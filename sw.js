@@ -3,13 +3,13 @@
    - the app page: try the internet first (to get the newest version), else the saved copy
    - libraries, fonts, pictures: the saved copy first, else the internet
    - database traffic (googleapis.com) is never touched */
-const CACHE = "golden-bee-v2";
+const CACHE = "golden-bee-v3";
 const CORE = [
   "./", "index.html", "manifest.json", "icon-192.png", "icon-512.png",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js",
-  "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+  "lib/html2canvas-1.4.1.min.js", "lib/zxing-0.21.3.min.js"
 ];
 const STATIC_HOSTS = ["www.gstatic.com", "fonts.googleapis.com", "fonts.gstatic.com", "cdnjs.cloudflare.com", "cdn.jsdelivr.net"];
 

@@ -3121,7 +3121,7 @@ async function buildPreview(o){
   try{return await buildPreviewCanvas(o)}catch(e){return await buildSlipPreview(o)}
 }
 async function buildSlipPreview(o){
-  if(!window.html2canvas)await loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+  if(!window.html2canvas)await loadLib("lib/html2canvas-1.4.1.min.js");
   try{await Promise.all([document.fonts.load(`400 16px "Noto Sans Myanmar"`),document.fonts.load(`700 16px "Noto Sans Myanmar"`),document.fonts.load(`500 16px "IBM Plex Mono"`)])}catch(e){}
   const fin=o.deco?.endAt&&o.deco.photo?photoUrl(o.deco.photo):"";
   const pics=[...(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean).slice(0,fin?3:4),...(fin?[fin]:[])];
@@ -3520,7 +3520,7 @@ async function exportSlip(o){
   else toast("JPEG ပြင်ဆင်နေသည်…");
   let step="load";
   try{
-    await loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
+    await loadLib("lib/html2canvas-1.4.1.min.js");
     el.style.zoom="";el.classList.add("measure");step="render";
     /* only the slip is copied for the picture (not the whole order list with its photos, which is too heavy for an iPad),
        and a render that never finishes gives up after 40 s instead of leaving the viewer waiting */
@@ -4293,7 +4293,7 @@ async function exportExcel(){
   if(!list.length){toast("ထုတ်စရာ အော်ဒါ မရှိပါ",3000);return}
   toast("Excel ပြင်ဆင်နေသည်…",8000);
   try{
-    await loadLib("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+    await loadLib("lib/xlsx-0.18.5.full.min.js");
     const rows=[XL_COLS.map(c=>c[0]),...list.map(o=>XL_COLS.map(c=>c[1](o)??""))];
     const ws=XLSX.utils.aoa_to_sheet(rows);
     ws["!cols"]=XL_COLS.map(c=>({wch:c[2]}));
@@ -5985,7 +5985,7 @@ $("posGrid").addEventListener("click",e=>{
 $("posTabs").addEventListener("click",e=>{const b=e.target.closest("[data-pos-tab]");if(!b)return;posTab=b.dataset.posTab;renderPos()});
 /* ---- camera barcode scan: live video where the browser allows the camera, otherwise a photo from the phone camera ---- */
 let zxReader=null,scanSeen={};
-async function zxLib(){await loadLib("https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js");return window.ZXing}
+async function zxLib(){await loadLib("lib/zxing-0.21.3.min.js");return window.ZXing}
 /* a printed code may carry a check digit or a leading 0 (UPC/EAN), so those count as the same barcode */
 function scanFind(t){const v=String(t||"").trim(),n=v.replace(/^0+/,"");
   return pds.find(p=>{const b=String(p.barcode||"");return b&&(b===v||b===n||(v.length===b.length+1&&v.startsWith(b))||(n.length===b.length+1&&n.startsWith(b)))})||pds.find(p=>pdNorm(p.code)===pdNorm(v))}
