@@ -1343,7 +1343,7 @@ span.star-ic{cursor:default}
     <button type="button" class="btn prq-new fab" id="tdNewBtn">+ New task</button>
   </section>
 
-  <!-- PURCHASE & EXPENSE: Purchase Requisition · Business Expense (Admins) · Personal Expense (Admins and the people in it) -->
+  <!-- PURCHASE & EXPENSE: Purchase Requisition · Business Expense (Admins) · Personal Expense (Admins only) -->
   <section id="viewPE" hidden>
     <div class="home-grid">
       <button type="button" class="home-tile" id="goBiz" hidden><span class="ht-ic" aria-hidden="true">🏪</span><b>Business Expense</b><small id="homeBizN"></small></button>
@@ -4540,7 +4540,7 @@ const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>","မွ
   biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
-  if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins and the people linked to it */
+  if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
@@ -4668,7 +4668,7 @@ const exPpl=()=>exPplDoc||EX_PEOPLE.map(n=>({id:n,name:n}));
 const exPName=id=>(exPpl().find(p=>p.id===id)||{}).name||id;
 /* the person linked to whoever is signed in (Admins included) */
 const myPerson=()=>{const a=myAcct(),u=a?.editor?a.u:session?.u;return a&&u?exPpl().find(p=>p.acct&&p.acct===u)||null:null};
-const canSeeEx=()=>can("admin")||!!myPerson();
+const canSeeEx=()=>can("admin");   /* Personal Expense: Admins only */
 var exUnsub=null,bxUnsub=null,exs=[],bxs=[],exCol=null,bxCol=null,exKind="personal",exTab="list",exEditing=null,exDetail=null;
 /* the filter: Today (first), a month, or a From – To range */
 var exF={mode:"today",month:todayISO().slice(0,7),from:todayISO().slice(0,8)+"01",to:todayISO()};
