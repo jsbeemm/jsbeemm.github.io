@@ -1348,7 +1348,6 @@ span.star-ic{cursor:default}
     <div class="home-grid">
       <button type="button" class="home-tile" id="goBiz" hidden><span class="ht-ic" aria-hidden="true">🏪</span><b>Business Expense</b><small id="homeBizN"></small></button>
       <button type="button" class="home-tile" id="goEx" hidden><span class="ht-ic" aria-hidden="true">💰</span><b>Personal Expense</b><small id="homeExN"></small></button>
-      <button type="button" class="home-tile" id="goRcvPE"><span class="ht-ic" aria-hidden="true">📦</span><b>Goods Received</b><small>Weigh, photo, packages</small></button>
     </div>
   </section>
 
@@ -5854,7 +5853,6 @@ $("pkgDel").addEventListener("click",async()=>{const r=rcvs.find(x=>x.id===rcvOp
 /* open from Home, To Buy List or Purchase & Expense — that name is kept as the record's module */
 function goRcv(from){rcvFrom=from;BACK_TO.rcv=RCV_BACK[from]||"home";go("rcv")}
 $("goRcv").addEventListener("click",()=>goRcv("Goods Received"));
-$("goRcvPE").addEventListener("click",()=>goRcv("Purchase & Expense"));
 $("prRcvBtn").addEventListener("click",()=>goRcv("To Buy List"));
 function initRcv(){
   if(!db){try{rcvs=JSON.parse(localStorage.getItem("cakeRcv")||"[]");Object.values(RCV_LISTS).forEach(L=>{try{L.list=JSON.parse(localStorage.getItem(L.local)||"null")}catch(x){}})}catch(e){rcvs=[]}rcvLocalPhotos();return}
