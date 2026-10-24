@@ -13,8 +13,11 @@ textarea{width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:10
 button{font:inherit;font-weight:700;padding:8px 14px;border:0;border-radius:10px;background:#C8285F;color:#fff;margin-top:10px}
 </style></head><body>
 <h1>⌨️ Keyboard test</h1>
-<p>C အကွက်မှာ "မေ" ရှေ့မှာ cursor ထားပြီး ⌫ ၅ ချက်လောက် နှိပ်ပါ။ ပြီးရင် မြန်မာ keyboard နဲ့ "မေတ္တာ" လို စာနည်းနည်း ရိုက်ပါ။ ဖျက်တာနဲ့ ရိုက်တာ မှန်မမှန် ပြောပေးပါ။</p>
-<label>C — iPhone ရဲ့ မူလ မြန်မာ font နဲ့ အကွက် (ဒါကို အဓိက စမ်းပေးပါ)</label>
+<p>D အကွက်မှာ "မေ" ရှေ့မှာ cursor ထားပြီး ⌫ ၅ ချက်လောက် နှိပ်ပါ။ ပြီးရင် မြန်မာ keyboard နဲ့ "မေတ္တာ" လို စာနည်းနည်း ရိုက်ပါ။ စာကြားထဲမှာ ရိုက်တာ၊ ဖျက်တာလည်း စမ်းပါ။ ဖျက်တာနဲ့ ရိုက်တာ မှန်မမှန် ပြောပေးပါ။</p>
+<label>D — iPhone font + ⌫ ပြင်ချက် ပေါင်းထားတဲ့ အကွက် (ဒါကို စမ်းပေးပါ)</label>
+<textarea id="d" rows="3" style="font-family:'Myanmar Sangam MN','Myanmar MN',system-ui,sans-serif">ချည်နှောင်မိတဲ့မေတ္တာတွေ
+ကိုယ်ပြန်လွှတ်မြောက်ရပါစေ</textarea>
+<label>C — iPhone ရဲ့ မူလ မြန်မာ font နဲ့ အကွက်</label>
 <textarea id="c" rows="3" style="font-family:'Myanmar Sangam MN','Myanmar MN',system-ui,sans-serif">ချည်နှောင်မိတဲ့မေတ္တာတွေ
 ကိုယ်ပြန်လွှတ်မြောက်ရပါစေ</textarea>
 <label>A — ဘာမှ မပြင်ထားတဲ့ အကွက် (Noto Sans Myanmar font)</label>
@@ -30,11 +33,11 @@ const log=document.getElementById("log");
 const hex=s=>[...s].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")).join(" ");
 function add(t){log.textContent=t+"\n"+log.textContent}
 function around(el,p){const s=el.value;return JSON.stringify(s.slice(Math.max(0,p-3),p))+"|"+JSON.stringify(s.slice(p,p+3))}
-["a","b","c"].forEach(id=>{const el=document.getElementById(id);let before=null;
+["a","b","c","d"].forEach(id=>{const el=document.getElementById(id);let before=null;
   el.addEventListener("beforeinput",e=>{before={p:el.selectionStart,q:el.selectionEnd,len:el.value.length};
     add(`${id.toUpperCase()} before  ${e.inputType} data=${JSON.stringify(e.data)} comp=${e.isComposing} sel=${el.selectionStart}-${el.selectionEnd} ${around(el,el.selectionStart)}`);
     /* B: Backspace removes exactly one code point and puts the cursor at the deletion point */
-    if(id==="b"&&e.inputType==="deleteContentBackward"&&!e.isComposing&&el.selectionStart===el.selectionEnd&&el.selectionStart>0){
+    if((id==="b"||id==="d")&&e.inputType==="deleteContentBackward"&&!e.isComposing&&el.selectionStart===el.selectionEnd&&el.selectionStart>0){
       e.preventDefault();const p=el.selectionStart,gone=el.value.slice(p-1,p);el.setRangeText("",p-1,p,"start");
       el.dispatchEvent(new Event("input"));add(`B   handled: removed U+${hex(gone)}, cursor=${el.selectionStart}`)}});
   el.addEventListener("input",e=>{add(`${id.toUpperCase()} after   ${e.inputType||""} sel=${el.selectionStart} len ${before?before.len:"?"}→${el.value.length} ${around(el,el.selectionStart)}`)});
