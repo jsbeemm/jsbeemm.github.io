@@ -4524,7 +4524,7 @@ function syncAuth(){
   $("authView").hidden=!locked;
   $("authLoading").hidden=acctLoaded||!db;$("authForms").hidden=!acctLoaded&&!!db;
   if(locked&&!$("viewNew").hidden)showTab("list");
-  initEx();initTd();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin")))go("pe");
+  initEx();initTd();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin")))go("pe");if(view==="pt"&&isProdRole())go("home");
   renderMe();render();renderPR();renderTeam();placeHome();renderHome();
 }
 /* to-dos the owner kept before linking move to the linked account, once */
@@ -4541,6 +4541,7 @@ function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
+  if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
   $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
@@ -4577,6 +4578,7 @@ function renderHome(){
   $("homeProdN").textContent=pds.length?`${pds.length} products`:"";
   {const c=pts.filter(p=>p.type!=="supplier").length,sp=pts.length-c;$("homePtN").textContent=pts.length?`${c} customers${can("admin")?` · ${sp} suppliers`:""}`:""}
   $("goEx").hidden=!canSeeEx();$("goBiz").hidden=!can("admin");
+  $("goPt").hidden=isProdRole();
   const mo=todayISO().slice(0,7),inMo=r=>(r.date||"").slice(0,7)===mo;
   $("homePEN").textContent=can("admin")?`This month · ${fmtSums(curSums(bxs.concat(exs).filter(inMo),r=>Number(r.amount||0)))}`:"";
   if(can("admin")){$("homeExN").textContent=`This month · ${fmtSums(curSums(exs.filter(inMo),r=>Number(r.amount||0)))}`;$("homeBizN").textContent=`This month · ${fmtSums(curSums(bxs.filter(inMo),r=>Number(r.amount||0)))}`}
@@ -4668,6 +4670,8 @@ const exPName=id=>(exPpl().find(p=>p.id===id)||{}).name||id;
 /* the person linked to whoever is signed in (Admins included) */
 const myPerson=()=>{const a=myAcct(),u=a?.editor?a.u:session?.u;return a&&u?exPpl().find(p=>p.acct&&p.acct===u)||null:null};
 const canSeeEx=()=>can("admin");   /* Personal Expense: Admins only */
+/* Production staff (Baking, Decoration, or any role named "Production …") don't see Customers & Suppliers */
+const isProdRole=()=>{const k=myRole();if(k==="baking"||k==="decoration")return true;return /production/i.test(roleList().find(r=>r.k===k)?.n||"")};
 var exUnsub=null,bxUnsub=null,exs=[],bxs=[],exCol=null,bxCol=null,exKind="personal",exTab="list",exEditing=null,exDetail=null;
 /* the filter: Today (first), a month, or a From – To range */
 var exF={mode:"today",month:todayISO().slice(0,7),from:todayISO().slice(0,8)+"01",to:todayISO()};
