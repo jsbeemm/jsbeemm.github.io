@@ -1210,13 +1210,9 @@ span.star-ic{cursor:default}
             <div class="cnt"><button type="button" class="cnt-b" data-cnt="-1" aria-label="တစ်လုံး လျှော့ရန်">−</button><input id="fCount" type="text" inputmode="numeric" autocomplete="off" value="1" aria-label="ကိတ် အရေအတွက်"><button type="button" class="cnt-b" data-cnt="1" aria-label="တစ်လုံး တိုးရန်">+</button></div></div>
         </fieldset>
 
-        <!-- extra charges, design code / note, message and design photos have their own frame under the cake -->
+        <!-- design code / note, message and design photos have their own frame under the cake -->
         <fieldset id="designSet">
-          <legend>Design &amp; Additional</legend>
-          <p class="grp">Additional charge</p>
-          <div class="charges" id="chargeList"></div>
-          <button type="button" class="add-charge" id="addCharge">+ Charge ထပ်ထည့်ရန်</button>
-          <div style="margin-bottom:12px"></div>
+          <legend>Design</legend>
           <div class="row dc-row" style="margin-top:12px">
             <label class="f"><span>Design Code</span><input id="fDesign" placeholder="ဥပမာ – D-012" autocapitalize="characters"></label>
             <label class="f"><span>ကိတ် Design မှတ်ချက်</span><textarea id="fDesignNote" rows="2" placeholder="ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…"></textarea></label>
@@ -1270,6 +1266,11 @@ span.star-ic{cursor:default}
 
         <fieldset id="paySet">
           <legend>ငွေပေးချေမှု</legend>
+          <!-- extra charges (with quantity and photo) sit above the discount -->
+          <p class="grp">Additional charge</p>
+          <div class="charges" id="chargeList"></div>
+          <button type="button" class="add-charge" id="addCharge">+ Charge ထပ်ထည့်ရန်</button>
+          <div style="margin-bottom:12px"></div>
           <!-- a discount typed by hand, in Ks: it comes off the total (before the payments are counted) -->
           <label class="f disc-wrap" style="margin:0 0 12px;max-width:220px"><span>Discount (Ks)</span><input id="fDiscount" type="number" min="0" step="500" placeholder="0" inputmode="numeric"></label>
           <div class="pay-head" aria-hidden="true"><span>ပေးသည့်နေ့</span><span>ငွေပေးချေနည်း</span><span>ပမာဏ (Ks)</span><span></span></div>
