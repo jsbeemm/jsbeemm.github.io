@@ -6376,34 +6376,6 @@ document.querySelectorAll('input[type="number"]').forEach(moneyInput);
 new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes){if(n.nodeType!==1)continue;
   if(n.matches('input[type="number"]'))moneyInput(n);n.querySelectorAll?.('input[type="number"]').forEach(moneyInput)}}).observe(document.documentElement,{childList:true,subtree:true});
 
-/* ---------- Myanmar text: Backspace in the middle of a word ----------
-   On iPhones the built-in delete can leave the cursor inside a Myanmar letter group (e.g. between a consonant and the vowel sign
-   drawn before it), so the next deletes remove letters on the wrong side. In every text box, Backspace with Myanmar letters
-   before the cursor removes exactly one whole letter group and leaves the cursor where it was. */
-const MM_RE=/[က-႟ꧠ-꧿ꩠ-ꩿ]/;
-const mmSeg=(()=>{try{return new Intl.Segmenter("my",{granularity:"grapheme"})}catch(e){return null}})();
-const mmMark=c=>{const p=c.codePointAt(0);return(p>=0x102B&&p<=0x103E)||(p>=0x1056&&p<=0x1059)||(p>=0x105E&&p<=0x1060)||(p>=0x1062&&p<=0x1064)||(p>=0x1067&&p<=0x106D)||(p>=0x1071&&p<=0x1074)||(p>=0x1082&&p<=0x108D)||p===0x108F||(p>=0x109A&&p<=0x109D)};
-/* the letter group that ends at position p ([start,end)), after moving p out of the middle of a group */
-function mmGroupBefore(s,p){
-  let bounds=[0];
-  if(mmSeg){for(const g of mmSeg.segment(s))bounds.push(g.index+g.segment.length)}
-  else{for(let i=1;i<=s.length;i++)if(i===s.length||!mmMark(s[i])&&s[i-1]!=="္")bounds.push(i)}
-  let end=bounds.find(b=>b>=p);if(end==null)end=s.length;
-  let start=0;for(const b of bounds){if(b<end)start=b;else break}
-  /* a stacked letter (after the ္ sign) goes together with the letter above it */
-  while(start>0&&s[start-1]==="္"){const prev=bounds.filter(b=>b<start).pop();if(prev==null)break;start=prev}
-  return[start,end]}
-document.addEventListener("beforeinput",e=>{
-  const el=e.target;if(e.inputType!=="deleteContentBackward"||e.isComposing)return;
-  if(!(el instanceof HTMLTextAreaElement||(el instanceof HTMLInputElement&&/^(text|search|)$/.test(el.type))))return;
-  if(el.readOnly||el.disabled||el.__money)return;
-  const s=el.value,a=el.selectionStart,b=el.selectionEnd;if(a==null||a!==b||a===0)return;
-  if(!MM_RE.test(s.slice(Math.max(0,a-4),a+4)))return;   /* only around Myanmar text; other text keeps the normal delete */
-  const[st,en]=mmGroupBefore(s,a);if(en<=st)return;
-  e.preventDefault();
-  el.setRangeText("",st,en,"start");
-  el.dispatchEvent(new Event("input",{bubbles:true}))},true);
-
 /* ---------- boot ---------- */
 resetForm();render();go("home");
 (async()=>{
