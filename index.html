@@ -6376,6 +6376,28 @@ document.querySelectorAll('input[type="number"]').forEach(moneyInput);
 new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes){if(n.nodeType!==1)continue;
   if(n.matches('input[type="number"]'))moneyInput(n);n.querySelectorAll?.('input[type="number"]').forEach(moneyInput)}}).observe(document.documentElement,{childList:true,subtree:true});
 
+/* ---------- iPhone / iPad: typing and deleting Myanmar text ----------
+   Tested on an iPhone (keytest.html): with the downloaded Myanmar font the cursor jumps while typing, and the built-in delete
+   in the middle of a word removes letters on the wrong side. So on iPhones and iPads only:
+   - text boxes use the phone's own Myanmar font (typing then puts letters in the right place);
+   - Backspace right after a Myanmar letter removes exactly that one letter (sign) and leaves the cursor there. */
+const IS_IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+if(IS_IOS){
+  document.documentElement.classList.add("ios");
+  const st=document.createElement("style");
+  st.textContent="html.ios input:not([type=checkbox]):not([type=radio]),html.ios textarea{font-family:'Myanmar Sangam MN','Myanmar MN',system-ui,-apple-system,sans-serif!important}";
+  document.head.appendChild(st);
+  document.addEventListener("beforeinput",e=>{
+    const el=e.target;if(e.inputType!=="deleteContentBackward"||e.isComposing)return;
+    if(!(el instanceof HTMLTextAreaElement||(el instanceof HTMLInputElement&&/^(text|search|)$/.test(el.type))))return;
+    if(el.readOnly||el.disabled)return;
+    const p=el.selectionStart;if(p==null||p!==el.selectionEnd||p===0)return;
+    if(!/[က-႟ꧠ-꧿ꩠ-ꩿ]/.test(el.value[p-1]))return;   /* only right after a Myanmar letter */
+    e.preventDefault();
+    el.setRangeText("",p-1,p,"start");
+    el.dispatchEvent(new Event("input",{bubbles:true}))},true);
+}
+
 /* ---------- boot ---------- */
 resetForm();render();go("home");
 (async()=>{
