@@ -3,7 +3,7 @@
    - the app page: try the internet first (to get the newest version), else the saved copy
    - libraries, fonts, pictures: the saved copy first, else the internet
    - database traffic (googleapis.com) is never touched */
-const CACHE = "golden-bee-v3";
+const CACHE = "golden-bee-v4";
 const CORE = [
   "./", "index.html", "manifest.json", "icon-192.png", "icon-512.png",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",

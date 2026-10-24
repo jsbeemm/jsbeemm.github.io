@@ -1861,6 +1861,23 @@ function fbReady(){return new Promise(res=>{
     catch(x){err.textContent=/wrong-password|invalid-credential|user-not-found|invalid-email/.test(x?.code||"")?"Email (သို့) Password မှားနေပါတယ်":"ဝင်လို့ မရပါ — "+(x?.code||x)}
     finally{go.disabled=false}});
 })}
+/* ---- working without internet ----
+   Firestore keeps a copy of the shared data on the phone and queues changes until the connection is back.
+   But a save only "finishes" once the server confirms it, so the app would sit waiting while offline.
+   Saves therefore finish as soon as they are written on the phone; the upload carries on in the background,
+   and a failure (e.g. no permission) is shown as a message. */
+if(window.firebase){
+  const DR=firebase.firestore.DocumentReference.prototype,CR=firebase.firestore.CollectionReference.prototype;
+  const fbSaveFailed=e=>{console.error("Save failed",e);try{toast("Save failed to reach the shared data — "+(e?.code||e))}catch(x){}};
+  ["set","update","delete"].forEach(m=>{const orig=DR[m];DR[m]=function(...a){let p;try{p=orig.apply(this,a)}catch(e){return Promise.reject(e)}p.catch(fbSaveFailed);return Promise.resolve()}});
+  CR.add=function(d){const r=this.doc();r.set(d);return Promise.resolve(r)};
+}
+/* a banner while this phone has no connection, so staff know their changes are waiting to sync */
+function fbNetBar(){let b=document.getElementById("fbNet");if(!b){b=document.createElement("div");b.id="fbNet";b.setAttribute("role","status");
+    b.style.cssText="position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:999;background:#3A2A31;color:#fff;font:600 13.5px/1.4 'Noto Sans Myanmar',system-ui,sans-serif;padding:8px 14px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center";
+    document.body.appendChild(b)}
+  b.textContent="📴 Internet မရှိပါ — ဆက်သုံးလို့ရပါတယ်၊ Internet ပြန်ရရင် အလိုလို sync ပါမယ်";b.hidden=navigator.onLine}
+addEventListener("online",fbNetBar);addEventListener("offline",fbNetBar);addEventListener("DOMContentLoaded",()=>{if(!navigator.onLine)fbNetBar()});
 /* keep a copy of the app on this phone (sw.js), so it opens even when the network blocks the site's address */
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 function fbShopSignOut(){if(window.firebase)firebase.auth().signOut().then(()=>location.reload())}
