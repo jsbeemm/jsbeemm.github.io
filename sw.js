@@ -3,7 +3,7 @@
    - the app page: try the internet first (to get the newest version), else the saved copy
    - libraries, fonts, pictures: the saved copy first, else the internet
    - database traffic (googleapis.com) is never touched */
-const CACHE = "golden-bee-v4";
+const CACHE = "golden-bee-v5";
 const CORE = [
   "./", "index.html", "manifest.json", "icon-192.png", "icon-512.png",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
@@ -24,6 +24,9 @@ const timeout = (ms) => new Promise((_, rej) => setTimeout(() => rej(new Error("
 
 async function networkFirst(req) {
   const c = await caches.open(CACHE);
+  // only the app page itself is kept as the offline copy (other pages, e.g. keytest.html, are just loaded)
+  const appUrls = [self.registration.scope, new URL("index.html", self.registration.scope).href];
+  if (!appUrls.includes(req.url.split("?")[0].split("#")[0])) return fetch(req).catch(() => c.match(req).then(r => r || Response.error()));
   try {
     const res = await Promise.race([fetch(req), timeout(6000)]);
     if (res.ok) c.put(new URL("index.html", self.registration.scope).href, res.clone());

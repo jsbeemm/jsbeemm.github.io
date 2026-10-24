@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keyboard test</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap">
+<style>
+:root{color-scheme:light}
+body{margin:0;padding:16px;font:15px/1.5 "Noto Sans Myanmar",system-ui,sans-serif;background:#F6ECEF;color:#2B1B23}
+h1{font-size:18px;margin:0 0 4px;color:#C8285F}
+p{margin:0 0 12px;color:#6b5560;font-size:13.5px}
+label{display:block;font-weight:700;margin:14px 0 4px}
+textarea{width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:10px;border:1px solid #c9b3bd;border-radius:10px;background:#fff}
+#log{margin-top:14px;background:#fff;border-radius:10px;padding:8px 10px;font:12px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;max-height:46vh;overflow:auto}
+button{font:inherit;font-weight:700;padding:8px 14px;border:0;border-radius:10px;background:#C8285F;color:#fff;margin-top:10px}
+</style></head><body>
+<h1>⌨️ Keyboard test</h1>
+<p>အကွက် ၂ ခုလုံးမှာ "မေ" ရှေ့မှာ cursor ထားပြီး ⌫ ၅ ချက်လောက် နှိပ်ပါ။ ပြီးရင် မြန်မာ keyboard နဲ့ စာနည်းနည်း ရိုက်ပါ။ ပြီးရင် ဒီစာမျက်နှာ တစ်ခုလုံးကို screenshot ပို့ပေးပါ။</p>
+<label>A — ဘာမှ မပြင်ထားတဲ့ အကွက်</label>
+<textarea id="a" rows="3">ချည်နှောင်မိတဲ့မေတ္တာတွေ
+ကိုယ်ပြန်လွှတ်မြောက်ရပါစေ</textarea>
+<label>B — ⌫ ကို စာလုံး ၁ လုံးချင်း ဖျက်ပေးတဲ့ အကွက်</label>
+<textarea id="b" rows="3">ချည်နှောင်မိတဲ့မေတ္တာတွေ
+ကိုယ်ပြန်လွှတ်မြောက်ရပါစေ</textarea>
+<button type="button" id="clr">Log ရှင်းမည်</button>
+<div id="log"></div>
+<script>
+const log=document.getElementById("log");
+const hex=s=>[...s].map(c=>c.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")).join(" ");
+function add(t){log.textContent=t+"\n"+log.textContent}
+function around(el,p){const s=el.value;return JSON.stringify(s.slice(Math.max(0,p-3),p))+"|"+JSON.stringify(s.slice(p,p+3))}
+["a","b"].forEach(id=>{const el=document.getElementById(id);let before=null;
+  el.addEventListener("beforeinput",e=>{before={p:el.selectionStart,q:el.selectionEnd,len:el.value.length};
+    add(`${id.toUpperCase()} before  ${e.inputType} data=${JSON.stringify(e.data)} comp=${e.isComposing} sel=${el.selectionStart}-${el.selectionEnd} ${around(el,el.selectionStart)}`);
+    /* B: Backspace removes exactly one code point and puts the cursor at the deletion point */
+    if(id==="b"&&e.inputType==="deleteContentBackward"&&!e.isComposing&&el.selectionStart===el.selectionEnd&&el.selectionStart>0){
+      e.preventDefault();const p=el.selectionStart,gone=el.value.slice(p-1,p);el.setRangeText("",p-1,p,"start");
+      el.dispatchEvent(new Event("input"));add(`B   handled: removed U+${hex(gone)}, cursor=${el.selectionStart}`)}});
+  el.addEventListener("input",e=>{add(`${id.toUpperCase()} after   ${e.inputType||""} sel=${el.selectionStart} len ${before?before.len:"?"}→${el.value.length} ${around(el,el.selectionStart)}`)});
+  el.addEventListener("compositionstart",()=>add(id.toUpperCase()+" compositionstart"));
+  el.addEventListener("compositionend",e=>add(id.toUpperCase()+" compositionend "+JSON.stringify(e.data)));
+});
+document.addEventListener("selectionchange",()=>{const el=document.activeElement;if(el&&el.tagName==="TEXTAREA")add(`${el.id.toUpperCase()} cursor → ${el.selectionStart}${el.selectionEnd!==el.selectionStart?"-"+el.selectionEnd:""} ${around(el,el.selectionStart)}`)});
+document.getElementById("clr").onclick=()=>{log.textContent=""};
+add("UA: "+navigator.userAgent);
+</script>
+</body></html>
