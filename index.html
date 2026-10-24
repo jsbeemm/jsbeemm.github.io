@@ -2117,10 +2117,11 @@ let orders=[], db=null, col=null, editingId=null, dateF="all", statusF="all", pe
 function localLoad(){try{return JSON.parse(localStorage.getItem("cakeOrders")||"[]")}catch(e){return[]}}
 function localSave(){try{localStorage.setItem("cakeOrders",JSON.stringify(orders))}catch(e){}}
 function setSync(m){
-  mode=m;const d=$("syncDot"),t=$("syncText");
-  d.className="dot"+(m==="db"?" on":m==="local"?" local":"");
-  t.textContent=m==="db"?"မျှဝေထားသော ဒေတာနှင့် ချိတ်ဆက်ပြီး":m==="local"?"ဒီစက်ပေါ်တွင်သာ သိမ်းထားသည်":"ချိတ်ဆက်နေသည်…";
+  mode=m;const d=$("syncDot"),t=$("syncText"),off=m==="db"&&navigator.onLine===false;   /* shared data, but this phone has no internet: changes wait on the phone and sync later */
+  d.className="dot"+(off?" local":m==="db"?" on":m==="local"?" local":"");
+  t.textContent=off?"Offline — ဖုန်းထဲမှာ သိမ်းထားပြီး Internet ပြန်ရရင် sync ပါမယ်":m==="db"?"မျှဝေထားသော ဒေတာနှင့် ချိတ်ဆက်ပြီး":m==="local"?"ဒီစက်ပေါ်တွင်သာ သိမ်းထားသည်":"ချိတ်ဆက်နေသည်…";
 }
+addEventListener("online",()=>{if(mode==="db")setSync("db")});addEventListener("offline",()=>{if(mode==="db")setSync("db")});
 async function saveOrder(o){
   if(col){await col.doc(o.id).set(o)}
   else{const i=orders.findIndex(x=>x.id===o.id);if(i>=0)orders[i]=o;else orders.push(o);localSave();render()}
@@ -4002,7 +4003,7 @@ let tt;function toast(m,ms=2200){const el=$("toast");el.textContent=m;el.hidden=
    cake messages) is never altered. A handful of labels that carry numbers use the patterns below. */
 const EN={
   "မွေးနေ့ကိတ် အော်ဒါစာအုပ်":"Birthday Cake Orders","မွေးနေ့ကိတ် အော်ဒါ လက်ခံစာအုပ်":"Birthday cake order book",
-  "ချိတ်ဆက်နေသည်…":"Connecting…","မျှဝေထားသော ဒေတာနှင့် ချိတ်ဆက်ပြီး":"Connected to shared data","ဒီစက်ပေါ်တွင်သာ သိမ်းထားသည်":"Saved on this device only",
+  "ချိတ်ဆက်နေသည်…":"Connecting…","မျှဝေထားသော ဒေတာနှင့် ချိတ်ဆက်ပြီး":"Connected to shared data","Offline — ဖုန်းထဲမှာ သိမ်းထားပြီး Internet ပြန်ရရင် sync ပါမယ်":"Offline — saved on this phone, will sync when the internet is back","ဒီစက်ပေါ်တွင်သာ သိမ်းထားသည်":"Saved on this device only",
   "အကျဉ်းချုပ်":"Summary","ဒီနေ့ ယူမည့်ကိတ်":"Cakes due today","နောက် ၇ ရက်အတွင်း":"Next 7 days","မပြီးသေးသော အော်ဒါ":"Open orders","ကျန်ငွေ စုစုပေါင်း (Ks)":"Total balance due (Ks)",
   "အော်ဒါများ":"Orders","+ အော်ဒါအသစ်":"+ New order","အော်ဒါအသစ်":"New order","အော်ဒါ ပြင်ဆင်ရန်":"Edit order",
   "Channel အလိုက် စစ်ရန်":"Filter by channel","Channel အားလုံး":"All channels","အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်":"Search name, phone, order number",
@@ -4177,7 +4178,7 @@ const ROLES=[{k:"admin",n:"Admin"},{k:"staff",n:"Sale"},{k:"baking",n:"Productio
 const PERMS=[["orders.add","Add & edit orders"],["orders.pay","Record payments"],["orders.status","Change order status"],["orders.delete","Delete / cancel orders"],
   ["orders.print","Print / Save JPEG"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
 const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.report","sales.report","excel","pr.request"],
-  baking:["orders.print","pr.request"],decoration:["orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
+  baking:["orders.print","pr.request"],decoration:["orders.add","orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
 const permsFor=r=>Object.fromEntries(PERMS.map(([k])=>[k,(ROLE_PERMS[r]||[]).includes(k)]));
 const ROLES_DEF=ROLES.filter(r=>r.k!=="admin").map(r=>({...r,perms:ROLE_PERMS[r.k].slice()}));
 var rolesDoc=null;
