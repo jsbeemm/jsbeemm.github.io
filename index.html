@@ -1072,6 +1072,7 @@ span.star-ic{cursor:default}
 <div class="wrap">
   <div class="due-bar" id="dueBar" hidden role="alert"></div>   <!-- pending orders due within the hour, on every page -->
   <div class="due-bar print-nag" id="printNag" hidden role="alert"></div>   <!-- open orders whose slip is not printed yet, on every page -->
+  <div class="due-bar print-nag" id="tdNag" hidden role="alert"></div>   <!-- tasks newly assigned to the signed-in person, until they open their to-do list -->
   <header class="top">
     <div class="brand">
       <div class="title-row"><button type="button" class="back-btn" id="backBtn" hidden aria-label="Back" title="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><h1 id="pageTitle">Cake <span>Orders</span></h1></div>
@@ -1668,6 +1669,7 @@ span.star-ic{cursor:default}
   <h3 id="tdDlgT">New task</h3>
   <label class="prf"><span>Task <b>*</b></span><div id="tdText" contenteditable="true" role="textbox" aria-multiline="true" aria-required="true" data-maxlength="300" spellcheck="false" autocorrect="off" style="min-height:2.8em;max-height:8em;overflow-y:auto;white-space:pre-wrap;word-break:break-word;padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:15px;line-height:1.7;outline:none;cursor:text"></div></label>
   <div class="prf"><span>Due date</span><span class="td-due-w"><span id="tdDue"></span><button type="button" class="td-due-x" id="tdDueX" aria-label="Clear date" hidden>×</button></span></div>
+  <label class="prf" id="tdAssignW"><span>Assign to <small>(shows in their to-do list, with a notice)</small></span><select id="tdAssign"></select></label>
   <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="tdGo">Add</button></div>
 </form></div>
 <div class="editor" id="rcvDlg" hidden role="dialog" aria-modal="true" aria-labelledby="rcvDlgT">
@@ -3767,7 +3769,7 @@ function renderPrintNag(){const el=$("printNag");if(!el)return;
   const np=can("orders.print")?orders.filter(needPrint).length:0;if(!np)npF=false;
   el.hidden=!np||document.body.classList.contains("locked");
   el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်</span><button type="button" class="btn" data-npf>${npF&&view==="orders"?"အားလုံး ပြရန်":"ပြရန်"}</button></div>`:""}
-function renderDue(){renderPrintNag();
+function renderDue(){renderPrintNag();renderTdNag();
   const el=$("dueBar");if(!el)return;
   const list=orders.map(o=>({o,d:dueInfo(o)})).filter(x=>x.d).sort((a,b)=>a.d.mins-b.d.mins);
   el.hidden=!list.length||document.body.classList.contains("locked");
@@ -4583,8 +4585,10 @@ function renderHome(){
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* someone (not an Admin) with an open item assigned to them sees the tiles light up */
   const mine=myRole()!=="admin"?prs.filter(r=>!r.done&&isMyPR(r)).length:0;
-  ["goPR","goTodo"].forEach(id=>{const t=$(id);t.classList.toggle("glow",mine>0);t.querySelector(".ht-badge")?.remove();
-    if(mine)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${mine} assigned to you</span>`)});
+  /* tasks someone else assigned to me light up My to-do list (and To-do list) as well */
+  const tdN=tds.filter(t=>!t.done&&tdMine(t)).length;
+  [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
+    if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
    $("homePosN").textContent=`Today · ${ts.length} sale${ts.length===1?"":"s"}`;$("homeSaleRepN").textContent=`Today · ${fmt(amt)}`;
    $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(amt)}`}
@@ -5470,6 +5474,18 @@ function initPt(){
 /* ---------- My to-do list: each signed-in person's own list (collection "todos", one doc per item, owner = their account).
    The page shows a person only their own items. ---------- */
 var tds=[],tdCol=null,tdUnsub=null,tdOwner=null,tdShowDone=false;
+/* a task can be assigned to another account: it then shows in their list too, with a notice at the top of every page until
+   they open their to-do list. They can tick it done; only the person who made it edits or deletes it. */
+var tdNotified=new Set();
+function tdMine(t){return!!db&&!!t&&!!t.assignTo&&sameId(t.assignTo,tdMe())&&!sameId(t.owner,tdMe())}
+function tdIsOwner(t){return!db||sameId(t.owner,tdMe())}
+function renderTdNag(){const el=$("tdNag");if(!el||!tds||!tdNotified)return;const n=tds.filter(t=>!t.done&&tdMine(t)&&t.seen===false);
+  el.hidden=!n.length||document.body.classList.contains("locked")||view==="mytodo";
+  el.innerHTML=n.length?`<div class="due-h"><span>📝 သင့်ကို assign လုပ်ထားတဲ့ task အသစ် ${n.length} ခု ရှိပါတယ်</span><button type="button" class="btn" data-tdnag>ကြည့်ရန်</button></div>`:"";
+  /* a pop-up message the first time a task arrives */
+  const fresh=n.filter(t=>!tdNotified.has(t.id));fresh.forEach(t=>tdNotified.add(t.id));
+  if(fresh.length&&!document.body.classList.contains("locked"))toast(`📝 ${nameOf(fresh[0].owner)}: ${String(fresh[0].text).slice(0,80)}`,6000)}
+$("tdNag").addEventListener("click",e=>{if(e.target.closest("[data-tdnag]"))go("mytodo")});
 /* the signed-in person: an app account ("acct:<name>") or the page owner signed in through Claude */
 const tdMe=()=>!db?"local":(myAcct()&&me.id?me.id:null);
 function tdLocalSave(){try{localStorage.setItem("cakeTodos",JSON.stringify(tds))}catch(e){}}
@@ -5483,11 +5499,13 @@ function renderTd(){
   const row=t=>`<div class="td-item ${t.done?"done":""}" data-td="${esc(t.id)}">
       <label class="td-chk"><input type="checkbox" ${t.done?"checked":""} aria-label="Done"></label>
       <div class="td-main"><span class="td-text" data-t="${esc(t.text)}"></span>
-        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}</span></div>
-      <span class="ex-btns"><button type="button" class="o-ic" data-tdedit aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-tddel aria-label="Delete" title="Delete">${TRASH_IC}</button></span></div>`;
+        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}</span></div>
+      ${tdIsOwner(t)?`<span class="ex-btns"><button type="button" class="o-ic" data-tdedit aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-tddel aria-label="Delete" title="Delete">${TRASH_IC}</button></span>`:""}</div>`;
   $("tdList").innerHTML=(open.length?open.map(row).join(""):`<div class="prq-empty">Nothing to do. Tap “+ New task”.</div>`)
     +(done.length?`<button type="button" class="td-dtog" id="tdDoneTog">${tdShowDone?"▾":"▸"} Done (${done.length})</button>${tdShowDone?done.map(row).join(""):""}`:"");
   $("tdList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
+  /* opening My to-do list counts as having seen the tasks assigned to me */
+  tds.filter(t=>tdMine(t)&&t.seen===false).forEach(t=>saveTd({...t,seen:true}).catch(()=>{}));
 }
 /* contenteditable helpers replacing textarea .value */
 function tdGetText(){return $("tdText").innerText.replace(/\n$/,"").trim()}
@@ -5539,8 +5557,9 @@ $("tdAddForm").addEventListener("submit",async e=>{e.preventDefault();const u=td
   const text=tdGetText();if(!text){$("tdText").focus();return}
   const due=readDate($("tdDue").querySelector(".dp"))||null;if(due&&due<todayISO()&&due!==tdEditing?.due){toast("ယခင်ရက် ရွေးလို့ မရပါ");return}
   /* editing keeps the task's id, owner and done state; only the words and the due date change */
-  let t;if(tdEditing){t={...tdEditing,text,updatedAt:new Date().toISOString()};if(due)t.due=due;else delete t.due}
-  else t={id:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),owner:u,text,done:false,at:new Date().toISOString(),...(due?{due}:{})};
+  let asg=db?($("tdAssign").value||null):null;if(asg&&sameId(asg,u))asg=null;
+  let t;if(tdEditing){t={...tdEditing,text,updatedAt:new Date().toISOString(),assignTo:asg};if(due)t.due=due;else delete t.due;if(asg&&!sameId(asg,tdEditing.assignTo))t.seen=false}
+  else t={id:"t"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),owner:u,text,done:false,at:new Date().toISOString(),...(due?{due}:{}),assignTo:asg,...(asg?{seen:false}:{})};
   tdEditing=null;tdSetText("");tdDueReset();$("tdDlg").hidden=true;
   try{await saveTd(t)}catch(x){toast("သိမ်းမရပါ");tdSetText(text);$("tdDlg").hidden=false}});
 $("tdList").addEventListener("click",async e=>{
@@ -5560,6 +5579,7 @@ var tdEditing=null;
 function openTdForm(t){
   tdEditing=t||null;$("tdDlgT").textContent=t?"Edit task":"New task";$("tdGo").textContent=t?"Save":"Add";
   tdSetText(t?.text||"");tdDueReset();
+  $("tdAssignW").hidden=!db;if(db)$("tdAssign").innerHTML=prAssignOpts(t?.assignTo||"");
   if(t?.due){$("tdDue").innerHTML=dateSelect("",t.due,"Due date",t.due<todayISO()?t.due:todayISO(),true);$("tdDueX").hidden=false}
   $("tdDlg").hidden=false;$("tdText").focus();
 }
@@ -5574,7 +5594,11 @@ function initTd(){
   if(!db){try{tds=JSON.parse(localStorage.getItem("cakeTodos")||"[]")}catch(e){tds=[]}return}
   if(!u)return;
   tdCol=db.collection("todos");
-  tdUnsub=tdCol.where("owner","==",u).onSnapshot(s=>{tds=s.docs.map(d=>({...d.data(),id:d.id})).filter(t=>t.owner===u);renderTd();if(view==="home"||view==="todo")renderHome()},()=>{});
+  /* my own tasks and the tasks assigned to me, as one list */
+  let own=[],asg=[];const merge=()=>{const m=new Map();own.concat(asg).forEach(t=>m.set(t.id,t));tds=[...m.values()];renderTd();renderTdNag();if(view==="home"||view==="todo")renderHome()};
+  const u1=tdCol.where("owner","==",u).onSnapshot(s=>{own=s.docs.map(d=>({...d.data(),id:d.id})).filter(t=>t.owner===u);merge()},()=>{});
+  const u2=tdCol.where("assignTo","==",u).onSnapshot(s=>{asg=s.docs.map(d=>({...d.data(),id:d.id})).filter(t=>t.assignTo===u);merge()},()=>{});
+  tdUnsub=()=>{u1();u2()};
 }
 
 
@@ -5894,10 +5918,13 @@ const posPrice=(p,t=posTier)=>{if(!p)return null;if(t==="dist")return has(p.dist
   if(t==="panda")return has(p.panda)?Number(p.panda):has(p.retail)?pandaOf(p.retail):null;return has(p.retail)?Number(p.retail):null};
 const isPanda=c=>/food\s*panda/i.test(c?.name||"");
 const posCustObj=()=>posCustId?pts.find(p=>p.id===posCustId)||null:null;
-function posFillCust(){const sel=$("posCustSel");if(!sel)return;const cs=pts.filter(p=>p.type!=="supplier").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+function posFillCust(){const sel=$("posCustSel");if(!sel)return;
+  /* POS sells to Mr.Bee customers only (JS customers are not listed) */
+  if(posCustObj()?.type==="js"){posCustId="";posTier="retail"}
+  const cs=pts.filter(p=>p.type==="customer").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   const opt=p=>`<option value="${esc(p.id)}" ${p.id===posCustId?"selected":""}>${esc(p.name)}</option>`;
   sel.innerHTML=`<option value="">Walk-in · Retail price</option>`
-    +[["customer","Mr.Bee Customers"],["js","JS Customers"]].map(([k,n])=>{const l=cs.filter(p=>p.type===k);return l.length?`<optgroup label="${n}">${l.map(opt).join("")}</optgroup>`:""}).join("");
+    +[["customer","Mr.Bee Customers"]].map(([k,n])=>{const l=cs.filter(p=>p.type===k);return l.length?`<optgroup label="${n}">${l.map(opt).join("")}</optgroup>`:""}).join("");
   $("posTierNote").textContent=tierName(posTier)+" price"}
 function saleLocalSave(){try{localStorage.setItem("cakeSales",JSON.stringify(sales))}catch(e){}}
 async function saveSale(s){if(saleCol){await saleCol.doc(s.id).set(s);return}
