@@ -3145,6 +3145,7 @@ $("form").addEventListener("submit",async e=>{
   if(orders.some(o=>o.no===no&&o.id!==editingId)){err.textContent=`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;err.hidden=false;goToField([$("fNo")]);return}
   const {total}=price(f);
   const prev=editingId?orders.find(o=>o.id===editingId):null;
+  if(prev&&!canEditOrder(prev)){err.textContent="ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်။";return}
   const id=editingId||("o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
   const now=new Date().toISOString();
   const o={...f,id,total,no,status:prev?.status||"new",createdAt:prev?.createdAt||now,createdBy:prev?(prev.createdBy??null):me.id||null,updatedAt:now};
@@ -3795,7 +3796,7 @@ function render(){
         <div class="deco-main ${o.deco?.startAt?"":"dm-start"}">${decoBlock(o)}</div>
       </div>
       <div class="o-side">
-        <div class="o-top">${canWriteOrders()?`<button class="link o-edit" data-edit="${o.id}" aria-label="ပြင်ရန်" title="ပြင်ရန်">${PENCIL}</button>`:""}${o.history?.length?`<button class="link o-hist" data-hist="${o.id}">🕘 History (${o.history.length})</button>`:""}</div>
+        <div class="o-top">${canEditOrder(o)?`<button class="link o-edit" data-edit="${o.id}" aria-label="ပြင်ရန်" title="ပြင်ရန်">${PENCIL}</button>`:""}${o.history?.length?`<button class="link o-hist" data-hist="${o.id}">🕘 History (${o.history.length})</button>`:""}</div>
         <select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}${!o.deco.startAt&&!o.deco.endAt&&prevSecsOf(o.deco)>0?" · Paused":""}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
         <!-- "Start decorating" sits right under the status (computer); on phones the whole decorating block sits here, above the status and Print -->
         <div class="deco-side ${o.deco?.startAt?"":"ds-start"}">${decoBlock(o)}</div>
@@ -4055,7 +4056,7 @@ $("orders").addEventListener("click",async e=>{
   if(t.dataset.pv){openPreview(orders.find(o=>o.id===t.dataset.pv));return}
   if(t.dataset.print){printOrder(orders.find(o=>o.id===t.dataset.print));return}
   if(t.dataset.hist){openHistory(orders.find(o=>o.id===t.dataset.hist));return}
-  if(t.dataset.edit){fillForm(orders.find(o=>o.id===t.dataset.edit));showTab("new");return}
+  if(t.dataset.edit){const o=orders.find(o=>o.id===t.dataset.edit);if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}fillForm(o);showTab("new");return}
   if(t.dataset.del){const o=orders.find(x=>x.id===t.dataset.del);if(!o)return;
     if(!await askConfirm(`Delete order ${o.no}?`,`${o.name||""}${o.phone?" · "+o.phone:""}\nThis order and its photos will be removed for good.`))return;
     try{await removeOrder(o.id);toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}return}
@@ -4369,6 +4370,8 @@ const myRole=()=>!db?"admin":(myAcct()?.role||"viewer");
 const can=p=>{if(!db)return true;const a=myAcct();if(!a)return false;if(a.role==="admin")return true;
   const v=a.perms?.[p];return v===undefined?(ROLE_PERMS[a.role]||[]).includes(p):!!v};
 const canWriteOrders=()=>can("orders.add");
+/* an order is edited by the staff member who accepted it; Admins can edit every order */
+const canEditOrder=o=>!db||can("admin")||(canWriteOrders()&&!!o&&sameId(o.createdBy,me.id));
 const canDelete=()=>can("orders.delete");
 /* the owner is marked in team/<id> {owner:true} so every Admin sees the owner as a fixed Admin */
 const isOwnerId=id=>!!id&&(sameId(id,me.id)&&me.isOwner||team[id]?.owner===true||String(id).startsWith("acct:")&&team[accounts[id.slice(5)]?.claude]?.owner===true);
