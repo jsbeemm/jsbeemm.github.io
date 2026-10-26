@@ -3950,6 +3950,9 @@ function tickDeco(){
   const pvLive=!$("preview").hidden&&pvOrder&&orders.find(o=>o.id===pvOrder.id);
   const pvRun=pvLive&&pvLive.deco?.startAt&&!pvLive.deco.endAt&&seeDecoTime();
   $("pvTimer").hidden=!pvRun;if(pvRun)$("pvTimer").textContent=fmtClock(decoSecs(pvLive.deco));
+  /* the decorator's preview closes when someone else (an Admin) cancels their decorating */
+  if(pvLive&&pvOrder.deco?.startAt&&!pvOrder.deco.endAt&&sameId(pvOrder.deco.by,me.id)&&!pvLive.deco?.startAt&&!pvLive.deco?.endAt&&pvLive.updatedBy&&!sameId(pvLive.updatedBy,me.id)){
+    $("preview").hidden=true;pvOrder=null;toast(`${pvLive.no} — decorating was cancelled by ${nameOf(pvLive.updatedBy)}`,6000)}
   if(!$("preview").hidden)syncPvFinish();
 }
 setInterval(tickDeco,1000);
