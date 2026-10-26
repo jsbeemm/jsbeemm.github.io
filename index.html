@@ -3412,7 +3412,10 @@ $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];
   $("pvFinish").hidden=true;const patch=await decoFinish(o,f);
   /* the preview is drawn again with the finished-cake photo */
   if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
-$("pvClose").addEventListener("click",()=>{$("preview").hidden=true});
+$("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
+  /* the decorator closing the preview of the cake they are decorating pauses its timer ("Resume decorating" carries on) */
+  const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);
+  if(o&&o.deco?.startAt&&!o.deco.endAt&&sameId(o.deco.by,me.id))decoPause(o)});
 /* Save order & image: the picture is saved first (while the tap still counts, so the save / share sheet can open),
    then the order is saved exactly as the form's Save button does, and the preview closes */
 $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;const b=$("pvSaveAll");b.disabled=true;
@@ -3886,6 +3889,14 @@ setInterval(()=>{if(view==="orders"&&!$("viewList").hidden)render();else renderD
 const readyName=o=>o.delivery==="delivery"?"Ready to deliver":"Ready to pick up";
 /* a decorator: the Decoration role (or a role named "…Decorat…"), not an Admin */
 const isDecorator=()=>!!db&&!can("admin")&&(myRole()==="decoration"||/decorat/i.test(roleList().find(r=>r.k===myRole())?.n||""));
+/* decorating time (the running timer, earlier time, how long a cake took) is shown to Admins only */
+const seeDecoTime=()=>can("admin");
+/* pause: the time so far is kept and the timer stops; the order stays where it is and shows "Resume decorating" */
+async function decoPause(o){
+  const prevSecs=decoSecs(o.deco),now=new Date().toISOString();
+  /* the shared store merges nested objects on update, so the start time is cleared explicitly */
+  try{await patchOrder(o.id,{deco:{...o.deco,prevSecs,prevMins:null,startAt:null,endAt:null,photo:null},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Decorating paused · ${fmtClock(prevSecs)}`])});
+    toast("Decorating paused — tap Resume decorating to carry on")}catch(x){toast("သိမ်းမရပါ")}}
 const canSetStatus=k=>k!=="baking"&&can("orders.status");
 /* decoration time, in seconds = time from earlier starts that were cancelled (prevSecs; older records kept whole
    minutes in prevMins) + the current / last run */
@@ -3899,19 +3910,19 @@ const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="
 const isRedo=o=>o.deco?.redo??((o.history||[]).filter(h=>h.act==="deco").slice(-1)[0]?.changes?.[0]==="Redecorating");
 function decoBlock(o){
   const d=o.deco||{},me2=can("orders.decorate");
-  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)} · <b>${fmtDur(decoMins(d))}</b></small>${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
+  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
     ${me2&&o.status==="ready"?`<button type="button" class="btn deco-btn" data-deco-start="${esc(o.id)}">${BRUSH}<span>Redecorate</span></button>`:""}</div>`;
-  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)} · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b></small></div>
+  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small></div>
     ${me2?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
-  return me2&&isOpen(o)?`<button type="button" class="btn deco-btn deco-start" data-deco-start="${esc(o.id)}">${BRUSH}<span>${o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}</span></button>${prevSecsOf(d)?`<small class="deco-prev">Earlier decorating time: ${fmtClock(prevSecsOf(d))} — the timer carries on from here</small>`:""}`:"";
+  return me2&&isOpen(o)?`<button type="button" class="btn deco-btn deco-start" data-deco-start="${esc(o.id)}">${BRUSH}<span>${o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}</span></button>${prevSecsOf(d)&&seeDecoTime()?`<small class="deco-prev">Earlier decorating time: ${fmtClock(prevSecsOf(d))} — the timer carries on from here</small>`:""}`:"";
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
 function tickDeco(){
   document.querySelectorAll(".deco-live").forEach(el=>el.textContent=fmtClock(decoSecs({startAt:el.dataset.since,prevSecs:Number(el.dataset.prev)||0})));
   /* with the order preview open on a cake being decorated, its running time sits at the left of the preview's footer */
   const pvLive=!$("preview").hidden&&pvOrder&&orders.find(o=>o.id===pvOrder.id);
-  const pvRun=pvLive&&pvLive.deco?.startAt&&!pvLive.deco.endAt;
+  const pvRun=pvLive&&pvLive.deco?.startAt&&!pvLive.deco.endAt&&seeDecoTime();
   $("pvTimer").hidden=!pvRun;if(pvRun)$("pvTimer").textContent=fmtClock(decoSecs(pvLive.deco));
   if(!$("preview").hidden)syncPvFinish();
 }
@@ -3938,7 +3949,7 @@ async function decoFinish(o,file){
     /* a finished cake waits for pickup / delivery */
     if(o.status==="new"||o.status==="baking"){patch.status="ready";ch.push(`${statusName(o.status)} → ${statusName("ready")}`)}
     patch.history=addHist(o,"deco",ch);
-    await patchOrder(o.id,patch);toast(`${o.no} — Order is ${readyName(o).toLowerCase()} · decorated in ${fmtDur(decoMins(d))}`,5000);
+    await patchOrder(o.id,patch);toast(`${o.no} — Order is ${readyName(o).toLowerCase()}${seeDecoTime()?` · decorated in ${fmtDur(decoMins(d))}`:""}`,5000);
     return patch;
   }catch(x){toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}
 }
