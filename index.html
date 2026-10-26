@@ -202,6 +202,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .o-head .cal{width:auto}
 /* the date on one line ("26 Oct"), the time under it */
 .cal .dm{display:block;font-family:var(--display);font-size:20px;line-height:1.25;white-space:nowrap}
+.cal .dm small{font-size:.7em}   /* the month a little smaller than the day */
 .o-modes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:6px}
 .o-modes .mode{display:inline-block;margin-top:0;padding:4px 10px;white-space:nowrap}
 .o-who{display:grid;gap:0;font-size:14px;line-height:1.5;color:var(--muted);min-width:0}
@@ -3777,7 +3778,7 @@ function render(){
         <div class="o-head"><div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div>
         <span class="o-no">${esc(o.no)}</span>
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
-        <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} ${MONTHS[d.getMonth()]}</span><span class="t">${fmtTime(o.time)}</span></div></div></div>
+        <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
         ${o.delivery==="delivery"||o.callEarly||o.sendPhoto?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}</div>`:""}
         <p class="o-cake"><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
