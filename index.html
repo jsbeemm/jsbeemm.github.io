@@ -203,7 +203,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* the date on one line ("26 Oct"), the time under it */
 .cal .dm{display:block;font-family:var(--display);font-size:20px;line-height:1.25;white-space:nowrap}
 .cal .dm small{font-size:.7em}   /* the month a little smaller than the day */
-.o-modes{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin-top:6px}
+.o-modes{display:flex;flex-direction:column;align-items:flex-end;gap:4px;margin-top:6px}   /* one under another, right edges in line with the date box */
 .o-modes .mode{display:inline-block;margin-top:0;padding:4px 10px;white-space:nowrap}
 .o-who{display:grid;gap:0;font-size:14px;line-height:1.5;color:var(--muted);min-width:0}
 .o-who .o-name{overflow-wrap:anywhere;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}
