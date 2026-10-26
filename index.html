@@ -155,7 +155,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .orders{display:grid;gap:10px}
-.order{cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:4px 16px;align-items:start}
+.order{cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:start}
 .order.done{opacity:.72}
 .timepick{display:flex;align-items:center;gap:6px}
 .timepick select{width:auto;flex:1 1 0;min-width:0}
@@ -182,6 +182,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* order number (large, boxed) first, customer info beside it, both top-aligned */
 .o-head{display:flex;align-items:flex-start;gap:12px}
 .o-head .o-no{flex:none}
+.o-head .o-who{flex:1 1 auto}
+.o-head .o-name{font-size:16px;font-weight:700;color:var(--ink)}
+.o-head .cal{flex:none;width:68px}
+/* Delivery / call if early / send a photo, under the customer row */
+.o-modes{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.o-modes .mode{display:inline-block;margin-top:0;padding:3px 10px}
 .o-who{display:grid;gap:0;font-size:14px;line-height:1.5;color:var(--muted);min-width:0}
 .o-who .o-name{overflow-wrap:anywhere;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}
 .o-meta:empty{display:none}
@@ -252,7 +258,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .link:hover{color:var(--ink);background:var(--sunk)}
 .link.danger{color:var(--accent)}
 @media (max-width:600px){
-  .order{grid-template-columns:auto 1fr}
+  .order{grid-template-columns:minmax(0,1fr)}
+  .o-head{gap:8px}.o-head .o-no{font-size:20px;padding:0 6px}.o-head .cal{width:58px}
   .o-side{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;text-align:left;border-top:1px dashed var(--line);padding-top:8px;margin-top:6px}
 }
 .empty{padding:40px 16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
@@ -3740,12 +3747,13 @@ function render(){
     const ex=(o.extras||[]).map(k=>EXTRAS.find(e=>e.k===k)?.n).filter(Boolean);
     const when=dd===0?"ဒီနေ့":dd===1?"မနက်ဖြန်":dd>1?`နောက် ${dd} ရက်`:`${-dd} ရက် ကျော်လွန်`;
     return `<article class="order ${isOpen(o)?"":"done"}" data-oid="${o.id}">
-      <div class="when-col"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="m">${MONTHS[d.getMonth()]}</span><span class="d">${String(d.getDate()).padStart(2,"0")}</span><span class="t">${fmtTime(o.time)}</span></div>
-        ${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}</div>
       <div class="o-main">
         ${dueWarn(o)}
-        <div class="o-head"><span class="o-no">${esc(o.no)}</span>
-        <div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div></div>
+        <!-- as on the order preview: customer, then the order number, then the date and time -->
+        <div class="o-head"><div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div>
+        <span class="o-no">${esc(o.no)}</span>
+        <div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="m">${MONTHS[d.getMonth()]}</span><span class="d">${String(d.getDate()).padStart(2,"0")}</span><span class="t">${fmtTime(o.time)}</span></div></div>
+        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}</div>`:""}
         <p class="o-cake"><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[o.design?`<span class="dc">${esc(o.design)}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
