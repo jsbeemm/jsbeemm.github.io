@@ -206,6 +206,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .nw{white-space:nowrap}
 .o-shape{font-weight:500;color:var(--muted);white-space:nowrap}
 .o-flv .shp-ic{width:20px;height:20px;vertical-align:-4px;margin-right:2px}
+/* shape outline with the size inside it */
+.shp-sz{width:42px;height:42px;vertical-align:middle;margin-right:4px}
+.shp-sz .shp{fill:var(--surface);stroke:var(--accent);stroke-width:2.6}
+.shp-sz text{fill:var(--ink);font-weight:700;font-family:Arial,Helvetica,sans-serif}
 .dc{display:inline-block;margin-top:4px;font-family:var(--mono);font-size:14.5px;font-weight:500;letter-spacing:.03em;padding:1px 10px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
 .lightbox{position:fixed;inset:0;background:rgba(10,4,8,.85);display:grid;place-items:center;padding:24px 16px;z-index:45;cursor:zoom-out;grid-template-rows:1fr auto}
 /* in the full-screen view, press-and-hold must reach the picture's own menu (Save to Photos / Share), not start selecting the text around it */
@@ -1970,6 +1974,10 @@ const SHAPES=[
 const OLD_SHAPE={"အဝိုင်း":"circle","လေးထောင့်":"square","နှလုံးပုံ":"heart","ဂဏန်းပုံ":"custom"};
 const shapeKey=s=>SHAPES.some(x=>x.k===s)?s:(OLD_SHAPE[s]||"circle");
 const shapeIcon=(k,cls)=>`<svg class="${cls}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===k).svg}</svg>`;
+/* the cake's shape drawn as an outline with its size written inside (e.g. a heart with 8" in it); "" when the size is too long to fit */
+function shapeSizeIcon(k,label){const L=String(label||"").trim();if(!L||L.length>5)return"";
+  const n=L.length,fs=k==="rect"||k==="custom"?(n<=3?11:9):k==="heart"?(n<=2?13:n<=3?10.5:8):(n<=2?14:n<=3?12.5:10),cy={heart:18.5,custom:22}[k]||20;
+  return`<svg class="shp-sz" viewBox="0 0 40 40" role="img" aria-label="${esc(L)}">${SHAPES.find(x=>x.k===k).svg}<text x="20" y="${cy}" dy=".36em" text-anchor="middle" font-size="${fs}">${esc(L)}</text></svg>`}
 const sizeIdx=k=>SIZES.findIndex(s=>s.k===k);
 /* a flavor's price in a size comes from Bakery Products: the Birthday Cake product tagged with that cake flavor and size (its short
    code is the one used for costing). The prices in FLAVORS are only the fallback while no product is tagged. */
@@ -3684,7 +3692,8 @@ function render(){
         ${dueWarn(o)}
         <div class="o-head"><span class="o-no">${esc(o.no)}</span>
         <div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div></div>
-        <p class="o-cake"><b class="o-flv"><span class="o-shape" title="${esc(shapeName(o))}">${o.shape||o.decoType!=="cupcake"?(sk=>`${shapeIcon(sk,"shp-ic")}${sk==="custom"?esc(shapeName(o)):""}`)(shapeKey(o.shape)):""}</span> <span class="nw">${sz}</span> ${esc(fl)}</b>${[o.design?`<span class="dc">${esc(o.design)}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
+        <p class="o-cake"><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
+          return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[o.design?`<span class="dc">${esc(o.design)}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
           const dn=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("၊ ");
           const adds=[...orderCharges(o).map(c=>`${esc(c.note||"Additional")} ${fmt(c.amt)}`),...ex.map(esc)];
