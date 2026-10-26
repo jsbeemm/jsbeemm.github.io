@@ -1521,6 +1521,7 @@ span.star-ic{cursor:default}
       <!-- preview of an order still being written: save the order and the picture in one go -->
       <button type="button" class="btn" id="pvSaveAll" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3"/><path d="M8 21v-7h8v7"/></svg><span>Save order &amp; image</span></button>
       <!-- while this cake is being decorated: finish it with a photo right here -->
+      <button type="button" class="btn ghost" id="pvCancel" hidden>Cancel decorating</button>
       <label class="btn" id="pvFinish" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" id="pvFinishIn" hidden></label>
     </div>
   </div>
@@ -3408,9 +3409,16 @@ async function openPreview(o,fromForm=false){
 }
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
-  $("pvFinish").hidden=!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoIsMine(o))}
+  const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoCanAct(o));
+  $("pvFinish").hidden=$("pvCancel").hidden=!run}
+/* Cancel in the preview; an Admin cancelling someone else's decorating confirms first */
+$("pvCancel").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!decoCanAct(o))return;
+  if(!decoIsMine(o)&&!await askConfirm(`Cancel decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. It goes back to Pending Order; the time so far is kept for Resume decorating.`,"Cancel decorating"))return;
+  if(await decoCancel(o))$("preview").hidden=true});
 $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];e.target.value="";
-  const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!f||!decoIsMine(o))return;
+  const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!f||!decoCanAct(o))return;
+  /* an Admin finishing someone else's decorating confirms after picking the photo */
+  if(!decoIsMine(o)&&!await askConfirm(`Finish decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. The photo you picked becomes the finished-cake photo and the order is set Ready.`,"Finish"))return;
   $("pvFinish").hidden=true;const patch=await decoFinish(o,f);
   /* the preview is drawn again with the finished-cake photo */
   if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
@@ -3895,6 +3903,17 @@ const isDecorator=()=>!!db&&!can("admin")&&(myRole()==="decoration"||/decorat/i.
 const seeDecoTime=()=>can("admin");
 /* once someone has started decorating a cake, only that person can Finish + photo or Cancel it */
 const decoIsMine=o=>!db||sameId(o?.deco?.by,me.id);
+/* in the order preview an Admin may also finish or cancel someone else's decorating (after confirming) */
+const decoCanAct=o=>decoIsMine(o)||can("admin");
+/* Cancel: a Preparing order goes back to Pending Order; the time already spent is kept for "Resume decorating" */
+async function decoCancel(o){
+  const back=o.status==="baking",ch=["Decorating cancelled",...(back?[`${statusName("baking")} → ${statusName("new")}`]:[])];
+  const prevSecs=o.deco?.startAt?decoSecs(o.deco):prevSecsOf(o.deco||{});
+  /* the shared store merges nested objects on update, so the old start time is cleared explicitly (otherwise the
+     order would keep running and every Cancel would add the same time again) */
+  try{await patchOrder(o.id,{deco:prevSecs?{...(o.deco||{}),prevSecs,startAt:null,endAt:null,photo:null,pausedAt:new Date().toISOString()}:null,...(back?{status:"new"}:{}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"deco",ch)});
+    /* follow the order back to Pending Order, where it now shows "Resume decorating" */
+    if(back&&statusF==="baking"){statusF="new";render()}toast("Decorating cancelled — Resume continues the timer");return true}catch(x){toast("သိမ်းမရပါ");return false}}
 /* pause: the time so far is kept and the timer stops; the order stays where it is and shows "Resume decorating" */
 async function decoPause(o){
   const prevSecs=decoSecs(o.deco),now=new Date().toISOString();
@@ -3986,16 +4005,7 @@ $("orders").addEventListener("click",async e=>{
   const ds=e.target.closest("[data-deco-start]");
   if(ds){const o=orders.find(x=>x.id===ds.dataset.decoStart);if(o&&can("orders.decorate"))decoStart(o);return}
   const du=e.target.closest("[data-deco-undo]");
-  if(du){const o=orders.find(x=>x.id===du.dataset.decoUndo);if(!o||!decoIsMine(o))return;
-    /* cancelling a start takes a Preparing order back to Pending Order */
-    const back=o.status==="baking",ch=["Decorating cancelled",...(back?[`${statusName("baking")} → ${statusName("new")}`]:[])];
-    /* the time already spent is kept and added when decorating starts again */
-    const prevSecs=o.deco?.startAt?decoSecs(o.deco):prevSecsOf(o.deco||{});
-    /* the shared store merges nested objects on update, so the old start time is cleared explicitly (otherwise the
-       order would keep running and every Cancel would add the same time again) */
-    try{await patchOrder(o.id,{deco:prevSecs?{prevSecs,startAt:null,endAt:null,photo:null}:null,...(back?{status:"new"}:{}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"deco",ch)});
-      /* follow the order back to Pending Order, where it now shows "Resume decorating" */
-      if(back&&statusF==="baking"){statusF="new";render()}toast("Decorating cancelled — Resume continues the timer")}catch(x){toast("သိမ်းမရပါ")}return}
+  if(du){const o=orders.find(x=>x.id===du.dataset.decoUndo);if(!o||!decoIsMine(o))return;await decoCancel(o);return}
   const t=e.target.closest("button");
   /* a tap on the card itself (not on a button, link, field or a text selection) opens the order preview */
   if(!t){const card=e.target.closest("article.order[data-oid]");if(card&&!e.target.closest("a,select,input,label,textarea,.qp,.confirm")&&!String(getSelection()).trim())openPreview(orders.find(o=>o.id===card.dataset.oid));return}
