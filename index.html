@@ -3431,7 +3431,8 @@ async function openPreview(o,fromForm=false){
   pvOrder=o;pvBlob=await buildPreview(o);pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";
   /* a data: picture (not a blob: link), so pressing and holding it on a phone saves / shares the picture itself */
   await new Promise(res=>{const fr=new FileReader();fr.onload=()=>{$("pvImg").src=fr.result;res()};fr.readAsDataURL(pvBlob)});
-  $("pvSave").hidden=false;$("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=false;$("pvNote").textContent=matchMedia("(pointer:coarse)").matches?"ပုံကို ဖိထားပြီး Save to Photos / Share ကို ရွေးပါ":"";
+  $("pvSave").hidden=!$("pvSaveAll").hidden;   /* "Save order & image" replaces "Save image" while the order is being written */
+  $("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=false;$("pvNote").textContent=matchMedia("(pointer:coarse)").matches?"ပုံကို ဖိထားပြီး Save to Photos / Share ကို ရွေးပါ":"";
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
