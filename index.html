@@ -1662,7 +1662,9 @@ span.star-ic{cursor:default}
       <label class="prf"><span>Barcode (auto from category)</span><input id="pdBarcode" class="ro" readonly></label>
       <div class="ex-row2">
         <label class="prf"><span>Retail price (Ks) <b>*</b></span><input id="pdRetail" type="number" inputmode="numeric" min="0" step="1"></label>
-        <label class="prf"><span>Distribution price (Ks)</span><input id="pdDist" type="number" inputmode="numeric" min="0" step="1"></label>
+        <div class="prf"><span>Distribution price (Ks)</span>
+          <label class="pd-auto"><input type="checkbox" id="pdDistAuto"><span>Auto: Retail − 10% (the 10% rounded down to 100)</span></label>
+          <input id="pdDist" type="number" inputmode="numeric" min="0" step="1" aria-label="Distribution price"></div>
       </div>
       <div class="prf"><span>Food Panda price (Ks)</span>
         <label class="pd-auto"><input type="checkbox" id="pdPandaAuto"><span>Auto: Retail + 30%, rounded up to 500</span></label>
@@ -5303,6 +5305,10 @@ function pdSyncBarcode(){const c=pdCats().find(x=>x.name===$("pdCatSel").value);
   /* an existing product keeps its barcode unless its category changes */
   if(pdEditing&&pdEditing.cat===$("pdCatSel").value)$("pdBarcode").value=pdEditing.barcode||"";
   else $("pdBarcode").value=c?nextBarcode(c.code,pdEditing?.id):""}
+/* Distribution price = Retail − 10%, the 10% rounded down to 100 (6,000 → 5,400 · 6,500 → 5,900 · 7,000 → 6,300) */
+const distOf=r=>{r=Number(r||0);return r-Math.floor(r*0.1/100)*100};
+function pdSyncDist(){const on=$("pdDistAuto").checked;$("pdDist").readOnly=on;$("pdDist").classList.toggle("ro",on);
+  if(on){const r=Number($("pdRetail").value);$("pdDist").value=r>0?distOf(r):""}}
 function pdSyncPanda(){const on=$("pdPandaAuto").checked;$("pdPanda").readOnly=on;$("pdPanda").classList.toggle("ro",on);
   if(on){const r=Number($("pdRetail").value);$("pdPanda").value=r>0?pandaOf(r):""}}
 /* Birthday Cake products are edited a flavor at a time: pick (or add) the cake flavor, then its sizes — one row per product */
@@ -5338,10 +5344,12 @@ function openPdForm(p){
   /* "Auto" shows ticked when the product says so, or when its saved Food Panda price is exactly Retail + 30% (rounded up to 500);
      a hand-set price that differs stays unticked, so saving never replaces it */
   const pAuto=!!p?.pandaAuto||(p?.panda!=null&&p.panda!==""&&Number(p.retail)>0&&Number(p.panda)===pandaOf(p.retail));
+  /* Distribution "Auto" the same way: ticked for a new product, or when the saved price already follows the rule */
+  $("pdDistAuto").checked=!p||!!p.distAuto||(p.dist!=null&&p.dist!==""&&Number(p.retail)>0&&Number(p.dist)===distOf(p.retail));
   $("pdPandaAuto").checked=pAuto;$("pdPanda").value=p?.panda??"";
   pdPhoto=p&&(p.photo||p.img)?{id:p.photo||null,img:p.photo?null:p.img,url:pdImg(p)}:null;
   $("pdFlvSel").innerHTML=pdFlvOpts(p?.cakeFlavor||"");
-  pdRenderPhoto();pdSyncBarcode();pdSyncPanda();$("pdDel").hidden=!p;
+  pdRenderPhoto();pdSyncBarcode();pdSyncPanda();pdSyncDist();$("pdDel").hidden=!p;
   pdLoadFlavor(p?.cat===BC?p.cakeFlavor||"":"");
   $("pdDlg").hidden=false;(p?$("pdName"):$("pdCatSel")).focus();
 }
@@ -5371,7 +5379,8 @@ $("pdFlvDel").addEventListener("click",async()=>{const k=pdFlv;if(!k||!can("admi
   if(!await askConfirm(`Delete “${fl?.n||""}”?`,"This cake flavor is removed from Cake Orders and Bakery Products."))return;
   try{await saveFlavors(flvList().filter(x=>x.k!==k));$("pdFlvSel").innerHTML=pdFlvOpts("");pdLoadFlavor("");toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 $("pdPandaAuto").addEventListener("change",pdSyncPanda);
-$("pdRetail").addEventListener("input",()=>{if($("pdPandaAuto").checked)pdSyncPanda()});
+$("pdRetail").addEventListener("input",()=>{if($("pdPandaAuto").checked)pdSyncPanda();if($("pdDistAuto").checked)pdSyncDist()});
+$("pdDistAuto").addEventListener("change",pdSyncDist);
 $("pdPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="pdFile"||!e.target.files[0])return;
   const f=e.target.files[0];pdPhoto={id:null,url:"",busy:true};
   try{const b=await shrinkImage(f,900);pdPhoto.url=await blobToData(b);pdRenderPhoto();const s=await storePhoto(b);pdPhoto={id:s.id,url:s.url}}
@@ -5412,7 +5421,7 @@ $("pdForm").addEventListener("submit",async e=>{
   if(pdPhoto?.busy){toast("ပုံတင်နေဆဲပါ");return}
   const code=$("pdCode").value.trim(),name=$("pdName").value.trim().replace(/\s+/g," "),cat=$("pdCatSel").value,barcode=$("pdBarcode").value.trim();
   const num=id=>{const v=$(id).value.trim();return v===""?null:Math.round(Number(v))};
-  const retail=num("pdRetail"),dist=num("pdDist"),promo=num("pdPromo"),pandaAuto=$("pdPandaAuto").checked,panda=pandaAuto?pandaOf(retail):num("pdPanda");
+  const retail=num("pdRetail"),distAuto=$("pdDistAuto").checked,dist=distAuto?(retail>0?distOf(retail):null):num("pdDist"),promo=num("pdPromo"),pandaAuto=$("pdPandaAuto").checked,panda=pandaAuto?pandaOf(retail):num("pdPanda");
   if(!cat){toast("Category ရွေးပါ");return}
   if(!code){toast("ID ထည့်ပါ");$("pdCode").focus();return}
   if(!name){toast("Name ထည့်ပါ");$("pdName").focus();return}
@@ -5422,7 +5431,7 @@ $("pdForm").addEventListener("submit",async e=>{
   if(others.some(p=>pdNorm(p.code)===pdNorm(code))){toast(`ID "${code}" ရှိပြီးသားပါ`);$("pdCode").focus();return}
   if(others.some(p=>pdNorm(p.name)===pdNorm(name))){toast(`"${name}" ဆိုတဲ့ နာမည် ရှိပြီးသားပါ`);$("pdName").focus();return}
   if(!barcode||others.some(p=>String(p.barcode)===barcode)){toast("Barcode ထပ်နေပါတယ်");pdSyncBarcode();return}
-  const now=new Date().toISOString(),p={...(pdEditing||{}),id:pdEditing?.id||("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),code,name,cat,barcode,retail,pandaAuto,
+  const now=new Date().toISOString(),p={...(pdEditing||{}),id:pdEditing?.id||("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),code,name,cat,barcode,retail,pandaAuto,distAuto,
     ...(pdEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   delete p.cakeFlavor;delete p.cakeSize;   /* a single item is not part of a cake flavor */
   for(const [k,v] of [["dist",dist],["panda",panda],["promo",promo],["shelf",$("pdShelf").value.trim()||null]])if(v==null)delete p[k];else p[k]=v;
