@@ -142,6 +142,12 @@ body:not(.off-home) header.top{align-items:flex-start}body:not(.off-home) .head-
 .range input{width:auto;padding:5px 8px}
 .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:13px;padding:4px 12px;border-radius:999px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Orders: the status filter button and its list */
+.flt-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 12px}
+.flt-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+.flt-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.flt-car{font-size:11px;opacity:.7}
+.flt-pop{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
 .chip .n{font-family:var(--mono);font-size:11.5px;opacity:.7;margin-left:4px}
 .search{flex:1 1 200px;min-width:0}
 
@@ -3719,7 +3725,10 @@ function render(){
   $("dateFilters").innerHTML=`<span class="row-lbl">နေ့စွဲ</span><select id="dateSel" aria-label="နေ့စွဲ">`+dSel.map(x=>`<option value="${x.k}" ${dateF===x.k?"selected":""}>${x.n}${x.k==="range"?" 📅":""}</option>`).join("")+`</select>`
     +(accF?`<button type="button" class="chip acc-btn" data-acc aria-pressed="${dateF==="accepted"}">Today's accepted orders<span class="n">${orders.filter(accF.f).length}</span></button>`:"");
   $("rangeBox").hidden=dateF!=="range";
-  $("filters").innerHTML=`<span class="row-lbl">Orders</span>`+SF.map(x=>`<button class="chip" data-sf="${x.k}" aria-pressed="${statusF===x.k}">${x.n}<span class="n">${inDates.filter(x.f).length}</span></button>`).join("");
+  /* status filter behind a filter icon: the button shows the status chosen; tapping it opens the list */
+  {const cur=SF.find(x=>x.k===statusF)||SF[0];
+   $("filters").innerHTML=`<button type="button" class="chip flt-btn${statusF!=="all"?" on":""}" data-fltog aria-expanded="${fltOpen}" aria-label="Filter orders by status" title="Filter"><svg class="flt-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8.2V19l-4 2v-7.8z"/></svg><span>${cur.n}</span><span class="n">${inDates.filter(cur.f).length}</span><span class="flt-car" aria-hidden="true">▾</span></button>`
+     +(fltOpen?`<div class="flt-pop">${SF.map(x=>`<button class="chip" data-sf="${x.k}" aria-pressed="${statusF===x.k}">${x.n}<span class="n">${inDates.filter(x.f).length}</span></button>`).join("")}</div>`:"")}
   const chSel=$("chFilter"),ch=chSel.value;
   chSel.innerHTML=`<option value="">Channel အားလုံး</option>`+CHANNELS.map(c=>`<option value="${c}" ${c===ch?"selected":""}>${c} (${orders.filter(o=>o.channel===c).length})</option>`).join("");
   const q=$("q").value.trim().toLowerCase();
@@ -3797,7 +3806,11 @@ $("dateFilters").addEventListener("click",e=>{if(!e.target.closest("[data-acc]")
   render()});
 $("dateFilters").addEventListener("change",e=>{if(e.target.id!=="dateSel")return;dateF=e.target.value;
   if(dateF==="range"&&!$("fFrom").firstChild){$("fFrom").innerHTML=dateSelect("",todayISO(),"From");$("fTo").innerHTML=dateSelect("",todayISO(),"To")}render()});
-$("filters").addEventListener("click",e=>{const b=e.target.closest("[data-sf]");if(b){statusF=b.dataset.sf;render()}});
+var fltOpen=false;
+$("filters").addEventListener("click",e=>{if(e.target.closest("[data-fltog]")){fltOpen=!fltOpen;render();return}
+  const b=e.target.closest("[data-sf]");if(b){statusF=b.dataset.sf;fltOpen=false;render()}});
+/* a tap anywhere else closes the open filter list */
+document.addEventListener("click",e=>{if(fltOpen&&!e.composedPath().includes($("filters"))){fltOpen=false;render()}});
 ["fFrom","fTo"].forEach(id=>$(id).addEventListener("change",render));
 $("q").addEventListener("input",render);
 $("chFilter").addEventListener("change",render);
