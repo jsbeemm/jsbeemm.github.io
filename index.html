@@ -597,11 +597,12 @@ label.f > span b{color:var(--accent);font-weight:500}
 .live-slip .pr-tiers svg{max-height:220px}
 .pr-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px}
 .pr-no{font-family:var(--mono);font-size:36px;font-weight:500;line-height:1.2;letter-spacing:.04em;color:#8c8c8c;border:3px solid #bdbdbd;padding:2px 7px}
-.pr-when{text-align:right;font-size:calc(11.5px*var(--tz,1));line-height:1.35;max-width:6.2em;min-width:0}
-.pr-when b{display:block;font-size:calc(16px*var(--tz,1))}
+/* the header grows less than the rest when the slip enlarges its text, so the customer's name keeps room */
+.pr-when{text-align:right;font-size:calc(11.5px*min(var(--tz,1),1.25));line-height:1.35;max-width:6.2em;min-width:0}
+.pr-when b{display:block;font-size:calc(16px*min(var(--tz,1),1.25))}
 /* the call-early note wraps inside the date/time width, so it does not push the order number away from the right */
 /* notes under the time ("call if early", "send a photo") wrap inside the column, never past the slip's right edge */
-.pr-notes{text-align:right;font-size:calc(11.5px*var(--tz,1));line-height:1.35;margin-top:2px}
+.pr-notes{text-align:right;font-size:calc(11.5px*min(var(--tz,1),1.25));line-height:1.35;margin-top:2px}
 .pr-notes .pr-call{white-space:nowrap}
 .pr-ph{white-space:nowrap}
 /* slip text is plain weight; only the order number and the balance are bold */
@@ -611,8 +612,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .live-slip .pr-bal{border-top-color:var(--line)}
 .pr-paid{text-align:right}
 .pr-fnote{text-align:right;font-weight:700;font-size:calc(13px*var(--tz,1));margin-top:2px;overflow-wrap:anywhere;max-width:100%}   /* a flavor's slip note, under the total */   /* "Paid in full" sits on the right, under the amounts */
-.pr-who{font-size:calc(13px*var(--tz,1));line-height:1.35;overflow-wrap:anywhere}
-.pr-who b{font-size:calc(16px*var(--tz,1))}
+.pr-who{font-size:calc(13px*min(var(--tz,1),1.25));line-height:1.35;overflow-wrap:break-word}
+.pr-who b{font-size:calc(16px*min(var(--tz,1),1.25))}
 .pr-shp{width:16px;height:16px;vertical-align:-2px;margin-right:4px}
 .pr-shp.pr-shp-sz{width:calc(34px*var(--tz,1));height:calc(34px*var(--tz,1));vertical-align:middle;margin-right:5px}
 .pr-rule{border:0;border-top:.5px solid #d6d6d6;margin:5px 0}
@@ -654,6 +655,13 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-pics.two{flex-wrap:wrap}.pr-pics.two .pr-pic{flex:0 0 calc(50% - 2px)}
 .pr-foot{margin-top:auto;padding-top:6px;text-align:right;font-size:calc(8px*var(--tz,1));color:#b5b5b5;display:flex;justify-content:space-between;gap:8px}   /* who took the order on the left, print time on the right */
 .pr-foot span:first-child{text-align:left;color:#8c8c8c}
+/* more room between the customer and the cake */
+.pr-rule.pr-rule-gap{margin:calc(9px*var(--tz,1)) 0 calc(8px*var(--tz,1))}
+/* delivery slip: Deliver to on the left, who took the order and the print time stacked on the right */
+.pr-tofoot{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.pr-to{flex:1;min-width:0}
+.pr-foot.pr-foot-side{flex-direction:column;align-items:flex-end;justify-content:flex-end;gap:1px;margin-top:0;padding-top:0;flex:0 1 auto;max-width:36%}
+.pr-foot.pr-foot-side span:first-child{text-align:right}
 /* delivery orders: a second copy of the delivery info just above the footer, behind a dashed cut line, to tear off for the rider */
 .pr-cut{margin-top:auto;padding-top:4px;font-size:calc(12px*var(--tz,1));line-height:1.4}.pr-foot-up{margin-top:0;padding-top:4px}   /* delivery slip: the footer sits under the first Deliver-to, above the tear-off, so it stays on the main slip */
 .pr-cutline{border-top:1px dashed #9a9a9a;margin:4px 0 4px;height:0;position:relative}
@@ -3495,7 +3503,7 @@ function slipHTML(o,live=false){
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?"Deli · ":""}${fmtTimeShort(o.time)}</div></div>
     ${(!deli&&o.callEarly)||o.sendPhoto?`<div class="pr-notes">${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}
-    <hr class="pr-rule">
+    <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox"><div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>
     ${o.design||sub?`<div>${o.design?`<span class="pr-dc">${esc(o.design)}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
     ${o.custom?`<div class="pl">${esc(o.custom)}</div>`:""}
@@ -3509,12 +3517,15 @@ function slipHTML(o,live=false){
     ${row("Total",o.total,"pr-tot")}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
     ${pays.map((p,i)=>row(i?"Paid":"Deposit",p.amt,"",[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · "))).join("")}
     ${pays.length?(bal?row("Balance",bal,"pr-bal"):`<div class="pr-bal pr-paid">✓ Paid in full</div>`):""}
-    ${showTo?`<hr class="pr-rule">
-    <div class="pr-lbl">Deliver to</div>
-    ${rn||rp?`<div><b>${esc(rn)}</b>${phList(rp).length>1?"<br>":" "}${phHtml(rp)}</div>`:""}
-    ${o.addr?`<div class="pl">${esc(o.addr)}</div>`:""}`:""}${o.delivNote?`<div class="pl">${esc(o.delivNote)}</div>`:""}
-    ${o.orderNote?`<hr class="pr-rule"><div class="pl"><b>မှတ်ချက် –</b> ${esc(o.orderNote)}</div>`:""}
-    ${live?"":`<div class="pr-foot${showTo&&!wedSlip?" pr-foot-up":""}"><span>${(by=>by?`Order accepted by ${esc(by)}`:"")(o.createdBy?nameOf(o.createdBy):(me.name||""))}</span><span>${fmtDate(todayISO()).slice(0,6)} ${fmtTimeShort(new Date().toTimeString().slice(0,5))}</span></div>`}
+    ${(()=>{
+      const foot=`<span>${(by=>by?`Order accepted by ${esc(by)}`:"")(o.createdBy?nameOf(o.createdBy):(me.name||""))}</span><span>${fmtDate(todayISO()).slice(0,6)} ${fmtTimeShort(new Date().toTimeString().slice(0,5))}</span>`;
+      const note=o.orderNote?`<hr class="pr-rule"><div class="pl"><b>မှတ်ချက် –</b> ${esc(o.orderNote)}</div>`:"";
+      const to=`<div class="pr-lbl">Deliver to</div>
+        ${rn||rp?`<div><b>${esc(rn)}</b>${phList(rp).length>1?"<br>":" "}${phHtml(rp)}</div>`:""}
+        ${o.addr?`<div class="pl">${esc(o.addr)}</div>`:""}${o.delivNote?`<div class="pl">${esc(o.delivNote)}</div>`:""}`;
+      /* a delivery slip: "Order accepted by" and the print time sit in a column beside Deliver to, so no extra line is used */
+      if(showTo&&!wedSlip&&!live)return`${note}<hr class="pr-rule"><div class="pr-tofoot"><div class="pr-to">${to}</div><div class="pr-foot pr-foot-side">${foot}</div></div>`;
+      return`${showTo?`<hr class="pr-rule">${to}`:o.delivNote?`<div class="pl">${esc(o.delivNote)}</div>`:""}${note}${live?"":`<div class="pr-foot">${foot}</div>`}`})()}
     ${!live&&showTo&&!wedSlip?`<div class="pr-cut"><div class="pr-cutline">✂</div>
       <div class="pr-cuthead"><b>${esc(o.no||"")}</b><span>${fmtDate(o.date).slice(0,6)} · ${fmtTimeShort(o.time)}</span></div>
       <div class="pr-lbl">Deliver to</div>
