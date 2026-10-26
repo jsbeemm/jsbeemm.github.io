@@ -612,6 +612,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-who{font-size:calc(13px*var(--tz,1));line-height:1.35;overflow-wrap:anywhere}
 .pr-who b{font-size:calc(16px*var(--tz,1))}
 .pr-shp{width:16px;height:16px;vertical-align:-2px;margin-right:4px}
+.pr-shp.pr-shp-sz{width:calc(34px*var(--tz,1));height:calc(34px*var(--tz,1));vertical-align:middle;margin-right:5px}
 .pr-rule{border:0;border-top:.5px solid #d6d6d6;margin:5px 0}
 .pr-lbl{font-size:calc(8.5px*var(--tz,1));font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
 .pr-cakebox{font-size:calc(13px*var(--tz,1));line-height:1.45}
@@ -1975,9 +1976,11 @@ const OLD_SHAPE={"အဝိုင်း":"circle","လေးထောင့်":
 const shapeKey=s=>SHAPES.some(x=>x.k===s)?s:(OLD_SHAPE[s]||"circle");
 const shapeIcon=(k,cls)=>`<svg class="${cls}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===k).svg}</svg>`;
 /* the cake's shape drawn as an outline with its size written inside (e.g. a heart with 8" in it); "" when the size is too long to fit */
-function shapeSizeIcon(k,label){const L=String(label||"").trim();if(!L||L.length>5)return"";
-  const n=L.length,fs=k==="rect"||k==="custom"?(n<=3?11:9):k==="heart"?(n<=2?13:n<=3?10.5:8):(n<=2?14:n<=3?12.5:10),cy={heart:18.5,custom:22}[k]||20;
-  return`<svg class="shp-sz" viewBox="0 0 40 40" role="img" aria-label="${esc(L)}">${SHAPES.find(x=>x.k===k).svg}<text x="20" y="${cy}" dy=".36em" text-anchor="middle" font-size="${fs}">${esc(L)}</text></svg>`}
+/* the size text inside a shape (in the shape's 40×40 box): its font size and the height of its middle; null when it does not fit */
+function shapeSizeFit(k,label){const L=String(label||"").trim(),n=L.length;if(!n||n>5)return null;
+  return{L,fs:k==="rect"||k==="custom"?(n<=3?11:9):k==="heart"?(n<=2?13:n<=3?10.5:8):(n<=2?14:n<=3?12.5:10),cy:{heart:18.5,custom:22}[k]||20}}
+function shapeSizeIcon(k,label){const f=shapeSizeFit(k,label);if(!f)return"";
+  return`<svg class="shp-sz" viewBox="0 0 40 40" role="img" aria-label="${esc(f.L)}">${SHAPES.find(x=>x.k===k).svg}<text x="20" y="${f.cy}" dy=".36em" text-anchor="middle" font-size="${f.fs}">${esc(f.L)}</text></svg>`}
 const sizeIdx=k=>SIZES.findIndex(s=>s.k===k);
 /* a flavor's price in a size comes from Bakery Products: the Birthday Cake product tagged with that cake flavor and size (its short
    code is the one used for costing). The prices in FLAVORS are only the fallback while no product is tagged. */
@@ -3229,9 +3232,16 @@ async function buildPreviewCanvas(o){
 
     /* ── cake ── */
     rule();label("Cake");
-    y+=48;font(36,700);const ic=50;
-    if(paint)drawShape(ctx,P,y-36,40);
-    wrapLines(ctx,(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o)),LW-ic).forEach((l,i)=>{if(i)y+=48;text(l,P+ic,y,36,{weight:700})});
+    y+=48;font(36,700);
+    /* the shape outline with the size written inside it (as on the order card); a size too long to fit stays in the title */
+    const sfit=o.shape?shapeSizeFit(shpKey,o.sizeName):null;
+    if(sfit){y+=16;const S=76,top=y-50,k=S/40,ic=S+16;
+      if(paint){drawShape(ctx,P,top,S);text(sfit.L,P+S/2,top+sfit.cy*k+sfit.fs*k*.36,sfit.fs*k,{align:"center",weight:700,fam:"Arial,Helvetica,sans-serif"})}
+      wrapLines(ctx,(String(o.flavorName||"").trim()+fondTag(o)),LW-ic).forEach((l,i)=>{if(i)y+=48;text(l,P+ic,y,36,{weight:700})});
+      y=Math.max(y,top+S-8)}
+    else{const ic=50;
+      if(paint)drawShape(ctx,P,y-36,40);
+      wrapLines(ctx,(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o)),LW-ic).forEach((l,i)=>{if(i)y+=48;text(l,P+ic,y,36,{weight:700})})}
     /* a tiered / wedding cake already says so in its title, so its type is not repeated underneath */
     const sub=[shpKey==="custom"?shapeName(o):"",hasTiers(ctOf(o))?"":ctLbl(o)].filter(Boolean).join(" · ");
     if(sub||o.design){y+=44;let x=P;
@@ -3473,7 +3483,9 @@ function slipHTML(o,live=false){
   const dn=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("၊ ");
   /* the shape shows as its outline icon before the size, so only a customized shape keeps its words */
   const sk=shapeKey(o.shape),sub=[sk==="custom"?shapeName(o):"",hasTiers(ctOf(o))?"":ctLbl(o)].filter(Boolean).join(" · ");
-  const shp=o.shape?`<svg class="pr-shp" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===sk).svg.replace('class="shp"',`fill="none" stroke="${live?"currentColor":printColor(o.date)}" stroke-width="3.5" stroke-linejoin="round"`)}</svg>`:"";
+  /* the shape outline, with the size written inside it when it fits (then the title is just the cake's name) */
+  const sfit=o.shape?shapeSizeFit(sk,o.sizeName):null;
+  const shp=o.shape?`<svg class="${sfit?"pr-shp pr-shp-sz":"pr-shp"}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===sk).svg.replace('class="shp"',`fill="none" stroke="${live?"currentColor":printColor(o.date)}" stroke-width="${sfit?2.6:3.5}" stroke-linejoin="round"`)}${sfit?`<text x="20" y="${sfit.cy}" dy=".36em" text-anchor="middle" font-size="${sfit.fs}" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="currentColor">${esc(sfit.L)}</text>`:""}</svg>`:"";
   const pics=(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean).slice(0,4);
   return`
     <div class="pr-head">
@@ -3481,7 +3493,7 @@ function slipHTML(o,live=false){
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?"Deli · ":""}${fmtTimeShort(o.time)}${!deli&&o.callEarly?`<small class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</small>`:""}${o.sendPhoto?`<small class="pr-call">ဓာတ်ပုံပို့ပေးရန်</small>`:""}</div></div>
     <hr class="pr-rule">
-    <div class="pr-cakebox"><div class="pr-cake">${shp}${esc((`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o)))}</div>
+    <div class="pr-cakebox"><div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>
     ${o.design||sub?`<div>${o.design?`<span class="pr-dc">${esc(o.design)}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
     ${o.custom?`<div class="pl">${esc(o.custom)}</div>`:""}
     ${dn?`<div class="pl">${esc(tr("Design မှတ်ချက် –"))} ${esc(dn)}</div>`:""}
