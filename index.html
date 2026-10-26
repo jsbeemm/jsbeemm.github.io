@@ -147,7 +147,15 @@ body:not(.off-home) header.top{align-items:flex-start}body:not(.off-home) .head-
 .flt-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
 .flt-btn.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 .flt-car{font-size:11px;opacity:.7}
-.flt-pop{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+#filters{position:relative}
+.flt-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;width:max-content;max-width:min(92vw,520px);display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+@@@END
+@@@OLD
+     +(fltOpen?`<div class="flt-pop">${SF.map(x=>`<button class="chip" data-sf="${x.k}" aria-pressed="${statusF===x.k}">${x.n}<span class="n">${inDates.filter(x.f).length}</span></button>`).join("")}</div>`:"")}
+@@@NEW
+     +(fltOpen?`<div class="flt-pop">${SF.map(x=>`<button class="chip" data-sf="${x.k}" aria-pressed="${statusF===x.k}">${x.n}<span class="n">${inDates.filter(x.f).length}</span></button>`).join("")}</div>`:"");
+   /* keep the open list on screen: slide it left if it would run past the right edge */
+   const pop=$("filters").querySelector(".flt-pop");if(pop){const r=pop.getBoundingClientRect(),over=r.right-(document.documentElement.clientWidth-8);if(over>0)pop.style.left=Math.max(-r.left+8,-over)+"px"}}
 .chip .n{font-family:var(--mono);font-size:11.5px;opacity:.7;margin-left:4px}
 .search{flex:1 1 200px;min-width:0}
 
@@ -1156,11 +1164,12 @@ span.star-ic{cursor:default}
     <div class="drafts" id="draftBar" hidden></div>   <!-- unfinished orders saved as drafts, always on top so they are not forgotten -->
     <div class="filter-rows">
       <div class="date-row"><div class="chips" id="dateFilters" aria-label="Date"></div>
+      <!-- status filter (filter icon) right beside "Today's accepted orders" -->
+      <div class="chips" id="filters" aria-label="Orders"></div>
       <div class="range" id="rangeBox" hidden>
         <label>From <span id="fFrom"></span></label>
         <label>To <span id="fTo"></span></label>
       </div></div>
-      <div class="chips" id="filters" aria-label="Orders"></div>
     </div>
     <div class="toolbar">
       <select id="chFilter" aria-label="Channel အလိုက် စစ်ရန်" style="width:auto"></select>
