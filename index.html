@@ -704,6 +704,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .deco{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px;padding:8px 12px;border-radius:12px;font-size:13.5px}
 .deco.run{background:#FFF6DA;border:1.5px solid #E8C55A;color:#3A2E10}
 .deco.done{background:var(--mint-soft);border:1px solid var(--line)}
+.deco.paused{background:#EEF1F7;border:1.5px dashed #8E9BB3;color:#27324A}
+.deco-pause-ic{font-size:18px;line-height:1}
 .deco-txt{display:grid;flex:1;min-width:160px}.deco-txt small{font-size:12.5px;opacity:.85}
 .deco-btn{width:auto;margin:0;display:inline-flex;align-items:center;gap:8px;padding:10px 16px}
 .deco-start{margin-top:10px}
@@ -3751,7 +3753,7 @@ function render(){
       </div>
       <div class="o-side">
         <div class="o-top">${canWriteOrders()?`<button class="link o-edit" data-edit="${o.id}" aria-label="ပြင်ရန်" title="ပြင်ရန်">${PENCIL}</button>`:""}${o.history?.length?`<button class="link o-hist" data-hist="${o.id}">🕘 History (${o.history.length})</button>`:""}</div>
-        <select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
+        <select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}${!o.deco.startAt&&!o.deco.endAt&&prevSecsOf(o.deco)>0?" · Paused":""}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
         <!-- "Start decorating" sits right under the status (computer); on phones the whole decorating block sits here, above the status and Print -->
         <div class="deco-side ${o.deco?.startAt?"":"ds-start"}">${decoBlock(o)}</div>
         ${o.deco?.endAt&&o.deco.photo?`<button type="button" class="deco-pic" data-zoom="${esc(photoUrl(o.deco.photo))}" aria-label="Finished cake photo" title="Finished cake"><img src="${esc(photoUrl(o.deco.photo))}" alt="Finished cake" loading="lazy"></button>`:""}
@@ -3895,7 +3897,7 @@ const seeDecoTime=()=>can("admin");
 async function decoPause(o){
   const prevSecs=decoSecs(o.deco),now=new Date().toISOString();
   /* the shared store merges nested objects on update, so the start time is cleared explicitly */
-  try{await patchOrder(o.id,{deco:{...o.deco,prevSecs,prevMins:null,startAt:null,endAt:null,photo:null},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Decorating paused · ${fmtClock(prevSecs)}`])});
+  try{await patchOrder(o.id,{deco:{...o.deco,prevSecs,prevMins:null,startAt:null,endAt:null,photo:null,pausedAt:now},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Decorating paused · ${fmtClock(prevSecs)}`])});
     toast("Decorating paused — tap Resume decorating to carry on")}catch(x){toast("သိမ်းမရပါ")}}
 const canSetStatus=k=>k!=="baking"&&can("orders.status");
 /* decoration time, in seconds = time from earlier starts that were cancelled (prevSecs; older records kept whole
@@ -3915,6 +3917,9 @@ function decoBlock(o){
     ${me2&&o.status==="ready"?`<button type="button" class="btn deco-btn" data-deco-start="${esc(o.id)}">${BRUSH}<span>Redecorate</span></button>`:""}</div>`;
   if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small></div>
     ${me2?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
+  /* paused (the decorator closed the preview, or cancelled a start): everyone sees that it is paused, by whom and since when */
+  if(prevSecsOf(d)>0&&o.status!=="ready")return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
+    ${me2&&isOpen(o)?`<button type="button" class="btn deco-btn" data-deco-start="${esc(o.id)}">${BRUSH}<span>Resume decorating</span></button>`:""}</div>`;
   return me2&&isOpen(o)?`<button type="button" class="btn deco-btn deco-start" data-deco-start="${esc(o.id)}">${BRUSH}<span>${o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}</span></button>${prevSecsOf(d)&&seeDecoTime()?`<small class="deco-prev">Earlier decorating time: ${fmtClock(prevSecsOf(d))} — the timer carries on from here</small>`:""}`:"";
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
@@ -3931,7 +3936,7 @@ async function decoStart(o){
   const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready";   /* a Ready cake is redecorated, even if it was set Ready by hand */
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
-  const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,redo},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
+  const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,pausedAt:null,redo},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
   if(o.status==="new"||o.status==="ready"){patch.status="baking";patch.history=addHist(o,"deco",[what,`${statusName(o.status)} → ${statusName("baking")}`])}
   try{await patchOrder(o.id,patch);if(!redo&&!before)toast("Decorating started");   /* no "… so far" message when resuming or redecorating */
