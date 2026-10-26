@@ -5326,7 +5326,10 @@ function openPdForm(p){
   $("pdCode").value=p?.code||"";$("pdName").value=p?.name||"";
   $("pdCatSel").innerHTML=`<option value="">— ရွေးပါ —</option>`+pdCats().map(c=>`<option value="${esc(c.name)}" ${c.name===(p?.cat||pdCat)?"selected":""}>${esc(c.name)} (${c.code})</option>`).join("");
   $("pdRetail").value=p?.retail??"";$("pdDist").value=p?.dist??"";$("pdPromo").value=p?.promo??"";$("pdShelf").value=p?.shelf||"";
-  $("pdPandaAuto").checked=!!p?.pandaAuto;$("pdPanda").value=p?.panda??"";
+  /* "Auto" shows ticked when the product says so, or when its saved Food Panda price is exactly Retail + 30% (rounded up to 500);
+     a hand-set price that differs stays unticked, so saving never replaces it */
+  const pAuto=!!p?.pandaAuto||(p?.panda!=null&&p.panda!==""&&Number(p.retail)>0&&Number(p.panda)===pandaOf(p.retail));
+  $("pdPandaAuto").checked=pAuto;$("pdPanda").value=p?.panda??"";
   pdPhoto=p&&(p.photo||p.img)?{id:p.photo||null,img:p.photo?null:p.img,url:pdImg(p)}:null;
   $("pdFlvSel").innerHTML=pdFlvOpts(p?.cakeFlavor||"");
   pdRenderPhoto();pdSyncBarcode();pdSyncPanda();$("pdDel").hidden=!p;
