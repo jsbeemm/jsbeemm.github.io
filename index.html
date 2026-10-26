@@ -195,7 +195,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* order number box on the left, customer name / phone / channel stacked beside it */
 /* order number (large, boxed) first, customer info beside it, both top-aligned */
 .o-head{display:flex;align-items:flex-start;gap:12px}
-.o-head .o-no{flex:none}
+.o-head .o-no{flex:none;min-width:4.4em;text-align:center;box-sizing:border-box}   /* same width for short and long numbers */
 .o-head .o-who{flex:1 1 auto}
 .o-head .o-name{font-size:16px;font-weight:700;color:var(--ink)}
 .o-head .o-when{flex:none;width:76px;display:grid;gap:4px}
@@ -247,7 +247,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .o-meta{margin:6px 0 0;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 14px}
 .o-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
 /* History and status stay top-right; total, balance and the action links sit at the bottom-right of the card */
-@media (min-width:601px){.o-side{align-self:stretch}.o-side .money-box{margin-top:auto}}
+@media (min-width:601px){.o-side{align-self:stretch}.o-side .money-box{margin-top:auto}
+  /* every card's right column is the same width, so the order number and date line up from card to card */
+  .order{grid-template-columns:minmax(0,1fr) 260px}.o-side{min-width:0}.o-side>*{max-width:100%}}
 .money{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px}
 /* the balance still to collect is the headline figure; the total sits small underneath */
 .money-box{display:grid;gap:2px}
