@@ -649,6 +649,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-no{font-family:Arial,Helvetica,sans-serif;font-size:36px;font-weight:500;line-height:1.2;letter-spacing:.04em;color:#8c8c8c;border:3px solid #bdbdbd;padding:2px 7px}
 /* the header grows less than the rest when the slip enlarges its text, so the customer's name keeps room */
 .pr-when{text-align:right;font-size:calc(11.5px*min(var(--tz,1),1.25));line-height:1.35;max-width:6.2em;min-width:0}
+.pr-when .pr-deli{display:block}   /* Deli on its own line, so the time column stays narrow and the order number sits further right */
 .pr-when b{display:block;font-size:calc(16px*min(var(--tz,1),1.25))}
 /* the call-early note wraps inside the date/time width, so it does not push the order number away from the right */
 /* notes under the time ("call if early", "send a photo") wrap inside the column, never past the slip's right edge */
@@ -3698,7 +3699,7 @@ function slipHTML(o,live=false){
     <div class="pr-head">
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
       <div class="pr-no">${esc(o.no||"")}</div>
-      <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?"Deli · ":""}${fmtTimeShort(o.time)}</div>
+      <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${fmtTimeShort(o.time)}</div>
       ${(!deli&&o.callEarly)||o.sendPhoto?`<div class="pr-notes">${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
