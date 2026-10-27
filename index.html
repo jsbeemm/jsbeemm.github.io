@@ -1261,8 +1261,7 @@ span.star-ic{cursor:default}
           <select id="fDecoSel" class="opt-sel" aria-label="Design"></select>
           <!-- shape comes right after Design, above Size -->
           <p class="grp" style="margin-top:12px" id="shapeGrp">ပုံသဏ္ဌာန် <b style="color:var(--accent);font-weight:500">*</b></p>
-          <div class="opts shapes as-select" id="optShape"></div>
-          <div class="shape-pick"><span class="shape-ic" id="fShapeIc" aria-hidden="true"></span><select id="fShapeSel" class="opt-sel" aria-label="ပုံသဏ္ဌာန်"></select></div>
+          <div class="opts shapes" id="optShape"></div>
           <label class="f" id="shapeWrap" style="margin-top:8px" hidden><span>Customized ပုံသဏ္ဌာန် <b>*</b></span>
             <input id="fShapeCustom" placeholder="ဥပမာ – ဂဏန်း 5 ပုံ၊ ကာတွန်းပုံ"></label>
           <!-- Mini cake (4" / 5") and Cupcake (a number of pieces) take no flavor and a typed price -->
@@ -2428,7 +2427,7 @@ function price(f){
 }
 /* Design and Shape dropdowns: each mirrors its (hidden) radio buttons — the options follow the radios that are shown,
    picking an option ticks that radio (so everything that listens to the radios works as before) */
-const RSEL=[["fDecoSel","optDeco","fDeco",""],["fShapeSel","optShape","fShape","— ပုံသဏ္ဌာန် ရွေးပါ —"]];
+const RSEL=[["fDecoSel","optDeco","fDeco",""]];
 function syncRadioSelects(){RSEL.forEach(([sid,gid,name,ph])=>{const sel=$(sid),grp=$(gid);if(!sel||!grp)return;
   const items=[...grp.querySelectorAll(`input[name="${name}"]`)].filter(i=>!i.closest("label")?.hidden),cur=items.find(i=>i.checked)?.value||"";
   /* a dropdown cannot hold drawings, so each shape gets a small outline sign in front of its name;
@@ -3131,7 +3130,7 @@ function formMissing(f){
   const sk=SMALL[f.decoType]?f.decoType:"";
   /* cupcakes: at least 6 pieces, more is fine */
   if(sk==="cupcake")need(f.qty<6,"Cupcake အရေအတွက် (အနည်းဆုံး 6 လုံး)","fQty");else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
-  if(!sk&&!hasTiers(f.cakeType))need(!f.flavor,"ကိတ်သား","optFlavor");if(sk!=="cupcake")need(!f.shape,"ပုံသဏ္ဌာန်","fShapeSel");
+  if(!sk&&!hasTiers(f.cakeType))need(!f.flavor,"ကိတ်သား","optFlavor");if(sk!=="cupcake")need(!f.shape,"ပုံသဏ္ဌာန်","optShape");
   /* every cake carries a message (cupcakes and Wedding Cakes excepted); write "-" when the customer wants none */
   if(msgNeeded(f))need(!String(f.msg||"").trim(),"ကိတ်ပေါ်ရေးမည့်စာ","fMsg");
   need(!!sk&&!!f.sizeName&&!f.basePrice,"ကိတ်ဈေးနှုန်း","fPrice");
