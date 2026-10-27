@@ -1366,10 +1366,12 @@ span.star-ic{cursor:default}
         <fieldset id="paySet">
           <legend>ငွေပေးချေမှု</legend>
           <!-- extra charges (with quantity and photo) sit above the discount -->
+          <div id="chargeW"><!-- not for a bakery products order -->
           <p class="grp">Additional charge</p>
           <div class="charges" id="chargeList"></div>
           <button type="button" class="add-charge" id="addCharge">+ Charge ထပ်ထည့်ရန်</button>
           <div style="margin-bottom:12px"></div>
+          </div>
           <!-- a discount typed by hand, in Ks: it comes off the total (before the payments are counted) -->
           <label class="f disc-wrap" style="margin:0 0 12px;max-width:220px"><span>Discount (Ks)</span><input id="fDiscount" type="number" min="0" step="500" placeholder="0" inputmode="numeric"></label>
           <div class="pay-head" aria-hidden="true"><span>ပေးသည့်နေ့</span><span>ငွေပေးချေနည်း</span><span>ပမာဏ (Ks)</span><span></span></div>
@@ -2316,7 +2318,7 @@ function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   $("bakSet").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 /* cake parts hide for a bakery products order, the products part shows */
 function syncKind(){const b=kindVal()==="bakery";
-  $("bakSet").hidden=$("bakPickBtn").hidden=!b;if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
+  $("bakSet").hidden=$("bakPickBtn").hidden=!b;$("chargeW").hidden=b;if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
   if(b)renderBak()}
 function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
   bakItems=(items||[]).map(l=>({...l}));bakCustId=custId||"";$("bakQ").value="";syncKind()}
@@ -2333,7 +2335,7 @@ $("bakLines").addEventListener("change",e=>{const inp=e.target.closest(".bak-qn"
   if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
 /* the form keeps its own fields; a bakery products order drops everything about a cake */
 function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
-  const o={...r,kind:"bakery",items,custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
+  const o={...r,kind:"bakery",items,charges:[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
