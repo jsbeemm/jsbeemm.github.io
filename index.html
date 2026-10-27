@@ -906,7 +906,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pos-lines{display:grid;gap:6px;margin-bottom:14px}
 .pos-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding:6px 0}
 .pos-ln{display:grid;min-width:0}.pos-ln b{font-size:14px;overflow-wrap:anywhere}.pos-ln small{font-size:12px;color:var(--muted);font-family:var(--mono)}
-.pos-qty{display:flex;align-items:center;gap:6px}.pos-qty .o-ic{width:32px;height:32px;font-size:18px;cursor:pointer}.pos-qty span{min-width:22px;text-align:center;font-weight:700}
+.pos-qty{display:flex;align-items:center;gap:6px}
+.pos-qn{min-width:40px;height:32px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+.pos-qty.open .pos-qn{border-color:var(--accent);color:var(--accent)}.pos-qty .o-ic{width:32px;height:32px;font-size:18px;cursor:pointer}.pos-qty span{min-width:22px;text-align:center;font-weight:700}
 .pos-lt{font-family:var(--mono);font-size:14px;white-space:nowrap;min-width:78px;text-align:right}
 .pos-rm{width:32px;height:32px;cursor:pointer}.pos-rm .ic{width:18px;height:18px}
 @media (max-width:420px){.pos-line{grid-template-columns:minmax(0,1fr) auto auto;row-gap:4px}.pos-line .pos-ln{grid-column:1/-1}.pos-line .pos-qty{grid-column:1;justify-self:start}}
@@ -6236,17 +6238,19 @@ $("scanFile").addEventListener("change",async e=>{const f=e.target.files[0];e.ta
   catch(x){$("scanMsg").textContent="No barcode found in that photo — hold it closer and straight, then try again"}
   finally{URL.revokeObjectURL(url)}});
 /* ---- the cart: returned items first, then sold items, then the money ---- */
-const posLineHtml=(l,i)=>`<div class="pos-line" data-i="${i}">
+/* − and + show only after the quantity is tapped (tap it again to put them away) */
+var posQtyOpen=new Set();
+const posLineHtml=(l,i,kind)=>{const open=posQtyOpen.has((kind==="r"?"r:":"s:")+l.pid);return`<div class="pos-line" data-i="${i}">
       <div class="pos-ln"><b data-t="${esc(l.name)}"></b><small>${fmt(l.price)}${l.last?" · last price":""}</small></div>
-      <div class="pos-qty"><button type="button" class="o-ic" data-dq="-1" aria-label="Less">−</button><span>${l.qty}</span><button type="button" class="o-ic" data-dq="1" aria-label="More">+</button></div>
-      <b class="pos-lt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger pos-rm" data-rm aria-label="Remove item" title="Remove item">${TRASH_IC}</button></div>`;
+      <div class="pos-qty${open?" open":""}">${open?`<button type="button" class="o-ic" data-dq="-1" aria-label="Less">−</button>`:""}<button type="button" class="pos-qn" data-qtog aria-label="Change quantity" title="Tap to change">${l.qty}</button>${open?`<button type="button" class="o-ic" data-dq="1" aria-label="More">+</button>`:""}</div>
+      <b class="pos-lt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger pos-rm" data-rm aria-label="Remove item" title="Remove item">${TRASH_IC}</button></div>`};
 function renderPosCart(){
   $("posTierTag").textContent=`${posCustObj()?.name||"Walk-in"} · ${tierName(posTier)}`;
   const hasRet=!!posRet.length;
   $("posRetBox").hidden=!hasRet;$("posSoldH").hidden=!hasRet;
   /* each returned item carries its own reason (Expired unless changed) */
-  $("posRetLines").innerHTML=posRet.map((l,i)=>posLineHtml(l,i).replace(/<\/div>$/,`<select class="pos-why" data-why aria-label="Reason">${RET_WHY.map(w=>`<option ${w===(l.reason||"Expired")?"selected":""}>${w}</option>`).join("")}</select></div>`)).join("");
-  $("posLines").innerHTML=posCart.length?posCart.map(posLineHtml).join("")
+  $("posRetLines").innerHTML=posRet.map((l,i)=>posLineHtml(l,i,"r").replace(/<\/div>$/,`<select class="pos-why" data-why aria-label="Reason">${RET_WHY.map(w=>`<option ${w===(l.reason||"Expired")?"selected":""}>${w}</option>`).join("")}</select></div>`)).join("");
+  $("posLines").innerHTML=posCart.length?posCart.map((l,i)=>posLineHtml(l,i,"s")).join("")
     :`<div class="prq-empty">${hasRet?"Nothing sold — the returned value is paid back.":"Cart is empty. Tap a product to add it."}</div>`;
   $("posCartDlg").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
   const{sub,disc,ret,total}=posSums();
@@ -6275,6 +6279,7 @@ $("posCartBtn").addEventListener("click",openPosCart);
 /* + / − / remove work the same in both lists */
 [["posLines",()=>posCart],["posRetLines",()=>posRet]].forEach(([id,lst])=>$(id).addEventListener("click",e=>{
   const list=lst(),rm=e.target.closest("[data-rm]");if(rm){list.splice(Number(rm.closest("[data-i]").dataset.i),1);renderPosCart();renderPos();return}
+  const tg=e.target.closest("[data-qtog]");if(tg){const l=list[Number(tg.closest("[data-i]").dataset.i)];if(l){const k=(id==="posRetLines"?"r:":"s:")+l.pid;if(posQtyOpen.has(k))posQtyOpen.delete(k);else posQtyOpen.add(k)}renderPosCart();return}
   const b=e.target.closest("[data-dq]");if(!b)return;const i=Number(b.closest("[data-i]").dataset.i);
   list[i].qty+=Number(b.dataset.dq);if(list[i].qty<=0)list.splice(i,1);renderPosCart();renderPos()}));
 $("posRetLines").addEventListener("change",e=>{const s=e.target.closest("[data-why]");if(!s)return;const l=posRet[Number(s.closest("[data-i]").dataset.i)];if(l)l.reason=s.value});
