@@ -1218,6 +1218,17 @@ span.star-ic{cursor:default}
             <label class="f"><span>အချိန် <b>*</b> <small>(8:00 AM – 6:00 PM)</small></span>
               <span class="timepick"><select id="fTime"></select><select id="fTimeSpecial" aria-label="Special request အချိန်" hidden></select></span></label>
           </div>
+          <!-- Pickup / Delivery right under the date and time -->
+          <div id="delivModeSet" style="margin-top:12px">
+          <label class="f" style="margin-bottom:6px"><span>Pickup / Delivery <b>*</b></span></label>
+          <div class="opts" id="fDelivOpts">
+            <label class="opt"><input type="radio" name="fDeliv" value="pickup"><span>Pickup – ဆိုင်တွင် လာယူမည်</span></label>
+            <label class="opt"><input type="radio" name="fDeliv" value="delivery"><span>Delivery – အိမ်အရောက်ပို့</span></label>
+          </div>
+          <label class="check call-early" id="fCallEarlyW" hidden><input type="checkbox" id="fCallEarly"> 📞 စောရလျှင် ဖုန်းဆက်ပေးပါ</label>
+          <!-- for Pickup and Delivery alike: send the customer a photo of the finished cake -->
+          <label class="check call-early" id="fSendPhotoW" hidden><input type="checkbox" id="fSendPhoto"> 📷 ဓာတ်ပုံပို့ပေးရန်</label>
+          </div>
         </fieldset>
 
         <!-- cake type has its own frame above the cake: standard, or a tiered cake whose tiers share the flavor or each take their own -->
@@ -1299,16 +1310,6 @@ span.star-ic{cursor:default}
           <div class="row">
             <label class="f"><span>အမည် <b>*</b></span><input id="fName" required></label>
             <label class="f"><span>ဖုန်းနံပါတ် <b>*</b></span><input id="fPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx" required></label>
-          </div>
-          <div id="delivModeSet">
-          <label class="f" style="margin-bottom:6px"><span>Pickup / Delivery <b>*</b></span></label>
-          <div class="opts" id="fDelivOpts">
-            <label class="opt"><input type="radio" name="fDeliv" value="pickup"><span>Pickup – ဆိုင်တွင် လာယူမည်</span></label>
-            <label class="opt"><input type="radio" name="fDeliv" value="delivery"><span>Delivery – အိမ်အရောက်ပို့</span></label>
-          </div>
-          <label class="check call-early" id="fCallEarlyW" hidden><input type="checkbox" id="fCallEarly"> 📞 စောရလျှင် ဖုန်းဆက်ပေးပါ</label>
-          <!-- for Pickup and Delivery alike: send the customer a photo of the finished cake -->
-          <label class="check call-early" id="fSendPhotoW" hidden><input type="checkbox" id="fSendPhoto"> 📷 ဓာတ်ပုံပို့ပေးရန်</label>
           </div>
         </fieldset>
 
