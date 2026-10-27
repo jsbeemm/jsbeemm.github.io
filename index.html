@@ -3385,28 +3385,30 @@ async function buildPreviewCanvas(o){
     const para=(s,size=28,weight=400,color=C.ink,lh=1.6,x=P,w=LW)=>{font(size,weight);wrapLines(ctx,s,w).forEach(l=>{y+=size*lh;text(l,x,y,size,{weight,color})})};
 
     /* ── header, one row like the printed slip: customer · order number · date + time ── */
-    const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=`${deli?"🚚 Deli · ":""}${fmtTimeShort(o.time)}`;
+    const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the order number, so the time column stays narrow */
     const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":""].filter(Boolean);
     /* right: date, the time pill under it (delivery marked "Deli"), then the shop notes */
     const rW=Math.max(width(dateS,40,700),width(timeS,22,700)+32);
     text(dateS,P+LW,y0+40,40,{align:"right",weight:700});
-    pill(timeS,P+LW,y0+84,22,deli?C.sky:C.ink,deli?C.skySoft:C.photoBg,{align:"right"});
+    pill(timeS,P+LW,y0+84,22,C.ink,C.photoBg,{align:"right"});
     let ry=y0+84;notes.forEach(t=>{ry+=34;text(t,P+LW,ry,22,{align:"right",weight:700,color:C.accent})});
     /* middle: the order-number badge */
     font(48,500,MONO);const noW=Math.max(150,ctx.measureText(o.no||"").width+44),noH=80,noX=P+LW-rW-24-noW;
     if(paint){ctx.fillStyle=C.accent;rr(ctx,noX,y0+4,noW,noH,16);ctx.fill()}
     text(o.no||"",noX+noW/2,y0+60,48,{align:"center",weight:500,color:"#fff",fam:MONO});
+    const dlS="🚚 Deli",dlW=deli?width(dlS,22,700)+32:0;if(deli)pill(dlS,noX+(noW-dlW)/2,y0+noH+38,22,C.sky,C.skySoft);
     /* left: customer name (up to 2 lines), phone(s), channel */
-    const cw=noX-20-P;let ly=y0+30;font(30,700);
-    wrapLines(ctx,o.name||"",cw).slice(0,2).forEach((l,i)=>{if(i)ly+=38;text(l,P,ly,30,{weight:700})});
+    /* a long name gets a little smaller (down to 22px) so it stays on one line; longer still, it wraps */
+    const cw=noX-20-P;let ly=y0+30,ns=30;while(ns>22&&width(o.name||"",ns,700)>cw)ns--;font(ns,700);
+    wrapLines(ctx,o.name||"",cw).slice(0,2).forEach((l,i)=>{if(i)ly+=ns+8;text(l,P,ly,ns,{weight:700})});
     {const phs=phList(o.phone);if(!phs.length)phs.push("");
      phs.forEach((n,i)=>{ly+=i?34:40;text(`☎ ${n}`,P,ly,24,{color:C.muted})});
      if(o.channel){const lbl=chLabel(o),pw=width(`☎ ${phs[phs.length-1]}`,24)+14;
        if(pw+width(lbl,18,500)+24<=cw)pill(lbl,P+pw,ly,18,C.ink,C.photoBg,{weight:500,padX:12});else{ly+=36;pill(lbl,P,ly,18,C.ink,C.photoBg,{weight:500,padX:12})}}}
-    y=Math.max(ly+12,ry+12,y0+noH+4);
+    y=Math.max(ly+12,ry+12,y0+noH+(deli?52:4));
 
     /* ── cake ── */
-    rule();label(isBak(o)?"Bakery products":"Cake");
+    rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
     if(isBak(o)){bakItemsOf(o).forEach(l=>{font(30,700);wrapLines(ctx,l.name||"",LW-120).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});text(`× ${l.qty}`,P+LW,y,30,{align:"right",weight:700})})}else{
     y+=48;font(36,700);
     /* the shape outline with the size written inside it (as on the order card); a size too long to fit stays in the title */
