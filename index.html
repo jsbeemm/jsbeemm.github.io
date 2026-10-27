@@ -2110,11 +2110,13 @@ const fromPrice=fl=>Math.min(...SIZES.map((s,i)=>priceAt(fl,i)).filter(v=>v));
 /* only for showing older orders that used preset extras */
 const EXTRAS=[{k:"topper",n:"Topper ထည့်"},{k:"photo",n:"ဓာတ်ပုံကိတ်"},{k:"fruit",n:"သစ်သီးအလှ"},{k:"box",n:"လက်ဆောင်ဘူး"}];
 const CHANNELS=["Walk-in","Page","Viber","Telegram","Phone call","TikTok","Distribution","Others"];
-/* Mr.Bee customers: which channel their orders come through (everyone not listed is Distribution) */
-const CUST_CH_KEY=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
+/* Mr.Bee customers: the Channel saved on the customer (Customers page) is used for their new orders.
+   Customers with no Channel saved yet start from these defaults; everyone not listed is Distribution. */
+const CUST_CH_KEY=s=>String(s||"").toLowerCase().replace(/[\s\-_]+/g,"");
 const CUST_CHANNEL={aunty:"Walk-in",foodpanda:"Walk-in",hz:"Walk-in",pos:"Walk-in",secretgarden:"Walk-in",
   thepinecafe:"Phone call",yudathan:"Phone call","တောင်ချွန်းရိပ်":"Phone call"};
-const custChannel=c=>c.channel&&CHANNELS.includes(c.channel)?c.channel:CUST_CHANNEL[CUST_CH_KEY(c.name)]||"Distribution";
+const chMatch=s=>CHANNELS.find(c=>CUST_CH_KEY(c)===CUST_CH_KEY(s))||"";
+const custChannel=c=>chMatch(c?.channel)||CUST_CHANNEL[CUST_CH_KEY(c?.name)]||"Distribution";
 /* "Others" (e.g. a staff member's personal Messenger) keeps a hand-typed account name in chOther */
 /* the channel as shown: for "Others", "Channel-" and the account it came from (e.g. "Channel-အစ်မဖုန်း") */
 const chLabel=o=>o.channel==="Others"&&o.chOther?`Channel-${o.chOther}`:(o.channel||"");
@@ -5704,7 +5706,10 @@ $("ptList").addEventListener("click",e=>{if(e.target.closest("a"))return;if(!can
 $("ptList").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-pt]"))e.target.click()});
 $("goPt").addEventListener("click",()=>go("pt"));
 $("ptNewBtn").addEventListener("click",()=>openPtForm(null));
-function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
+const PT_CH_OTHER=["Walk in","Viber","Facebook","Tik Tok","WeChat"];
+function ptSyncCh(t){$("ptChList").innerHTML=(t==="customer"?CHANNELS:PT_CH_OTHER).map(c=>`<option>${c}</option>`).join("");
+  $("ptChannel").placeholder=t==="customer"?"Walk-in, Phone call, Distribution…":"Viber, Facebook, Walk in…"}
+function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
 /* any number of phones and addresses (older records kept "phone" as "09…, 09…" and up to two addresses) */
 const ptPhonesOf=p=>p?.phones||String(p?.phone||"").split(/,\s*/).filter(Boolean);
 const ptAddrsOf=p=>p?.addresses||[p?.address,p?.address2].filter(Boolean);
@@ -5726,6 +5731,7 @@ function openPtForm(p){
   $("ptFormTitle").textContent=(p?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2];
   $("ptTypeSel").innerHTML=PT_TYPES.map(([k,,n])=>`<option value="${k}" ${k===t?"selected":""}>${n}</option>`).join("");
   for(const [id,k] of [["ptName","name"],["ptOther","otherName"],["ptChannel","channel"],["ptAcct","account"],["ptShort","short"],["ptCountry","country"]])$(id).value=p?.[k]||"";
+  ptSyncCh(t);if(t==="customer"&&p)$("ptChannel").value=custChannel(p);
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
   $("ptPhones").innerHTML="";const phs=ptPhonesOf(p);(phs.length?phs:[""]).forEach(v=>ptPhoneRow(v));
   $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di));
