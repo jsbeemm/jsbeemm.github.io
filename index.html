@@ -2342,7 +2342,7 @@ function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,n
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
-const bakSlip=o=>`<div class="pr-cake">Bakery products</div>${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
+const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
 function readForm(){
   /* flavor and size start unpicked on a new order ("") and must be chosen before saving */
   const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qty=sk==="cupcake"?Math.max(0,parseInt(String($("fQty").value).replace(/\D/g,""))||0):0;
