@@ -885,6 +885,16 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pos-cust small{font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 10px}
 .pos-top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:10px}.pos-top input{flex:1;min-width:200px;padding:9px 14px;border-radius:999px}
 .pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+/* tablets / laptops: the receipt docked on the right of POS Sell */
+@media (min-width:900px){
+  #viewPos.docked{display:grid;grid-template-columns:minmax(0,1fr) 370px;column-gap:16px;align-items:start}
+  #viewPos.docked>#posTabs,#viewPos.docked>#posRep{grid-column:1/-1}
+  #viewPos.docked>#posSell{grid-column:1;min-width:0}
+  #viewPos.docked #posCartBtn{display:none!important}
+  #viewPos.docked #posCartDlg,#viewPos.docked #posCartDlg[hidden]{display:block!important;position:sticky;top:12px;inset:auto;height:auto;z-index:1;background:none;padding:0;grid-column:2}
+  #viewPos.docked #posCartDlg .ed-panel{width:100%;max-height:calc(100dvh - 130px);border:1px solid var(--line);box-shadow:var(--shadow)}
+  #viewPos.docked #posCartDlg :is(.x-close,.dlg-back){display:none!important}
+}
 .pos-tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;padding:10px 8px;cursor:pointer;min-width:0}
 .pos-tile:hover{border-color:var(--accent)}.pos-tile:disabled{opacity:.45;cursor:not-allowed}
 .pos-tile.hit{animation:posHit .25s}@keyframes posHit{50%{transform:scale(.95);border-color:var(--accent)}}
@@ -6103,7 +6113,7 @@ function posAdd(p){
     const l=posRet.find(x=>x.pid===p.id);if(l)l.qty++;else posRet.push({pid:p.id,code:p.code||"",name:p.name,price:r.price,qty:1,reason:"Expired",...(r.last?{last:true}:{})})}
   else{const price=posPrice(p);if(price==null){toast(`${tierName(posTier)} ဈေး မရှိပါ`);return}
     const l=posCart.find(x=>x.pid===p.id);if(l)l.qty++;else posCart.push({pid:p.id,code:p.code||"",name:p.name,price,qty:1})}
-  renderPosCartBtn();if(!$("posCartDlg").hidden)renderPosCart()}
+  renderPosCartBtn();if(posCartShown())renderPosCart()}
 function renderPosCartBtn(){const n=posCount(),r=posRetCount(),b=$("posCartBtn");b.hidden=posTab!=="sell";
   b.innerHTML=`🛒 <b>${n}</b>${r?` · ↩ <b>${r}</b>`:""}${n||r?` · ${(t=>t<0?`Refund ${fmt(-t)}`:fmt(t))(posSums().total)}`:""}`;b.classList.toggle("is-empty",!n&&!r)}
 /* ---- POS: Birthday Cakes tagged with a Cake Orders flavor show as one tile per flavor; tapping it asks for the size
@@ -6169,7 +6179,7 @@ $("posCustSel").addEventListener("change",e=>{posCustId=e.target.value;const c=p
   posCart=posCart.filter(l=>{const pr=posPrice(pds.find(p=>p.id===l.pid));if(pr==null){drop.push(l.name);return false}l.price=pr;return true});
   if(!posCustId&&posRet.length){posRet=[];toast("Walk-in return ကို Sales report ထဲက invoice ကနေ လုပ်ပါ",4000)}
   posRet=posRet.filter(l=>{const p=pds.find(x=>x.id===l.pid),r=p?retPrice(p):{price:null};if(r.price==null){drop.push(l.name);return false}l.price=r.price;if(r.last)l.last=true;else delete l.last;return true});
-  if(drop.length)toast(`${tierName(posTier)} ဈေးမရှိလို့ ဖယ်လိုက်ပါတယ် – ${drop.join(", ")}`,5000);renderPos();if(!$("posCartDlg").hidden)renderPosCart()});
+  if(drop.length)toast(`${tierName(posTier)} ဈေးမရှိလို့ ဖယ်လိုက်ပါတယ် – ${drop.join(", ")}`,5000);renderPos();if(posCartShown())renderPosCart()});
 $("posCats").addEventListener("click",e=>{const b=e.target.closest("[data-poscat]");if(!b)return;posCat=b.dataset.poscat;renderPos()});
 $("posQ").addEventListener("input",e=>{posQ=e.target.value;renderPos()});
 /* a barcode scanner types the number and presses Enter: an exact barcode or ID goes straight into the cart */
@@ -6249,9 +6259,18 @@ function renderPosCart(){
   $("posChangeRow").classList.toggle("short",!!paid&&paid<total);
   $("posDone").disabled=!posCart.length&&!hasRet;$("posDone").textContent=total<0?"Complete & refund":"Complete sale";renderPosCartBtn();
 }
-function openPosCart(){
-  const pm=pmFor("sale"),cur=$("posPay").value;$("posPay").innerHTML=pm.map(m=>`<option value="${esc(m)}" ${m===cur?"selected":""}>${esc(pmLabel(m))}</option>`).join("");
-  renderPosCart();$("posCartDlg").hidden=false}
+function fillPosPay(){const pm=pmFor("sale"),cur=$("posPay").value;$("posPay").innerHTML=pm.map(m=>`<option value="${esc(m)}" ${m===cur?"selected":""}>${esc(pmLabel(m))}</option>`).join("")}
+function openPosCart(){fillPosPay();renderPosCart();$("posCartDlg").hidden=false}
+/* tablets and laptops: the receipt stays open on the right of POS Sell and updates as items are added (phones keep the 🛒 button) */
+const POS_WIDE=matchMedia("(min-width:900px)");
+const posCartShown=()=>!$("posCartDlg").hidden||$("viewPos").classList.contains("docked");
+function posDock(){const want=POS_WIDE.matches&&view==="pos"&&posTab==="sell",dlg=$("posCartDlg"),vp=$("viewPos");
+  if(want&&dlg.parentElement!==vp)vp.appendChild(dlg);
+  if(!want&&dlg.parentElement===vp){dlg.hidden=true;document.body.appendChild(dlg)}
+  vp.classList.toggle("docked",want);
+  if(want){fillPosPay();renderPosCart()}}
+POS_WIDE.addEventListener("change",posDock);
+{const base=renderPos;renderPos=function(){base.apply(this,arguments);posDock()}}
 $("posCartBtn").addEventListener("click",openPosCart);
 /* + / − / remove work the same in both lists */
 [["posLines",()=>posCart],["posRetLines",()=>posRet]].forEach(([id,lst])=>$(id).addEventListener("click",e=>{
