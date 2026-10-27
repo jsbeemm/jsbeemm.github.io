@@ -222,12 +222,15 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-hit small{color:var(--muted)}
 .bak-hit i{font-style:normal;font-weight:700;color:var(--accent);text-align:center}
 .bak-lines{display:grid;gap:8px;margin-top:6px}
-.bak-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
+/* fixed columns, so every row's quantity and amount line up */
+.bak-line{display:grid;grid-template-columns:minmax(0,1fr) 132px 92px 36px;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
+.bak-line .pos-qty{justify-content:center}
+.bak-amt{text-align:right;white-space:nowrap}
 .bak-n{display:grid;min-width:0}
 .bak-n small{color:var(--muted)}
 .bak-qn{width:52px;text-align:center;padding:4px}
 .bak-empty{margin:6px 0;font-size:13px;color:var(--muted)}
-@media (max-width:420px){.bak-line{grid-template-columns:minmax(0,1fr) auto auto}.bak-line .bak-n{grid-column:1/-1}}
+@media (max-width:420px){.bak-line{grid-template-columns:132px minmax(0,1fr) 36px}.bak-line .bak-n{grid-column:1/-1}.bak-line .pos-qty{justify-content:flex-start}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
 .photos{display:flex;flex-wrap:wrap;gap:8px}
 .ph{position:relative;width:84px;height:84px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--sunk)}
