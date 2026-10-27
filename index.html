@@ -2132,12 +2132,12 @@ const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov",
 const fmtDate=iso=>{if(!iso)return"--";const[y,m,d]=iso.split("-");return d+"-"+MONTHS[Number(m)-1]+"-"+y};
 /* "17:00" -> "5:00 PM" */
 /* "tbc" = the customer will confirm the time later */
-const fmtTime=t=>{if(!t)return"--";if(t==="tbc")return"TBC";let[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return`${h}:${String(m).padStart(2,"0")} ${ap}`};
+const fmtTime=t=>{if(!t)return"--";if(t==="tbc")return"အချိန်ပြန်ပြောမည်";let[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return`${h}:${String(m).padStart(2,"0")} ${ap}`};
 /* pickup time: 8:00 AM – 6:00 PM every half hour */
 const TIME_OPTS=[];for(let m=8*60;m<=18*60;m+=30)TIME_OPTS.push(String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"));
 /* last option "Special request" opens a second list of times outside shop hours */
 /* a new order starts with no time picked, so the time is always chosen on purpose (saving needs one) */
-$("fTime").innerHTML=`<option value="">-- အချိန်ရွေးရန် --</option>`+TIME_OPTS.map(t=>`<option value="${t}">${fmtTime(t)}</option>`).join("")+`<option value="special">⭐ Special request</option><option value="tbc">⏳ TBC – အချိန်ပြန်ပြောမည်</option>`;
+$("fTime").innerHTML=`<option value="">-- အချိန်ရွေးရန် --</option>`+TIME_OPTS.map(t=>`<option value="${t}">${fmtTime(t)}</option>`).join("")+`<option value="special">⭐ Special request</option><option value="tbc">⏳ အချိန်ပြန်ပြောမည်</option>`;
 /* special times: outside shop hours (5:00 AM onwards — nothing between midnight and 4:30 AM), on the hour or half hour only */
 const SPECIAL_OPTS=[];for(let m=5*60;m<24*60;m+=30){const t=String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");if(!TIME_OPTS.includes(t))SPECIAL_OPTS.push(t)}
 function fillSpecial(extra){const list=extra&&!SPECIAL_OPTS.includes(extra)?[extra,...SPECIAL_OPTS].sort():SPECIAL_OPTS;
@@ -3304,7 +3304,7 @@ $("form").addEventListener("submit",async e=>{
 /* ---------- order preview card (photo to save / share) ---------- */
 let downloads=null, pvBlob=null, pvName="", pvOrder=null;
 const MM_FONT='"Noto Sans Myanmar","Padauk",sans-serif';
-const fmtTimeShort=t=>t==="tbc"?"TBC":fmtTime(t).replace(" ","").toLowerCase();
+const fmtTimeShort=t=>t==="tbc"?"အချိန်ပြန်ပြောမည်":fmtTime(t).replace(" ","").toLowerCase();
 function wrapLines(ctx,text,maxW){
   /* iPhone canvases can measure Burmese as almost no width: then a safe estimate is used, so the text still wraps */
   const px=parseFloat((String(ctx.font).match(/(\d+(?:\.\d+)?)px/)||[])[1])||16;
@@ -4292,7 +4292,7 @@ const EN={
   "ဖျက်မှာ သေချာပါသလား?":"Delete this order?","ဖျက်မည်":"Delete","မဖျက်ပါ":"Keep",
   /* form */
   "မှာယူသည့် Channel":"Order channel","ဘယ်သူ့ Account ကနေ လာသလဲ":"Which account did it come from?","ဥပမာ – Ma Hla ၏ Personal Messenger":"e.g. Ma Hla's personal Messenger","အမည်":"Name","ဖုန်းနံပါတ်":"Phone number",
-  "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ TBC – အချိန်ပြန်ပြောမည်":"⏳ TBC – customer will confirm",
+  "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ အချိန်ပြန်ပြောမည်":"⏳ Customer will confirm time",
   "Pickup – ဆိုင်တွင် လာယူမည်":"Pickup – at the shop","📞 စောရလျှင် ဖုန်းဆက်ပေးပါ":"📞 Call if it's ready early","📞 စောရလျှင် ဖုန်းဆက်":"📞 Call if early","📷 ဓာတ်ပုံပို့ပေးရန်":"📷 Send a photo of the cake","📷 ဓာတ်ပုံပို့ရန်":"📷 Send photo","Delivery – အိမ်အရောက်ပို့":"Delivery – to the door",
   "ကိတ်":"Cake","ပုံမှန်ကိတ်သား":"Regular flavors","အခြားကိတ်သား":"Other flavor","စာရင်းမပါသော ကိတ်သား":"Flavor not on the list","See less ▴":"See less ▴",
   "ရွေးထားသော ကိတ်သား":"Selected flavor","ကိတ်သားအမည်":"Flavor name","ဥပမာ – Mango Mousse":"e.g. Mango Mousse",
