@@ -211,6 +211,23 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .o-ph{white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
 .o-flv{display:block;font-size:16.5px;font-weight:700;color:var(--ink);margin-top:4px}
 .o-cake{margin:2px 0 0;font-size:14px}
+/* Bakery products order */
+.kind-bar{margin:0 0 14px}
+.kind-bar .opt span{font-weight:600}
+.o-bak{display:grid;gap:2px}
+.o-bak small{color:var(--muted)}
+.bak-tier{margin:4px 0 10px;font-size:12.5px;color:var(--muted)}
+.bak-res{display:grid;gap:6px;margin:8px 0}
+.bak-hit{display:grid;grid-template-columns:minmax(0,1fr) auto auto 28px;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.bak-hit small{color:var(--muted)}
+.bak-hit i{font-style:normal;font-weight:700;color:var(--accent);text-align:center}
+.bak-lines{display:grid;gap:8px;margin-top:6px}
+.bak-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
+.bak-n{display:grid;min-width:0}
+.bak-n small{color:var(--muted)}
+.bak-qn{width:52px;text-align:center;padding:4px}
+.bak-empty{margin:6px 0;font-size:13px;color:var(--muted)}
+@media (max-width:420px){.bak-line{grid-template-columns:minmax(0,1fr) auto auto}.bak-line .bak-n{grid-column:1/-1}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
 .photos{display:flex;flex-wrap:wrap;gap:8px}
 .ph{position:relative;width:84px;height:84px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--sunk)}
@@ -1207,6 +1224,8 @@ span.star-ic{cursor:default}
 
   <!-- FORM -->
   <section id="viewNew" hidden>
+    <!-- what is being ordered: a cake, or bakery products (then products take the place of the cake and its design) -->
+    <div class="opts kind-bar" id="optKind" role="radiogroup" aria-label="Order type"><label class="opt"><input type="radio" name="fKind" value="cake" checked><span>🎂 Cake order</span></label><label class="opt"><input type="radio" name="fKind" value="bakery"><span>🥐 Bakery products</span></label></div>
     <form id="form" class="form-grid" novalidate>
       <div>
         <fieldset>
@@ -1232,6 +1251,14 @@ span.star-ic{cursor:default}
         </fieldset>
 
         <!-- cake type has its own frame above the cake: standard, or a tiered cake whose tiers share the flavor or each take their own -->
+        <!-- Bakery products order: a Mr.Bee customer (their own price) or anyone else (Retail price), then the products -->
+        <fieldset id="bakSet" hidden>
+          <legend>Bakery products</legend>
+          <p class="bak-tier" id="bakTier"></p>
+          <input class="search" id="bakQ" type="search" placeholder="Product ရှာရန် – အမည်၊ Code၊ Barcode" autocomplete="off">
+          <div class="bak-res" id="bakRes"></div>
+          <div class="bak-lines" id="bakLines"></div>
+        </fieldset>
         <fieldset id="typeSet">
           <legend>ကိတ်အမျိုးအစား</legend>
           <div class="opts" id="optTiers"><label class="opt"><input type="radio" name="fTiersR" value="std" checked><span>ပုံမှန်</span></label><label class="opt"><input type="radio" name="fTiersR" value="tier"><span>အဆင့်ကိတ်</span></label><label class="opt"><input type="radio" name="fTiersR" value="custom"><span>Customized</span></label><label class="opt"><input type="radio" name="fTiersR" value="wedding"><span>Wedding Cake</span></label></div>
@@ -1250,7 +1277,7 @@ span.star-ic{cursor:default}
             <textarea id="fCustom" rows="3" placeholder="ဥပမာ – ၃ ဆင့်ကိတ်၊ အောက်ဆုံး 10&quot; Chiffon၊ အလယ် 8&quot; Brownie၊ အပေါ် 6&quot; Red Velvet"></textarea></label>
         </fieldset>
 
-        <fieldset>
+        <fieldset id="cakeSet">
           <legend>ကိတ်</legend>
           <!-- chosen cake at a glance: photo, price, flavor and size (like a shop's option sheet) -->
           <div class="sku-sum" id="flvSel" aria-live="polite"></div>
@@ -1303,6 +1330,8 @@ span.star-ic{cursor:default}
              Delivery info / Payment (placeCust). Pickup / Delivery is part of it. -->
         <fieldset id="custSet">
           <legend>ဝယ်သူ</legend>
+          <!-- Bakery products order: pick a Mr.Bee customer (fills in name, phone, channel) or leave Walk-in for anyone else -->
+          <label class="f" id="bakCustW" hidden><span>Mr.Bee Customer</span><select id="fBakCust" aria-label="Customer"></select></label>
           <label class="f"><span>မှာယူသည့် Channel <b>*</b></span></label>
           <select id="fChannel" class="ch-sel" aria-label="Channel"></select>
           <label class="f" id="chOtherWrap" style="margin:0 0 12px" hidden><span>ဘယ်သူ့ Account ကနေ လာသလဲ <b>*</b></span><input id="fChOther" placeholder="ဥပမာ – Ma Hla ၏ Personal Messenger"></label>
@@ -2242,6 +2271,59 @@ async function removeOrder(id){
 }
 
 /* ---------- pricing ---------- */
+/* ---------- Bakery products order: the same order form, with bakery products (from Bakery Products) in place of the cake.
+   The customer is one of the Mr.Bee Customers (their price, as in POS: Distribution, or Food Panda) or anyone else (Retail). ---------- */
+var bakItems=[],bakCustId="";
+const kindVal=()=>document.querySelector('input[name="fKind"]:checked')?.value==="bakery"?"bakery":"cake";
+const isBak=o=>o?.kind==="bakery";
+const bakItemsOf=o=>o?.items||[];
+const bakCust=()=>bakCustId&&typeof pts!=="undefined"?pts.find(p=>p.id===bakCustId)||null:null;
+const bakTier=()=>{const c=bakCust();return!c?"retail":isPanda(c)?"panda":"dist"};
+function bakFillCust(){const sel=$("fBakCust");if(!sel)return;
+  const cs=(typeof pts!=="undefined"?pts:[]).filter(p=>p.type==="customer").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const html=`<option value="">Walk-in · Retail price</option>`+(cs.length?`<optgroup label="Mr.Bee Customers">${cs.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</optgroup>`:"");
+  if(sel.dataset.h!==html){sel.innerHTML=html;sel.dataset.h=html}
+  sel.value=bakCust()?bakCustId:"";$("bakTier").textContent=tierName(bakTier())+" price"}
+/* a customer's price changes the price of what is already in the list */
+function bakReprice(){const t=bakTier();bakItems.forEach(l=>{const p=pds.find(x=>x.id===l.pid),v=p?posPrice(p,t):null;if(v!=null)l.price=v})}
+function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
+  const q=pdNorm($("bakQ").value),t=bakTier();
+  const hits=q?pds.filter(p=>p.cat!=="Birthday Cake"&&posPrice(p,t)!=null&&(pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q))).slice(0,12):[];
+  $("bakRes").innerHTML=hits.map(p=>`<button type="button" class="bak-hit" data-bpid="${esc(p.id)}"><span class="bak-hn" data-t="${esc(p.name)}"></span><small>${esc(p.code||"")}</small><b>${fmt(posPrice(p,t))}</b><i aria-hidden="true">+</i></button>`).join("")||(q?`<p class="bak-empty">မတွေ့ပါ</p>`:"");
+  $("bakLines").innerHTML=bakItems.length?bakItems.map((l,i)=>`<div class="bak-line" data-bi="${i}"><span class="bak-n"><b data-t="${esc(l.name)}"></b><small>${fmt(l.price)}</small></span>
+    <span class="pos-qty"><button type="button" class="o-ic" data-bq="-1" aria-label="Less">−</button><input class="bak-qn" type="number" inputmode="numeric" min="1" value="${l.qty}" aria-label="Quantity"><button type="button" class="o-ic" data-bq="1" aria-label="More">+</button></span>
+    <b class="bak-amt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger" data-brm aria-label="Remove" title="Remove">${TRASH_IC}</button></div>`).join(""):`<p class="bak-empty">Product ရှာပြီး ထည့်ပါ</p>`;
+  $("bakSet").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+/* cake parts hide for a bakery products order, the products part shows */
+function syncKind(){const b=kindVal()==="bakery";
+  $("bakSet").hidden=$("bakCustW").hidden=!b;["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
+  if(b)renderBak()}
+function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
+  bakItems=(items||[]).map(l=>({...l}));bakCustId=custId||"";$("bakQ").value="";syncKind()}
+document.querySelectorAll('input[name="fKind"]').forEach(i=>i.addEventListener("change",()=>{syncKind();updateReceipt()}));
+$("bakQ").addEventListener("input",renderBak);
+$("fBakCust").addEventListener("change",e=>{bakCustId=e.target.value;const c=bakCust();
+  /* a Mr.Bee customer fills in their name, phone and channel (the address too, for a delivery) */
+  if(c){$("fName").value=c.name||"";$("fPhone").value=(c.phones||[])[0]||c.phone||"";
+    if(c.channel&&CHANNELS.includes(c.channel))$("fChannel").value=c.channel;
+    if(!$("fAddr").value.trim()&&(c.address||(c.addresses||[])[0]))$("fAddr").value=c.address||c.addresses[0]}
+  bakReprice();renderBak();updateReceipt()});
+$("bakRes").addEventListener("click",e=>{const b=e.target.closest("[data-bpid]");if(!b)return;const p=pds.find(x=>x.id===b.dataset.bpid);if(!p)return;
+  const l=bakItems.find(x=>x.pid===p.id);if(l)l.qty++;else bakItems.push({pid:p.id,name:p.name,code:p.code||"",price:posPrice(p,bakTier())||0,qty:1});
+  $("bakQ").value="";renderBak();updateReceipt();$("bakQ").focus()});
+$("bakLines").addEventListener("click",e=>{const r=e.target.closest("[data-bi]");if(!r)return;const i=Number(r.dataset.bi),l=bakItems[i];if(!l)return;
+  if(e.target.closest("[data-brm]"))bakItems.splice(i,1);
+  else{const q=e.target.closest("[data-bq]");if(!q)return;l.qty=Math.max(1,l.qty+Number(q.dataset.bq))}
+  renderBak();updateReceipt()});
+$("bakLines").addEventListener("change",e=>{const inp=e.target.closest(".bak-qn");if(!inp)return;const l=bakItems[Number(inp.closest("[data-bi]").dataset.bi)];
+  if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
+/* the form keeps its own fields; a bakery products order drops everything about a cake */
+function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
+  const o={...r,kind:"bakery",items,custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
+    shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
+  ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
+const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
+const bakSlip=o=>`<div class="pr-cake">Bakery products</div>${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
 function readForm(){
   /* flavor and size start unpicked on a new order ("") and must be chosen before saving */
   const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qty=sk==="cupcake"?Math.max(0,parseInt(String($("fQty").value).replace(/\D/g,""))||0):0;
@@ -2260,7 +2342,7 @@ function readForm(){
     return{note:r.querySelector(".cn").value.trim(),amt:unit*qty,...(qty>1?{qty,unit}:{}),...(r.dataset.ph?{photo:r.dataset.ph}:{})}}).filter(c=>c.note||c.amt||c.photo);
   const payments=[...document.querySelectorAll("#payList .pay")].map(r=>({date:readDate(r.querySelector(".pd")),method:r.querySelector(".pm").value,amt:Math.max(0,Number(r.querySelector(".pa").value)||0),at:r.dataset.at||new Date().toISOString()})).filter(p=>p.amt);
   const delivery=(document.querySelector('input[name="fDeliv"]:checked')?.value||"");
-  return{
+  const r={
     name:$("fName").value.trim(),phone:$("fPhone").value.trim(),
     channel:$("fChannel").value,
     chOther:$("fChannel").value==="Others"?$("fChOther").value.trim():"",flavor,flavorName,size,sizeName,basePrice,
@@ -2279,6 +2361,7 @@ function readForm(){
     /* deposit = everything paid so far; pay = the latest method (older views read these) */
     payments,deposit:payments.reduce((a,p)=>a+p.amt,0),pay:payments.length?payments[payments.length-1].method:""
   };
+  return kindVal()==="bakery"?bakForm(r):r;
 }
 /* ---------- cake type: std (standard) · tier (tiered cake) · custom (any other customized cake) · wedding (wedding cake).
    A tiered or wedding cake is built tier by tier (bottom → top): each tier has a size and one or more layers, each layer
@@ -2419,6 +2502,7 @@ $("tierAdd").addEventListener("click",()=>{const top=tierDraft[tierDraft.length-
 function manualPrice(flavor,size){return flavor==="other"||size==="custom"||size==="cup"}
 function price(f){
   const L=[];
+  if(isBak(f))bakItemsOf(f).forEach(l=>L.push([`${l.name} × ${l.qty}`,l.price*l.qty]));else
   L.push([`${f.flavorName||(f.flavor==="other"?"အခြားကိတ်သား":"—")} · ${f.sizeName||(f.size==="custom"?"Customized":"—")}${fondTag(f)}`,f.basePrice]);
   f.charges.forEach(c=>L.push([(c.note||"Additional charge")+(c.qty>1?` (${chQty(c)})`:""),c.amt]));
   if(f.delivery==="delivery")L.push(["Delivery charge",f.delivAmt]);
@@ -2971,6 +3055,7 @@ function resetForm(keepFresh){
   $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value=nextNo();$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
+  setKind("cake");
 }
 function fillForm(o){
   discardFreshPhotos();editingId=o.id;
@@ -3007,6 +3092,7 @@ function fillForm(o){
   $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
   $("draftBtn").hidden=true;   /* drafts are for new orders only */
   editSnap=null;setTimeout(()=>{if(editingId===o.id)editSnap=formSig()},60);
+  setKind(o.kind,o.items,o.custId);
   $("formErr").hidden=true;updateReceipt();checkNo();
 }
 /* ---------- drafts: a new order can be put aside half-filled (e.g. a walk-in customer arrives) and finished later.
@@ -3127,6 +3213,8 @@ function formMissing(f){
   need(!f.name,"အမည်","fName");need(!f.phone,"ဖုန်းနံပါတ်","fPhone");need(!f.channel,"Channel","fChannel");need(f.channel==="Others"&&!f.chOther,"Others Account","fChOther");
   need(!f.date,"နေ့စွဲ","fDatePick");need(!f.delivery,"Pickup / Delivery","fDelivOpts");need(!f.time,"အချိန်",$("fTime").value==="special"?"fTimeSpecial":"fTime");
   if(f.delivery==="delivery"){need(!f.recvName,"လက်ခံမည့်သူ အမည်","fRecvName");need(!f.recvPhone,"လက်ခံမည့်သူ ဖုန်း","fRecvPhone");need(!f.addr,"လိပ်စာ","fAddr")}
+  /* a bakery products order needs at least one product (nothing about a cake) */
+  if(isBak(f)){need(!bakItemsOf(f).length,"Bakery products","bakSet");need(!!f.date&&f.date<minDate,"ယနေ့ သို့မဟုတ် နောက်ရက် နေ့စွဲ","fDatePick");return{miss,at}}
   const sk=SMALL[f.decoType]?f.decoType:"";
   /* cupcakes: at least 6 pieces, more is fine */
   if(sk==="cupcake")need(f.qty<6,"Cupcake အရေအတွက် (အနည်းဆုံး 6 လုံး)","fQty");else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
@@ -3299,7 +3387,8 @@ async function buildPreviewCanvas(o){
     y=Math.max(ly+12,ry+12,y0+noH+4);
 
     /* ── cake ── */
-    rule();label("Cake");
+    rule();label(isBak(o)?"Bakery products":"Cake");
+    if(isBak(o)){bakItemsOf(o).forEach(l=>{font(30,700);wrapLines(ctx,l.name||"",LW-120).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});text(`× ${l.qty}`,P+LW,y,30,{align:"right",weight:700})})}else{
     y+=48;font(36,700);
     /* the shape outline with the size written inside it (as on the order card); a size too long to fit stays in the title */
     const sfit=o.shape?shapeSizeFit(shpKey,o.sizeName):null;
@@ -3328,7 +3417,7 @@ async function buildPreviewCanvas(o){
       text(tr("ကိတ်ပေါ်တွင်ရေးမည့်စာ"),P+28,top+40,20,{weight:700,color:C.accent});
       let yy=top+46;lines.forEach(l=>{yy+=30*1.55;text(l,P+28,yy,30,{weight:700})});
       y=top+boxH;
-    }
+    }}
 
     /* ── payment ── */
     rule();
@@ -3338,7 +3427,7 @@ async function buildPreviewCanvas(o){
         let fs=22;while(fs>18&&width(info,fs)>room)fs--;
         if(width(info,fs)<=room)text(info,x0,y,fs,{color:C.muted});else{text(money(amt),P+LW,y,size,{align:"right",weight:bold?700:400,color});y+=30;text(info,P,y,20,{color:C.muted});return}}
       text(money(amt),P+LW,y,size,{align:"right",weight:bold?700:400,color})};
-    row("Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
+    row(isBak(o)?"Products":"Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
     /* a charge written on several lines: the first line with the amount, the rest under it */
     orderCharges(o).forEach(ch=>{const [l1,...more]=String(ch.note||"Additional").split("\n");row(l1,ch.amt,{color:C.muted,info:chQty(ch)});
       more.forEach(l=>{if(!l.trim())return;font(24);wrapLines(ctx,l,LW).forEach(w=>{y+=36;text(w,P,y,24,{color:C.muted})})})});
@@ -3463,7 +3552,7 @@ async function openPreview(o,fromForm=false){
 }
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
 /* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
-function decoStartLabel(o){const d=o?.deco||{};if(!o||!can("orders.decorate")||!isOpen(o)||(d.startAt&&!d.endAt))return"";
+function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o)||(d.startAt&&!d.endAt))return"";
   if(d.endAt)return o.status==="ready"?"Redecorate":"";
   return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
@@ -3594,7 +3683,7 @@ function slipHTML(o,live=false){
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?"Deli · ":""}${fmtTimeShort(o.time)}</div>
       ${(!deli&&o.callEarly)||o.sendPhoto?`<div class="pr-notes">${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     <hr class="pr-rule pr-rule-gap">
-    <div class="pr-cakebox"><div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>
+    <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
     ${o.design||sub?`<div>${o.design?`<span class="pr-dc">${esc(o.design)}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
     ${o.custom?`<div class="pl">${esc(o.custom)}</div>`:""}
     ${dn?`<div class="pl">${esc(tr("Design မှတ်ချက် –"))} ${esc(dn)}</div>`:""}
@@ -3603,7 +3692,7 @@ function slipHTML(o,live=false){
       const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape)}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
       return pics.length||tb?`<div class="pr-pics">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
     <hr class="pr-rule">
-    ${row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
+    ${isBak(o)?"":row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
     ${row("Total",o.total,"pr-tot")}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
     ${pays.map((p,i)=>row(i?"Paid":"Deposit",p.amt,"",[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · "))).join("")}
     ${pays.length?(bal?row("Balance",bal,"pr-bal"):`<div class="pr-bal pr-paid">✓ Paid in full</div>`):""}
@@ -3787,7 +3876,7 @@ function render(){
      A note above the list counts them; "ပြရန်" shows only those, tapping again shows everything */
   renderPrintNag();
   if(npF)list=list.filter(needPrint);
-  if(q)list=list.filter(o=>[o.name,o.phone,o.no,o.msg,o.channel,o.chOther,o.design].join(" ").toLowerCase().includes(q));
+  if(q)list=list.filter(o=>[o.name,o.phone,o.no,o.msg,o.channel,o.chOther,o.design,...bakItemsOf(o).map(l=>l.name)].join(" ").toLowerCase().includes(q));
   /* sort: by pickup date (soonest first; Done shows the latest first), or by when the order was accepted */
   const srt=$("sortSel").value;
   if(srt==="acc-new"||srt==="acc-old"){list.sort((a,b)=>(a.createdAt||"").localeCompare(b.createdAt||""));if(srt==="acc-new")list.reverse()}
@@ -3814,7 +3903,7 @@ function render(){
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
         ${o.delivery==="delivery"||o.callEarly||o.sendPhoto?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}</div>`:""}
-        <p class="o-cake"><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
+        ${isBak(o)?bakCard(o):""}<p class="o-cake"${isBak(o)?" hidden":""}><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[o.design?`<span class="dc">${esc(o.design)}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
           const dn=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("၊ ");
@@ -4006,7 +4095,7 @@ const fmtDur=m=>m<60?`${m} min`:`${Math.floor(m/60)}h ${String(m%60).padStart(2,
 const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L11 15.8 8.2 13z"/><path d="M8 13.5c-2.2 0-4 1.8-4 4 0 1.6-1 2.5-2 3 1 .5 2.5 1 4 1a4 4 0 0 0 4-4z"/></svg>`;
 /* started again from Ready (older records: the last decorating entry in the history says so) */
 const isRedo=o=>o.deco?.redo??((o.history||[]).filter(h=>h.act==="deco").slice(-1)[0]?.changes?.[0]==="Redecorating");
-function decoBlock(o){
+function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorated */
   const d=o.deco||{},me2=can("orders.decorate");
   if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
