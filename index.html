@@ -5686,7 +5686,7 @@ function renderPt(){
   $("ptNewBtn").textContent="+ Add "+PT_TYPES.find(t=>t[0]===ptType)[2];
   const list=pts.filter(p=>p.type===ptType&&hit(p)).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   $("ptList").innerHTML=list.length?list.map(p=>{const sup=p.type==="supplier";
-    const tags=[p.short&&`<span class="pt-tag code">${esc(p.short)}</span>`,p.channel&&`<span class="pt-tag">${esc(p.channel)}</span>`,
+    const tags=[p.short&&`<span class="pt-tag code">${esc(p.short)}</span>`,(p.type==="customer"?`<span class="pt-tag">${esc(custChannel(p))}</span>`:p.channel&&`<span class="pt-tag">${esc(p.channel)}</span>`),
       sup&&(p.country||p.currency)&&`<span class="pt-tag sky">${esc([p.country,p.currency].filter(Boolean).join(" · "))}</span>`].filter(Boolean).join("");
     return`<article class="pt-card" data-pt="${esc(p.id)}" ${admin?'tabindex="0" role="button"':""}>
       <span class="pt-av" aria-hidden="true">${esc([...String(p.name||"?")][0].toUpperCase())}</span>
