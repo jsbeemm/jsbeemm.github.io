@@ -912,6 +912,13 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pos-lt{font-family:var(--mono);font-size:14px;white-space:nowrap;min-width:78px;text-align:right}
 .pos-rm{width:32px;height:32px;cursor:pointer}.pos-rm .ic{width:18px;height:18px}
 @media (max-width:420px){.pos-line{grid-template-columns:minmax(0,1fr) auto auto;row-gap:4px}.pos-line .pos-ln{grid-column:1/-1}.pos-line .pos-qty{grid-column:1;justify-self:start}}
+/* POS cart: the name on the left; on the right the quantity, with the amount and Delete under it */
+:is(#posLines,#posRetLines) .pos-line{grid-template-columns:minmax(0,1fr) auto auto;column-gap:8px;row-gap:4px;align-items:center}
+:is(#posLines,#posRetLines) .pos-line .pos-ln{grid-column:1;grid-row:1/span 2;align-self:center}
+:is(#posLines,#posRetLines) .pos-line .pos-qty{grid-column:2/4;grid-row:1;justify-self:end}
+:is(#posLines,#posRetLines) .pos-line .pos-lt{grid-column:2;grid-row:2;min-width:0}
+:is(#posLines,#posRetLines) .pos-line .pos-rm{grid-column:3;grid-row:2}
+:is(#posLines,#posRetLines) .pos-line .pos-why{grid-column:1/-1;grid-row:3}
 .pos-disc{display:flex;gap:6px}.pos-disc input{flex:1;min-width:0}.pos-disc select{width:auto}
 .pos-sum{display:grid;gap:4px;background:var(--sunk);border-radius:12px;padding:10px 14px;margin:2px 0 12px}
 .pos-sum div{display:flex;justify-content:space-between;font-size:14px}.pos-sum b{font-family:var(--mono);font-weight:600}
