@@ -1550,6 +1550,7 @@ span.star-ic{cursor:default}
       <!-- preview of an order still being written: save the order and the picture in one go -->
       <button type="button" class="btn" id="pvSaveAll" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3"/><path d="M8 21v-7h8v7"/></svg><span>Save order &amp; image</span></button>
       <!-- while this cake is being decorated: finish it with a photo right here -->
+      <button type="button" class="btn" id="pvStart" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L11 15.8 8.2 13z"/><path d="M8 13.5c-2.2 0-4 1.8-4 4 0 1.6-1 2.5-2 3 1 .5 2.5 1 4 1a4 4 0 0 0 4-4z"/></svg><span>Start decorating</span></button>
       <button type="button" class="btn ghost" id="pvCancel" hidden>Cancel decorating</button>
       <label class="btn" id="pvFinish" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" id="pvFinishIn" hidden></label>
     </div>
@@ -3438,10 +3439,17 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
-  syncPvFinish();
+  syncPvFinish();pvFormMode=fromForm;syncPvStart();
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
+/* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
+function decoStartLabel(o){const d=o?.deco||{};if(!o||!can("orders.decorate")||!isOpen(o)||(d.startAt&&!d.endAt))return"";
+  if(d.endAt)return o.status==="ready"?"Redecorate":"";
+  return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
+function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
+  $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l}
+$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;decoStart(o)}});
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoCanAct(o));
@@ -3808,7 +3816,7 @@ function render(){
         ${o.deco?.endAt&&o.deco.photo?`<button type="button" class="deco-pic" data-zoom="${esc(photoUrl(o.deco.photo))}" aria-label="Finished cake photo" title="Finished cake"><img src="${esc(photoUrl(o.deco.photo))}" alt="Finished cake" loading="lazy"></button>`:""}
         <div class="money-box"><div class="tot">စုစုပေါင်း ${fmt(o.total)}</div><div class="bal ${bal?"owe":"paid"}">${bal?`<small>ကျန်ငွေ</small>${fmt(bal)}`:"✓ ငွေချေပြီး"}</div></div>
         <!-- ticked by hand once the slip has really been printed -->
-        ${o.status!=="cancel"?`<label class="prt-chk${o.printed?" on":""}" title="${o.printed?.at?esc(fmtDate(localDay(o.printed.at))+" "+new Date(o.printed.at).toTimeString().slice(0,5)):""}"><input type="checkbox" data-printed="${o.id}" ${o.printed?"checked":""} ${can("orders.print")?"":"disabled"}><span>${o.printed?"🖨 Print ပြီး":"🖨 Print မထုတ်ရသေး"}</span></label>`:""}
+        ${o.status!=="cancel"&&printShown(o)?`<label class="prt-chk${o.printed?" on":""}" title="${o.printed?.at?esc(fmtDate(localDay(o.printed.at))+" "+new Date(o.printed.at).toTimeString().slice(0,5)):""}"><input type="checkbox" data-printed="${o.id}" ${o.printed?"checked":""} ${can("orders.print")?"":"disabled"}><span>${o.printed?"🖨 Print ပြီး":"🖨 Print မထုတ်ရသေး"}</span></label>`:""}
         <div class="o-actions">${pendingPay===o.id
           ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ"><span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
           :pendingCancel===o.id
@@ -3872,7 +3880,10 @@ const dueWarn=o=>{const d=dueInfo(o);return d?`<div class="due-warn ${d.late?"la
 const dueNotified=new Set();
 /* not printed yet: today's and later orders, still open (not Done / cancelled), whose slip is not ticked as printed.
    Shown at the top of every page like the pending-order alert; "ပြရန်" opens Orders with only those, tapping again shows all */
-const needPrint=o=>!o.printed&&o.status!=="cancel"&&o.status!=="done"&&(o.date||"")>=todayISO();
+const needPrint=o=>!o.printed&&o.status!=="cancel"&&o.status!=="done"&&(o.date||"")>=todayISO()&&printShown(o);
+/* "Print ပြီး / Print မထုတ်ရသေး": a decorator sees it only on the orders they took themselves */
+function printShown(o){return!isDecorator()||sameId(o?.createdBy,me.id)}
+var pvFormMode=false;
 function renderPrintNag(){const el=$("printNag");if(!el)return;
   const np=can("orders.print")?orders.filter(needPrint).length:0;if(!np)npF=false;
   el.hidden=!np||document.body.classList.contains("locked");
@@ -3980,13 +3991,14 @@ function decoBlock(o){
   const d=o.deco||{},me2=can("orders.decorate");
   if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
-    ${me2&&o.status==="ready"?`<button type="button" class="btn deco-btn" data-deco-start="${esc(o.id)}">${BRUSH}<span>Redecorate</span></button>`:""}</div>`;
+    </div>`;
   if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small></div>
     ${me2&&decoIsMine(o)?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
   /* paused (the decorator closed the preview, or cancelled a start): everyone sees that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready")return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
-    ${me2&&isOpen(o)?`<button type="button" class="btn deco-btn" data-deco-start="${esc(o.id)}">${BRUSH}<span>Resume decorating</span></button>`:""}</div>`;
-  return me2&&isOpen(o)?`<button type="button" class="btn deco-btn deco-start" data-deco-start="${esc(o.id)}">${BRUSH}<span>${o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}</span></button>${prevSecsOf(d)&&seeDecoTime()?`<small class="deco-prev">Earlier decorating time: ${fmtClock(prevSecsOf(d))} — the timer carries on from here</small>`:""}`:"";
+    </div>`;
+  /* Start / Resume decorating and Redecorate are in the order preview (tap the card to open it) */
+  return "";
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
 function tickDeco(){
@@ -3998,7 +4010,7 @@ function tickDeco(){
   /* the decorator's preview closes when someone else (an Admin) cancels their decorating */
   if(pvLive&&pvOrder.deco?.startAt&&!pvOrder.deco.endAt&&sameId(pvOrder.deco.by,me.id)&&!pvLive.deco?.startAt&&!pvLive.deco?.endAt&&pvLive.updatedBy&&!sameId(pvLive.updatedBy,me.id)){
     $("preview").hidden=true;pvOrder=null;toast(`${pvLive.no} — decorating was cancelled by ${nameOf(pvLive.updatedBy)}`,6000)}
-  if(!$("preview").hidden)syncPvFinish();
+  if(!$("preview").hidden){syncPvFinish();syncPvStart()}
 }
 setInterval(tickDeco,1000);
 async function decoStart(o){
