@@ -2109,7 +2109,12 @@ const priceAt=(fl,i)=>{if(!fl||i<0)return 0;const p=cakeProd(fl.k,SIZES[i].k);re
 const fromPrice=fl=>Math.min(...SIZES.map((s,i)=>priceAt(fl,i)).filter(v=>v));
 /* only for showing older orders that used preset extras */
 const EXTRAS=[{k:"topper",n:"Topper ထည့်"},{k:"photo",n:"ဓာတ်ပုံကိတ်"},{k:"fruit",n:"သစ်သီးအလှ"},{k:"box",n:"လက်ဆောင်ဘူး"}];
-const CHANNELS=["Walk-in","Page","Viber","Telegram","Phone call","TikTok","Others"];
+const CHANNELS=["Walk-in","Page","Viber","Telegram","Phone call","TikTok","Distribution","Others"];
+/* Mr.Bee customers: which channel their orders come through (everyone not listed is Distribution) */
+const CUST_CH_KEY=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
+const CUST_CHANNEL={aunty:"Walk-in",foodpanda:"Walk-in",hz:"Walk-in",pos:"Walk-in",secretgarden:"Walk-in",
+  thepinecafe:"Phone call",yudathan:"Phone call","တောင်ချွန်းရိပ်":"Phone call"};
+const custChannel=c=>c.channel&&CHANNELS.includes(c.channel)?c.channel:CUST_CHANNEL[CUST_CH_KEY(c.name)]||"Distribution";
 /* "Others" (e.g. a staff member's personal Messenger) keeps a hand-typed account name in chOther */
 /* the channel as shown: for "Others", "Channel-" and the account it came from (e.g. "Channel-အစ်မဖုန်း") */
 const chLabel=o=>o.channel==="Others"&&o.chOther?`Channel-${o.chOther}`:(o.channel||"");
@@ -2301,7 +2306,7 @@ function bakPopRender(){const q=pdNorm($("bakPopQ").value);
 function bakChoose(id){bakCustId=id||"";const c=bakCust();
   /* a Mr.Bee customer fills in their name, phone and channel (the address too, for a delivery) */
   if(c){$("fName").value=c.name||"";$("fPhone").value=(c.phones||[])[0]||c.phone||"";
-    if(c.channel&&CHANNELS.includes(c.channel))$("fChannel").value=c.channel;
+    $("fChannel").value=custChannel(c);
     if(!$("fAddr").value.trim()&&(c.address||(c.addresses||[])[0]))$("fAddr").value=c.address||c.addresses[0]}
   bakReprice();renderBak();bakFillCust();updateReceipt()}
 $("bakPickBtn").addEventListener("click",e=>{e.preventDefault();const p=$("bakPop");p.hidden=!p.hidden;if(!p.hidden){$("bakPopQ").value="";bakPopRender();$("bakPopQ").focus()}});
