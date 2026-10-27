@@ -1474,6 +1474,7 @@ span.star-ic{cursor:default}
   <section id="viewProd" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="pdQ" placeholder="Search name, ID or barcode" aria-label="Search products" autocomplete="off"><button type="button" class="chip" id="pdCatBtn">🏷️ Categories</button>
       <button type="button" class="chip" id="pdXlBtn" title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
+      <button type="button" class="chip" id="pdReBtn" title="Retail ဈေးကနေ Food Panda (+30%) နဲ့ Wholesale (−10%) ဈေး ပြန်တွက်ရန်">🔄 Panda / Wholesale ဈေး</button>
       <button type="button" class="btn prq-new fab" id="pdNewBtn">+ Add product</button></div>
     <div class="chips pd-cats" id="pdCats"></div>
     <!-- Birthday Cake only: view one by one, by flavor (which sizes each flavor comes in) or by size (which flavors a size comes in) -->
@@ -5416,7 +5417,7 @@ function nextBarcode(code,skipId){const pre=BC_PREFIX+code;
 const pdNorm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function renderPd(){
   if(!$("viewProd")||$("viewProd").hidden)return;
-  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;
+  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;$("pdReBtn").hidden=!admin;
   const cats=pdCats(),q=pdNorm(pdQ);
   const inQ=pds.filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
   $("pdCats").innerHTML=`<button type="button" class="chip" data-pdcat="" aria-pressed="${!pdCat}">All <small>${inQ.length}</small></button>`
@@ -5470,6 +5471,22 @@ $("goProd").addEventListener("click",()=>go("prod"));
 $("pdNewBtn").addEventListener("click",()=>openPdForm(null));
 /* Retail prices from an Excel sheet: wherever a cell holds a product ID, the cell two to its right is the new Retail price
    (the sheet's "ID | Name | Price" blocks can sit side by side). Only Retail changes; Wholesale and Food Panda stay as they are. */
+/* Food Panda and Wholesale worked out again from Retail (the same rule as "Auto" in the product form),
+   only for products that already have that price; Birthday Cakes are left alone */
+$("pdReBtn").addEventListener("click",async()=>{if(!can("admin"))return;
+  const ch=[];for(const p of pds){const r=Number(p.retail);if(p.cat==="Birthday Cake"||!(r>0))continue;
+    const has=v=>v!=null&&v!=="",np=has(p.panda)?pandaOf(r):null,nd=has(p.dist)?distOf(r):null;
+    const dp=np!=null&&Number(p.panda)!==np,dd=nd!=null&&Number(p.dist)!==nd;if(dp||dd)ch.push({p,np:dp?np:null,nd:dd?nd:null})}
+  if(!ch.length){toast("ပြောင်းစရာ မရှိပါ — Panda / Wholesale ဈေးတွေ Retail နဲ့ ကိုက်ပြီးသားပါ",4000);return}
+  const lines=ch.slice(0,8).map(x=>`${x.p.name}: `+[x.np!=null&&`Panda ${fmt(x.p.panda)} → ${fmt(x.np)}`,x.nd!=null&&`Wholesale ${fmt(x.p.dist)} → ${fmt(x.nd)}`].filter(Boolean).join(" · "));
+  if(ch.length>8)lines.push(`… နောက်ထပ် ${ch.length-8} ခု`);
+  $("cfmMsg").style.whiteSpace="pre-line";
+  const ok=await askConfirm(`ပစ္စည်း ${ch.length} ခုရဲ့ ဈေး ပြောင်းမလား?`,["Food Panda = Retail + 30% · Wholesale = Retail − 10%","",...lines].join("\n"),"ပြောင်းမည်");
+  $("cfmMsg").style.whiteSpace="";if(!ok)return;
+  const now=new Date().toISOString();let done=0;
+  try{for(const x of ch){const p={...x.p,updatedAt:now,updatedBy:me.id||null};if(x.np!=null)p.panda=x.np;if(x.nd!=null)p.dist=x.nd;await savePd(p);done++}
+    toast(`ပစ္စည်း ${done} ခု ပြောင်းပြီး`,4000)}
+  catch(x){toast(`${done} ခုပဲ ပြောင်းနိုင်ပါတယ် — ပြန်ကြိုးစားပါ`,5000)}});
 $("pdXlBtn").addEventListener("click",()=>{if(can("admin")){$("pdXlFile").value="";$("pdXlFile").click()}});
 $("pdXlFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f||!can("admin"))return;
   try{await loadLib("lib/xlsx-0.18.5.full.min.js")}catch(x){toast("Excel ဖတ်မရပါ");return}
