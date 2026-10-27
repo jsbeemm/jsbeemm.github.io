@@ -681,6 +681,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-row.pr-item{font-size:calc(12px*var(--tz,1));line-height:1.35}
 .pr-tot{font-weight:700;border-top:.5px solid #d6d6d6;margin-top:2px;padding-top:2px}
 .pr-bal{font-weight:700;font-size:calc(16px*var(--tz,1));line-height:1.4}
+.pr-blank{flex:0 0 55%;align-self:flex-end;border-bottom:1px solid #000;margin-bottom:3px;min-height:1.2em}
 .pr-pics{display:flex;gap:4px;margin-top:6px}
 .pr-pic{flex:1 1 0;min-width:0}
 .pr-tierpic{flex:1 1 0;min-width:0;display:flex;flex-direction:column-reverse;align-items:center}   /* the tier drawing in the photo row; note comes after svg in DOM so column-reverse puts it on top */
@@ -1472,6 +1473,7 @@ span.star-ic{cursor:default}
   <!-- BAKERY PRODUCTS -->
   <section id="viewProd" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="pdQ" placeholder="Search name, ID or barcode" aria-label="Search products" autocomplete="off"><button type="button" class="chip" id="pdCatBtn">🏷️ Categories</button>
+      <button type="button" class="chip" id="pdXlBtn" title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
       <button type="button" class="btn prq-new fab" id="pdNewBtn">+ Add product</button></div>
     <div class="chips pd-cats" id="pdCats"></div>
     <!-- Birthday Cake only: view one by one, by flavor (which sizes each flavor comes in) or by size (which flavors a size comes in) -->
@@ -3738,7 +3740,8 @@ function slipHTML(o,live=false){
       <div class="pr-lbl">Deliver to</div>
       ${rn||rp?`<div><b>${esc(rn)}</b>${phList(rp).length>1?"<br>":" "}${phHtml(rp)}</div>`:""}
       ${o.addr?`<div class="pl">${esc(o.addr)}</div>`:""}${o.delivNote?`<div class="pl">${esc(o.delivNote)}</div>`:""}
-      ${bal?`<div class="pr-row pr-bal"><span>Collect</span><span>${money(bal)}</span></div>`:`<div class="pr-paid">✓ Paid in full</div>`}</div>`:""}`;
+      ${/* the amount is left blank: the customer may still pay after the slip is printed, so it is written in by hand */
+        bal?`<div class="pr-row pr-bal"><span>Collect</span><span class="pr-blank"></span></div>`:`<div class="pr-paid">✓ Paid in full</div>`}</div>`:""}`;
 }
 async function layoutSlip(o){
   await fbPrefetch(o);
@@ -4458,13 +4461,15 @@ const ROLES=[{k:"admin",n:"Admin"},{k:"staff",n:"Sale"},{k:"baking",n:"Productio
    accounts are written only by the artifact's Owner/Editors (db rule), so nobody can approve themselves.
    Passwords are never stored — only a salted PBKDF2 hash; the signed-in user is remembered on this device. */
 const PERMS=[["orders.add","Add & edit orders"],["orders.pay","Record payments"],["orders.status","Change order status"],["orders.delete","Delete / cancel orders"],
-  ["orders.print","Print / Save JPEG"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
-const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.report","sales.report","excel","pr.request"],
+  ["orders.print","Print / Save JPEG"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
+const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.report","sales.report","excel","pr.request","customers.add"],
   baking:["orders.print","pr.request"],decoration:["orders.add","orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
 const permsFor=r=>Object.fromEntries(PERMS.map(([k])=>[k,(ROLE_PERMS[r]||[]).includes(k)]));
 const ROLES_DEF=ROLES.filter(r=>r.k!=="admin").map(r=>({...r,perms:ROLE_PERMS[r.k].slice()}));
 var rolesDoc=null;
-const roleList=()=>(rolesDoc||ROLES_DEF).map(r=>({...r,perms:(r.perms||[]).slice()}));
+/* roles saved before "Add customers" existed (no v:2) give it to Sale, as the starting set does */
+const roleList=()=>(rolesDoc||ROLES_DEF).map(r=>{const perms=(r.perms||[]).slice();
+  if((r.v||1)<2&&r.k==="staff"&&!perms.includes("customers.add"))perms.push("customers.add");return{...r,perms}});
 /* the saved list replaces the roles and their usual permissions in place (Admin always has everything) */
 function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList();
   ROLES.length=0;ROLES.push({k:"admin",n:"Admin"},...L.map(r=>({k:r.k,n:r.n})));
@@ -4473,6 +4478,7 @@ function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList(
   $("acNewRole").innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k==="staff"?"selected":""}>${esc(x.n)}</option>`).join("");
   renderRoles();renderTeam()}
 async function saveRoles(list){
+  list=list.map(r=>({...r,v:2}));
   if(db)await db.doc("meta/roles").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
   else{try{localStorage.setItem("cakeRoles",JSON.stringify(list))}catch(x){}}
   applyRoles(list)}
@@ -5410,7 +5416,7 @@ function nextBarcode(code,skipId){const pre=BC_PREFIX+code;
 const pdNorm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function renderPd(){
   if(!$("viewProd")||$("viewProd").hidden)return;
-  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;
+  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;
   const cats=pdCats(),q=pdNorm(pdQ);
   const inQ=pds.filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
   $("pdCats").innerHTML=`<button type="button" class="chip" data-pdcat="" aria-pressed="${!pdCat}">All <small>${inQ.length}</small></button>`
@@ -5462,6 +5468,29 @@ $("pdList").addEventListener("click",e=>{if(!can("admin"))return;const c=e.targe
 $("pdList").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-pd]"))e.target.click()});
 $("goProd").addEventListener("click",()=>go("prod"));
 $("pdNewBtn").addEventListener("click",()=>openPdForm(null));
+/* Retail prices from an Excel sheet: wherever a cell holds a product ID, the cell two to its right is the new Retail price
+   (the sheet's "ID | Name | Price" blocks can sit side by side). Only Retail changes; Wholesale and Food Panda stay as they are. */
+$("pdXlBtn").addEventListener("click",()=>{if(can("admin")){$("pdXlFile").value="";$("pdXlFile").click()}});
+$("pdXlFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f||!can("admin"))return;
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js")}catch(x){toast("Excel ဖတ်မရပါ");return}
+  let rows=[];try{const wb=XLSX.read(await f.arrayBuffer());for(const n of wb.SheetNames)for(const r of XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,blankrows:false}))rows.push(r)}
+  catch(x){toast("Excel ဖတ်မရပါ");return}
+  const byCode=new Map(pds.map(p=>[pdNorm(p.code),p])),hit=new Map(),miss=[];
+  for(const r of rows)for(let i=0;i<r.length;i++){
+    const c=r[i],n=Number(String(r[i+2]??"").replace(/,/g,""));
+    if(typeof c!=="string"||!c.trim()||r[i+2]===""||r[i+2]==null||!(n>0))continue;
+    const p=byCode.get(pdNorm(c));if(p)hit.set(p.id,{p,retail:Math.round(n)});else miss.push(c.trim());i+=2}
+  const ch=[...hit.values()].filter(x=>Number(x.p.retail)!==x.retail);
+  if(!ch.length){toast(hit.size?`ဈေးပြောင်းစရာ မရှိပါ (${hit.size} ခု တူပြီးသား)`:"Excel ထဲမှာ ကိုက်ညီတဲ့ ID မတွေ့ပါ",4000);return}
+  const lines=ch.slice(0,8).map(x=>`${x.p.name}: ${fmt(x.p.retail||0)} → ${fmt(x.retail)}`);if(ch.length>8)lines.push(`… နောက်ထပ် ${ch.length-8} ခု`);
+  $("cfmMsg").style.whiteSpace="pre-line";
+  const ok=await askConfirm(`Retail ဈေး ${ch.length} ခု ပြောင်းမလား?`,
+    [...lines,"",`မပြောင်းတာ ${hit.size-ch.length} ခု`+(miss.length?` · App ထဲမှာ ID မရှိတာ ${miss.length} ခု (${miss.slice(0,6).join(", ")}${miss.length>6?"…":""})`:"")].join("\n"),"ပြောင်းမည်");
+  $("cfmMsg").style.whiteSpace="";if(!ok)return;
+  const now=new Date().toISOString();let done=0;
+  try{for(const x of ch){await savePd({...x.p,retail:x.retail,updatedAt:now,updatedBy:me.id||null});done++}toast(`Retail ဈေး ${done} ခု ပြောင်းပြီး`,4000)}
+  catch(x){toast(`${done} ခုပဲ ပြောင်းနိုင်ပါတယ် — ပြန်ကြိုးစားပါ`,5000)}
+  if(!pdCol)renderPd?.()});
 /* ---- the product form ---- */
 function pdRenderPhoto(){const u=pdPhoto?.url||"";
   $("pdPhotoBox").innerHTML=`<div class="pd-fph">${u?`<img src="${esc(u)}" alt="">`:`<span>📷</span>`}</div>
@@ -5667,7 +5696,8 @@ function initPd(){
 }
 
 /* ---------- Customers & Suppliers: Mr.Bee customers, JS customers and suppliers in the shared "parties" collection.
-   Everyone signed in reads them; Admins add, edit and delete. ---------- */
+   Everyone signed in reads them; Admins add, edit and delete; people with "Add customers" (Sale) add customers. ---------- */
+const canAddCust=()=>can("admin")||can("customers.add");
 const PT_TYPES=[["customer","Mr.Bee Customers","Mr.Bee Customer"],["js","JS Customers","JS Customer"],["supplier","Suppliers","Supplier"]];
 var pts=[],ptCol=null,ptType="customer",ptQ="",ptEditing=null;
 function ptLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeParties")||"[]")}catch(e){return[]}}
@@ -5678,7 +5708,7 @@ async function removePt(id){if(ptCol){await ptCol.doc(id).delete();return}pts=pt
 const ptTel=s=>String(s||"").split(/,\s*/).filter(Boolean).map(n=>`<a href="tel:${esc(n.replace(/[^\d+]/g,""))}">${esc(n)}</a>`).join(", ");
 function renderPt(){
   if(!$("viewPt")||$("viewPt").hidden)return;
-  const admin=can("admin");$("ptNewBtn").hidden=!admin;
+  const admin=can("admin");$("ptNewBtn").hidden=!(admin||(canAddCust()&&ptType!=="supplier"));
   /* suppliers are shown to Admins only */
   if(!admin&&ptType==="supplier")ptType="customer";
   const q=pdNorm(ptQ),hit=p=>!q||["name","otherName","phone","short","account","channel","address","address2"].some(k=>pdNorm(p[k]).includes(q))||ptAddrsOf(p).some(a=>pdNorm(a).includes(q))||ptPhonesOf(p).some(n=>pdNorm(n).includes(q));
@@ -5727,9 +5757,9 @@ $("ptAddrAdd").addEventListener("click",()=>{const r=ptAddrRow("",!$("ptAddrs").
   /* the default address goes: the first one left becomes the default */
   if(wasDef){const r=$("ptAddrs").querySelector("input[name=ptDef]");if(r)r.checked=true}}));
 function openPtForm(p){
-  if(!can("admin"))return;ptEditing=p||null;const t=p?.type||ptType;
+  if(!(can("admin")||(!p&&canAddCust()&&ptType!=="supplier")))return;ptEditing=p||null;const t=p?.type||ptType;
   $("ptFormTitle").textContent=(p?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2];
-  $("ptTypeSel").innerHTML=PT_TYPES.map(([k,,n])=>`<option value="${k}" ${k===t?"selected":""}>${n}</option>`).join("");
+  $("ptTypeSel").innerHTML=PT_TYPES.filter(([k])=>can("admin")||k!=="supplier").map(([k,,n])=>`<option value="${k}" ${k===t?"selected":""}>${n}</option>`).join("");
   for(const [id,k] of [["ptName","name"],["ptOther","otherName"],["ptChannel","channel"],["ptAcct","account"],["ptShort","short"],["ptCountry","country"]])$(id).value=p?.[k]||"";
   ptSyncCh(t);if(t==="customer"&&p)$("ptChannel").value=custChannel(p);
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
@@ -5739,8 +5769,8 @@ function openPtForm(p){
 }
 $("ptTypeSel").addEventListener("change",ptSyncType);
 $("ptForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!can("admin"))return;
-  const v=id=>$(id).value.trim().replace(/[ \t]+/g," ")||null,type=$("ptTypeSel").value,name=v("ptName");
+  e.preventDefault();const v=id=>$(id).value.trim().replace(/[ \t]+/g," ")||null,type=$("ptTypeSel").value,name=v("ptName");
+  if(!(can("admin")||(!ptEditing&&canAddCust()&&type!=="supplier")))return;
   if(!name){toast("Name ထည့်ပါ");$("ptName").focus();return}
   const others=pts.filter(p=>p.id!==ptEditing?.id&&p.type===type);
   if(others.some(p=>pdNorm(p.name)===pdNorm(name))){toast(`"${name}" ရှိပြီးသားပါ`);$("ptName").focus();return}
