@@ -3727,7 +3727,8 @@ function slipHTML(o,live=false){
     ${(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
       const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape)}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
       return pics.length||tb?`<div class="pr-pics">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
-    <hr class="pr-rule">
+    ${/* a bakery order has no Cake row, so Total's own top line follows the items; a second rule would double it */
+      isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount?"":`<hr class="pr-rule">`}
     ${isBak(o)?"":row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
     ${row("Total",o.total,"pr-tot")}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
     ${pays.map((p,i)=>row(i?"Paid":"Deposit",p.amt,"",[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · "))).join("")}
