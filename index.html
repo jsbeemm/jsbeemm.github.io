@@ -2133,7 +2133,7 @@ const custChannel=c=>chMatch(c?.channel)||CUST_CHANNEL[CUST_CH_KEY(c?.name)]||"D
 /* the channel as shown: for "Others", "Channel-" and the account it came from (e.g. "Channel-အစ်မဖုန်း") */
 const chLabel=o=>o.channel==="Others"&&o.chOther?`Channel-${o.chOther}`:(o.channel||"");
 const STATUS=[
-  {k:"new",n:"Pending Order",c:"s-new"},{k:"baking",n:"Preparing",c:"s-baking"},{k:"ready",n:"Ready",c:"s-ready"},{k:"deli_req",n:"Requested delivery",c:"s-req"},
+  {k:"new",n:"Pending Order",c:"s-new"},{k:"ready",n:"Ready",c:"s-ready"},{k:"deli_req",n:"Requested delivery",c:"s-req"},
   {k:"done",n:"Done",c:"s-done"},{k:"cancel",n:"ပယ်ဖျက်",c:"s-cancel"}
 ];
 const MM_DIG="၀၁၂၃၄၅၆၇၈၉";
@@ -4184,10 +4184,11 @@ async function decoStart(o){
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
   const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,pausedAt:null,redo},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
-  if(o.status==="new"||o.status==="ready"){patch.status="baking";patch.history=addHist(o,"deco",[what,`${statusName(o.status)} → ${statusName("baking")}`])}
+  /* there is no "Preparing" any more: a cake being decorated stays Pending Order (a Ready cake redecorated goes back to it) */
+  if(o.status==="ready"){patch.status="new";patch.history=addHist(o,"deco",[what,`${statusName("ready")} → ${statusName("new")}`])}
   try{await patchOrder(o.id,patch);if(!redo&&!before)toast("Decorating started");   /* no "… so far" message when resuming or redecorating */
     /* jump to the Preparing tab and open the order, so the decorator has the full details in front of them */
-    statusF="baking";render();openPreview({...(orders.find(x=>x.id===o.id)||o),...patch})}
+    statusF="new";render();openPreview({...(orders.find(x=>x.id===o.id)||o),...patch})}
   catch(x){toast("သိမ်းမရပါ")}
 }
 async function decoFinish(o,file){
@@ -6792,7 +6793,8 @@ resetForm();render();go("home");
   draftCol.onSnapshot(s=>{drafts=s.docs.map(d=>({...d.data(),id:d.id}));render()},()=>{draftCol=null;drafts=draftLocalLoad();render()});
   prCol=db.collection("pr");
   prCol.onSnapshot(s=>{prs=s.docs.map(d=>({...d.data(),id:d.id}));renderPR();if(view==="home"||view==="todo")renderHome()},()=>{prCol=null;prs=prLocalLoad();renderPR()});
-  col.onSnapshot(snap=>{orders=snap.docs.map(d=>({...d.data(),id:d.id}));if(mode!=="db")setSync("db");render();refreshNo()},
+  /* orders saved as "Preparing" (no longer used) show as Pending Order */
+  col.onSnapshot(snap=>{orders=snap.docs.map(d=>{const o={...d.data(),id:d.id};if(o.status==="baking")o.status="new";return o});if(mode!=="db")setSync("db");render();refreshNo()},
     ()=>{col=null;orders=localLoad();setSync("local");render()});
   db.doc("meta/payMethods").onSnapshot(s=>{payMethods=s.exists?s.data().list||null:null;render()},()=>{});
   db.doc("meta/exPeople").onSnapshot(s=>{exPplDoc=s.exists?s.data().list||null:null;initEx();renderEx();renderHome()},()=>{});
