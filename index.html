@@ -1623,6 +1623,9 @@ span.star-ic{cursor:default}
       <!-- while this cake is being decorated: finish it with a photo right here -->
       <button type="button" class="btn" id="pvStart" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L11 15.8 8.2 13z"/><path d="M8 13.5c-2.2 0-4 1.8-4 4 0 1.6-1 2.5-2 3 1 .5 2.5 1 4 1a4 4 0 0 0 4-4z"/></svg><span>Start decorating</span></button>
       <button type="button" class="btn ghost" id="pvCancel" hidden>Cancel decorating</button>
+      <!-- another decorator joins a cake someone is decorating (e.g. making the topper), with their own time -->
+      <button type="button" class="btn" id="pvHelp" hidden>🤝 Help decorating</button>
+      <button type="button" class="btn ghost" id="pvHelpDone" hidden>✓ Done helping</button>
       <label class="btn" id="pvFinish" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" id="pvFinishIn" hidden></label>
     </div>
   </div>
@@ -3590,7 +3593,7 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
-  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();
+  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
 function syncPvEdit(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
@@ -3611,6 +3614,26 @@ function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOr
 /* Start / Resume decorating also stops the 10-second countdown: the preview (and its photos) now stay open while decorating */
 $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");decoStart(o)}});
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
+/* ---- helpers: while one decorator decorates a cake, others can join it ("Help decorating") with their own time.
+   deco.helpers = [{by, startAt, endAt}]; open helpers are closed when they tap "Done helping" or the cake is finished ---- */
+const helpersOf=o=>o?.deco?.helpers||[];
+const myHelp=o=>helpersOf(o).find(h=>sameId(h.by,me.id)&&!h.endAt);
+const closeHelpers=(hs,now)=>hs.map(h=>h.endAt?h:{...h,endAt:now});
+const helpMins=h=>Math.max(1,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/60000));
+/* on the card: who helped (and, for Admins, for how long) */
+const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
+  return`<small class="deco-help">🤝 Helped by ${hs.map(h=>`<span data-uid="${esc(h.by||"")}"></span>${seeDecoTime()?` · <b>${fmtDur(helpMins(h))}</b>${h.endAt?"":" (helping)"}`:""}`).join(", ")}</small>`};
+function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
+  const run=!!(o&&db&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&!decoIsMine(o));
+  $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o))}
+$("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!o.deco?.startAt||o.deco.endAt||myHelp(o))return;
+  const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
+  try{await patchOrder(o.id,{deco:{...o.deco,helpers:[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
+    toast(`${o.no} — helping ${nameOf(o.deco.by)}`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
+$("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id),h=o&&myHelp(o);if(!h)return;
+  const now=new Date().toISOString(),hs=helpersOf(o).map(x=>x===h?{...x,endAt:now}:x);
+  try{await patchOrder(o.id,{deco:{...o.deco,helpers:hs},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Finished helping · ${fmtDur(helpMins({...h,endAt:now}))}`])});
+    $("preview").hidden=true;toast("Thanks for helping")}catch(x){toast("သိမ်းမရပါ")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoCanAct(o));
   $("pvFinish").hidden=!run;$("pvCancel").hidden=true}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
@@ -3649,7 +3672,8 @@ function watchPeek(id){const el=$(id),img=$(id==="preview"?"pvImg":"lightImg");n
   if(el.hidden&&id==="lightbox")lbOrder=null;
   /* once decorating has started on that order, its preview and photos stay open as long as the decorator needs;
      another decorator looking at it still gets the 10-second view */
-  const order=id==="preview"?pvOrder:lbOrder,decorating=!!order?.deco?.startAt&&!order.deco.endAt&&sameId(order.deco.by,me.id);
+  const order0=id==="preview"?pvOrder:lbOrder,order=order0&&(orders.find(x=>x.id===order0.id)||order0);
+  const decorating=!!order?.deco?.startAt&&!order.deco.endAt&&(sameId(order.deco.by,me.id)||!!myHelp(order));
   if(!el.hidden&&db&&myRole()==="decoration"&&!decorating){
     /* the 10 seconds start only once the picture is on screen, not while it is still being prepared */
     const p=peek[id]={};
@@ -4155,10 +4179,10 @@ const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="
 const isRedo=o=>o.deco?.redo??((o.history||[]).filter(h=>h.act==="deco").slice(-1)[0]?.changes?.[0]==="Redecorating");
 function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorated */
   const d=o.deco||{},me2=can("orders.decorate");
-  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
+  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
     </div>`;
-  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small></div>
+  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span></span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>${helpLine(o)}</div>
     ${me2&&decoIsMine(o)?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
   /* paused (the decorator closed the preview, or cancelled a start): only Admins see that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready"&&can("admin"))return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
@@ -4176,14 +4200,14 @@ function tickDeco(){
   /* the decorator's preview closes when someone else (an Admin) cancels their decorating */
   if(pvLive&&pvOrder.deco?.startAt&&!pvOrder.deco.endAt&&sameId(pvOrder.deco.by,me.id)&&!pvLive.deco?.startAt&&!pvLive.deco?.endAt&&pvLive.updatedBy&&!sameId(pvLive.updatedBy,me.id)){
     $("preview").hidden=true;pvOrder=null;toast(`${pvLive.no} — decorating was cancelled by ${nameOf(pvLive.updatedBy)}`,6000)}
-  if(!$("preview").hidden){syncPvFinish();syncPvStart()}
+  if(!$("preview").hidden){syncPvFinish();syncPvStart();syncPvHelp()}
 }
 setInterval(tickDeco,1000);
 async function decoStart(o){
   const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready";   /* a Ready cake is redecorated, even if it was set Ready by hand */
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
-  const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,pausedAt:null,redo},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
+  const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(helpersOf(o).length?{helpers:helpersOf(o)}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
   /* there is no "Preparing" any more: a cake being decorated stays Pending Order (a Ready cake redecorated goes back to it) */
   if(o.status==="ready"){patch.status="new";patch.history=addHist(o,"deco",[what,`${statusName("ready")} → ${statusName("new")}`])}
@@ -4197,6 +4221,7 @@ async function decoFinish(o,file){
   toast("Uploading photo…",15000);
   try{
     const s=await storePhoto(await shrinkImage(file)),now=new Date().toISOString(),d={...(o.deco||{}),endAt:now,photo:s.id};
+    if(helpersOf(o).length)d.helpers=closeHelpers(helpersOf(o),now);   /* anyone still helping stops with the finish */
     const ch=[`Finished decorating · ${fmtDur(decoMins(d))}`];
     const patch={deco:d,updatedAt:now,updatedBy:me.id||null};
     /* a finished cake waits for pickup / delivery */
