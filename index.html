@@ -3594,7 +3594,8 @@ function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.dec
   return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
   $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l}
-$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;decoStart(o)}});
+/* Start / Resume decorating also stops the 10-second countdown: the preview (and its photos) now stay open while decorating */
+$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");decoStart(o)}});
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoCanAct(o));
@@ -3628,6 +3629,7 @@ function peekShow(){const left=Object.values(peek).filter(p=>p.end).map(p=>Math.
   /* on the order preview the countdown sits in its header, centred on the "Order preview" line; over a photo it floats at the top */
   const host=peek.preview?.end&&!$("preview").hidden?document.querySelector("#preview .pv-head"):document.body;
   if(peekBadge.parentNode!==host)host.append(peekBadge);peekBadge.classList.toggle("in-head",host!==document.body)}
+function stopPeek(id){const p=peek[id];if(!p)return;clearTimeout(p.t);clearInterval(p.i);$(id==="preview"?"pvImg":"lightImg").removeEventListener("load",p.go);delete peek[id];peekShow()}
 function watchPeek(id){const el=$(id),img=$(id==="preview"?"pvImg":"lightImg");new MutationObserver(()=>{
   if(peek[id]){clearTimeout(peek[id].t);clearInterval(peek[id].i);img.removeEventListener("load",peek[id].go);delete peek[id]}
   if(el.hidden&&id==="lightbox")lbOrder=null;
