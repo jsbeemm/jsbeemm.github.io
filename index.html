@@ -3621,10 +3621,11 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
 const helpersOf=o=>o?.deco?.helpers||[];
 const myHelp=o=>helpersOf(o).find(h=>sameId(h.by,me.id)&&!h.endAt);
 const closeHelpers=(hs,now)=>hs.map(h=>h.endAt?h:{...h,endAt:now});
+const helpSecs=h=>Math.max(0,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/1000));
 const helpMins=h=>Math.max(1,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/60000));
 /* on the card: who helped (and, for Admins, for how long) */
 const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
-  return`<small class="deco-help">🤝 Helped by ${hs.map(h=>`<span data-uid="${esc(h.by||"")}"></span>${seeDecoTime()?` · <b>${fmtDur(helpMins(h))}</b>${h.endAt?"":" (helping)"}`:""}`).join(", ")}</small>`};
+  return`<small class="deco-help">🤝 Helped by ${hs.map(h=>`<span data-uid="${esc(h.by||"")}"></span>${seeDecoTime()?(h.endAt?` · <b>${fmtDur(helpMins(h))}</b>`:` · <b class="help-live" data-since="${esc(h.startAt)}">${fmtClock(helpSecs(h))}</b> (helping)`):""}`).join(", ")}</small>`};
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   const live=!!(o&&o.deco?.startAt&&!o.deco.endAt),run=!!(live&&db&&can("orders.decorate")&&!decoIsMine(o));
   $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o));
@@ -4202,6 +4203,8 @@ function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorat
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
 function tickDeco(){
+  /* a helper still at work: their own clock runs on the card, like the decorator's */
+  document.querySelectorAll(".help-live").forEach(el=>el.textContent=fmtClock(helpSecs({startAt:el.dataset.since})));
   document.querySelectorAll(".deco-live").forEach(el=>el.textContent=fmtClock(decoSecs({startAt:el.dataset.since,handedAt:el.dataset.handed||null,prevSecs:Number(el.dataset.prev)||0})));
   /* with the order preview open on a cake being decorated, its running time sits at the left of the preview's footer */
   const pvLive=!$("preview").hidden&&pvOrder&&orders.find(o=>o.id===pvOrder.id);
