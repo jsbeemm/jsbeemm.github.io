@@ -3634,7 +3634,9 @@ async function helpStop(o,why){const h=myHelp(o);if(!h)return;
   try{await patchOrder(o.id,{deco:{...o.deco,helpers:hs},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
   catch(x){toast("သိမ်းမရပါ");return false}}
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
-  const live=!!(o&&o.deco?.startAt&&!o.deco.endAt),run=!!(live&&db&&can("orders.decorate")&&!decoIsMine(o));
+  /* helping is open while the cake is being decorated by someone else, and also before anyone starts (e.g. making the topper first) */
+  const live=!!(o&&o.deco?.startAt&&!o.deco.endAt),before=!!(o&&!isBak(o)&&isOpen(o)&&!o.deco?.startAt&&!o.deco?.endAt&&o.status!=="ready");
+  const run=!!((live||before)&&db&&can("orders.decorate")&&!(live&&decoIsMine(o)));
   $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o));
   const open=live?helpersOf(o).filter(h=>!h.endAt):[];
   $("pvHandOver").hidden=!(live&&db&&decoIsMine(o)&&!o.deco.handedAt&&open.length);
@@ -3646,10 +3648,10 @@ $("pvHandOver").addEventListener("click",async()=>{const o=pvOrder&&orders.find(
   const now=new Date().toISOString(),d={...o.deco,handedAt:now};
   try{await patchOrder(o.id,{deco:d,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Handed to ${hs.map(h=>nameOf(h.by)).join(", ")} to finish · ${fmtDur(decoMins(d))}`])});
     $("preview").hidden=true;toast("Handed over — the helper finishes the cake")}catch(x){toast("သိမ်းမရပါ")}});
-$("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!o.deco?.startAt||o.deco.endAt||myHelp(o))return;
+$("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||o.deco?.endAt||myHelp(o))return;
   const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
-  try{await patchOrder(o.id,{deco:{...o.deco,helpers:[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
-    toast(`${o.no} — helping ${nameOf(o.deco.by)}`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
+  try{await patchOrder(o.id,{deco:{...(o.deco||{}),helpers:[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
+    toast(o.deco?.startAt?`${o.no} — helping ${nameOf(o.deco.by)}`:`${o.no} — helping (before decorating starts)`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
 $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!myHelp(o))return;
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
@@ -3692,7 +3694,7 @@ function watchPeek(id){const el=$(id),img=$(id==="preview"?"pvImg":"lightImg");n
   /* once decorating has started on that order, its preview and photos stay open as long as the decorator needs;
      another decorator looking at it still gets the 10-second view */
   const order0=id==="preview"?pvOrder:lbOrder,order=order0&&(orders.find(x=>x.id===order0.id)||order0);
-  const decorating=!!order?.deco?.startAt&&!order.deco.endAt&&(sameId(order.deco.by,me.id)||!!myHelp(order));
+  const decorating=(!!order?.deco?.startAt&&!order.deco.endAt&&sameId(order.deco.by,me.id))||!!(order&&myHelp(order));
   if(!el.hidden&&db&&myRole()==="decoration"&&!decorating){
     /* the 10 seconds start only once the picture is on screen, not while it is still being prepared */
     const p=peek[id]={};
@@ -4207,7 +4209,9 @@ function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorat
   /* paused (the decorator closed the preview, or cancelled a start): only Admins see that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready"&&can("admin"))return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
     </div>`;
-  /* Start / Resume decorating and Redecorate are in the order preview (tap the card to open it) */
+  /* Start / Resume decorating and Redecorate are in the order preview (tap the card to open it);
+     someone helping before decorating starts (e.g. the topper) shows here */
+  if(helpersOf(o).length&&!d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>Not started yet</b></span>${helpLine(o)}</div></div>`;
   return "";
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
