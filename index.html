@@ -1399,8 +1399,9 @@ span.star-ic{cursor:default}
         <!-- live summary laid out like the print slip, in full colour -->
         <div class="live-slip" id="liveSlip"></div>
         <p class="err" id="formErr" hidden></p>
-        <button class="btn ghost" type="button" id="previewBtn">👁 Order preview</button>
-        <button class="btn" type="submit" id="saveBtn">အော်ဒါ သိမ်းမည်</button>
+        <!-- orders are saved from the Order preview ("Save order & image"); the plain Save button stays only for the form's own submit -->
+        <button class="btn" type="button" id="previewBtn">👁 Order preview</button>
+        <button class="btn" type="submit" id="saveBtn" hidden>အော်ဒါ သိမ်းမည်</button>
         <button class="btn ghost" type="button" id="draftBtn">📝 Draft အဖြစ် သိမ်းမည်</button>
         <button class="btn ghost" type="button" id="resetBtn">ပယ်ဖျက် / ရှင်းလင်း</button>
       </aside>
