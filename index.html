@@ -3629,7 +3629,10 @@ const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   const live=!!(o&&o.deco?.startAt&&!o.deco.endAt),run=!!(live&&db&&can("orders.decorate")&&!decoIsMine(o));
   $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o));
-  $("pvHandOver").hidden=!(live&&db&&decoIsMine(o)&&!o.deco.handedAt&&helpersOf(o).some(h=>!h.endAt))}
+  const open=live?helpersOf(o).filter(h=>!h.endAt):[];
+  $("pvHandOver").hidden=!(live&&db&&decoIsMine(o)&&!o.deco.handedAt&&open.length);
+  /* the button names the helper who will finish, e.g. "🤝 Aye finishes" */
+  if(open.length)$("pvHandOver").textContent=`🤝 ${open.map(h=>nameOf(h.by)).join(", ")} finishes`}
 $("pvHandOver").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!decoIsMine(o)||o.deco?.handedAt)return;
   const hs=helpersOf(o).filter(h=>!h.endAt);if(!hs.length)return;
   if(!await askConfirm(`Hand ${o.no} to ${hs.map(h=>nameOf(h.by)).join(", ")}?`,"Your decorating time stops now. The helper finishes the cake with Finish + photo.","Hand over"))return;
