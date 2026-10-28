@@ -3599,7 +3599,7 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&decoCanAct(o));
-  $("pvFinish").hidden=$("pvCancel").hidden=!run}
+  $("pvFinish").hidden=!run;$("pvCancel").hidden=true}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
 /* Cancel in the preview; an Admin cancelling someone else's decorating confirms first */
 $("pvCancel").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!decoCanAct(o))return;
   if(!decoIsMine(o)&&!await askConfirm(`Cancel decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. It goes back to Pending Order; the time so far is kept for Resume decorating.`,"Cancel decorating"))return;
