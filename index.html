@@ -3647,8 +3647,9 @@ function stopPeek(id){const p=peek[id];if(!p)return;clearTimeout(p.t);clearInter
 function watchPeek(id){const el=$(id),img=$(id==="preview"?"pvImg":"lightImg");new MutationObserver(()=>{
   if(peek[id]){clearTimeout(peek[id].t);clearInterval(peek[id].i);img.removeEventListener("load",peek[id].go);delete peek[id]}
   if(el.hidden&&id==="lightbox")lbOrder=null;
-  /* once decorating has started on that order, its preview and photos stay open as long as the decorator needs */
-  const order=id==="preview"?pvOrder:lbOrder,decorating=!!order?.deco?.startAt&&!order.deco.endAt;
+  /* once decorating has started on that order, its preview and photos stay open as long as the decorator needs;
+     another decorator looking at it still gets the 10-second view */
+  const order=id==="preview"?pvOrder:lbOrder,decorating=!!order?.deco?.startAt&&!order.deco.endAt&&sameId(order.deco.by,me.id);
   if(!el.hidden&&db&&myRole()==="decoration"&&!decorating){
     /* the 10 seconds start only once the picture is on screen, not while it is still being prepared */
     const p=peek[id]={};
