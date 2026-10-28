@@ -493,6 +493,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 #edOverlay{pointer-events:none}
 .ed-foot{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px;border-top:1px solid var(--line)}
 .ed-foot{flex-wrap:wrap}
+.pv-del{color:var(--accent);padding-inline:12px}.pv-del .ic{width:20px;height:20px}
 .ed-foot .btn,.ed-foot .btn.ghost{width:auto;margin:0;white-space:nowrap}
 /* footer buttons carry a bold drawn icon (emoji looked faint on some screens) */
 .ed-foot .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;padding:11px 18px}
@@ -1607,6 +1608,9 @@ span.star-ic{cursor:default}
     <div class="ed-foot">
       <!-- the order's change history, at the left of the preview's footer -->
       <button type="button" class="btn ghost pv-hist" id="pvHist" hidden>🕘 History</button>
+      <!-- a saved order: edit it in the form, or delete it (who may do which follows the same permissions as before) -->
+      <button type="button" class="btn ghost" id="pvEdit" hidden>✏️ Edit</button>
+      <button type="button" class="btn ghost pv-del" id="pvDel" hidden aria-label="Delete order" title="Delete order"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg></button>
       <span class="pv-timer" id="pvTimer" hidden></span>   <!-- order number + decorating time, while that cake is being decorated -->
       <span class="ed-count" id="pvNote"></span>
       <button type="button" class="btn ghost" id="pvPrint"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span>Print</span></button>
@@ -3584,9 +3588,17 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
-  syncPvFinish();pvFormMode=fromForm;syncPvStart();
+  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
+function syncPvEdit(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
+  $("pvEdit").hidden=!(o&&canEditOrder(o));$("pvDel").hidden=!(o&&canDelete())}
+$("pvEdit").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;
+  if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}
+  $("preview").hidden=true;fillForm(o);showTab("new")});
+$("pvDel").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!canDelete())return;
+  if(!await askConfirm(`Delete order ${o.no}?`,`${o.name||""}${o.phone?" · "+o.phone:""}\nThis order and its photos will be removed for good.`))return;
+  try{await removeOrder(o.id);$("preview").hidden=true;toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}});
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
 /* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
 function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o)||(d.startAt&&!d.endAt))return"";
@@ -3960,7 +3972,7 @@ function render(){
         <div class="deco-main ${o.deco?.startAt?"":"dm-start"}">${decoBlock(o)}</div>
       </div>
       <div class="o-side">
-        <div class="o-top">${canEditOrder(o)?`<button class="link o-edit" data-edit="${o.id}" aria-label="ပြင်ရန်" title="ပြင်ရန်">${PENCIL}</button>`:""}</div>
+        <div class="o-top"></div>   <!-- Edit and Delete are in the order preview (tap the card) -->
         <select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}${!o.deco.startAt&&!o.deco.endAt&&prevSecsOf(o.deco)>0?" · Paused":""}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
         <!-- "Start decorating" sits right under the status (computer); on phones the whole decorating block sits here, above the status and Print -->
         <div class="deco-side ${o.deco?.startAt?"":"ds-start"}">${decoBlock(o)}</div>
@@ -3974,7 +3986,7 @@ function render(){
           ?`<span class="confirm cancel-ask">ဒီအော်ဒါကို ပယ်ဖျက်မှာ သေချာပါသလား? <input class="cancel-why" data-cancel-why placeholder="Cancel ရတဲ့ အကြောင်းရင်း *" aria-label="Cancel reason" autocomplete="off" value="${esc(cancelDraft)}"><button class="link danger" data-cancel-yes="${o.id}">ပယ်ဖျက်မည်</button><button class="link" data-cancel-no>မလုပ်တော့ပါ</button></span>`
           :pendingDelete===o.id
           ?`<span class="confirm">ဖျက်မှာ သေချာပါသလား? <button class="link danger" data-del-yes="${o.id}">ဖျက်မည်</button><button class="link" data-del-no>မဖျက်ပါ</button></span>`
-          :`${bal&&can("orders.pay")?`<button class="link" data-paid="${o.id}">ငွေချေရန်</button>`:""}${canDelete()?`<button class="link danger o-ic" data-del="${o.id}" aria-label="ဖျက်ရန်" title="ဖျက်ရန်"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg></button>`:""}`}</div>
+          :`${bal&&can("orders.pay")?`<button class="link" data-paid="${o.id}">ငွေချေရန်</button>`:""}`}</div>
       </div>
     </article>`}).join("");
   /* names are filled in as text (never stored); the ids on screen are resolved again every render */
