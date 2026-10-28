@@ -3624,8 +3624,15 @@ const closeHelpers=(hs,now)=>hs.map(h=>h.endAt?h:{...h,endAt:now});
 const helpSecs=h=>Math.max(0,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/1000));
 const helpMins=h=>Math.max(1,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/60000));
 /* on the card: who helped (and, for Admins, for how long) */
+/* one entry per helper: a helper who closed the preview and joined again has their times added up */
 const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
-  return`<small class="deco-help">🤝 Helped by ${hs.map(h=>`<span data-uid="${esc(h.by||"")}"></span>${seeDecoTime()?(h.endAt?` · <b>${fmtDur(helpMins(h))}</b>`:` · <b class="help-live" data-since="${esc(h.startAt)}">${fmtClock(helpSecs(h))}</b> (helping)`):""}`).join(", ")}</small>`};
+  const per=[];hs.forEach(h=>{let p=per.find(x=>sameId(x.by,h.by)||x.by===h.by);if(!p)per.push(p={by:h.by,done:0,open:null});if(h.endAt)p.done+=helpSecs(h);else p.open=h});
+  return`<small class="deco-help">🤝 Helped by ${per.map(p=>`<span data-uid="${esc(p.by||"")}"></span>${seeDecoTime()?(!p.open?` · <b>${fmtDur(Math.max(1,Math.round(p.done/60)))}</b>`:` · <b class="help-live" data-since="${esc(p.open.startAt)}" data-prev="${p.done}">${fmtClock(p.done+helpSecs(p.open))}</b> (helping)`):""}`).join(", ")}</small>`};
+/* a helper closing the preview stops their own clock (tap "Help decorating" again to carry on) */
+async function helpStop(o,why){const h=myHelp(o);if(!h)return;
+  const now=new Date().toISOString(),hs=helpersOf(o).map(x=>x===h?{...x,endAt:now}:x);
+  try{await patchOrder(o.id,{deco:{...o.deco,helpers:hs},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
+  catch(x){toast("သိမ်းမရပါ");return false}}
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   const live=!!(o&&o.deco?.startAt&&!o.deco.endAt),run=!!(live&&db&&can("orders.decorate")&&!decoIsMine(o));
   $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o));
@@ -3643,10 +3650,8 @@ $("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x
   const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
   try{await patchOrder(o.id,{deco:{...o.deco,helpers:[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
     toast(`${o.no} — helping ${nameOf(o.deco.by)}`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
-$("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id),h=o&&myHelp(o);if(!h)return;
-  const now=new Date().toISOString(),hs=helpersOf(o).map(x=>x===h?{...x,endAt:now}:x);
-  try{await patchOrder(o.id,{deco:{...o.deco,helpers:hs},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Finished helping · ${fmtDur(helpMins({...h,endAt:now}))}`])});
-    $("preview").hidden=true;toast("Thanks for helping")}catch(x){toast("သိမ်းမရပါ")}});
+$("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!myHelp(o))return;
+  if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&(decoCanAct(o)||myHelp(o)));   /* a helper can finish the cake too */
   $("pvFinish").hidden=!run;$("pvCancel").hidden=true}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
@@ -3664,7 +3669,8 @@ $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];
 $("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
   /* the decorator closing the preview of the cake they are decorating pauses its timer ("Resume decorating" carries on) */
   const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);
-  if(o&&o.deco?.startAt&&!o.deco.endAt&&!o.deco.handedAt&&sameId(o.deco.by,me.id))decoPause(o)});   /* handed over: the helper is still on it */
+  if(o&&o.deco?.startAt&&!o.deco.endAt&&!o.deco.handedAt&&sameId(o.deco.by,me.id))decoPause(o);   /* handed over: the helper is still on it */
+  else if(o&&myHelp(o))helpStop(o,"Stopped helping")});
 /* Save order & image: the picture is saved first (while the tap still counts, so the save / share sheet can open),
    then the order is saved exactly as the form's Save button does, and the preview closes */
 $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;const b=$("pvSaveAll");b.disabled=true;
@@ -4207,7 +4213,7 @@ function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorat
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
 function tickDeco(){
   /* a helper still at work: their own clock runs on the card, like the decorator's */
-  document.querySelectorAll(".help-live").forEach(el=>el.textContent=fmtClock(helpSecs({startAt:el.dataset.since})));
+  document.querySelectorAll(".help-live").forEach(el=>el.textContent=fmtClock((Number(el.dataset.prev)||0)+helpSecs({startAt:el.dataset.since})));
   document.querySelectorAll(".deco-live").forEach(el=>el.textContent=fmtClock(decoSecs({startAt:el.dataset.since,handedAt:el.dataset.handed||null,prevSecs:Number(el.dataset.prev)||0})));
   /* with the order preview open on a cake being decorated, its running time sits at the left of the preview's footer */
   const pvLive=!$("preview").hidden&&pvOrder&&orders.find(o=>o.id===pvOrder.id);
