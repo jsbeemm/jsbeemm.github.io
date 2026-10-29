@@ -752,7 +752,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .due-bar .due-h{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700;font-size:14.5px}
 .due-bar .due-h .btn{width:auto;margin:0;padding:8px 16px}
 .due-row{font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
-.due-row.is-req{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+.due-row.is-req{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;background:#E3EEFB;color:#14467A;border:1px solid #9EC2EA;border-radius:10px;padding:6px 10px}
+.due-bar.all-req{background:#EAF3FC;border-color:#3F8FD6;color:#14467A}
 .due-req2{display:grid;justify-items:end;text-align:right;line-height:1.35}
 .due-row.is-req .due-reqd{grid-column:1/-1;justify-self:end}
 .due-reqbtn{border:1.5px solid currentColor;background:#fff;color:#B3261E;font:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;cursor:pointer;min-height:36px}.due-reqbtn:disabled{opacity:.45;cursor:not-allowed}
@@ -4139,7 +4140,9 @@ function renderDue(){renderPrintNag();renderTdNag();
   const list=orders.map(o=>({o,d:dueInfo(o)})).filter(x=>x.d).sort((a,b)=>a.d.mins-b.d.mins);
   el.hidden=!list.length||document.body.classList.contains("locked");
   /* a delivery that is already late turns the whole bar red */
-  el.classList.toggle("late",list.some(x=>x.d.deli&&x.d.late));
+  /* …unless that delivery is already requested (someone is on it): requested rows turn blue, and a bar of only requested deliveries is blue */
+  el.classList.toggle("late",list.some(x=>x.d.deli&&x.d.late&&x.o.status!=="deli_req"));
+  el.classList.toggle("all-req",list.length>0&&list.every(x=>x.o.status==="deli_req"));
   el.innerHTML=list.length?`<div class="due-h"><span>⚠ ${list.length} order${list.length===1?"":"s"} need attention now</span></div>`
     /* a delivery order that is Ready to deliver can be sent for delivery straight from the warning (who takes it is asked first); once requested, the time and the person show instead */
     +list.map(({o,d})=>{const req=d.deli&&o.status==="deli_req",st=can("orders.status");
