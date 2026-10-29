@@ -4965,10 +4965,9 @@ function renderHome(){
   {const n=tds.filter(t=>!t.done).length;$("homeMyTodoN").textContent=`${n} open task${n===1?"":"s"}`;$("homeTodoN").textContent=`${toBuy} to buy · ${n} task${n===1?"":"s"}`}
   $("goPE").hidden=!can("admin")&&!canSeeEx();
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
-  /* someone (not an Admin) with an open item assigned to them sees the tiles light up */
-  const mine=myRole()!=="admin"?prs.filter(r=>!r.done&&isMyPR(r)).length:0;
-  /* tasks someone else assigned to me light up My to-do list (and To-do list) as well */
-  const tdN=tds.filter(t=>!t.done&&tdMine(t)).length;
+  /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
+  const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
+  const tdN=tds.filter(t=>!t.done&&!!t.assignTo&&!!tdMe()&&sameId(t.assignTo,tdMe())).length;
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
