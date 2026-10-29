@@ -4680,10 +4680,11 @@ $("bkExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;expor
 const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"",12],["Time",o=>o.time?fmtTime(o.time):"",9],
   ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>`${l.name} × ${l.qty}`).join("\n"):"",26],
-  ["Size",o=>o.sizeName,12],["Flavor",o=>o.flavorName,16],["Design type",o=>(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>o.cakeCode||"",10],["Shape",o=>shapeName(o),10],["Cake type",o=>ctLbl(o)||"Standard",11],
+  /* cake-only details stay blank on a Bakery products order */
+  ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>isBak(o)?"":o.cakeCode||"",10],["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
   ["Design code",o=>o.design,10],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
-  ["Cake price",o=>Number(o.basePrice)||0,11],["Additional total",o=>orderCharges(o).reduce((s,c)=>s+(Number(c.amt)||0),0),11],
+  ["Cake price",o=>isBak(o)?"":Number(o.basePrice)||0,11],["Products price",o=>isBak(o)?Number(o.basePrice)||0:"",11],["Additional total",o=>orderCharges(o).reduce((s,c)=>s+(Number(c.amt)||0),0),11],
   ["Delivery charge",o=>o.delivery==="delivery"?Number(o.delivAmt)||0:0,11],["Total",o=>Number(o.total)||0,11],
   ["Paid",o=>Number(o.deposit)||0,11],["Balance",o=>Math.max(0,(o.total||0)-(o.deposit||0)),11],
   ["Payments",o=>orderPayments(o).map(p=>[p.date?fmtDate(p.date):"",p.method,Number(p.amt||0).toLocaleString("en-US")].filter(Boolean).join(" ")).join("\n"),26],
@@ -4705,7 +4706,7 @@ async function exportExcel(){
     ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:rows.length-1,c:XL_COLS.length-1}})};
     ws["!freeze"]={xSplit:0,ySplit:1};
     /* money columns show thousands separators */
-    XL_COLS.forEach((c,ci)=>{if(typeof c[1](list[0])!=="number")return;
+    XL_COLS.forEach((c,ci)=>{if(!list.some(o=>typeof c[1](o)==="number"))return;
       for(let r=1;r<rows.length;r++){const cell=ws[XLSX.utils.encode_cell({r,c:ci})];if(cell)cell.z="#,##0"}});
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Orders");
     const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
