@@ -4679,12 +4679,16 @@ $("bkExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;expor
 /* ---------- Excel: the orders the list shows now, one row each, money as numbers so Excel can add them up ---------- */
 const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"",12],["Time",o=>o.time?fmtTime(o.time):"",9],
   ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
-  ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>`${l.name} × ${l.qty}`).join("\n"):"",26],
+  ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>`${l.name} ${l.qty} × ${(Number(l.price)||0).toLocaleString("en-US")}`).join("\n"):"",30],
   /* cake-only details stay blank on a Bakery products order */
   ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>isBak(o)?"":o.cakeCode||"",10],["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
   ["Design code",o=>o.design,10],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
-  ["Cake price",o=>isBak(o)?"":Number(o.basePrice)||0,11],["Products price",o=>isBak(o)?Number(o.basePrice)||0:"",11],["Additional total",o=>orderCharges(o).reduce((s,c)=>s+(Number(c.amt)||0),0),11],
+  /* Quantity × Price = Amount (e.g. Tiramisu 10 × 5,000 = 50,000); a bakery order of several different items has no single price, so its
+   Price stays blank (the Items column lists each one) and Quantity is the number of pieces */
+["Quantity",o=>{if(!isBak(o))return Number(o.count)||1;const it=bakItemsOf(o);return it.reduce((s,l)=>s+(Number(l.qty)||0),0)},9],
+["Price",o=>{if(!isBak(o))return Math.round((Number(o.basePrice)||0)/(Number(o.count)||1));const it=bakItemsOf(o);return it.length===1?Number(it[0].price)||0:""},11],
+["Amount",o=>Number(o.basePrice)||0,11],["Additional total",o=>orderCharges(o).reduce((s,c)=>s+(Number(c.amt)||0),0),11],
   ["Delivery charge",o=>o.delivery==="delivery"?Number(o.delivAmt)||0:0,11],["Total",o=>Number(o.total)||0,11],
   ["Paid",o=>Number(o.deposit)||0,11],["Balance",o=>Math.max(0,(o.total||0)-(o.deposit||0)),11],
   ["Payments",o=>orderPayments(o).map(p=>[p.date?fmtDate(p.date):"",p.method,Number(p.amt||0).toLocaleString("en-US")].filter(Boolean).join(" ")).join("\n"),26],
