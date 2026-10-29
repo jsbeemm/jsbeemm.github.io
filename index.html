@@ -4290,6 +4290,9 @@ function tickDeco(){
   /* the decorator's preview closes when someone else (an Admin) cancels their decorating */
   if(pvLive&&pvOrder.deco?.startAt&&!pvOrder.deco.endAt&&sameId(pvOrder.deco.by,me.id)&&!pvLive.deco?.startAt&&!pvLive.deco?.endAt&&pvLive.updatedBy&&!sameId(pvLive.updatedBy,me.id)){
     $("preview").hidden=true;pvOrder=null;toast(`${pvLive.no} — decorating was cancelled by ${nameOf(pvLive.updatedBy)}`,6000)}
+  /* the cake is finished (by the decorator or whoever was handed it): the helpers' previews of it close too */
+  if(pvLive&&pvLive.deco?.endAt&&!pvOrder.deco?.endAt&&helpersOf(pvLive).some(h=>sameId(h.by,me.id))&&!sameId(pvLive.updatedBy,me.id)){
+    $("preview").hidden=true;pvOrder=null;toast(`${pvLive.no} — finished${pvLive.updatedBy?` by ${nameOf(pvLive.updatedBy)}`:""}. Thanks for helping`,5000)}
   if(!$("preview").hidden){syncPvFinish();syncPvStart();syncPvHelp()}
 }
 setInterval(tickDeco,1000);
