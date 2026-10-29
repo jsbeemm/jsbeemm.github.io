@@ -4956,12 +4956,18 @@ function renderHome(){
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
    $("homePosN").textContent=`Today · ${ts.length} sale${ts.length===1?"":"s"}`;$("homeSaleRepN").textContent=`Today · ${fmt(amt)}`;
-   $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(amt)}`}
+   $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(amt)}`;
+  }
   /* the account owner sees how much money is waiting for their confirmation */
   /* Sales report: people allowed in Accounts ("View sales report"), plus anyone with money waiting for their confirmation */
   $("goSaleRep").hidden=!can("sales.report")&&!sales.some(isMineToConf);
   {const n=sales.filter(isMineToConf).length;["goSale","goSaleRep"].forEach(id=>{const t=$(id);t.classList.toggle("glow",n>0);t.querySelector(".ht-badge")?.remove();
     if(n)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">🔔 ${n} to confirm</span>`)})}
+  /* decorators: the Sale tile shows only today's order count (no money), and lights up while today's cakes are not all finished */
+  if(db&&myRole()==="decoration"){const t=todayISO(),gs=$("goSale"),td=orders.filter(o=>o.date===t&&isOpen(o)),left=td.filter(o=>!isBak(o)&&!o.deco?.endAt&&o.status==="new").length;
+    $("homeSaleN").textContent=`Today ${td.length} order${td.length===1?"":"s"}`;
+    gs.classList.toggle("glow",left>0);gs.querySelector(".ht-badge")?.remove();
+    if(left)gs.insertAdjacentHTML("beforeend",`<span class="ht-badge">${left} not finished</span>`)}
   $("homeProdN").textContent=pds.length?`${pds.length} products`:"";
   {const c=pts.filter(p=>p.type!=="supplier").length,sp=pts.length-c;$("homePtN").textContent=pts.length?`${c} customers${can("admin")?` · ${sp} suppliers`:""}`:""}
   $("goEx").hidden=!canSeeEx();$("goBiz").hidden=!can("admin");
