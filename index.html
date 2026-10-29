@@ -4101,9 +4101,10 @@ $("q").addEventListener("input",render);
 $("chFilter").addEventListener("change",render);
 /* the "not yet printed" note: show only those orders / show all again */
 var npF=false;
-/* a tap anywhere on the bar shows the unprinted orders (tap again on Orders to see all) */
+/* a tap anywhere on the bar shows the unprinted orders */
 $("printNag").addEventListener("click",()=>{
-  if(view!=="orders"){npF=true;dateF="all";statusF="all";go("orders")}else{npF=!npF;showTab("list");render()}});
+  /* opens Orders on Status "Need to print" (all dates) */
+  npF=false;dateF="all";statusF="print";if(view!=="orders")go("orders");else{showTab("list");render()}});
 /* the chosen sort is remembered on this device */
 try{const s=localStorage.getItem("cakeSort");if(s&&[...$("sortSel").options].some(o=>o.value===s))$("sortSel").value=s}catch(e){}
 $("sortSel").addEventListener("change",()=>{try{localStorage.setItem("cakeSort",$("sortSel").value)}catch(e){}render()});
@@ -4141,7 +4142,7 @@ var pvFormMode=false;
 function renderPrintNag(){const el=$("printNag");if(!el)return;
   const np=can("orders.print")?orders.filter(needPrint).length:0;if(!np)npF=false;
   el.hidden=!np||document.body.classList.contains("locked");
-  el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်${npF&&view==="orders"?" · အားလုံးပြန်ကြည့်ရန် ဒီနေရာကို နှိပ်ပါ":""}</span></div>`:""}
+  el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်</span></div>`:""}
 function renderDue(){renderPrintNag();renderTdNag();
   const el=$("dueBar");if(!el)return;
   const list=orders.map(o=>({o,d:dueInfo(o)})).filter(x=>x.d).sort((a,b)=>a.d.mins-b.d.mins);
