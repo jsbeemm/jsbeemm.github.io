@@ -1190,9 +1190,9 @@ span.star-ic{cursor:default}
           <button type="button" class="set-btn" id="teamBtn" hidden>👥 Accounts</button>
           <button type="button" class="set-btn" id="pmBtn" hidden>💳 Payment methods</button>
           <button type="button" class="set-btn" onclick="if(confirm('ဒီစက်ကို ဆိုင် account ကနေ ထွက်မလား?'))fbShopSignOut()">🔒 Shop sign out</button><button type="button" class="set-btn" id="logoutBtn" hidden style="display:none">⎋ Log out</button>   <!-- kept for its handler; the visible Log out is the icon beside Settings -->
-          <p class="set-title" id="xlTitle" style="margin-top:8px">Excel</p>
-          <button type="button" class="set-btn" id="xlExport">📊 Excel ထုတ်မည်</button>
-          <p class="set-hint" id="xlHint">စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)</p>
+          <p class="set-title" id="xlTitle" style="margin-top:8px" hidden>Excel</p>
+          <button type="button" class="set-btn" id="xlExport" hidden>📊 Excel ထုတ်မည်</button>
+          <p class="set-hint" id="xlHint" hidden>စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)</p>
           <div id="bkBox" hidden>
             <p class="set-title" style="margin-top:8px">Backup</p>
             <button type="button" class="set-btn" id="bkExport">⬇ Backup ထုတ်မည်</button>
@@ -1232,6 +1232,8 @@ span.star-ic{cursor:default}
       <select id="sortSel" aria-label="Sort" style="width:auto"><option value="date">Sort: Pickup date</option><option value="acc-new">Sort: Accepted (newest)</option><option value="acc-old">Sort: Accepted (oldest)</option></select>
       <input class="search" id="q" type="search" placeholder="အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်">
       <button type="button" class="chip ord-rep-btn" id="ordRepBtn">📊 Report</button>
+      <!-- Excel of exactly the orders the filters above show (date, status, channel, search), to check by hand -->
+      <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ထုတ်ရန်">📥 Excel</button>
     </div>
     <div class="orders" id="orders"></div>
   </section>
@@ -4677,6 +4679,7 @@ $("bkExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;expor
 /* ---------- Excel: the orders the list shows now, one row each, money as numbers so Excel can add them up ---------- */
 const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"",12],["Time",o=>o.time?fmtTime(o.time):"",9],
   ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
+  ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>`${l.name} × ${l.qty}`).join("\n"):"",26],
   ["Size",o=>o.sizeName,12],["Flavor",o=>o.flavorName,16],["Design type",o=>(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>o.cakeCode||"",10],["Shape",o=>shapeName(o),10],["Cake type",o=>ctLbl(o)||"Standard",11],
   ["Design code",o=>o.design,10],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
@@ -4689,8 +4692,9 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Taken by",o=>o.createdBy?nameOf(o.createdBy):"",14],["Taken at",o=>o.createdAt?fmtStamp(o.createdAt):"",14],
   ["Decorated by",o=>o.deco?.startAt?nameOf(o.deco.by):"",16],["Decoration start",o=>o.deco?.startAt?fmtStamp(o.deco.startAt):"",14],
   ["Decoration end",o=>o.deco?.endAt?fmtStamp(o.deco.endAt):"",14],["Decoration time (min)",o=>o.deco?.endAt?decoMins(o.deco):"",10]];
+/* the orders the list shows now (its filters decide which days), in order-number order so a missing number stands out */
 async function exportExcel(){
-  const list=shownList.slice();
+  const list=shownList.slice().sort((a,b)=>String(a.no||"").localeCompare(String(b.no||""),undefined,{numeric:true}));
   if(!list.length){toast("ထုတ်စရာ အော်ဒါ မရှိပါ",3000);return}
   toast("Excel ပြင်ဆင်နေသည်…",8000);
   try{
@@ -4706,10 +4710,12 @@ async function exportExcel(){
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Orders");
     const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
     const blob=new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
-    await saveFile(blob,`cake-orders-${todayISO()}.xlsx`,"Excel",false);
+    const dl=(document.querySelector("#dateSel option:checked")?.textContent||"").replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-");
+    await saveFile(blob,`cake-orders-${todayISO()}${dl?"-"+dl:""}.xlsx`,"Excel",false);
   }catch(x){if(x?.code==="declined")return;toast(x?.code==="rate_limited"?"ခဏစောင့်ပြီး ပြန်နှိပ်ပါ":"Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}
 }
 $("xlExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;exportExcel()});
+$("ordXlBtn").addEventListener("click",()=>{if(can("excel"))exportExcel()});
 $("bkFile").addEventListener("change",async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
   let data=null;try{data=JSON.parse(await f.text())}catch(x){}
@@ -4760,8 +4766,8 @@ function renderMe(){
   $("teamBtn").hidden=!(db&&can("admin"));
   $("pmBtn").hidden=!can("admin");
   $("bkBox").hidden=!can("admin");
-  $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=!can("excel");
-  $("ordRepBtn").hidden=!can("orders.report");   /* Production (Baking / Decoration) does not see the order report */
+  $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=true;   /* Excel is exported from Orders (the 📥 Excel button), not Settings */
+  $("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");   /* Production (Baking / Decoration) does not see the order report */
   document.body.classList.toggle("no-print",!can("orders.print"));
   syncNewBtns();
   if(!canWriteOrders()&&!$("viewNew").hidden)showTab("list");
