@@ -3605,6 +3605,7 @@ const SAVE_HINT="ပုံကို ဖိထား (သို့) right-click �
 /* fromForm: the preview of an order still being written (from the order form): it also offers "Save order & image" */
 async function openPreview(o,fromForm=false){
   fbPrefetch(o);
+  pvFormMode=fromForm;   /* set first: the decorator's 10-second limit does not apply to an order they are writing */
   $("preview").hidden=false;$("pvImg").removeAttribute("src");$("pvNote").textContent="ပုံ ပြင်ဆင်နေသည်…";$("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=true;
   $("pvSaveAll").hidden=!fromForm||!canWriteOrders();
   pvOrder=o;pvBlob=await buildPreview(o);pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";
@@ -3731,7 +3732,7 @@ function watchPeek(id){const el=$(id),img=$(id==="preview"?"pvImg":"lightImg");n
      another decorator looking at it still gets the 10-second view */
   const order0=id==="preview"?pvOrder:lbOrder,order=order0&&(orders.find(x=>x.id===order0.id)||order0);
   const decorating=(!!order?.deco?.startAt&&!order.deco.endAt&&sameId(order.deco.by,me.id))||!!(order&&myHelp(order));
-  if(!el.hidden&&db&&myRole()==="decoration"&&!decorating){
+  if(!el.hidden&&db&&myRole()==="decoration"&&!decorating&&!(id==="preview"&&pvFormMode)){
     /* the 10 seconds start only once the picture is on screen, not while it is still being prepared */
     const p=peek[id]={};
     p.go=()=>{if(peek[id]!==p||p.end||!img.getAttribute("src"))return;img.removeEventListener("load",p.go);
