@@ -4117,8 +4117,9 @@ $("dueBar").addEventListener("click",async e=>{
   if(cx){cx.disabled=true;await cancelDeliReq(orders.find(x=>x.id===cx.dataset.deliCancel));return}
   const pk=e.target.closest("[data-deli-picked]");
   if(pk){pk.disabled=true;await deliPickedUp(orders.find(x=>x.id===pk.dataset.deliPicked));return}
-  /* a tap anywhere else on the bar works like View */
-  dateF="today";statusF="all";go("orders")});
+  /* a tap anywhere else on the bar opens today's orders on Pending Order (or All, when a warned order is past Pending, e.g. a delivery that is Ready) */
+  const due=orders.filter(o=>dueInfo(o));
+  dateF="today";statusF=due.every(o=>o.status==="new")?"new":"all";go("orders")});
 /* "Requested delivery" asks who takes the cake (a staff member or the Deli M service); the request can be cancelled later */
 let deliFor=null;
 const DELI_SERVICES=["Deli M"];
