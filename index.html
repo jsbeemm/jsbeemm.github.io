@@ -3653,7 +3653,8 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
    the helper keeps helping but no longer finishes */
 async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.handedTo,other=!sameId(d.by,me.id);
   /* whoever resumes becomes the decorator; the time so far carries on */
-  const deco={...d,by:me.id||null,prevSecs:decoSecs(d),startAt:now,handedAt:null,handedTo:null};
+  const cr=decoCarry(d,me.id,decoSecs(d));
+  const deco={...d,by:me.id||null,prevSecs:cr.prevSecs,prior:cr.prior,startAt:now,handedAt:null,handedTo:null};
   try{await patchOrder(o.id,{deco,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Resumed decorating${other?` (from ${nameOf(d.by)})`:""}${to?` · taken back from ${nameOf(to)}`:""}`])});
     toast(`${o.no} — decorating resumed`)}catch(x){toast("သိမ်းမရပါ");syncPvStart()}}
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
@@ -4260,6 +4261,16 @@ const prevSecsOf=d=>d.prevSecs??((d.prevMins||0)*60);
 /* the decorator's own time: up to the finish, or up to when they handed the cake to a helper to finish */
 const decoSecs=d=>Math.max(0,prevSecsOf(d)+(d.startAt?Math.round((new Date(d.handedAt||d.endAt||Date.now())-new Date(d.startAt))/1000):0));
 const decoMins=d=>Math.round(decoSecs(d)/60);
+/* each decorator's own time: when someone else carries on with a cake, the time so far is put down to the one who did it
+   (deco.prior = [{by, secs}]) and the new decorator's clock starts from their own earlier time on it (0 if none) */
+function decoCarry(d,newBy,secsSoFar){const prior=(d?.prior||[]).map(x=>({...x}));
+  if(d?.by&&!sameId(d.by,newBy)){if(secsSoFar>0){const p=prior.find(x=>sameId(x.by,d.by));if(p)p.secs+=secsSoFar;else prior.push({by:d.by,secs:secsSoFar})}
+    const i=prior.findIndex(x=>sameId(x.by,newBy)),mine=i>=0?prior.splice(i,1)[0].secs:0;return{prior,prevSecs:mine}}
+  return{prior,prevSecs:secsSoFar}}
+const decoTotalSecs=d=>decoSecs(d)+(d?.prior||[]).reduce((s,x)=>s+(x.secs||0),0);
+/* on the card: the others who decorated this cake before, with their own time for Admins */
+const priorLine=o=>{const p=o.deco?.prior||[];if(!p.length)return"";
+  return`<small class="deco-help">🎨 Also decorated by ${p.map(x=>`<span data-uid="${esc(x.by||"")}"></span>${seeDecoTime()?` · <b>${fmtDur(Math.max(1,Math.round(x.secs/60)))}</b>`:""}`).join(", ")}</small>`};
 const fmtClock=t=>{const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;return(h?h+":"+String(m).padStart(2,"0"):String(m))+":"+String(x).padStart(2,"0")};
 const fmtDur=m=>m<60?`${m} min`:`${Math.floor(m/60)}h ${String(m%60).padStart(2,"0")}m`;
 const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L11 15.8 8.2 13z"/><path d="M8 13.5c-2.2 0-4 1.8-4 4 0 1.6-1 2.5-2 3 1 .5 2.5 1 4 1a4 4 0 0 0 4-4z"/></svg>`;
@@ -4267,17 +4278,17 @@ const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="
 const isRedo=o=>o.deco?.redo??((o.history||[]).filter(h=>h.act==="deco").slice(-1)[0]?.changes?.[0]==="Redecorating");
 function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorated */
   const d=o.deco||{},me2=can("orders.decorate");
-  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${decoView()?`Finished ${fmtStamp(d.endAt)}`:`${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}`}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${d.photo?"":`<span class="deco-nophoto">📷 Finish photo not added yet</span>`}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
+  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${decoView()?`Finished ${fmtStamp(d.endAt)}`:`${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}`}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${priorLine(o)}${d.photo?"":`<span class="deco-nophoto">📷 Finish photo not added yet</span>`}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
     </div>`;
-  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?(d.handedTo?` · <span data-uid="${esc(d.handedTo)}"></span> finishing`:" · helper finishing"):""}</span>${decoView()?"":`<small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>`}${helpLine(o)}</div>
+  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?(d.handedTo?` · <span data-uid="${esc(d.handedTo)}"></span> finishing`:" · helper finishing"):""}</span>${decoView()?"":`<small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>`}${helpLine(o)}${priorLine(o)}</div>
     ${me2&&(decoMineLive(o)||helpFinish(o))?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}" ${decoMineLive(o)?"":"hidden"}>Cancel</button>`:""}</div>`;
   /* paused (the decorator closed the preview, or cancelled a start): only Admins see that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready"&&can("admin"))return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
     </div>`;
   /* Start / Resume decorating and Redecorate are in the order preview (tap the card to open it);
      someone helping before decorating starts (e.g. the topper) shows here */
-  if(helpersOf(o).length&&!d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>Not started yet</b></span>${helpLine(o)}</div></div>`;
+  if(helpersOf(o).length&&!d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>Not started yet</b></span>${helpLine(o)}${priorLine(o)}</div></div>`;
   return "";
 }
 /* the running timers tick every second: on the order card, and at the left of the order preview's footer */
@@ -4302,7 +4313,8 @@ async function decoStart(o){
   const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready";   /* a Ready cake is redecorated, even if it was set Ready by hand */
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
-  const patch={deco:{by:me.id||null,startAt:now,prevSecs:before,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(helpersOf(o).length?{helpers:helpersOf(o)}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
+  const cr=decoCarry(o.deco,me.id,before);
+  const patch={deco:{by:me.id||null,startAt:now,prevSecs:cr.prevSecs,prior:cr.prior,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(helpersOf(o).length?{helpers:helpersOf(o)}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
   /* there is no "Preparing" any more: a cake being decorated stays Pending Order (a Ready cake redecorated goes back to it) */
   if(o.status==="ready"){patch.status="new";patch.history=addHist(o,"deco",[what,`${statusName("ready")} → ${statusName("new")}`])}
@@ -4746,8 +4758,9 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Receiver",o=>o.delivery==="delivery"?(o.recvName?[o.recvName,o.recvPhone].filter(Boolean).join(" "):[o.name,o.phone].filter(Boolean).join(" ")):"",18],
   ["Address",o=>o.delivery==="delivery"?o.addr||"":"",28],["Status",o=>o.status==="cancel"?"Cancelled":statusName(o.status),13],
   ["Taken by",o=>o.createdBy?nameOf(o.createdBy):"",14],["Taken at",o=>o.createdAt?fmtStamp(o.createdAt):"",14],
-  ["Decorated by",o=>o.deco?.startAt?nameOf(o.deco.by):"",16],["Decoration start",o=>o.deco?.startAt?fmtStamp(o.deco.startAt):"",14],
-  ["Decoration end",o=>o.deco?.endAt?fmtStamp(o.deco.endAt):"",14],["Decoration time (min)",o=>o.deco?.endAt?decoMins(o.deco):"",10]];
+  ["Decorated by",o=>o.deco?.startAt?[o.deco.by,...(o.deco.prior||[]).map(x=>x.by)].map(nameOf).join(", "):"",16],["Decoration start",o=>o.deco?.startAt?fmtStamp(o.deco.startAt):"",14],
+  ["Decoration end",o=>o.deco?.endAt?fmtStamp(o.deco.endAt):"",14],["Decoration time (min)",o=>o.deco?.endAt?Math.round(decoTotalSecs(o.deco)/60):"",10],
+  ["Decoration time by person",o=>o.deco?.endAt&&(o.deco.prior||[]).length?[[o.deco.by,decoSecs(o.deco)],...o.deco.prior.map(x=>[x.by,x.secs])].map(([b,s])=>`${nameOf(b)} ${Math.round(s/60)} min`).join("\n"):"",22]];
 /* the orders the list shows now (its filters decide which days), in order-number order so a missing number stands out */
 async function exportExcel(){
   const list=shownList.slice().sort((a,b)=>String(a.no||"").localeCompare(String(b.no||""),undefined,{numeric:true}));
