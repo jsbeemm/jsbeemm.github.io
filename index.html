@@ -1169,7 +1169,7 @@ span.star-ic{cursor:default}
   <header class="top">
     <div class="brand">
       <div class="title-row"><button type="button" class="back-btn" id="backBtn" hidden aria-label="Back" title="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><h1 id="pageTitle">Cake <span>Orders</span></h1></div>
-      <p id="pageSub">မွေးနေ့ကိတ် အော်ဒါ လက်ခံစာအုပ်</p>
+      <p id="pageSub" hidden></p>
     </div>
     <!-- POS: Sell / Return switch on the right of the title row -->
     <div class="chips pos-mode" id="posMode" hidden><button type="button" class="chip" data-pos-mode="sell" aria-pressed="true">🛒 Sell</button><button type="button" class="chip" data-pos-mode="return" aria-pressed="false">↩ Return</button></div>
@@ -4915,7 +4915,7 @@ async function moveOwnerTodos(u){if(todosMoved||!db||!claudeId)return;todosMoved
 /* ---------- Home: Cake Orders · Purchase Requisition ---------- */
 var view="home";
 /* Home has no line under its title */
-const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>","မွေးနေ့ကိတ် အော်ဒါ လက်ခံစာအုပ်"],
+const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
   biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""]};
 function go(v){
