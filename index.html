@@ -1655,7 +1655,7 @@ span.star-ic{cursor:default}
     <div class="ed-stage slip-stage"><div class="slip-paper" id="slipPaper"></div></div>
     <div class="ed-foot">
       <span class="ed-count" id="slipNote"></span>
-      <button type="button" class="btn ghost" id="slipCancel">ပယ်ဖျက်ရန်</button>
+
       <button type="button" class="btn ghost" id="slipPrint"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span>Print</span></button>
       <button type="button" class="btn" id="slipGo"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-8 8"/></svg><span>JPEG သိမ်းမည်</span></button>
     </div>
@@ -3793,7 +3793,7 @@ function fitSlip(){const p=$("slipPaper");if($("slipDlg").hidden)return;p.style.
 addEventListener("resize",fitSlip);
 function closeSlip(){slipPics().forEach(p=>p.classList.remove("sel"));document.body.append($("printArea"));$("slipDlg").hidden=true;slipOrder=null}
 $("slipOp").addEventListener("input",()=>setSlipOp(Number($("slipOp").value)));
-["slipClose","slipCancel"].forEach(id=>$(id).addEventListener("click",closeSlip));
+$("slipClose").addEventListener("click",closeSlip);   /* the ✕ on the Print setup title row closes it (no Cancel button) */
 $("slipGo").addEventListener("click",()=>{const o=slipOrder;closeSlip();exportSlip(o)});
 /* Print: straight to the printer, with the slip as set here (photo transparency included). Some viewers (e.g. inside an
    app) do not let a page open the print dialog: if none opens, say so and point to Save JPEG */
@@ -5054,8 +5054,8 @@ $("homeBtn").addEventListener("click",()=>go("home"));
 const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
-/* (the Order preview keeps its ✕ on the right instead) */
-document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelector(".x-close");if(!x||h.closest("#preview"))return;
+/* (the Order preview and Print setup keep their ✕ on the right instead) */
+document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelector(".x-close");if(!x||h.closest("#preview,#slipDlg"))return;
   const b=document.createElement("button");b.type="button";b.className="back-btn dlg-back";b.setAttribute("aria-label","Back");b.title="Back";b.innerHTML=BACK_SVG;
   b.addEventListener("click",()=>x.click());h.prepend(b);x.classList.add("x-hid")});
 $("backBtn").addEventListener("click",()=>{if(view==="orders"&&!$("viewNew").hidden){showTab("list");return}go(BACK_TO[view]||"home")});
