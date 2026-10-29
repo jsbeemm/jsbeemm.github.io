@@ -5050,7 +5050,8 @@ document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelecto
   const b=document.createElement("button");b.type="button";b.className="back-btn dlg-back";b.setAttribute("aria-label","Back");b.title="Back";b.innerHTML=BACK_SVG;
   b.addEventListener("click",()=>x.click());h.prepend(b);x.classList.add("x-hid")});
 $("backBtn").addEventListener("click",()=>{if(view==="orders"&&!$("viewNew").hidden){showTab("list");return}go(BACK_TO[view]||"home")});
-$("goOrders").addEventListener("click",()=>go("orders"));
+/* an Admin opening Orders starts on Today · Status All */
+$("goOrders").addEventListener("click",()=>{if(db&&can("admin")){dateF="today";statusF="all";npF=false}go("orders")});
 $("goPR").addEventListener("click",()=>go("pr"));
 $("goPE").addEventListener("click",()=>go("pe"));
 /* ---------- Settings → Payment methods (Admins) ---------- */
