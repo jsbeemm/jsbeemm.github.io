@@ -162,6 +162,13 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .orders{display:grid;gap:10px}
+/* decorator view: Pending = amber, Decorating = blue, Done = green (card edge, tint and label); the status box is hidden */
+.order[class*=" ds-"] select.status{display:none}
+.order.ds-pending{border-left:6px solid #E8A317;background:#FFF8E6}
+.order.ds-run{border-left:6px solid #3F8FD6;background:#EAF3FC}
+.order.ds-done{border-left:6px solid #2E9E6A;background:#E9F7F0}
+.ds-pill{display:inline-block;font-size:13px;font-weight:700;padding:4px 12px;border-radius:999px;color:#fff}
+.ds-pending .ds-pill{background:#E8A317}.ds-run .ds-pill{background:#3F8FD6}.ds-done .ds-pill{background:#2E9E6A}
 .order{cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;align-items:start}
 .order.done{opacity:.72}
 .timepick{display:flex;align-items:center;gap:6px}
@@ -2418,6 +2425,9 @@ function readForm(){
    tiers are tiered. ---------- */
 /* the code of the "Wedding Cake" product in Bakery Products (e.g. wdc) */
 const weddingCode=()=>(typeof pds!=="undefined"&&pds.find(p=>/wedding\s*cake/i.test(p.name||""))?.code)||"";
+/* decorators see each cake by its decorating stage (colour + a small label) instead of the order status box */
+const decoView=()=>!!db&&myRole()==="decoration";
+const decoSt=o=>o.deco?.endAt||o.status==="ready"||o.status==="deli_req"||o.status==="done"?"done":(o.deco?.startAt||(o.deco?.helpers||[]).some(h=>!h.endAt))?"run":"pending";
 const ctOf=o=>o.cakeType==="wedding"?"wedding":o.cakeType==="tier"||o.cakeType==="custom"&&o.tierN?"tier":o.cakeType==="custom"?"custom":"std";
 const ctLbl=o=>({tier:"Tiered cake",custom:"Customized",wedding:"Wedding Cake"})[ctOf(o)]||"";
 const hasTiers=v=>v==="tier"||v==="wedding";
@@ -4016,7 +4026,8 @@ function render(){
     const bal=Math.max(0,(o.total||0)-(o.deposit||0));
     const ex=(o.extras||[]).map(k=>EXTRAS.find(e=>e.k===k)?.n).filter(Boolean);
     const when=dd===0?"ဒီနေ့":dd===1?"မနက်ဖြန်":dd>1?`နောက် ${dd} ရက်`:`${-dd} ရက် ကျော်လွန်`;
-    return `<article class="order ${isOpen(o)?"":"done"}" data-oid="${o.id}">
+    const ds=decoView()&&!isBak(o)?decoSt(o):"";
+    return `<article class="order ${isOpen(o)?"":"done"}${ds?" ds-"+ds:""}" data-oid="${o.id}">
       <div class="o-main">
         ${dueWarn(o)}
         <!-- as on the order preview: customer, then the order number, then the date and time -->
@@ -4041,7 +4052,7 @@ function render(){
       </div>
       <div class="o-side">
         <div class="o-top"></div>   <!-- Edit and Delete are in the order preview (tap the card) -->
-        <select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}${!o.deco.startAt&&!o.deco.endAt&&prevSecsOf(o.deco)>0?" · Paused":""}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
+        ${ds?`<span class="ds-pill">${{pending:"Pending",run:"Decorating",done:"Done"}[ds]}</span>`:""}<select class="status ${st.c}" data-status="${o.id}" aria-label="အခြေအနေ" ${can("orders.status")?"":"disabled"}>${STATUS.filter(s=>s.k!=="deli_req"||o.delivery==="delivery").map(s=>`<option value="${s.k}" ${s.k===o.status?"selected":""} ${s.k!==o.status&&(!canSetStatus(s.k)||s.k==="deli_req"&&o.status!=="ready")?"disabled":""}>${s.k==="deli_req"&&o.status!=="deli_req"?"Request delivery":s.k==="ready"?readyName(o):s.k==="baking"&&o.deco?.by?esc(`Preparing by ${nameOf(o.deco.by)}${!o.deco.startAt&&!o.deco.endAt&&prevSecsOf(o.deco)>0?" · Paused":""}`):s.n}</option>`).join("")}</select>${o.status==="deli_req"?`<span class="st-at">${o.reqDeliAt?`Requested ${fmtStamp(o.reqDeliAt)}`:""}${o.deliBy?` · 🚚 ${esc(o.deliBy)}`:""}${can("orders.status")?` <button type="button" class="link st-cancel" data-deli-cancel="${o.id}">Cancel</button> <button type="button" class="link st-cancel" data-deli-picked="${o.id}">✓ Picked up</button>`:""}</span>`:o.status==="done"&&o.pickedUpAt?`<span class="st-at">🚚 Picked up ${fmtStamp(o.pickedUpAt)}${o.deliBy?` · ${esc(o.deliBy)}`:""}</span>`:o.status==="cancel"&&o.cancelReason?`<span class="st-at st-why">Reason: ${esc(o.cancelReason)}</span>`:""}
         <!-- "Start decorating" sits right under the status (computer); on phones the whole decorating block sits here, above the status and Print -->
         <div class="deco-side ${o.deco?.startAt?"":"ds-start"}">${decoBlock(o)}</div>
         ${o.deco?.endAt&&o.deco.photo?`<button type="button" class="deco-pic" data-zoom="${esc(photoUrl(o.deco.photo))}" aria-label="Finished cake photo" title="Finished cake"><img src="${esc(photoUrl(o.deco.photo))}" alt="Finished cake" loading="lazy"></button>`:""}
