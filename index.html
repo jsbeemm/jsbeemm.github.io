@@ -813,6 +813,7 @@ body.no-print [data-print],body.no-print #pvPrint{display:none!important}
 .auth-first{margin:-4px 0 12px;font-size:13.5px;color:var(--mint);background:var(--mint-soft);border-radius:10px;padding:8px 12px}
 .ac-add{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:12px;margin-bottom:6px}.ac-add-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px}
 @media (max-width:520px){.ac-add-row{grid-template-columns:1fr 1fr}.ac-add-row input{grid-column:1/-1}}
+.ac-namew{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;margin:6px 0;font-size:13px;color:var(--muted)}.ac-namew input{margin:0}
 .ac-emp{width:auto;padding:6px 8px;font-size:13px}.ac-nopw{color:var(--amber)}
 .auth-msg{margin:12px 0 0;font-size:13.5px;color:var(--accent);min-height:1em}
 .ac-h{margin:14px 0 4px;font-weight:700;font-size:14px;color:var(--accent)}
@@ -4811,6 +4812,7 @@ function renderTeam(){
       <div class="ac-head"><div class="ac-who"><b>${esc(a.name)}</b><span class="ac-job">${esc(ROLES.find(x=>x.k===a.role)?.n||a.role||"")}</span><span class="ac-job">${a.emp==="part"?"Part time":"Full time"}</span>${a.claude&&team[a.claude]?.owner?`<span class="ac-job">👑 Owner · Claude</span>`:""}${pwOf(u)?"":`<span class="ac-job ac-nopw">No password yet</span>`}${a.status==="disabled"?`<span class="ac-job off">Disabled</span>`:""}</div>
         <button type="button" class="ac-more" data-ac-more aria-expanded="${open}"><span>${open?"See less":"See more"}</span><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${open?"m6 15 6-6 6 6":"m6 9 6 6 6-6"}"/></svg></button></div>
       <div class="ac-body" ${open?"":"hidden"}><small class="ac-when">${a.status==="disabled"?"Disabled":"Active"}${a.approvedAt?` · approved ${fmtStamp(a.approvedAt)}`:""}</small>
+      <label class="ac-namew"><span>Name</span><input class="ac-name" value="${esc(a.name||"")}" maxlength="40" aria-label="Name" autocomplete="off"></label>
       <div class="ac-add-row" style="grid-template-columns:auto auto">${roleSel(a.role)}<select class="ac-emp" aria-label="Employment"><option value="full">Full time</option><option value="part" ${a.emp==="part"?"selected":""}>Part time</option></select></div>${permBoxes({...permsFor(a.role),...a.perms})}
       <div class="ac-btns">${isEditorAdmin()?(a.claude===claudeId?`<span class="ac-job">✓ This is you (linked)</span>`:`<button type="button" class="link" data-ac-me>🔗 This is me</button>`):""}<button type="button" class="link" data-ac-pw>Reset password</button><button type="button" class="link ${a.status==="disabled"?"":"danger"}" data-ac-toggle>${a.status==="disabled"?"Enable":"Disable"}</button><button type="button" class="btn ac-ok" data-ac-save>Save</button></div>
       <div class="ac-pw" hidden><input type="password" class="ac-newpw" maxlength="4" placeholder="New password (1–4 characters)" autocomplete="new-password"><button type="button" class="btn ac-ok" data-ac-pwgo>Set</button></div></div></div>`}).join("")
@@ -4834,7 +4836,11 @@ $("teamDlg").addEventListener("click",async e=>{
         requestedAt:q.at,approvedAt:now,approvedBy:me.id});
       await dropReq();toast(`${q.name} approved`);return}
     if(e.target.closest("[data-ac-reject]")){await dropReq();toast("Rejected");return}
-    if(e.target.closest("[data-ac-save]")){await db.doc("accounts/"+u).update({role:row.querySelector(".ac-role").value,emp:row.querySelector(".ac-emp")?.value||"full",perms:readPerms(row),updatedAt:now,updatedBy:me.id});toast("သိမ်းပြီး");return}
+    if(e.target.closest("[data-ac-save]")){
+      /* the name shown everywhere can be changed; the sign-in key and everyone's past records stay the same */
+      const nm=(row.querySelector(".ac-name")?.value||"").trim().replace(/\s+/g," ")||accounts[u].name;const other=findAcct(nm);
+      if(other&&other!==u){toast(`"${nm}" ဆိုတဲ့ နာမည် ရှိပြီးသားပါ`,4000);row.querySelector(".ac-name").focus();return}
+      await db.doc("accounts/"+u).update({name:nm,role:row.querySelector(".ac-role").value,emp:row.querySelector(".ac-emp")?.value||"full",perms:readPerms(row),updatedAt:now,updatedBy:me.id});toast("သိမ်းပြီး");return}
     if(e.target.closest("[data-ac-me]")){if(!await askConfirm(`Link your Claude owner account to "${accounts[u].name}"?`,"Same name, activity and permissions everywhere."))return;
       for(const [o,x] of Object.entries(accounts))if(o!==u&&x.claude===claudeId)await db.doc("accounts/"+o).update({claude:null});
       await db.doc("accounts/"+u).update({claude:claudeId,updatedAt:now,updatedBy:me.id});toast("Linked");return}
