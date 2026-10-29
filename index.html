@@ -4342,11 +4342,11 @@ function showTab(which){
 }
 $("tabList").addEventListener("click",()=>showTab("list"));
 $("tabNew").addEventListener("click",()=>{if(editingId)resetForm();refreshNo();updateReceipt();showTab("new")});
-/* the floating "+ New order" also sits on the Sale page: from there it opens Orders straight on a new order */
+/* the floating "+ New order" also sits on the Home and Sale pages: from there it opens Orders straight on a new order */
 $("fabNew").addEventListener("click",()=>{if(view!=="orders"){if(!canWriteOrders())return;go("orders")}if(editingId)resetForm();refreshNo();updateReceipt();showTab("new");scrollTo({top:0})});
 /* the tab bar keeps "+ New order" only while the form is open; on the list the floating button replaces it */
 /* the page title already says "Cake Orders", so the tab bar only appears with the form (← back to the list · + new order) */
-function syncNewBtns(){const inOrders=view==="orders",onList=$("viewNew").hidden;$("tabBar").hidden=!inOrders||onList;$("tabRow").hidden=$("tabBar").hidden;$("tabNew").hidden=onList||!canWriteOrders();$("fabNew").hidden=!(inOrders&&onList||view==="sale")||!canWriteOrders()}
+function syncNewBtns(){const inOrders=view==="orders",onList=$("viewNew").hidden;$("tabBar").hidden=!inOrders||onList;$("tabRow").hidden=$("tabBar").hidden;$("tabNew").hidden=onList||!canWriteOrders();$("fabNew").hidden=!(inOrders&&onList||view==="sale"||view==="home")||!canWriteOrders()}   /* Home has it too */
 /* back to top: shown once the page has scrolled about a screen down */
 const syncTop=()=>{$("toTop").hidden=scrollY<Math.max(400,innerHeight*.8)};
 addEventListener("scroll",syncTop,{passive:true});
