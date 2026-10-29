@@ -3638,13 +3638,22 @@ $("pvDel").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.
   try{await removeOrder(o.id);$("preview").hidden=true;toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}});
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
 /* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
-function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o)||(d.startAt&&!d.endAt))return"";
+function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o))return"";
+  /* a decorator who handed the cake to a helper can take it back and carry on */
+  if(d.startAt&&!d.endAt)return d.handedAt&&decoIsMine(o)?"Resume decorating":"";
   if(d.endAt)return o.status==="ready"?"Redecorate":"";
   return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
   $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l}
 /* Start / Resume decorating also stops the 10-second countdown: the preview (and its photos) now stay open while decorating */
-$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");decoStart(o)}});
+$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");
+  if(o.deco?.startAt&&!o.deco.endAt&&o.deco.handedAt)decoTakeBack(o);else decoStart(o)}});
+/* taking a handed-over cake back: the decorator's clock carries on from where it stopped (the hand-over time);
+   the helper keeps helping but no longer finishes */
+async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.handedTo;
+  const deco={...d,prevSecs:decoSecs(d),startAt:now,handedAt:null,handedTo:null};
+  try{await patchOrder(o.id,{deco,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Resumed decorating${to?` (taken back from ${nameOf(to)})`:""}`])});
+    toast(`${o.no} — decorating resumed`)}catch(x){toast("သိမ်းမရပါ");syncPvStart()}}
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 /* ---- helpers: while one decorator decorates a cake, others can join it ("Help decorating") with their own time.
    deco.helpers = [{by, startAt, endAt}]; open helpers are closed when they tap "Done helping" or the cake is finished ---- */
