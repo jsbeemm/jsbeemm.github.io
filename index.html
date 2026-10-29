@@ -3639,8 +3639,9 @@ $("pvDel").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
 /* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
 function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o))return"";
-  /* a decorator who handed the cake to a helper can take it back and carry on */
-  if(d.startAt&&!d.endAt)return d.handedAt&&decoIsMine(o)?"Resume decorating":"";
+  /* nobody is decorating it (handed to a helper to finish): any decorator can take it back and carry on,
+     except the helper it was handed to, who finishes it */
+  if(d.startAt&&!d.endAt)return d.handedAt&&!(d.handedTo&&sameId(d.handedTo,me.id))?"Resume decorating":"";
   if(d.endAt)return o.status==="ready"?"Redecorate":"";
   return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
@@ -3650,9 +3651,10 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
   if(o.deco?.startAt&&!o.deco.endAt&&o.deco.handedAt)decoTakeBack(o);else decoStart(o)}});
 /* taking a handed-over cake back: the decorator's clock carries on from where it stopped (the hand-over time);
    the helper keeps helping but no longer finishes */
-async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.handedTo;
-  const deco={...d,prevSecs:decoSecs(d),startAt:now,handedAt:null,handedTo:null};
-  try{await patchOrder(o.id,{deco,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Resumed decorating${to?` (taken back from ${nameOf(to)})`:""}`])});
+async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.handedTo,other=!sameId(d.by,me.id);
+  /* whoever resumes becomes the decorator; the time so far carries on */
+  const deco={...d,by:me.id||null,prevSecs:decoSecs(d),startAt:now,handedAt:null,handedTo:null};
+  try{await patchOrder(o.id,{deco,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Resumed decorating${other?` (from ${nameOf(d.by)})`:""}${to?` · taken back from ${nameOf(to)}`:""}`])});
     toast(`${o.no} — decorating resumed`)}catch(x){toast("သိမ်းမရပါ");syncPvStart()}}
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 /* ---- helpers: while one decorator decorates a cake, others can join it ("Help decorating") with their own time.
