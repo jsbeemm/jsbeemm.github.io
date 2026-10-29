@@ -4000,7 +4000,8 @@ function render(){
     ...(["admin","staff"].includes(myRole())?[{k:"accepted",n:"Today's accepted orders",f:o=>localDay(o.createdAt)===t}]:[])];
   if(!DF.some(x=>x.k===dateF))dateF="all";
   /* row 2 — status, counted inside the chosen dates (cancelled orders show under All only) */
-  const SF=[{k:"all",n:"All",f:()=>true},...STATUS.filter(s=>s.k!=="cancel").map(s=>({k:s.k,n:s.n,f:o=>o.status===s.k}))];
+  /* "Need to print": open orders whose slip is not printed yet (the same ones the 🖨 reminder counts) */
+  const SF=[{k:"all",n:"All",f:()=>true},...STATUS.filter(s=>s.k!=="cancel").map(s=>({k:s.k,n:s.n,f:o=>o.status===s.k})),{k:"print",n:"Need to print",f:needPrint}];
   const inDates=orders.filter(DF.find(x=>x.k===dateF).f);
   /* each row starts with a small label so the two rows (dates / status) read apart */
   /* "Today's accepted orders" is its own button beside the date dropdown (Admin and Sale); tapping it again goes back to All dates */
