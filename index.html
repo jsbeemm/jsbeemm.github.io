@@ -411,7 +411,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .prt-chk{display:inline-flex;align-items:center;gap:6px;margin:6px 0 2px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;background:#FDECEC;color:#B42318;border:1px solid #F5C2C0}
 .prt-chk.on{background:var(--mint-soft,#DDF1EA);color:#2F7D6A;border-color:#BFE3D5}
 .prt-chk input{width:16px;height:16px;margin:0;accent-color:#2F7D6A}
-.print-nag{font-weight:700;font-size:14.5px}
+.print-nag{font-weight:700;font-size:14.5px;cursor:pointer}
 .print-nag .link{margin-left:8px;font-weight:700}
 /* cake count: − [ 10 ] + */
 .cnt-wrap{margin-top:12px}.cnt{display:inline-flex;align-items:center;gap:6px}
@@ -4090,7 +4090,8 @@ $("q").addEventListener("input",render);
 $("chFilter").addEventListener("change",render);
 /* the "not yet printed" note: show only those orders / show all again */
 var npF=false;
-$("printNag").addEventListener("click",e=>{if(!e.target.closest("[data-npf]"))return;
+/* a tap anywhere on the bar shows the unprinted orders (tap again on Orders to see all) */
+$("printNag").addEventListener("click",()=>{
   if(view!=="orders"){npF=true;dateF="all";statusF="all";go("orders")}else{npF=!npF;showTab("list");render()}});
 /* the chosen sort is remembered on this device */
 try{const s=localStorage.getItem("cakeSort");if(s&&[...$("sortSel").options].some(o=>o.value===s))$("sortSel").value=s}catch(e){}
@@ -4129,7 +4130,7 @@ var pvFormMode=false;
 function renderPrintNag(){const el=$("printNag");if(!el)return;
   const np=can("orders.print")?orders.filter(needPrint).length:0;if(!np)npF=false;
   el.hidden=!np||document.body.classList.contains("locked");
-  el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်</span><button type="button" class="btn" data-npf>${npF&&view==="orders"?"အားလုံး ပြရန်":"ပြရန်"}</button></div>`:""}
+  el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်${npF&&view==="orders"?" · အားလုံးပြန်ကြည့်ရန် ဒီနေရာကို နှိပ်ပါ":""}</span></div>`:""}
 function renderDue(){renderPrintNag();renderTdNag();
   const el=$("dueBar");if(!el)return;
   const list=orders.map(o=>({o,d:dueInfo(o)})).filter(x=>x.d).sort((a,b)=>a.d.mins-b.d.mins);
