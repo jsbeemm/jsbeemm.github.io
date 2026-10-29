@@ -163,7 +163,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 
 .orders{display:grid;gap:10px}
 /* decorator view: Pending = amber, Decorating = blue, Done = green (card edge, tint and label); the status box is hidden */
-.order[class*=" ds-"] select.status{display:none}
+.order.ds-nost select.status{display:none}
+.order .ds-pill+select.status{margin-top:6px}
 .order.ds-pending{border-left:6px solid #E8A317;background:#FFF8E6}
 .order.ds-run{border-left:6px solid #3F8FD6;background:#EAF3FC}
 .order.ds-done{border-left:6px solid #2E9E6A;background:#E9F7F0}
@@ -4027,8 +4028,9 @@ function render(){
     const bal=Math.max(0,(o.total||0)-(o.deposit||0));
     const ex=(o.extras||[]).map(k=>EXTRAS.find(e=>e.k===k)?.n).filter(Boolean);
     const when=dd===0?"ဒီနေ့":dd===1?"မနက်ဖြန်":dd>1?`နောက် ${dd} ရက်`:`${-dd} ရက် ကျော်လွန်`;
-    const ds=decoView()&&!isBak(o)?decoSt(o):"";
-    return `<article class="order ${isOpen(o)?"":"done"}${ds?" ds-"+ds:""}" data-oid="${o.id}">
+    /* decorators and Admins see each cake coloured by its decorating stage; only decorators lose the status box */
+    const ds=(decoView()||(!!db&&can("admin")))&&!isBak(o)&&o.status!=="cancel"?decoSt(o):"";
+    return `<article class="order ${isOpen(o)?"":"done"}${ds?" ds-"+ds:""}${ds&&decoView()?" ds-nost":""}" data-oid="${o.id}">
       <div class="o-main">
         <!-- no per-card warning: the bar at the top already lists orders needing attention -->
         <!-- as on the order preview: customer, then the order number, then the date and time -->
