@@ -3674,13 +3674,13 @@ $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];
   /* an Admin finishing someone else's decorating confirms after picking the photo (a helper finishing does not) */
   if(!decoIsMine(o)&&!myHelp(o)&&!await askConfirm(`Finish decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. The photo you picked becomes the finished-cake photo and the order is set Ready.`,"Finish"))return;
   $("pvFinish").hidden=true;const patch=await decoFinish(o,f);
-  /* the preview is drawn again with the finished-cake photo */
-  if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
+  /* finished: the preview closes (the photo shows on the order card) */
+  if(patch){$("preview").hidden=true;pvOrder=null}else syncPvFinish()});
 /* Finish without a photo (the phone's camera is poor; the photo comes later from another phone) */
 $("pvFinishLater").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!(decoCanAct(o)||myHelp(o)))return;
   if(!await askConfirm(`Finish ${o.no} without a photo?`,"The order is set Ready now. Add the finished-cake photo later with “Add finish photo” in this preview (any decorator or Admin can add it).","Finish"))return;
   $("pvFinish").hidden=$("pvFinishLater").hidden=true;const patch=await decoFinish(o,null);
-  if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
+  if(patch){$("preview").hidden=true;pvOrder=null}else syncPvFinish()});
 /* the finished-cake photo added afterwards, by anyone who decorates (or an Admin) */
 function syncPvAddPhoto(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   $("pvAddPhoto").hidden=!(o&&o.deco?.endAt&&!o.deco.photo&&(can("orders.decorate")||can("admin")))}
