@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793273549"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6982,5 +6982,13 @@ resetForm();render();go("home");
 })();
 setTimeout(async()=>{if(false&&mode==="loading"){orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");renderPR();localMode=true;setSync("local");render();renderPhotos();await loadLocalPhotos();render();renderPR()}},11000);
 </script>
+
+<script>(function(){const mine=document.querySelector('meta[name="app-build"]')?.content;if(!mine)return;let shown=false;
+async function check(){if(shown||!navigator.onLine)return;try{const t=await (await fetch("index.html?b="+Date.now(),{cache:"no-store"})).text();
+  const m=t.match(/name="app-build" content="(\d+)"/);if(m&&m[1]!==mine&&Number(m[1])>Number(mine))show()}catch(e){}}
+function show(){shown=true;const b=document.createElement("button");b.type="button";b.textContent="🔄 App အသစ် ရပါပြီ — နှိပ်ပြီး Update လုပ်ပါ";
+  b.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:99999;background:#C8285F;color:#fff;border:0;border-radius:999px;padding:12px 20px;font:700 14px sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer";
+  b.onclick=()=>location.reload();document.body.append(b)}
+setInterval(check,5*60*1000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()});setTimeout(check,20000)})();</script>
 
 </html>

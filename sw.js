@@ -3,7 +3,7 @@
    - the app page: try the internet first (to get the newest version), else the saved copy
    - libraries, fonts, pictures: the saved copy first, else the internet
    - database traffic (googleapis.com) is never touched */
-const CACHE = "golden-bee-v5";
+const CACHE = "golden-bee-v6";
 const CORE = [
   "./", "index.html", "manifest.json", "icon-192.png", "icon-512.png",
   "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
@@ -28,7 +28,7 @@ async function networkFirst(req) {
   const appUrls = [self.registration.scope, new URL("index.html", self.registration.scope).href];
   if (!appUrls.includes(req.url.split("?")[0].split("#")[0])) return fetch(req).catch(() => c.match(req).then(r => r || Response.error()));
   try {
-    const res = await Promise.race([fetch(req), timeout(6000)]);
+    const res = await Promise.race([fetch(req.url, { cache: "no-store", credentials: "same-origin" }), timeout(6000)]);   // skip the browser cache: always the newest published page
     if (res.ok) c.put(new URL("index.html", self.registration.scope).href, res.clone());
     return res;
   } catch (e) {
