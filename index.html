@@ -501,6 +501,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 #edOverlay{pointer-events:none}
 .ed-foot{display:flex;gap:8px;align-items:center;justify-content:flex-end;padding:10px 12px;border-top:1px solid var(--line)}
 .ed-foot{flex-wrap:wrap}
+.pv-ho{display:contents}
 .ed-foot .btn.pv-del{color:var(--accent);padding-inline:12px}
 .ed-foot .btn.pv-ic,.ed-foot .btn.pv-del{padding-inline:14px;min-width:48px;min-height:48px;justify-content:center}   /* outline trash can, in the accent colour */
 .ed-foot .btn,.ed-foot .btn.ghost{width:auto;margin:0;white-space:nowrap}
@@ -1640,7 +1641,8 @@ span.star-ic{cursor:default}
       <button type="button" class="btn" id="pvHelp" hidden>🤝 Help decorating</button>
       <button type="button" class="btn ghost" id="pvHelpDone" hidden>✓ Done helping</button>
       <!-- the decorator's part is done and a helper finishes the cake: the decorator's time stops here -->
-      <button type="button" class="btn ghost" id="pvHandOver" hidden>🤝 Helper finishes</button>
+      <!-- one "🤝 <name> finishes" button per helper: the decorator picks who finishes the cake -->
+      <span id="pvHandOver" class="pv-ho" hidden></span>
       <label class="btn" id="pvFinish" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" id="pvFinishIn" hidden></label>
       <!-- finish now, photo later; and adding that photo afterwards -->
       <button type="button" class="btn ghost" id="pvFinishLater" hidden>✓ Finish (photo later)</button>
@@ -3649,7 +3651,7 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
 const helpersOf=o=>o?.deco?.helpers||[];
 const myHelp=o=>helpersOf(o).find(h=>sameId(h.by,me.id)&&!h.endAt);
 /* a helper gets Finish + photo / Finish (photo later) only after the decorator taps "… finishes" (hand over) */
-const helpFinish=o=>!!myHelp(o)&&!!o?.deco?.handedAt;
+const helpFinish=o=>!!myHelp(o)&&!!o?.deco?.handedAt&&(!o.deco.handedTo||sameId(o.deco.handedTo,me.id));   /* only the helper it was handed to */
 const closeHelpers=(hs,now)=>hs.map(h=>h.endAt?h:{...h,endAt:now});
 const helpSecs=h=>Math.max(0,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/1000));
 const helpMins=h=>Math.max(1,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/60000));
@@ -3669,14 +3671,16 @@ function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrde
   const run=!!((live||before)&&db&&can("orders.decorate")&&!(live&&decoIsMine(o)));
   $("pvHelp").hidden=!(run&&!myHelp(o));$("pvHelpDone").hidden=!(o&&myHelp(o));
   const open=live?helpersOf(o).filter(h=>!h.endAt):[];
-  $("pvHandOver").hidden=!(live&&db&&decoIsMine(o)&&!o.deco.handedAt&&open.length);
-  /* the button names the helper who will finish, e.g. "🤝 Aye finishes" */
-  if(open.length)$("pvHandOver").textContent=`🤝 ${open.map(h=>nameOf(h.by)).join(", ")} finishes`}
-$("pvHandOver").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!decoIsMine(o)||o.deco?.handedAt)return;
-  const hs=helpersOf(o).filter(h=>!h.endAt);if(!hs.length)return;
-  if(!await askConfirm(`Hand ${o.no} to ${hs.map(h=>nameOf(h.by)).join(", ")}?`,"Your decorating time stops now. The helper finishes the cake with Finish + photo.","Hand over"))return;
-  const now=new Date().toISOString(),d={...o.deco,handedAt:now};
-  try{await patchOrder(o.id,{deco:d,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Handed to ${hs.map(h=>nameOf(h.by)).join(", ")} to finish · ${fmtDur(decoMins(d))}`])});
+  const show=!!(live&&db&&decoIsMine(o)&&!o.deco.handedAt&&open.length);$("pvHandOver").hidden=!show;
+  /* one button per helper, e.g. "🤝 Aye finishes" / "🤝 Mya finishes" */
+  const ids=[...new Set(open.map(h=>h.by))],html=show?ids.map(id=>`<button type="button" class="btn ghost" data-ho="${esc(id)}">🤝 ${esc(nameOf(id))} finishes</button>`).join(""):"";
+  if($("pvHandOver").innerHTML!==html)$("pvHandOver").innerHTML=html}
+$("pvHandOver").addEventListener("click",async e=>{const b=e.target.closest("[data-ho]");if(!b)return;
+  const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!decoIsMine(o)||o.deco?.handedAt)return;
+  const to=b.dataset.ho;if(!helpersOf(o).some(h=>!h.endAt&&h.by===to))return;
+  if(!await askConfirm(`Hand ${o.no} to ${nameOf(to)}?`,`Your decorating time stops now. ${nameOf(to)} finishes the cake with Finish + photo.`,"Hand over"))return;
+  const now=new Date().toISOString(),d={...o.deco,handedAt:now,handedTo:to};
+  try{await patchOrder(o.id,{deco:d,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`Handed to ${nameOf(to)} to finish · ${fmtDur(decoMins(d))}`])});
     $("preview").hidden=true;toast("Handed over — the helper finishes the cake")}catch(x){toast("သိမ်းမရပါ")}});
 $("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||o.deco?.endAt||myHelp(o))return;
   const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
@@ -4255,7 +4259,7 @@ function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorat
   if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${decoView()?`Finished ${fmtStamp(d.endAt)}`:`${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}`}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${d.photo?"":`<span class="deco-nophoto">📷 Finish photo not added yet</span>`}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
     </div>`;
-  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?" · helper finishing":""}</span>${decoView()?"":`<small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>`}${helpLine(o)}</div>
+  if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?(d.handedTo?` · <span data-uid="${esc(d.handedTo)}"></span> finishing`:" · helper finishing"):""}</span>${decoView()?"":`<small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>`}${helpLine(o)}</div>
     ${me2&&(decoMineLive(o)||helpFinish(o))?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}" ${decoMineLive(o)?"":"hidden"}>Cancel</button>`:""}</div>`;
   /* paused (the decorator closed the preview, or cancelled a start): only Admins see that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready"&&can("admin"))return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
