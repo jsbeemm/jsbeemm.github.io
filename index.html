@@ -2186,15 +2186,21 @@ $("fTimeSpecial").addEventListener("change",()=>$("fTimeSpecial").classList.remo
 function syncSpecial(){const sp=$("fTime").value==="special";$("fTimeSpecial").hidden=!sp;$("fTimeSpecial").required=sp}
 $("fTime").addEventListener("change",()=>{syncSpecial();$("fTime").classList.remove("bad");if($("fTime").value==="special")$("fTimeSpecial").focus()});
 function getTime(){return $("fTime").value==="special"?$("fTimeSpecial").value:$("fTime").value}
-function setTime(t){t=t||"";keepTime=editingId?t:"";$("fTime").classList.remove("bad");$("fTimeSpecial").classList.remove("bad");const std=!t||t==="tbc"||TIME_OPTS.includes(t);fillSpecial(std?"":t);$("fTime").value=std?t:"special";$("fTimeSpecial").value=std?"":t;syncSpecial();syncTimeOpts()}
+function setTime(t){t=t||"";keepTime=editingId?t:"";timeRestore($("fTime"));$("fTime").classList.remove("bad");$("fTimeSpecial").classList.remove("bad");const std=!t||t==="tbc"||TIME_OPTS.includes(t);fillSpecial(std?"":t);$("fTime").value=std?t:"special";$("fTimeSpecial").value=std?"":t;syncSpecial();syncTimeOpts()}
 /* for an order due today, only times still ahead of now can be picked (an order being edited keeps its own saved time) */
 var keepTime="";
 function nowHM(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+/* past times are taken out of the list, not just greyed (Android's picker shows disabled options in full colour);
+   the taken-out options are kept and put back in their place when the date changes */
+function timeRestore(s){const opts=[...s.options];
+  if(opts.some(o=>o.dataset.i===undefined)){opts.forEach((o,i)=>o.dataset.i=i);s._gone=[];return opts}   /* a freshly built list */
+  const all=[...opts,...(s._gone||[])].sort((a,b)=>a.dataset.i-b.dataset.i),cur=s.value;s._gone=[];s.replaceChildren(...all);s.value=cur;return all}
 function syncTimeOpts(){
   const today=$("fDate").value===todayISO(),now=nowHM();
-  ["fTime","fTimeSpecial"].forEach(id=>{const s=$(id);
-    [...s.options].forEach(o=>{o.disabled=today&&/^\d\d:\d\d$/.test(o.value)&&o.value<=now&&o.value!==keepTime});
-    if(s.selectedOptions[0]?.disabled){s.value="";if(id==="fTime")syncSpecial()}});
+  ["fTime","fTimeSpecial"].forEach(id=>{const s=$(id),cur=s.value,all=timeRestore(s);
+    const past=o=>today&&/^\d\d:\d\d$/.test(o.value)&&o.value<=now&&o.value!==keepTime;
+    s._gone=all.filter(past);s.replaceChildren(...all.filter(o=>!past(o)));
+    if(s._gone.some(o=>o.value===cur)){s.value="";if(id==="fTime")syncSpecial()}else s.value=cur});
 }
 setInterval(()=>{if(!$("viewNew").hidden)syncTimeOpts()},60000);
 
