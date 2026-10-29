@@ -3648,6 +3648,8 @@ $("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id=
    deco.helpers = [{by, startAt, endAt}]; open helpers are closed when they tap "Done helping" or the cake is finished ---- */
 const helpersOf=o=>o?.deco?.helpers||[];
 const myHelp=o=>helpersOf(o).find(h=>sameId(h.by,me.id)&&!h.endAt);
+/* a helper gets Finish + photo / Finish (photo later) only after the decorator taps "… finishes" (hand over) */
+const helpFinish=o=>!!myHelp(o)&&!!o?.deco?.handedAt;
 const closeHelpers=(hs,now)=>hs.map(h=>h.endAt?h:{...h,endAt:now});
 const helpSecs=h=>Math.max(0,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/1000));
 const helpMins=h=>Math.max(1,Math.round(((h.endAt?Date.parse(h.endAt):Date.now())-Date.parse(h.startAt))/60000));
@@ -3683,21 +3685,21 @@ $("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x
 $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!myHelp(o))return;
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
-  const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&(decoCanAct(o)||myHelp(o)));   /* a helper can finish the cake too */
+  const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&(decoCanAct(o)||helpFinish(o)));   /* a helper can finish only once the decorator has handed the cake over */
   $("pvFinish").hidden=$("pvFinishLater").hidden=!run;$("pvCancel").hidden=true;syncPvAddPhoto()}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
 /* Cancel in the preview; an Admin cancelling someone else's decorating confirms first */
 $("pvCancel").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!decoCanAct(o))return;
   if(!decoIsMine(o)&&!await askConfirm(`Cancel decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. It goes back to Pending Order; the time so far is kept for Resume decorating.`,"Cancel decorating"))return;
   if(await decoCancel(o))$("preview").hidden=true});
 $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];e.target.value="";
-  const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!f||!(decoCanAct(o)||myHelp(o)))return;
+  const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!f||!(decoCanAct(o)||helpFinish(o)))return;
   /* an Admin finishing someone else's decorating confirms after picking the photo (a helper finishing does not) */
-  if(!decoIsMine(o)&&!myHelp(o)&&!await askConfirm(`Finish decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. The photo you picked becomes the finished-cake photo and the order is set Ready.`,"Finish"))return;
+  if(!decoIsMine(o)&&!helpFinish(o)&&!await askConfirm(`Finish decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. The photo you picked becomes the finished-cake photo and the order is set Ready.`,"Finish"))return;
   $("pvFinish").hidden=true;const patch=await decoFinish(o,f);
   /* finished: the preview closes (the photo shows on the order card) */
   if(patch){$("preview").hidden=true;pvOrder=null}else syncPvFinish()});
 /* Finish without a photo (the phone's camera is poor; the photo comes later from another phone) */
-$("pvFinishLater").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!(decoCanAct(o)||myHelp(o)))return;
+$("pvFinishLater").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!(decoCanAct(o)||helpFinish(o)))return;
   if(!await askConfirm(`Finish ${o.no} without a photo?`,"The order is set Ready now. Add the finished-cake photo later with “Add finish photo” in this preview (any decorator or Admin can add it).","Finish"))return;
   $("pvFinish").hidden=$("pvFinishLater").hidden=true;const patch=await decoFinish(o,null);
   if(patch){$("preview").hidden=true;pvOrder=null}else syncPvFinish()});
@@ -4252,7 +4254,7 @@ function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorat
     <!-- the finished-cake photo sits under the status on the right of the card -->
     </div>`;
   if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?" · helper finishing":""}</span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>${helpLine(o)}</div>
-    ${me2&&(decoIsMine(o)||myHelp(o))?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
+    ${me2&&(decoIsMine(o)||helpFinish(o))?`<label class="btn deco-btn"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" data-deco-fin="${esc(o.id)}" hidden></label><button type="button" class="link" data-deco-undo="${esc(o.id)}">Cancel</button>`:""}</div>`;
   /* paused (the decorator closed the preview, or cancelled a start): only Admins see that it is paused, by whom and since when */
   if(prevSecsOf(d)>0&&o.status!=="ready"&&can("admin"))return`<div class="deco paused"><span class="deco-pause-ic" aria-hidden="true">⏸</span><div class="deco-txt"><span><b>Decorating paused</b>${d.by?` – <span data-uid="${esc(d.by)}"></span>`:""}</span><small>${d.pausedAt?`Paused ${fmtStamp(d.pausedAt)}`:"Paused"}${seeDecoTime()?` · ${fmtClock(prevSecsOf(d))} so far`:""}</small></div>
     </div>`;
@@ -4313,7 +4315,7 @@ $("orders").addEventListener("change",async e=>{
   const pc=e.target.closest("[data-printed]");
   if(pc){await patchOrder(pc.dataset.printed,{printed:pc.checked?{at:new Date().toISOString(),by:me.id||null}:null});return}
   const fin=e.target.closest("[data-deco-fin]");
-  if(fin){const o=orders.find(x=>x.id===fin.dataset.decoFin),f=fin.files?.[0];fin.value="";if(o&&f&&(decoIsMine(o)||myHelp(o)))decoFinish(o,f);return}
+  if(fin){const o=orders.find(x=>x.id===fin.dataset.decoFin),f=fin.files?.[0];fin.value="";if(o&&f&&(decoIsMine(o)||helpFinish(o)))decoFinish(o,f);return}
   const s=e.target.closest("[data-status]");if(!s)return;
   /* cancelling an order asks first; the dropdown snaps back until it is confirmed */
   if(!canSetStatus(s.value)){toast("ဒီ Status ကို ပြောင်းခွင့် မရှိပါ");render();return}
