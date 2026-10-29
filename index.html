@@ -4029,7 +4029,7 @@ function render(){
     const ds=decoView()&&!isBak(o)?decoSt(o):"";
     return `<article class="order ${isOpen(o)?"":"done"}${ds?" ds-"+ds:""}" data-oid="${o.id}">
       <div class="o-main">
-        ${dueWarn(o)}
+        <!-- no per-card warning: the bar at the top already lists orders needing attention -->
         <!-- as on the order preview: customer, then the order number, then the date and time -->
         <div class="o-head"><div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div>
         <span class="o-no">${esc(o.no)}</span>
