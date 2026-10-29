@@ -2438,7 +2438,7 @@ function readForm(){
 const weddingCode=()=>(typeof pds!=="undefined"&&pds.find(p=>/wedding\s*cake/i.test(p.name||""))?.code)||"";
 /* decorators see each cake by its decorating stage (colour + a small label) instead of the order status box */
 const decoView=()=>!!db&&myRole()==="decoration";
-const decoSt=o=>o.deco?.endAt||o.status==="ready"||o.status==="deli_req"||o.status==="done"?"done":(o.deco?.startAt||(o.deco?.helpers||[]).some(h=>!h.endAt))?"run":"pending";
+const decoSt=o=>o.deco?.endAt||o.status==="ready"||o.status==="deli_req"||o.status==="done"?"done":(o.deco?.startAt||helpersOf(o).some(h=>!h.endAt))?"run":"pending";
 const ctOf=o=>o.cakeType==="wedding"?"wedding":o.cakeType==="tier"||o.cakeType==="custom"&&o.tierN?"tier":o.cakeType==="custom"?"custom":"std";
 const ctLbl=o=>({tier:"Tiered cake",custom:"Customized",wedding:"Wedding Cake"})[ctOf(o)]||"";
 const hasTiers=v=>v==="tier"||v==="wedding";
@@ -3660,7 +3660,20 @@ async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.
 /* "Finish + photo" in the preview, while the cake shown is being decorated (by anyone allowed to decorate) */
 /* ---- helpers: while one decorator decorates a cake, others can join it ("Help decorating") with their own time.
    deco.helpers = [{by, startAt, endAt}]; open helpers are closed when they tap "Done helping" or the cake is finished ---- */
-const helpersOf=o=>o?.deco?.helpers||[];
+/* new helpers go into deco.help, a map with one entry per helping stint ({id, by, startAt, endAt}), so two helpers joining at
+   the same moment each write only their own entry and cannot wipe each other out; deco.helpers is the older list form */
+const helpersOf=o=>[...(o?.deco?.helpers||[]),...Object.values(o?.deco?.help||{})].sort((a,b)=>String(a.startAt).localeCompare(String(b.startAt)));
+const helpUseFields=()=>!!(window.firebase&&col);
+/* one helper entry written on its own (or, without field paths, the whole deco with that entry changed) */
+function helpEntryPatch(o,h){
+  if(h.id&&(o.deco?.help?.[h.id]||!(o.deco?.helpers||[]).includes(h)))
+    return helpUseFields()?{[`deco.help.${h.id}`]:h}:{deco:{...(o.deco||{}),help:{...(o.deco?.help||{}),[h.id]:h}}};
+  return decoHelpersPatch(o,(o.deco?.helpers||[]).map(x=>x.startAt===h.startAt&&x.by===h.by?h:x))}
+/* closing every open helper (the cake is finished): both forms */
+function closeAllHelp(d,now){const out={...d};
+  if(d.helpers?.length)out.helpers=closeHelpers(d.helpers,now);
+  if(d.help)out.help=Object.fromEntries(Object.entries(d.help).map(([k,h])=>[k,h.endAt?h:{...h,endAt:now}]));
+  return out}
 /* a helper joining or leaving writes only the helper list: on Firebase the field path "deco.helpers" leaves the decorator's
    own fields (start, pause, hand over) untouched, so a helper's slightly older copy can never undo the decorator's Resume */
 const decoHelpersPatch=(o,hs)=>window.firebase&&col?{"deco.helpers":hs}:{deco:{...(o.deco||{}),helpers:hs}};
@@ -3677,8 +3690,8 @@ const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
   return`<small class="deco-help">🤝 Helped by ${per.map(p=>`<span data-uid="${esc(p.by||"")}"></span>${seeDecoTime()?(!p.open?` · <b>${fmtDur(Math.max(1,Math.round(p.done/60)))}</b>`:` · <b class="help-live" data-since="${esc(p.open.startAt)}" data-prev="${p.done}">${fmtClock(p.done+helpSecs(p.open))}</b> (helping)`):""}`).join(", ")}</small>`};
 /* a helper closing the preview stops their own clock (tap "Help decorating" again to carry on) */
 async function helpStop(o,why){const h=myHelp(o);if(!h)return;
-  const now=new Date().toISOString(),hs=helpersOf(o).map(x=>x===h?{...x,endAt:now}:x);
-  try{await patchOrder(o.id,{...decoHelpersPatch(o,hs),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
+  const now=new Date().toISOString();
+  try{await patchOrder(o.id,{...helpEntryPatch(o,{...h,endAt:now}),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
   catch(x){toast("သိမ်းမရပါ");return false}}
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   /* helping is open while the cake is being decorated by someone else, and also before anyone starts (e.g. making the topper first) */
@@ -3699,7 +3712,8 @@ $("pvHandOver").addEventListener("click",async e=>{const b=e.target.closest("[da
     $("preview").hidden=true;toast("Handed over — the helper finishes the cake")}catch(x){toast("သိမ်းမရပါ")}});
 $("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||o.deco?.endAt||myHelp(o))return;
   const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
-  try{await patchOrder(o.id,{...decoHelpersPatch(o,[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
+  const hid="h"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  try{await patchOrder(o.id,{...helpEntryPatch(o,{id:hid,by:me.id||null,startAt:now,endAt:null}),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
     toast(o.deco?.startAt?`${o.no} — helping ${nameOf(o.deco.by)}`:`${o.no} — helping (before decorating starts)`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
 $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!myHelp(o))return;
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
@@ -4317,7 +4331,7 @@ async function decoStart(o){
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
   const cr=decoCarry(o.deco,me.id,before);
-  const patch={deco:{by:me.id||null,startAt:now,prevSecs:cr.prevSecs,prior:cr.prior,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(helpersOf(o).length?{helpers:helpersOf(o)}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
+  const patch={deco:{by:me.id||null,startAt:now,prevSecs:cr.prevSecs,prior:cr.prior,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(o.deco?.helpers?.length?{helpers:o.deco.helpers}:{}),...(o.deco?.help?{help:o.deco.help}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
   /* there is no "Preparing" any more: a cake being decorated stays Pending Order (a Ready cake redecorated goes back to it) */
   if(o.status==="ready"){patch.status="new";patch.history=addHist(o,"deco",[what,`${statusName("ready")} → ${statusName("new")}`])}
@@ -4332,7 +4346,7 @@ async function decoFinish(o,file){
   if(file)toast("Uploading photo…",15000);
   try{
     const s=file?await storePhoto(await shrinkImage(file)):null,now=new Date().toISOString(),d={...(o.deco||{}),endAt:now,photo:s?s.id:null};
-    if(helpersOf(o).length)d.helpers=closeHelpers(helpersOf(o),now);   /* anyone still helping stops with the finish */
+    Object.assign(d,closeAllHelp(d,now));   /* anyone still helping stops with the finish */
     const ch=[`Finished decorating · ${fmtDur(decoMins(d))}${file?"":" · photo later"}`];
     const patch={deco:d,updatedAt:now,updatedBy:me.id||null};
     /* a finished cake waits for pickup / delivery */
