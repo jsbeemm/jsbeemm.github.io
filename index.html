@@ -4821,7 +4821,7 @@ function renderTeam(){
       ${roleSel("staff")}${permBoxes(permsFor("staff"))}
       <div class="ac-btns"><button type="button" class="link danger" data-ac-reject>Reject</button><button type="button" class="btn ac-ok" data-ac-approve>Approve</button></div></div>`).join("")
     ||"";
-  const list=Object.entries(accounts).sort((a,b)=>(a[1].name||"").localeCompare(b[1].name||""));
+  const list=Object.entries(accounts).filter(([,a])=>!a.deleted).sort((a,b)=>(a[1].name||"").localeCompare(b[1].name||""));
   /* each account shows only its name and job; See more opens the role, permissions and buttons */
   $("acList").innerHTML=list.map(([u,a])=>{const open=acOpen.has(u);return `<div class="ac-row ${a.status==="disabled"?"off":""} ${open?"open":""}" data-u="${esc(u)}">
       <div class="ac-head"><div class="ac-who"><b>${esc(a.name)}</b><span class="ac-job">${esc(ROLES.find(x=>x.k===a.role)?.n||a.role||"")}</span><span class="ac-job">${a.emp==="part"?"Part time":"Full time"}</span>${a.claude&&team[a.claude]?.owner?`<span class="ac-job">👑 Owner · Claude</span>`:""}${pwOf(u)?"":`<span class="ac-job ac-nopw">No password yet</span>`}${a.status==="disabled"?`<span class="ac-job off">Disabled</span>`:""}</div>
@@ -4829,7 +4829,7 @@ function renderTeam(){
       <div class="ac-body" ${open?"":"hidden"}><small class="ac-when">${a.status==="disabled"?"Disabled":"Active"}${a.approvedAt?` · approved ${fmtStamp(a.approvedAt)}`:""}</small>
       <label class="ac-namew"><span>Name</span><input class="ac-name" value="${esc(a.name||"")}" maxlength="40" aria-label="Name" autocomplete="off"></label>
       <div class="ac-add-row" style="grid-template-columns:auto auto">${roleSel(a.role)}<select class="ac-emp" aria-label="Employment"><option value="full">Full time</option><option value="part" ${a.emp==="part"?"selected":""}>Part time</option></select></div>${permBoxes({...permsFor(a.role),...a.perms})}
-      <div class="ac-btns">${isEditorAdmin()?(a.claude===claudeId?`<span class="ac-job">✓ This is you (linked)</span>`:`<button type="button" class="link" data-ac-me>🔗 This is me</button>`):""}<button type="button" class="link" data-ac-pw>Reset password</button><button type="button" class="link ${a.status==="disabled"?"":"danger"}" data-ac-toggle>${a.status==="disabled"?"Enable":"Disable"}</button><button type="button" class="btn ac-ok" data-ac-save>Save</button></div>
+      <div class="ac-btns">${isEditorAdmin()?(a.claude===claudeId?`<span class="ac-job">✓ This is you (linked)</span>`:`<button type="button" class="link" data-ac-me>🔗 This is me</button>`):""}<button type="button" class="link" data-ac-pw>Reset password</button><button type="button" class="link ${a.status==="disabled"?"":"danger"}" data-ac-toggle>${a.status==="disabled"?"Enable":"Disable"}</button>${session?.u===u?"":`<button type="button" class="link danger" data-ac-del>Delete</button>`}<button type="button" class="btn ac-ok" data-ac-save>Save</button></div>
       <div class="ac-pw" hidden><input type="password" class="ac-newpw" maxlength="4" placeholder="New password (1–4 characters)" autocomplete="new-password"><button type="button" class="btn ac-ok" data-ac-pwgo>Set</button></div></div></div>`}).join("")
     ||`<p class="side-help">No accounts yet.</p>`;
 }
@@ -4845,7 +4845,7 @@ $("teamDlg").addEventListener("click",async e=>{
   const dropReq=async()=>{const d=signups[cid]||{},reqs={...(d.reqs||{})};delete reqs[u];await db.doc("signups/"+cid).set({...d,reqs})};
   try{
     if(e.target.closest("[data-ac-approve]")){
-      if(accounts[u]||findAcct(signups[cid]?.reqs?.[u]?.name)){toast("ဒီနာမည်နဲ့ Account ရှိပြီးသားပါ — Reject လုပ်ပြီး နာမည်ကွဲကွဲနဲ့ ပြန်လုပ်ခိုင်းပါ",4000);return}
+      if((accounts[u]&&!accounts[u].deleted)||findAcct(signups[cid]?.reqs?.[u]?.name)){toast("ဒီနာမည်နဲ့ Account ရှိပြီးသားပါ — Reject လုပ်ပြီး နာမည်ကွဲကွဲနဲ့ ပြန်လုပ်ခိုင်းပါ",4000);return}
       const q=signups[cid]?.reqs?.[u];if(!q)return;
       await db.doc("accounts/"+u).set({name:q.name,salt:q.salt,hash:q.hash,iter:q.iter,role:row.querySelector(".ac-role").value,perms:readPerms(row),status:"approved",
         requestedAt:q.at,approvedAt:now,approvedBy:me.id});
@@ -4859,6 +4859,13 @@ $("teamDlg").addEventListener("click",async e=>{
     if(e.target.closest("[data-ac-me]")){if(!await askConfirm(`Link your Claude owner account to "${accounts[u].name}"?`,"Same name, activity and permissions everywhere."))return;
       for(const [o,x] of Object.entries(accounts))if(o!==u&&x.claude===claudeId)await db.doc("accounts/"+o).update({claude:null});
       await db.doc("accounts/"+u).update({claude:claudeId,updatedAt:now,updatedBy:me.id});toast("Linked");return}
+    /* Delete: the account can no longer sign in and leaves every list; only its name is kept, so past orders and
+       history still show who did what (a deleted name can be used again for a new account) */
+    if(e.target.closest("[data-ac-del]")){const a=accounts[u];if(!a||session?.u===u)return;
+      if(!await askConfirm(`Delete ${a.name}'s account?`,"They can no longer sign in. Orders and history they made keep their name.","Delete"))return;
+      await db.doc("accounts/"+u).set({name:a.name,status:"disabled",deleted:true,deletedAt:now,deletedBy:me.id});
+      try{await db.doc("pw/"+u).delete()}catch(x){}
+      acOpen.delete(u);toast(`${a.name} deleted`);return}
     if(e.target.closest("[data-ac-toggle]")){const off=accounts[u].status!=="disabled";await db.doc("accounts/"+u).update({status:off?"disabled":"approved",updatedAt:now,updatedBy:me.id});toast(off?"Disabled":"Enabled");return}
     if(e.target.closest("[data-ac-pw]")){if(!await askConfirm(`Reset ${accounts[u]?.name||""}'s password?`,"They will choose a new password the next time they log in.","Reset"))return;
       await db.doc("accounts/"+u).update({salt:null,hash:null,iter:null,updatedAt:now,updatedBy:me.id});await db.doc("pw/"+u).delete().catch(()=>{});toast("Password reset — they set a new one at login");return}
@@ -4887,7 +4894,7 @@ async function hashPw(pw,salt,iter=PW_ITER){
 /* people sign in with their name (any language, spacing and capitals ignored); the account's id is a hash of it */
 const normName=s=>String(s||"").trim().replace(/\s+/g," ").toLowerCase();
 async function nameKey(name){return"n_"+hexOf(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(normName(name)))).slice(0,32)}
-const findAcct=name=>Object.keys(accounts).find(k=>normName(accounts[k].name)===normName(name));
+const findAcct=name=>Object.keys(accounts).find(k=>!accounts[k].deleted&&normName(accounts[k].name)===normName(name));
 const pendingNamed=name=>Object.values(signups).some(d=>Object.values(d.reqs||{}).some(q=>normName(q.name)===normName(name)));
 function setAuthTab(t){$("authLogin").hidden=t!=="login";$("authSignup").hidden=t!=="signup";
   document.querySelectorAll("[data-auth-tab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.authTab===t));$("authMsg").textContent=""}
