@@ -3661,6 +3661,9 @@ async function decoTakeBack(o){const now=new Date().toISOString(),d=o.deco,to=d.
 /* ---- helpers: while one decorator decorates a cake, others can join it ("Help decorating") with their own time.
    deco.helpers = [{by, startAt, endAt}]; open helpers are closed when they tap "Done helping" or the cake is finished ---- */
 const helpersOf=o=>o?.deco?.helpers||[];
+/* a helper joining or leaving writes only the helper list: on Firebase the field path "deco.helpers" leaves the decorator's
+   own fields (start, pause, hand over) untouched, so a helper's slightly older copy can never undo the decorator's Resume */
+const decoHelpersPatch=(o,hs)=>window.firebase&&col?{"deco.helpers":hs}:{deco:{...(o.deco||{}),helpers:hs}};
 const myHelp=o=>helpersOf(o).find(h=>sameId(h.by,me.id)&&!h.endAt);
 /* a helper gets Finish + photo / Finish (photo later) only after the decorator taps "… finishes" (hand over) */
 const helpFinish=o=>!!myHelp(o)&&!!o?.deco?.handedAt&&(!o.deco.handedTo||sameId(o.deco.handedTo,me.id));   /* only the helper it was handed to */
@@ -3675,7 +3678,7 @@ const helpLine=o=>{const hs=helpersOf(o);if(!hs.length)return"";
 /* a helper closing the preview stops their own clock (tap "Help decorating" again to carry on) */
 async function helpStop(o,why){const h=myHelp(o);if(!h)return;
   const now=new Date().toISOString(),hs=helpersOf(o).map(x=>x===h?{...x,endAt:now}:x);
-  try{await patchOrder(o.id,{deco:{...o.deco,helpers:hs},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
+  try{await patchOrder(o.id,{...decoHelpersPatch(o,hs),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[`${why} · ${fmtDur(helpMins({...h,endAt:now}))}`])});return true}
   catch(x){toast("သိမ်းမရပါ");return false}}
 function syncPvHelp(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
   /* helping is open while the cake is being decorated by someone else, and also before anyone starts (e.g. making the topper first) */
@@ -3696,7 +3699,7 @@ $("pvHandOver").addEventListener("click",async e=>{const b=e.target.closest("[da
     $("preview").hidden=true;toast("Handed over — the helper finishes the cake")}catch(x){toast("သိမ်းမရပါ")}});
 $("pvHelp").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||o.deco?.endAt||myHelp(o))return;
   const now=new Date().toISOString();$("pvHelp").hidden=true;stopPeek("preview");stopPeek("lightbox");
-  try{await patchOrder(o.id,{deco:{...(o.deco||{}),helpers:[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
+  try{await patchOrder(o.id,{...decoHelpersPatch(o,[...helpersOf(o),{by:me.id||null,startAt:now,endAt:null}]),updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Helping decorate"])});
     toast(o.deco?.startAt?`${o.no} — helping ${nameOf(o.deco.by)}`:`${o.no} — helping (before decorating starts)`)}catch(x){toast("သိမ်းမရပါ");syncPvHelp()}});
 $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!myHelp(o))return;
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
