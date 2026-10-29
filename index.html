@@ -763,6 +763,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .deco.paused{background:#EEF1F7;border:1.5px dashed #8E9BB3;color:#27324A}
 .deco-pause-ic{font-size:18px;line-height:1}
 .deco-txt{display:grid;flex:1;min-width:160px}.deco-txt small{font-size:12.5px;opacity:.85}
+.deco-nophoto{font-size:12.5px;font-weight:700;color:#8A5A00}
 .deco-btn{width:auto;margin:0;display:inline-flex;align-items:center;gap:8px;padding:10px 16px}
 .deco-start{margin-top:10px}
 .deco-prev{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
@@ -1629,6 +1630,9 @@ span.star-ic{cursor:default}
       <!-- the decorator's part is done and a helper finishes the cake: the decorator's time stops here -->
       <button type="button" class="btn ghost" id="pvHandOver" hidden>🤝 Helper finishes</button>
       <label class="btn" id="pvFinish" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Finish + photo</span><input type="file" accept="image/*" id="pvFinishIn" hidden></label>
+      <!-- finish now, photo later; and adding that photo afterwards -->
+      <button type="button" class="btn ghost" id="pvFinishLater" hidden>✓ Finish (photo later)</button>
+      <label class="btn" id="pvAddPhoto" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Add finish photo</span><input type="file" accept="image/*" id="pvAddPhotoIn" hidden></label>
     </div>
   </div>
       </div>
@@ -3595,7 +3599,7 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
-  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();
+  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
 function syncPvEdit(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
@@ -3656,7 +3660,7 @@ $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&(decoCanAct(o)||myHelp(o)));   /* a helper can finish the cake too */
-  $("pvFinish").hidden=!run;$("pvCancel").hidden=true}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
+  $("pvFinish").hidden=$("pvFinishLater").hidden=!run;$("pvCancel").hidden=true;syncPvAddPhoto()}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
 /* Cancel in the preview; an Admin cancelling someone else's decorating confirms first */
 $("pvCancel").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!decoCanAct(o))return;
   if(!decoIsMine(o)&&!await askConfirm(`Cancel decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. It goes back to Pending Order; the time so far is kept for Resume decorating.`,"Cancel decorating"))return;
@@ -3668,6 +3672,22 @@ $("pvFinishIn").addEventListener("change",async e=>{const f=e.target.files?.[0];
   $("pvFinish").hidden=true;const patch=await decoFinish(o,f);
   /* the preview is drawn again with the finished-cake photo */
   if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
+/* Finish without a photo (the phone's camera is poor; the photo comes later from another phone) */
+$("pvFinishLater").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!(decoCanAct(o)||myHelp(o)))return;
+  if(!await askConfirm(`Finish ${o.no} without a photo?`,"The order is set Ready now. Add the finished-cake photo later with “Add finish photo” in this preview (any decorator or Admin can add it).","Finish"))return;
+  $("pvFinish").hidden=$("pvFinishLater").hidden=true;const patch=await decoFinish(o,null);
+  if(patch&&!$("preview").hidden)openPreview({...o,...patch});else syncPvFinish()});
+/* the finished-cake photo added afterwards, by anyone who decorates (or an Admin) */
+function syncPvAddPhoto(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
+  $("pvAddPhoto").hidden=!(o&&o.deco?.endAt&&!o.deco.photo&&(can("orders.decorate")||can("admin")))}
+$("pvAddPhotoIn").addEventListener("change",async e=>{const f=e.target.files?.[0];e.target.value="";
+  const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!f||!o.deco?.endAt)return;
+  if(!canStore()){toast("ဒီစာမျက်နှာမှာ ဓာတ်ပုံတင်ခွင့် မရှိပါ",4000);return}
+  $("pvAddPhoto").hidden=true;toast("Uploading photo…",15000);
+  try{const s=await storePhoto(await shrinkImage(f)),now=new Date().toISOString();
+    const patch={deco:{...o.deco,photo:s.id,photoBy:me.id||null,photoAt:now},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Finish photo added"])};
+    await patchOrder(o.id,patch);toast(`${o.no} — finish photo added`);if(!$("preview").hidden)openPreview({...o,...patch})}
+  catch(x){toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ");syncPvAddPhoto()}});
 $("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
   /* the decorator closing the preview of the cake they are decorating pauses its timer ("Resume decorating" carries on) */
   const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);
@@ -4197,7 +4217,7 @@ const BRUSH=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="
 const isRedo=o=>o.deco?.redo??((o.history||[]).filter(h=>h.act==="deco").slice(-1)[0]?.changes?.[0]==="Redecorating");
 function decoBlock(o){if(isBak(o))return"";   /* bakery products are not decorated */
   const d=o.deco||{},me2=can("orders.decorate");
-  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
+  if(d.endAt)return`<div class="deco done">${BRUSH}<div class="deco-txt"><span><b>Decorated</b> by <span data-uid="${esc(d.by||"")}"></span></span><small>${fmtStamp(d.startAt)} → ${fmtStamp(d.endAt)}${seeDecoTime()?` · <b>${fmtDur(decoMins(d))}</b>`:""}</small>${helpLine(o)}${d.photo?"":`<span class="deco-nophoto">📷 Finish photo not added yet</span>`}${o.status==="ready"?`<span class="deco-ready">✓ Order is ${readyName(o).toLowerCase()}</span>`:""}</div>
     <!-- the finished-cake photo sits under the status on the right of the card -->
     </div>`;
   if(d.startAt)return`<div class="deco run">${BRUSH}<div class="deco-txt"><span><b>${isRedo(o)?"Redecorating":"Decorating"}</b> – <span data-uid="${esc(d.by||"")}"></span>${d.handedAt?" · helper finishing":""}</span><small>Started ${fmtStamp(d.startAt)}${seeDecoTime()?` · <b class="deco-live" data-since="${esc(d.startAt)}" data-handed="${esc(d.handedAt||"")}" data-prev="${prevSecsOf(d)}">${fmtClock(decoSecs(d))}</b>`:""}</small>${helpLine(o)}</div>
@@ -4238,13 +4258,14 @@ async function decoStart(o){
     statusF="new";render();openPreview({...(orders.find(x=>x.id===o.id)||o),...patch})}
   catch(x){toast("သိမ်းမရပါ")}
 }
+/* file null: finished now, the photo is added later (taken on another phone, maybe added from another account) */
 async function decoFinish(o,file){
-  if(!canStore()){toast("ဒီစာမျက်နှာမှာ ဓာတ်ပုံတင်ခွင့် မရှိပါ",4000);return}
-  toast("Uploading photo…",15000);
+  if(file&&!canStore()){toast("ဒီစာမျက်နှာမှာ ဓာတ်ပုံတင်ခွင့် မရှိပါ",4000);return}
+  if(file)toast("Uploading photo…",15000);
   try{
-    const s=await storePhoto(await shrinkImage(file)),now=new Date().toISOString(),d={...(o.deco||{}),endAt:now,photo:s.id};
+    const s=file?await storePhoto(await shrinkImage(file)):null,now=new Date().toISOString(),d={...(o.deco||{}),endAt:now,photo:s?s.id:null};
     if(helpersOf(o).length)d.helpers=closeHelpers(helpersOf(o),now);   /* anyone still helping stops with the finish */
-    const ch=[`Finished decorating · ${fmtDur(decoMins(d))}`];
+    const ch=[`Finished decorating · ${fmtDur(decoMins(d))}${file?"":" · photo later"}`];
     const patch={deco:d,updatedAt:now,updatedBy:me.id||null};
     /* a finished cake waits for pickup / delivery */
     if(o.status==="new"||o.status==="baking"){patch.status="ready";ch.push(`${statusName(o.status)} → ${statusName("ready")}`)}
