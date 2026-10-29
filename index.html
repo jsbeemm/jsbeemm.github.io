@@ -2395,8 +2395,8 @@ function readForm(){
     name:$("fName").value.trim(),phone:$("fPhone").value.trim(),
     channel:$("fChannel").value,
     chOther:$("fChannel").value==="Others"?$("fChOther").value.trim():"",flavor,flavorName,size,sizeName,basePrice,
-    /* the Bakery Products short code of this flavor × size (used for costing) */
-    cakeCode:flavor&&size?(cakeProd(flavor,size)?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(sk==="cupcake"?{qty}:{}),...(count>1?{count}:{}),
+    /* the Bakery Products short code of this flavor × size (used for costing); a wedding cake takes the "Wedding Cake" product's code */
+    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size)?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(sk==="cupcake"?{qty}:{}),...(count>1?{count}:{}),
     shape:sk==="cupcake"?"":document.querySelector('input[name="fShape"]:checked')?.value||"",
     shapeCustom:sk!=="cupcake"&&document.querySelector('input[name="fShape"]:checked')?.value==="custom"?$("fShapeCustom").value.trim():"",cakeType:$("fTiers").value,custom:$("fTiers").value!=="std"?$("fCustom").value.trim():"",...readTiers(),
     msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
@@ -2416,6 +2416,8 @@ function readForm(){
    A tiered or wedding cake is built tier by tier (bottom → top): each tier has a size and one or more layers, each layer
    its own flavor. A wedding cake tier can also be a Dummy cake (a display dummy, no flavor). Orders saved as "custom" with
    tiers are tiered. ---------- */
+/* the code of the "Wedding Cake" product in Bakery Products (e.g. wdc) */
+const weddingCode=()=>(typeof pds!=="undefined"&&pds.find(p=>/wedding\s*cake/i.test(p.name||""))?.code)||"";
 const ctOf=o=>o.cakeType==="wedding"?"wedding":o.cakeType==="tier"||o.cakeType==="custom"&&o.tierN?"tier":o.cakeType==="custom"?"custom":"std";
 const ctLbl=o=>({tier:"Tiered cake",custom:"Customized",wedding:"Wedding Cake"})[ctOf(o)]||"";
 const hasTiers=v=>v==="tier"||v==="wedding";
@@ -4681,7 +4683,7 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>`${l.name} ${l.qty} × ${(Number(l.price)||0).toLocaleString("en-US")}`).join("\n"):"",30],
   /* cake-only details stay blank on a Bakery products order */
-  ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||"",10],   /* bakery: one code per item, in the Items order */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
+  ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
   ["Design code",o=>o.design,10],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
   /* Quantity × Price = Amount (e.g. Tiramisu 10 × 5,000 = 50,000); a bakery order of several different items has no single price, so its
