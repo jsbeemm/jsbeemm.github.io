@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371645"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372005"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1504,6 +1504,7 @@ span.star-ic{cursor:default}
   <section id="viewProd" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="pdQ" placeholder="Search name, ID or barcode" aria-label="Search products" autocomplete="off"><button type="button" class="chip" id="pdCatBtn">🏷️ Categories</button>
       <button type="button" class="chip" id="pdXlBtn" title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
+      <button type="button" class="chip" id="pdTierLink" hidden title="နာမည်မှာ (အဆင့်) ပါတဲ့ product တွေကို သူ့ကိတ်သားနဲ့ size ထဲ ချိတ်ရန်">🔗 အဆင့်ကိတ်ဈေး ချိတ်ရန်</button>
       <button type="button" class="chip" id="pdReBtn" title="Retail ဈေးကနေ Food Panda (+30%) နဲ့ Wholesale (−10%) ဈေး ပြန်တွက်ရန်">🔄 Panda / Wholesale ဈေး</button>
       <button type="button" class="btn prq-new fab" id="pdNewBtn">+ Add product</button></div>
     <div class="chips pd-cats" id="pdCats"></div>
@@ -5656,7 +5657,7 @@ function nextBarcode(code,skipId){const pre=BC_PREFIX+code;
 const pdNorm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function renderPd(){
   if(!$("viewProd")||$("viewProd").hidden)return;
-  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;$("pdReBtn").hidden=!admin;
+  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;$("pdReBtn").hidden=!admin;$("pdTierLink").hidden=!admin||!tierLinkPlan().length;
   const cats=pdCats(),q=pdNorm(pdQ);
   const inQ=pds.filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
   $("pdCats").innerHTML=`<button type="button" class="chip" data-pdcat="" aria-pressed="${!pdCat}">All <small>${inQ.length}</small></button>`
@@ -5815,6 +5816,24 @@ $("pdFlvEdit").innerHTML=PENCIL;$("pdFlvDel").innerHTML=TRASH_IC;
 $("pdCatSel").addEventListener("change",()=>{pdSyncBarcode();if(!isBC())pdFlv="";pdSyncMode()});
 $("pdFlvSel").addEventListener("change",e=>pdLoadFlavor(e.target.value));
 $("pdRowAdd").addEventListener("click",()=>pdAddRow(null));
+/* tier prices kept as their own products, e.g. "1lb Chiffon Cake(အဆင့်)", are tied to their flavor and size in one go:
+   the size from the "1lb" / "1 1/2lb" at the front, the flavor from the rest of the name */
+function tierLinkPlan(){const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  return pds.filter(p=>p.cat===BC&&!(p.cakeFlavor&&p.cakeSize)&&/အဆင့်/.test(p.name||"")).map(p=>{
+    const m=String(p.name).match(/^\s*(\d+(?:\s+1\/2)?)\s*lb\b\s*(.*)$/i);if(!m)return null;
+    const sk=m[1].replace(/\s+1\/2/,".5"),size=SIZES.find(s=>s.k===sk);if(!size)return null;
+    const core=norm(m[2].replace(/\(?\s*အဆင့်\s*\)?/g,""));if(!core)return null;
+    const cands=FLAVORS.filter(f=>f.k!=="other"&&(norm(f.n)===core||norm(f.n).startsWith(core)||core.startsWith(norm(f.n))));
+    const fl=cands.find(f=>norm(f.n)===core)||(cands.length===1?cands[0]:null);if(!fl)return null;
+    if(tierProd(fl.k,size.k))return null;   /* that flavor × size already has a tier price */
+    return{p,fl,size}}).filter(Boolean)}
+$("pdTierLink").addEventListener("click",async()=>{if(!can("admin"))return;const plan=tierLinkPlan();if(!plan.length){toast("ချိတ်စရာ မရှိပါ");return}
+  $("cfmMsg").style.whiteSpace="pre-line";
+  const ok=await askConfirm(`အဆင့်ကိတ်ဈေး ${plan.length} ခု ချိတ်မလား?`,plan.map(x=>`${x.p.name} → ${x.fl.n} · ${x.size.n}`).join("\n"),"ချိတ်မည်");
+  $("cfmMsg").style.whiteSpace="";if(!ok)return;
+  const now=new Date().toISOString();let n=0;
+  try{for(const x of plan){await savePd({...x.p,cakeFlavor:x.fl.k,cakeSize:x.size.k,cakeTier:true,updatedAt:now,updatedBy:me.id||null});n++}toast(`အဆင့်ကိတ်ဈေး ${n} ခု ချိတ်ပြီး`,4000)}
+  catch(e){toast(`${n} ခုပဲ ချိတ်နိုင်ပါတယ် — ပြန်ကြိုးစားပါ`,5000)}renderPd()});
 $("pdRows").addEventListener("click",e=>{if(e.target.closest("[data-rrm]"))setTimeout(pdFillLink,300)});   /* a removed row's product can be added back */
 function pdFillLink(){const used=new Set([...$("pdRows").querySelectorAll(".pd-row")].map(r=>r.dataset.id).filter(Boolean));
   const L=pds.filter(p=>p.cat===BC&&!(p.cakeFlavor&&p.cakeSize)&&!used.has(p.id)).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
