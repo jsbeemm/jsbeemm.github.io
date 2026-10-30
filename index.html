@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372005"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372582"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1299,7 +1299,7 @@ span.star-ic{cursor:default}
         </fieldset>
         <fieldset id="typeSet">
           <legend>ကိတ်အမျိုးအစား</legend>
-          <div class="opts" id="optTiers"><label class="opt"><input type="radio" name="fTiersR" value="std" checked><span>ပုံမှန်</span></label><label class="opt"><input type="radio" name="fTiersR" value="tier"><span>အဆင့်ကိတ်</span></label><label class="opt"><input type="radio" name="fTiersR" value="custom"><span>Customized</span></label><label class="opt"><input type="radio" name="fTiersR" value="wedding"><span>Wedding Cake</span></label></div>
+          <div class="opts" id="optTiers"><label class="opt"><input type="radio" name="fTiersR" value="std" checked><span>ပုံမှန်</span></label><label class="opt"><input type="radio" name="fTiersR" value="tier"><span>အဆင့်ကိတ်</span></label><label class="opt"><input type="radio" name="fTiersR" value="custom"><span>Customized</span></label><label class="opt"><input type="radio" name="fTiersR" value="wedding"><span>Wedding Cake</span></label><label class="opt"><input type="radio" name="fTiersR" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fTiersR" value="cupcake"><span>Cupcake</span></label></div>
           <select id="fTiers" hidden aria-hidden="true" tabindex="-1"><option value="std">ပုံမှန်</option><option value="tier">အဆင့်ကိတ်</option><option value="custom">Customized</option><option value="wedding">Wedding Cake</option></select>
           <!-- tiered / wedding cake builder: each tier has a size and one or more layers, each layer its own flavor;
                a wedding cake tier can also be a Dummy cake (display dummy). The drawing beside it follows the chosen shape. -->
@@ -1320,7 +1320,7 @@ span.star-ic{cursor:default}
           <!-- chosen cake at a glance: photo, price, flavor and size (like a shop's option sheet) -->
           <div class="sku-sum" id="flvSel" aria-live="polite"></div>
           <!-- Cream design (default) or Fondant design: fondant is made on Rainbow Butter or Brownie only, at twice that cake's price -->
-          <p class="grp">Design</p>
+          <p class="grp" id="decoGrp">Design</p>
           <div class="opts as-select" id="optDeco"><label class="opt"><input type="radio" name="fDeco" value="cream" checked><span>Cream design</span></label><label class="opt"><input type="radio" name="fDeco" value="fondant"><span>Fondant design</span></label><label class="opt"><input type="radio" name="fDeco" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fDeco" value="cupcake"><span>Cupcake</span></label></div>
           <!-- Design and Shape are picked from dropdowns; the radio buttons stay behind them (hidden) and carry the choice -->
           <select id="fDecoSel" class="opt-sel" aria-label="Design"></select>
@@ -2580,20 +2580,29 @@ function syncTierBox(){const on=hasTiers(tierKind());$("tierBox").hidden=!on;
   if(on)["optSize","sizeGrp","optFlavor","qtyWrap","sizeWrap","otherWrap","priceWrap"].forEach(id=>$(id).hidden=true);
   /* …except a Wedding Cake, whose price is typed for the whole cake */
   if(on&&tierKind()==="wedding"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Wedding Cake ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
-  document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=on);
+  /* Mini cake and Cupcake are picked under Cake type now (they still travel as the Design value): the Design choice is only
+     Cream / Fondant, and it is not asked for a Mini cake or Cupcake */
+  document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=true);
+  {const sk=!!smallKind();$("decoGrp").hidden=sk;$("optDeco").hidden=sk;setTimeout(syncRadioSelects)}
   if(on)drawTiers()}   /* the drawing follows the shape picked in the Cake frame */
-$("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name="fTiersR"]');if(!r)return;const was=$("fTiers").value;if(was!==r.value)$("fPrice").value="";$("fTiers").value=r.value;
+$("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name="fTiersR"]');if(!r)return;
+  /* Mini cake / Cupcake: a one-piece cake (std) whose Design value is mini / cupcake; any other type is Cream unless Fondant was picked */
+  const small=SMALL[r.value]?r.value:"",rv=small?"std":r.value,was=$("fTiers").value,wasSmall=smallKind();
+  if(small!==wasSmall){document.querySelector(`input[name="fDeco"][value="${small||"cream"}"]`).checked=true;
+    document.querySelectorAll('input[name="fFlavor"],input[name="fSize"]').forEach(i=>i.checked=false);$("fPrice").value=""}
+  if(was!==rv)$("fPrice").value="";$("fTiers").value=rv;
   /* changing between a one-piece cake and a tiered / wedding cake starts that part afresh: nothing picked for the other kind stays behind */
-  if(hasTiers(r.value)!==hasTiers(was)){
-    if(hasTiers(r.value))document.querySelectorAll('input[name="fFlavor"],input[name="fSize"]').forEach(i=>i.checked=false);
+  if(hasTiers(rv)!==hasTiers(was)){
+    if(hasTiers(rv))document.querySelectorAll('input[name="fFlavor"],input[name="fSize"]').forEach(i=>i.checked=false);
     else tierDraft=[];
   }
-  if(hasTiers(r.value)){if(smallKind())document.querySelector('input[name="fDeco"][value="cream"]').checked=true;
-    if(!tierDraft.length||(was!==r.value&&hasTiers(was)))tierDraft=defaultTiers(r.value);
+  if(hasTiers(rv)){
+    if(!tierDraft.length||(was!==rv&&hasTiers(was)))tierDraft=defaultTiers(rv);
     /* a tiered cake is real cake only */
-    if(r.value==="tier")tierDraft.forEach(t=>{if(t.dummy){t.dummy=false;t.layers=[""]}})
+    if(rv==="tier")tierDraft.forEach(t=>{if(t.dummy){t.dummy=false;t.layers=[""]}})
     renderTierList()}
   else{renderSizes();syncPrice(false)}
+  if(small!==wasSmall)$("optDeco").dispatchEvent(new Event("change",{bubbles:true}));
   syncTierBox()});
 $("tierList").addEventListener("change",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const t=tierDraft[Number(c.dataset.ti)];if(!t)return;
   if(e.target.matches(".tier-size")){t.size=e.target.value;renderTierList()}
@@ -3171,7 +3180,7 @@ function fillForm(o){
   const sk=shapeKey(o.shape);document.querySelectorAll('input[name="fShape"]').forEach(i=>i.checked=i.value===sk);
   $("fShapeCustom").value=o.shapeCustom||(sk==="custom"&&!SHAPES.some(x=>x.k===o.shape)?o.shape:"");
   $("fTiers").value=ctOf(o);$("fCustom").value=o.custom||"";
-  document.querySelectorAll('input[name="fTiersR"]').forEach(i=>i.checked=i.value===$("fTiers").value);
+  {const sm=SMALL[o.decoType]?o.decoType:"";document.querySelectorAll('input[name="fTiersR"]').forEach(i=>i.checked=i.value===(sm||$("fTiers").value))}
   tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{})}));renderTierList();
   setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||"";$("fDiscount").value=o.discount||"";
   $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";
