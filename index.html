@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371099"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371358"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2572,9 +2572,14 @@ function syncTierBox(){const on=hasTiers(tierKind());$("tierBox").hidden=!on;
   if(on&&tierKind()==="wedding"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Wedding Cake ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
   document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=on);
   if(on)drawTiers()}   /* the drawing follows the shape picked in the Cake frame */
-$("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name="fTiersR"]');if(!r)return;if($("fTiers").value!==r.value)$("fPrice").value="";$("fTiers").value=r.value;
+$("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name="fTiersR"]');if(!r)return;const was=$("fTiers").value;if(was!==r.value)$("fPrice").value="";$("fTiers").value=r.value;
+  /* changing between a one-piece cake and a tiered / wedding cake starts that part afresh: nothing picked for the other kind stays behind */
+  if(hasTiers(r.value)!==hasTiers(was)){
+    if(hasTiers(r.value))document.querySelectorAll('input[name="fFlavor"],input[name="fSize"]').forEach(i=>i.checked=false);
+    else tierDraft=[];
+  }
   if(hasTiers(r.value)){if(smallKind())document.querySelector('input[name="fDeco"][value="cream"]').checked=true;
-    if(!tierDraft.length)tierDraft=defaultTiers(r.value);
+    if(!tierDraft.length||(was!==r.value&&hasTiers(was)))tierDraft=defaultTiers(r.value);
     /* a tiered cake is real cake only */
     if(r.value==="tier")tierDraft.forEach(t=>{if(t.dummy){t.dummy=false;t.layers=[""]}})
     renderTierList()}
