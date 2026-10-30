@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372582"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372838"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1324,6 +1324,8 @@ span.star-ic{cursor:default}
           <div class="opts as-select" id="optDeco"><label class="opt"><input type="radio" name="fDeco" value="cream" checked><span>Cream design</span></label><label class="opt"><input type="radio" name="fDeco" value="fondant"><span>Fondant design</span></label><label class="opt"><input type="radio" name="fDeco" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fDeco" value="cupcake"><span>Cupcake</span></label></div>
           <!-- Design and Shape are picked from dropdowns; the radio buttons stay behind them (hidden) and carry the choice -->
           <select id="fDecoSel" class="opt-sel" aria-label="Design"></select>
+          <!-- a Mini cake has its own Cream / Fondant choice (its Design value stays "mini") -->
+          <select id="fMiniDeco" class="opt-sel" aria-label="Mini cake design" hidden><option value="cream">Cream design</option><option value="fondant">Fondant design</option></select>
           <!-- shape comes right after Design, above Size -->
           <p class="grp" style="margin-top:12px" id="shapeGrp">ပုံသဏ္ဌာန် <b style="color:var(--accent);font-weight:500">*</b></p>
           <div class="opts shapes" id="optShape"></div>
@@ -2151,7 +2153,7 @@ const cakeProd=(k,s,shp)=>{const L=cakeProds(k,s);if(!L.length)return null;const
 const FONDANT_OK=["f6","f7"];
 function fondantOn(){return document.querySelector('input[name="fDeco"]:checked')?.value==="fondant"}
 /* after the cake's name: Fondant design, and "× 10" for several of the same cake */
-const fondTag=o=>(o.decoType==="fondant"?" · Fondant design":"")+(o.count>1?` × ${o.count}`:"");
+const fondTag=o=>(o.decoType==="fondant"||o.miniDeco==="fondant"?" · Fondant design":"")+(o.count>1?` × ${o.count}`:"");
 /* Mini cake (4" or 5") and Cupcake (pieces): no flavor is picked and the price is typed */
 const SMALL={mini:{n:"Mini cake",sizes:[{k:"m4",n:'4"'},{k:"m5",n:'5"'}]},cupcake:{n:"Cupcake"}};
 const DECO_N={cream:"Cream design",fondant:"Fondant design",mini:"Mini cake",cupcake:"Cupcake"};
@@ -2442,7 +2444,7 @@ function readForm(){
     channel:$("fChannel").value,
     chOther:$("fChannel").value==="Others"?$("fChOther").value.trim():"",flavor,flavorName,size,sizeName,basePrice,
     /* the Bakery Products short code of this flavor × size (used for costing); a wedding cake takes the "Wedding Cake" product's code */
-    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(sk==="cupcake"?{qty}:{}),...(count>1?{count}:{}),
+    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty}:{}),...(count>1?{count}:{}),
     shape:sk==="cupcake"?"":document.querySelector('input[name="fShape"]:checked')?.value||"",
     shapeCustom:sk!=="cupcake"&&document.querySelector('input[name="fShape"]:checked')?.value==="custom"?$("fShapeCustom").value.trim():"",cakeType:$("fTiers").value,custom:$("fTiers").value!=="std"?$("fCustom").value.trim():"",...readTiers(),
     msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
@@ -2583,7 +2585,7 @@ function syncTierBox(){const on=hasTiers(tierKind());$("tierBox").hidden=!on;
   /* Mini cake and Cupcake are picked under Cake type now (they still travel as the Design value): the Design choice is only
      Cream / Fondant, and it is not asked for a Mini cake or Cupcake */
   document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=true);
-  {const sk=!!smallKind();$("decoGrp").hidden=sk;$("optDeco").hidden=sk;setTimeout(syncRadioSelects)}
+  {const sk=smallKind();$("decoGrp").hidden=sk==="cupcake";$("optDeco").hidden=!!sk;$("fMiniDeco").hidden=sk!=="mini";setTimeout(syncRadioSelects)}
   if(on)drawTiers()}   /* the drawing follows the shape picked in the Cake frame */
 $("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name="fTiersR"]');if(!r)return;
   /* Mini cake / Cupcake: a one-piece cake (std) whose Design value is mini / cupcake; any other type is Cream unless Fondant was picked */
@@ -2746,6 +2748,7 @@ $("optSize").addEventListener("change",()=>syncPrice(true));
 $("optDeco").addEventListener("change",()=>{const c=document.querySelector('input[name="fFlavor"]:checked');
   if(fondantOn()&&c&&!FONDANT_OK.includes(c.value)){c.checked=false;toast("Fondant design: Rainbow Butter / Brownie ကိတ်သားသာ ရပါသည်")}
   renderSizes();syncPrice(true);updateReceipt()});
+$("fMiniDeco").addEventListener("change",updateReceipt);
 let moreOpen=false;
 function setMore(open){
   moreOpen=open;$("flvMore").hidden=!open;$("moreBtn").setAttribute("aria-expanded",open);
@@ -3181,6 +3184,7 @@ function fillForm(o){
   $("fShapeCustom").value=o.shapeCustom||(sk==="custom"&&!SHAPES.some(x=>x.k===o.shape)?o.shape:"");
   $("fTiers").value=ctOf(o);$("fCustom").value=o.custom||"";
   {const sm=SMALL[o.decoType]?o.decoType:"";document.querySelectorAll('input[name="fTiersR"]').forEach(i=>i.checked=i.value===(sm||$("fTiers").value))}
+  $("fMiniDeco").value=o.miniDeco==="fondant"?"fondant":"cream";
   tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{})}));renderTierList();
   setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||"";$("fDiscount").value=o.discount||"";
   $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";
@@ -4807,7 +4811,7 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>l.name||"").join("\n"):"",26],   /* names only; quantities and prices are in their own columns */
   /* cake-only details stay blank on a Bakery products order */
-  ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design",""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
+  ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design","")+(o.decoType==="mini"&&o.miniDeco==="fondant"?" · Fondant":""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
   ["Design code",o=>o.design,10],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
   /* Quantity × Price = Amount (e.g. Tiramisu 10 × 5,000 = 50,000); a bakery order of several different items has no single price, so its
