@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793370861"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371099"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3226,7 +3226,8 @@ const formEmpty=f=>!f.name&&!f.phone;
 /* going back from a new order (or a draft being finished) without saving keeps what was typed as a draft */
 function autoDraft(){
   if($("viewNew").hidden||editingId||!canWriteOrders())return;
-  const f=readForm();if(formEmpty(f))return;
+  /* without a name or phone it is not kept as a draft: the choices made so far are cleared, so the next New order starts fresh */
+  const f=readForm();if(formEmpty(f)){resetForm();return}
   const now=new Date().toISOString(),old=drafts.find(x=>x.id===draftId);
   const d={id:draftId||("d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),form:f,no:noTouched?$("fNo").value.trim().toUpperCase():"",
     createdAt:old?.createdAt||now,createdBy:old?(old.createdBy??null):me.id||null,updatedAt:now,updatedBy:me.id||null};
