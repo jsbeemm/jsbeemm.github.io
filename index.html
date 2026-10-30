@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793273549"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793354726"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1080,7 +1080,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pd-row label{display:grid;gap:2px;min-width:0}.pd-row small{font-size:11.5px;color:var(--muted)}
 .pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:520px){.pd-r3{grid-template-columns:1fr 1fr}}
-.pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}.pd-fph{width:96px;height:96px;border-radius:12px;overflow:hidden;background:var(--sunk);display:grid;place-items:center;font-size:34px;flex:none}.pd-fph img{width:100%;height:100%;object-fit:cover}
+.pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.pd-row .pd-sh{display:grid;grid-template-columns:auto minmax(0,1fr) 84px;align-items:center;gap:6px;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 6px}
+.pd-sh span{display:flex;align-items:center;gap:4px;min-width:0}.pd-sh svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.5}
+.pd-sh input[type=number]{padding:4px 6px;font-size:13px;margin:0}.pd-sh:has(.r-shp:not(:checked)){opacity:.5}
+#optShape label.off{opacity:.35;pointer-events:none}#optShape .shp-add{margin-left:4px;font-weight:700;color:var(--accent)}.pd-fph{width:96px;height:96px;border-radius:12px;overflow:hidden;background:var(--sunk);display:grid;place-items:center;font-size:34px;flex:none}.pd-fph img{width:100%;height:100%;object-fit:cover}
 .pd-fph-btns{display:flex;flex-wrap:wrap;gap:6px}.pd-fph-btns .chip{cursor:pointer}
 .pd-auto{display:flex;align-items:center;gap:8px;color:var(--ink);font-size:13.5px;cursor:pointer;margin:2px 0 4px}.pd-auto input{width:20px;height:20px;margin:0;accent-color:var(--accent)}
 input.ro{background:var(--sunk);font-family:var(--mono)}
@@ -2140,6 +2145,16 @@ const smallKind=()=>SMALL[decoVal()]?decoVal():"";
 /* Mini cake prices come from Bakery Products (Mini Butter Cake 4" / 5", codes 4"bt / 5"bt); these numbers are the fallback */
 const MINI_P={m4:['4"bt',10000],m5:['5"bt',15000]};
 const miniPrice=s=>{const m=MINI_P[s];if(!m)return 0;const p=(typeof pds!=="undefined"&&pds||[]).find(x=>x.code===m[0]&&x.retail!=null&&x.retail!=="");return p?Number(p.retail):m[1]};
+/* shapes by size (set in Bakery Products, on the flavor's size row): which shapes it can be made in, and a shape's price difference */
+const shapeOffFor=(fk,sk)=>cakeProd(fk,sk)?.shapeOff||[];
+const shapeAddFor=(fk,sk,shp)=>Number(cakeProd(fk,sk)?.shapeAdd?.[shp])||0;
+/* in the order form: shapes the chosen flavor × size cannot be made in are greyed out (a chosen one is cleared),
+   and a shape that costs more or less shows the difference beside its name */
+function syncShapeAvail(){const fk=document.querySelector('input[name="fFlavor"]:checked')?.value||"",sz=document.querySelector('input[name="fSize"]:checked')?.value||"";
+  const off=fk&&sz?shapeOffFor(fk,sz):[];
+  document.querySelectorAll('input[name="fShape"]').forEach(i=>{const no=off.includes(i.value),lb=i.closest("label");i.disabled=no;lb?.classList.toggle("off",no);
+    if(no&&i.checked)i.checked=false;
+    const add=fk&&sz?shapeAddFor(fk,sz,i.value):0,t=lb?.querySelector(".shp-add");if(t)t.textContent=add?` ${add>0?"+":"−"}${Math.abs(add).toLocaleString("en-US")}`:""})}
 const priceAt=(fl,i)=>{if(!fl||i<0)return 0;const p=cakeProd(fl.k,SIZES[i].k);return p?Number(p.retail):(fl.p[i]||0)};
 const fromPrice=fl=>Math.min(...SIZES.map((s,i)=>priceAt(fl,i)).filter(v=>v));
 /* only for showing older orders that used preset extras */
@@ -2402,7 +2417,7 @@ function readForm(){
   /* how many of this same cake (cupcakes keep their own piece count): the cake price below is for one, times this */
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
-  const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?miniPrice(size):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size))*(fondantOn()?2:1));
+  const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?miniPrice(size):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):(priceAt(fl,sizeIdx(size))+shapeAddFor(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||""))*(fondantOn()?2:1));
   const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?`${qty} pcs`:""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
@@ -2599,7 +2614,7 @@ function syncRadioSelects(){RSEL.forEach(([sid,gid,name,ph])=>{const sel=$(sid),
 const SHAPE_SIGN={circle:"◯",square:"◻",rect:"▭",heart:"♡",custom:"✎"};
 RSEL.forEach(([sid,gid,name])=>$(sid).addEventListener("change",e=>{const r=$(gid).querySelector(`input[name="${name}"][value="${CSS.escape(e.target.value)}"]`);
   if(r&&!r.checked){r.checked=true;r.dispatchEvent(new Event("change",{bubbles:true}))}}));
-function updateReceipt(){setTimeout(syncSaveBtn);setTimeout(syncRadioSelects);
+function updateReceipt(){syncShapeAvail();setTimeout(syncSaveBtn);setTimeout(syncRadioSelects);
   const f=readForm(),{lines,total}=price(f);
   const live=slipHTML({...f,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
   if($("liveSlip").__html!==live){$("liveSlip").innerHTML=live;$("liveSlip").__html=live}   /* rebuilt only when it changes, so photos don't flicker */
@@ -2796,7 +2811,7 @@ const orderCharges=o=>o.charges||(o.addAmt?[{note:o.addNote||"",amt:o.addAmt}]:[
 /* "5,000 × 3" for a charge with a quantity, shown beside its name */
 const chQty=c=>c.qty>1?`${Number(c.unit||0).toLocaleString("en-US")} × ${c.qty}`:"";
 function buildOpts(){
-  $("optShape").innerHTML=SHAPES.map(s=>`<label class="opt"><input type="radio" name="fShape" value="${s.k}"><span>${shapeIcon(s.k,"")}${s.n}</span></label>`).join("");
+  $("optShape").innerHTML=SHAPES.map(s=>`<label class="opt"><input type="radio" name="fShape" value="${s.k}"><span>${shapeIcon(s.k,"")}${s.n}<small class="shp-add"></small></span></label>`).join("");
   $("fChannel").innerHTML=`<option value="">-- Channel ရွေးရန် --</option>`+CHANNELS.map(c=>`<option value="${c}">${c}</option>`).join("");
   renderFlavorPills();
   setMore(false);renderSizes("");syncPrice(true);tierDraft=[];renderTierList();
@@ -5739,7 +5754,9 @@ function pdRowHtml(p){return`<div class="pd-row" data-id="${esc(p?.id||"")}">
     <div class="pd-r2"><label><small>Cake Orders size</small><select class="r-size"><option value="">— Not in Cake Orders —</option>${SIZES.map(s=>`<option value="${s.k}" ${p?.cakeSize===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
       <label><small>Barcode</small><input class="r-bc ro" readonly value="${esc(p?.barcode||"")}"></label></div>
     <div class="pd-r3"><label><small>Retail *</small><input class="r-retail" type="number" inputmode="numeric" min="0" value="${p?.retail??""}"></label><label><small>Distribution</small><input class="r-dist" type="number" inputmode="numeric" min="0" value="${p?.dist??""}"></label>
-      <label><small>Food Panda</small><input class="r-panda" type="number" inputmode="numeric" min="0" value="${p?.panda??""}"></label><label><small>Promotion</small><input class="r-promo" type="number" inputmode="numeric" min="0" value="${p?.promo??""}"></label></div></div>`}
+      <label><small>Food Panda</small><input class="r-panda" type="number" inputmode="numeric" min="0" value="${p?.panda??""}"></label><label><small>Promotion</small><input class="r-promo" type="number" inputmode="numeric" min="0" value="${p?.promo??""}"></label></div>
+    <!-- shapes this size comes in (untick the ones it cannot be made in) and how much a shape adds to Retail (minus for less) -->
+    <div class="pd-shp"><small>Shapes · ရတဲ့ပုံ (ဈေးကွာရင် ဘေးမှာ +/− ထည့်ပါ)</small><div class="pd-shps">${SHAPES.map(s=>`<label class="pd-sh"><input type="checkbox" class="r-shp" value="${s.k}" ${(p?.shapeOff||[]).includes(s.k)?"":"checked"}><span>${shapeIcon(s.k,"")}${s.n}</span><input class="r-shadd" data-k="${s.k}" data-neg type="number" inputmode="numeric" placeholder="+0" value="${p?.shapeAdd?.[s.k]??""}" aria-label="${s.n} price difference"></label>`).join("")}</div></div></div>`}
 function pdAddRow(p){$("pdRows").insertAdjacentHTML("beforeend",pdRowHtml(p));const r=$("pdRows").lastElementChild;if(!p){r.querySelector(".r-bc").value=pdNextCodes(1)[0]||"";r.querySelector(".r-code").focus()}return r}
 /* which part of the form shows: the flavor sheet (Birthday Cake with a flavor) or the single-product fields */
 function pdSyncMode(){const bc=isBC();$("pdFlvW").hidden=!bc;const sheet=bc&&!!pdFlv;$("pdFlvBody").hidden=!sheet;$("pdSingleW").hidden=sheet;
@@ -5804,7 +5821,9 @@ $("pdPhotoBox").addEventListener("click",e=>{if(e.target.id==="pdPhotoRm"){pdPho
 async function savePdSheet(){
   const rows=[...$("pdRows").querySelectorAll(".pd-row")],num=v=>{v=String(v).trim();return v===""?null:Math.round(Number(v))};
   const data=rows.map(r=>({row:r,id:r.dataset.id||"",code:r.querySelector(".r-code").value.trim(),name:r.querySelector(".r-name").value.trim().replace(/\s+/g," "),size:r.querySelector(".r-size").value,
-    barcode:r.querySelector(".r-bc").value.trim(),retail:num(r.querySelector(".r-retail").value),dist:num(r.querySelector(".r-dist").value),panda:num(r.querySelector(".r-panda").value),promo:num(r.querySelector(".r-promo").value)}));
+    barcode:r.querySelector(".r-bc").value.trim(),retail:num(r.querySelector(".r-retail").value),dist:num(r.querySelector(".r-dist").value),panda:num(r.querySelector(".r-panda").value),promo:num(r.querySelector(".r-promo").value),
+    shapeOff:[...r.querySelectorAll(".r-shp")].filter(c=>!c.checked).map(c=>c.value),
+    shapeAdd:Object.fromEntries([...r.querySelectorAll(".r-shadd")].map(i=>[i.dataset.k,num(i.value)]).filter(([,v])=>v))}));
   const mine=new Set([...data.map(d=>d.id).filter(Boolean),...pdRowsDel]),others=pds.filter(p=>!mine.has(p.id));
   const bad=(d,msg,sel)=>{toast(msg,4000);const el=d.row.querySelector(sel);el?.focus();d.row.classList.add("need");setTimeout(()=>d.row.classList.remove("need"),2400);return false};
   for(const [i,d] of data.entries()){
@@ -5827,6 +5846,8 @@ async function savePdSheet(){
       ...(old?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
     if(d.size)p.cakeSize=d.size;else delete p.cakeSize;
     for(const [k,v] of [["dist",d.dist],["panda",d.panda],["promo",d.promo]])if(v==null)delete p[k];else p[k]=v;
+    if(d.shapeOff.length)p.shapeOff=d.shapeOff;else delete p.shapeOff;
+    if(Object.keys(d.shapeAdd).length)p.shapeAdd=d.shapeAdd;else delete p.shapeAdd;
     delete p.pandaAuto;await savePd(p)}
   return true}
 $("pdForm").addEventListener("submit",async e=>{
@@ -6915,18 +6936,22 @@ function initSales(){
 /* ---------- amounts show thousands commas while typing (5,000). Every number box in the app is money, so each one becomes a
    text box whose .value still reads plain digits ("5000") — the rest of the code keeps working unchanged ---------- */
 const INPUT_VAL=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value");
-function fmtMoneyStr(v){let t=String(v??"").replace(/[^\d.]/g,"");if(!t)return"";const i=t.indexOf(".");
+/* neg: a box marked data-neg (e.g. a shape's price difference) may also hold a minus amount */
+function fmtMoneyStr(v,neg){const s=String(v??"").trim(),m=neg&&s.startsWith("-")?"-":"";const t=s.replace(/[^\d.]/g,"");if(!t)return m;
+  return m+fmtMoneyPos(t)}
+function fmtMoneyPos(t){if(!t)return"";const i=t.indexOf(".");
   let a=i<0?t:t.slice(0,i),b=i<0?"":"."+t.slice(i+1).replace(/\./g,"");a=a.replace(/^0+(?=\d)/,"");
   return a.replace(/\B(?=(\d{3})+(?!\d))/g,",")+b}
 function moneyInput(el){
   if(el.__money)return;el.__money=true;
   el.type="text";el.setAttribute("inputmode",el.getAttribute("step")==="1"&&el.id==="posDisc"?"decimal":"numeric");el.classList.add("money");
-  Object.defineProperty(el,"value",{configurable:true,get(){return INPUT_VAL.get.call(this).replace(/,/g,"")},set(v){INPUT_VAL.set.call(this,fmtMoneyStr(v))}});
-  INPUT_VAL.set.call(el,fmtMoneyStr(INPUT_VAL.get.call(el)));
+  const neg=el.hasAttribute("data-neg");
+  Object.defineProperty(el,"value",{configurable:true,get(){const v=INPUT_VAL.get.call(this).replace(/,/g,"");return v==="-"?"":v},set(v){INPUT_VAL.set.call(this,fmtMoneyStr(v,neg))}});
+  INPUT_VAL.set.call(el,fmtMoneyStr(INPUT_VAL.get.call(el),neg));
 }
 /* reformat as the person types, keeping the cursor after the same digit */
 document.addEventListener("input",e=>{const el=e.target;if(!el.__money||e.isComposing)return;
-  const raw=INPUT_VAL.get.call(el),pos=el.selectionStart??raw.length,keep=raw.slice(0,pos).replace(/[^\d.]/g,"").length,out=fmtMoneyStr(raw);
+  const raw=INPUT_VAL.get.call(el),pos=el.selectionStart??raw.length,keep=raw.slice(0,pos).replace(/[^\d.]/g,"").length,out=fmtMoneyStr(raw,el.hasAttribute("data-neg"));
   if(out===raw)return;INPUT_VAL.set.call(el,out);let n=0,c=0;while(c<out.length&&n<keep){if(/[\d.]/.test(out[c]))n++;c++}
   try{el.setSelectionRange(c,c)}catch(x){}},true);
 document.addEventListener("reset",e=>setTimeout(()=>e.target.querySelectorAll?.("input.money").forEach(el=>INPUT_VAL.set.call(el,fmtMoneyStr(INPUT_VAL.get.call(el))))),true);
