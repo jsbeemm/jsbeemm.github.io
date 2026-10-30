@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371358"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793371645"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1077,14 +1077,16 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pd-flvrow{display:flex;gap:6px;align-items:center}.pd-flvrow select{flex:1;min-width:0}.pd-flvrow .chip{white-space:nowrap;padding:7px 12px}
 .pd-rows{display:grid;gap:10px;margin:8px 0 4px}.pd-row{display:grid;gap:6px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--sunk)}
 .pd-row label{display:grid;gap:2px;min-width:0}.pd-row small{font-size:11.5px;color:var(--muted)}
-.pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:520px){.pd-r3{grid-template-columns:1fr 1fr}}
 .pd-flvrow{display:flex;gap:6px;align-items:center}.pd-flvrow select{flex:1;min-width:0}.pd-flvrow .chip{white-space:nowrap;padding:7px 12px}
 .pd-rows{display:grid;gap:10px;margin:8px 0 4px}.pd-row{display:grid;gap:6px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--sunk)}
 .pd-row label{display:grid;gap:2px;min-width:0}.pd-row small{font-size:11.5px;color:var(--muted)}
-.pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:520px){.pd-r3{grid-template-columns:1fr 1fr}}
 .pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.pd-addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pd-addrow select{width:auto;max-width:100%;flex:1 1 220px}
+.pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px}
 .pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
 .pd-row .pd-sh{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 6px}
 .pd-sh span{display:flex;align-items:center;gap:4px;min-width:0}.pd-sh svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.5}
@@ -1763,7 +1765,9 @@ span.star-ic{cursor:default}
         <div id="pdFlvBody" hidden>
           <label class="pd-auto"><input type="checkbox" id="pdFlvCustom"><span>Customized size ရနိုင်သည် (Cake Orders)</span></label>
           <div class="pd-rows" id="pdRows"></div>
-          <button type="button" class="chip pm-add" id="pdRowAdd">+ Add size</button>
+          <div class="pd-addrow"><button type="button" class="chip pm-add" id="pdRowAdd">+ Add size</button>
+            <!-- bring in a Birthday Cake product not yet tied to a flavor (e.g. "1lb Chiffon Cake(အဆင့်)"): it keeps its ID and barcode -->
+            <select id="pdRowLink" aria-label="Add an existing product"></select></div>
         </div>
       </div>
       <div id="pdSingleW">
@@ -2137,7 +2141,9 @@ const sizeIdx=k=>SIZES.findIndex(s=>s.k===k);
    code is the one used for costing). The prices in FLAVORS are only the fallback while no product is tagged. */
 /* a flavor × size can have one product for any shape and/or its own product per shape (own ID, barcode and price);
    with a shape asked for: that shape's own product, else the any-shape one unless it is marked as not made in that shape */
-const cakeProds=(k,s)=>(typeof pds!=="undefined"&&pds||[]).filter(p=>p.cat==="Birthday Cake"&&p.cakeFlavor===k&&p.cakeSize===s&&p.retail!=null&&p.retail!=="");
+const cakeProds=(k,s)=>(typeof pds!=="undefined"&&pds||[]).filter(p=>p.cat==="Birthday Cake"&&p.cakeFlavor===k&&p.cakeSize===s&&!p.cakeTier&&p.retail!=null&&p.retail!=="");
+/* the flavor × size's tier price (a size row ticked "အဆင့်ကိတ်ဈေး"), used for each layer of a tiered cake of more than one layer */
+const tierProd=(k,s)=>(typeof pds!=="undefined"&&pds||[]).find(p=>p.cat==="Birthday Cake"&&p.cakeFlavor===k&&p.cakeSize===s&&p.cakeTier&&p.retail!=null&&p.retail!=="")||null;
 const cakeProd=(k,s,shp)=>{const L=cakeProds(k,s);if(!L.length)return null;const any=L.find(p=>!p.cakeShape);
   if(!shp)return any||L[0];return L.find(p=>p.cakeShape===shp)||(any&&!(any.shapeOff||[]).includes(shp)?any:null)};
 /* Fondant design: only Rainbow Butter and Brownie, at twice their cream-design price */
@@ -2474,7 +2480,10 @@ function readTiers(){if(!hasTiers(tierKind()))return{};return{tiers:tierDraft.ma
 const flvName=k=>FLAVORS.find(x=>x.k===k)?.n||"";
 const szShort=k=>(SIZES.find(s=>s.k===k)?.n||"").replace(/\s*\(.*\)/,"");   /* '8"', or "1 1/2 lb" for a half size */
 /* each layer of a tiered / wedding cake is priced at its flavor's normal cake price for that size */
-const layerPrice=(k,s)=>priceAt(FLAVORS.find(x=>x.k===k),sizeIdx(s));
+/* a tiered cake of more than one layer in all is priced layer by layer at the tier price (အဆင့်ကိတ်ဈေး) where one is set;
+   a single tier of a single layer is just a cake, at the full cake price */
+const tierMulti=()=>tierDraft.filter(t=>!t.dummy).reduce((a,t)=>a+t.layers.length,0)>1;
+const layerPrice=(k,s,multi=tierMulti())=>{const tp=multi&&k?tierProd(k,s):null;return tp?Number(tp.retail):priceAt(FLAVORS.find(x=>x.k===k),sizeIdx(s))};
 const tierPrice=(t,m=1)=>t.dummy?0:t.layers.reduce((a,k)=>a+layerPrice(k,t.size)*m,0);
 /* orders from before the tier builder kept tierN / tierSame / tierFlavors */
 function tiersOf(o){if(o.tiers)return o.tiers;if(!o.tierN)return[];
@@ -5767,19 +5776,20 @@ function pdRowHtml(p){return`<div class="pd-row" data-id="${esc(p?.id||"")}">
     <div class="pd-r1"><label><small>ID *</small><input class="r-code" autocomplete="off" value="${esc(p?.code||"")}"></label><label class="pd-rname"><small>Name *</small><input class="r-name" autocomplete="off" value="${esc(p?.name||"")}"></label>
       <button type="button" class="o-ic danger" data-rrm aria-label="Remove size" title="Remove size">${TRASH_IC}</button></div>
     <div class="pd-r2"><label><small>Cake Orders size</small><select class="r-size"><option value="">— Not in Cake Orders —</option>${SIZES.map(s=>`<option value="${s.k}" ${p?.cakeSize===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
-      <label><small>Shape</small><select class="r-shape"><option value="">— Any shape —</option>${SHAPES.map(s=>`<option value="${s.k}" ${p?.cakeShape===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
+      <label class="pd-tierck"><small>အဆင့်ကိတ်ဈေး</small><span><input type="checkbox" class="r-tier" ${p?.cakeTier?"checked":""}> Tier</span></label>
+      <label ${p?.cakeTier?"hidden":""}><small>Shape</small><select class="r-shape"><option value="">— Any shape —</option>${SHAPES.map(s=>`<option value="${s.k}" ${p?.cakeShape===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
       <label><small>Barcode</small><input class="r-bc ro" readonly value="${esc(p?.barcode||"")}"></label></div>
     <div class="pd-r3"><label><small>Retail *</small><input class="r-retail" type="number" inputmode="numeric" min="0" value="${p?.retail??""}"></label><label><small>Distribution</small><input class="r-dist" type="number" inputmode="numeric" min="0" value="${p?.dist??""}"></label>
       <label><small>Food Panda</small><input class="r-panda" type="number" inputmode="numeric" min="0" value="${p?.panda??""}"></label><label><small>Promotion</small><input class="r-promo" type="number" inputmode="numeric" min="0" value="${p?.promo??""}"></label></div>
     <!-- an any-shape row: the shapes it can be made in (untick the ones it cannot). A shape with its own ID / barcode / price
          gets its own row with that Shape picked above -->
-    <div class="pd-shp" ${p?.cakeShape?"hidden":""}><small>ရတဲ့ Shape များ (ID / Barcode / ဈေး သီးသန့်ရှိတဲ့ shape ကို "+ Add size" နဲ့ row သီးသန့် ထည့်ပြီး Shape ရွေးပါ)</small><div class="pd-shps">${SHAPES.map(s=>`<label class="pd-sh"><input type="checkbox" class="r-shp" value="${s.k}" ${(p?.shapeOff||[]).includes(s.k)?"":"checked"}><span>${shapeIcon(s.k,"")}${s.n}</span></label>`).join("")}</div></div></div>`}
+    <div class="pd-shp" ${p?.cakeShape||p?.cakeTier?"hidden":""}><small>ရတဲ့ Shape များ (ID / Barcode / ဈေး သီးသန့်ရှိတဲ့ shape ကို "+ Add size" နဲ့ row သီးသန့် ထည့်ပြီး Shape ရွေးပါ)</small><div class="pd-shps">${SHAPES.map(s=>`<label class="pd-sh"><input type="checkbox" class="r-shp" value="${s.k}" ${(p?.shapeOff||[]).includes(s.k)?"":"checked"}><span>${shapeIcon(s.k,"")}${s.n}</span></label>`).join("")}</div></div></div>`}
 function pdAddRow(p){$("pdRows").insertAdjacentHTML("beforeend",pdRowHtml(p));const r=$("pdRows").lastElementChild;if(!p){r.querySelector(".r-bc").value=pdNextCodes(1)[0]||"";r.querySelector(".r-code").focus()}return r}
 /* which part of the form shows: the flavor sheet (Birthday Cake with a flavor) or the single-product fields */
 function pdSyncMode(){const bc=isBC();$("pdFlvW").hidden=!bc;const sheet=bc&&!!pdFlv;$("pdFlvBody").hidden=!sheet;$("pdSingleW").hidden=sheet;
   $("pdFlvEdit").hidden=$("pdFlvDel").hidden=!pdFlv;$("pdDel").hidden=!pdEditing||sheet;
   if(sheet){const fl=FLAVORS.find(x=>x.k===pdFlv);$("pdFlvCustom").checked=fl?.custom!==false}}
-function pdLoadFlavor(k){pdFlv=k;pdRowsDel=[];$("pdRows").innerHTML="";
+function pdLoadFlavor(k){pdFlv=k;pdRowsDel=[];$("pdRows").innerHTML="";setTimeout(pdFillLink);
   if(k){const ms=pds.filter(p=>p.cat===BC&&p.cakeFlavor===k).sort((a,b)=>(Number(a.cakeSize)||99)-(Number(b.cakeSize)||99)||String(a.barcode).localeCompare(String(b.barcode)));
     ms.forEach(p=>pdAddRow(p));if(!ms.length)pdAddRow(null)}
   pdSyncMode()}
@@ -5805,8 +5815,16 @@ $("pdFlvEdit").innerHTML=PENCIL;$("pdFlvDel").innerHTML=TRASH_IC;
 $("pdCatSel").addEventListener("change",()=>{pdSyncBarcode();if(!isBC())pdFlv="";pdSyncMode()});
 $("pdFlvSel").addEventListener("change",e=>pdLoadFlavor(e.target.value));
 $("pdRowAdd").addEventListener("click",()=>pdAddRow(null));
+$("pdRows").addEventListener("click",e=>{if(e.target.closest("[data-rrm]"))setTimeout(pdFillLink,300)});   /* a removed row's product can be added back */
+function pdFillLink(){const used=new Set([...$("pdRows").querySelectorAll(".pd-row")].map(r=>r.dataset.id).filter(Boolean));
+  const L=pds.filter(p=>p.cat===BC&&!(p.cakeFlavor&&p.cakeSize)&&!used.has(p.id)).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  $("pdRowLink").innerHTML=`<option value="">+ ရှိပြီးသား product ထည့်ရန်…</option>`+L.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · ${esc(p.code||"")} · ${fmt(p.retail)}</option>`).join("");$("pdRowLink").hidden=!L.length}
+$("pdRowLink").addEventListener("change",e=>{const p=pds.find(x=>x.id===e.target.value);if(p){const r=pdAddRow(p);if(/အဆင့်|tier/i.test(p.name||"")){r.querySelector(".r-tier").checked=true;r.querySelector(".r-tier").dispatchEvent(new Event("change",{bubbles:true}))}r.querySelector(".r-size").focus()}pdFillLink()});
 /* picking a shape for a row hides its "shapes it can be made in" list (that row is just the one shape) */
-$("pdRows").addEventListener("change",e=>{const s=e.target.closest(".r-shape");if(s)s.closest(".pd-row").querySelector(".pd-shp").hidden=!!s.value});
+$("pdRows").addEventListener("change",e=>{const s=e.target.closest(".r-shape");if(s)s.closest(".pd-row").querySelector(".pd-shp").hidden=!!s.value;
+  /* a tier-price row is only for tiered cakes: no shape choices */
+  const tk=e.target.closest(".r-tier");if(tk){const row=tk.closest(".pd-row");row.querySelector(".r-shape").closest("label").hidden=tk.checked;
+    row.querySelector(".pd-shp").hidden=tk.checked||!!row.querySelector(".r-shape").value}});
 $("pdRows").addEventListener("click",async e=>{const b=e.target.closest("[data-rrm]");if(!b)return;const row=b.closest(".pd-row"),id=row.dataset.id;
   if(id){const p=pds.find(x=>x.id===id);if(!await askConfirm(`Remove “${p?.name||""}”?`,"This size (product) is deleted when you Save.","Remove"))return;pdRowsDel.push(id)}
   row.remove()});
@@ -5841,7 +5859,7 @@ async function savePdSheet(){
   const rows=[...$("pdRows").querySelectorAll(".pd-row")],num=v=>{v=String(v).trim();return v===""?null:Math.round(Number(v))};
   const data=rows.map(r=>({row:r,id:r.dataset.id||"",code:r.querySelector(".r-code").value.trim(),name:r.querySelector(".r-name").value.trim().replace(/\s+/g," "),size:r.querySelector(".r-size").value,
     barcode:r.querySelector(".r-bc").value.trim(),retail:num(r.querySelector(".r-retail").value),dist:num(r.querySelector(".r-dist").value),panda:num(r.querySelector(".r-panda").value),promo:num(r.querySelector(".r-promo").value),
-    shape:r.querySelector(".r-shape").value,shapeOff:[...r.querySelectorAll(".r-shp")].filter(c=>!c.checked).map(c=>c.value)}));
+    tier:r.querySelector(".r-tier").checked,shape:r.querySelector(".r-tier").checked?"":r.querySelector(".r-shape").value,shapeOff:[...r.querySelectorAll(".r-shp")].filter(c=>!c.checked).map(c=>c.value)}));
   const mine=new Set([...data.map(d=>d.id).filter(Boolean),...pdRowsDel]),others=pds.filter(p=>!mine.has(p.id));
   const bad=(d,msg,sel)=>{toast(msg,4000);const el=d.row.querySelector(sel);el?.focus();d.row.classList.add("need");setTimeout(()=>d.row.classList.remove("need"),2400);return false};
   for(const [i,d] of data.entries()){
@@ -5852,7 +5870,7 @@ async function savePdSheet(){
     if(others.some(p=>pdNorm(p.code)===pdNorm(d.code))||rest.some(x=>pdNorm(x.code)===pdNorm(d.code)))return bad(d,`ID "${d.code}" ထပ်နေပါတယ်`,".r-code");
     if(others.some(p=>pdNorm(p.name)===pdNorm(d.name))||rest.some(x=>pdNorm(x.name)===pdNorm(d.name)))return bad(d,`"${d.name}" ဆိုတဲ့ နာမည် ထပ်နေပါတယ်`,".r-name");
     if(!d.barcode||others.some(p=>String(p.barcode)===d.barcode)||rest.some(x=>x.barcode===d.barcode))return bad(d,"Barcode ထပ်နေပါတယ်",".r-bc");
-    if(d.size&&(others.some(p=>p.cakeFlavor===pdFlv&&p.cakeSize===d.size&&(p.cakeShape||"")===d.shape)||rest.some(x=>x.size===d.size&&x.shape===d.shape)))return bad(d,`${SIZES.find(s=>s.k===d.size)?.n}${d.shape?" "+SHAPES.find(s=>s.k===d.shape)?.n:""} ကို နှစ်ခါ ထည့်ထားပါတယ်`,".r-size");
+    if(d.size&&(others.some(p=>p.cakeFlavor===pdFlv&&p.cakeSize===d.size&&(p.cakeShape||"")===d.shape&&!!p.cakeTier===d.tier)||rest.some(x=>x.size===d.size&&x.shape===d.shape&&x.tier===d.tier)))return bad(d,`${SIZES.find(s=>s.k===d.size)?.n}${d.shape?" "+SHAPES.find(s=>s.k===d.shape)?.n:""} ကို နှစ်ခါ ထည့်ထားပါတယ်`,".r-size");
   }
   const now=new Date().toISOString();
   /* the flavor's own setting: whether Cake Orders may take a customized size */
@@ -5865,6 +5883,7 @@ async function savePdSheet(){
     if(d.size)p.cakeSize=d.size;else delete p.cakeSize;
     for(const [k,v] of [["dist",d.dist],["panda",d.panda],["promo",d.promo]])if(v==null)delete p[k];else p[k]=v;
     if(d.shape)p.cakeShape=d.shape;else delete p.cakeShape;
+    if(d.tier)p.cakeTier=true;else delete p.cakeTier;
     if(!d.shape&&d.shapeOff.length)p.shapeOff=d.shapeOff;else delete p.shapeOff;
     delete p.shapeAdd;
     delete p.pandaAuto;await savePd(p)}
