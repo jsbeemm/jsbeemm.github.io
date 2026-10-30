@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793370012"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793370210"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -553,9 +553,11 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pd-bcview,.pd-bcsizes{margin:6px 0 10px}.pd-bcview .chip{font-weight:600}
 .pd-fgrp{grid-column:1/-1;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:10px 12px;display:grid;gap:8px}
 .pd-fgrp > b{font-size:15px}.pd-fgrp > b small{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
-.pd-szs{display:flex;flex-wrap:wrap;gap:6px}
-.pd-szc{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:10px;background:var(--sunk);font-size:13px}
-.pd-szc>span:first-child,.pd-srow>span:first-child{display:inline-flex;align-items:center;gap:4px}
+/* sizes line up in even columns: size · shape (if any) · price on the right */
+.pd-szs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.pd-szc{display:grid;grid-template-columns:2.6em 18px minmax(0,1fr);align-items:center;gap:6px;padding:5px 10px;border-radius:10px;background:var(--sunk);font-size:13px}
+.pd-szc>i{display:flex;font-style:normal}.pd-szc>b{justify-self:end;white-space:nowrap}
+.pd-srow>span:first-child{display:inline-flex;align-items:center;gap:4px}
 .pd-shpi{width:17px;height:17px;flex:none;fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
 .pd-szc b{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:12.5px}
 .pd-srows{display:grid}.pd-srow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:14px}
@@ -5676,7 +5678,7 @@ function renderPdBc(list,admin){const en=LANG==="en",linked=list.filter(p=>p.cak
     const ks=[...new Set(linked.map(p=>p.cakeFlavor))].sort((a,b)=>(flvOf(a).no||99)-(flvOf(b).no||99));
     $("pdList").innerHTML=(ks.map(k=>{const fl=flvOf(k),ps=linked.filter(p=>p.cakeFlavor===k).sort((a,b)=>szNum(a.cakeSize)-szNum(b.cakeSize)||shpOrd(a)-shpOrd(b));
       return`<div class="pd-fgrp"><b>${fl.no?fl.no+". ":""}${esc(fl.n)} <small>${ps.length} size${ps.length===1?"":"s"}</small></b>
-        <div class="pd-szs">${ps.map(p=>`<span class="pd-szc"${click(p)}><span>${esc(szName(p.cakeSize))}${pdShp(p)}</span><b>${fmt(p.retail)}</b></span>`).join("")}</div></div>`}).join("")+otherBox)
+        <div class="pd-szs">${ps.map(p=>`<span class="pd-szc"${click(p)}><span>${esc(szName(p.cakeSize))}</span><i>${pdShp(p)}</i><b>${fmt(p.retail)}</b></span>`).join("")}</div></div>`}).join("")+otherBox)
       ||`<div class="prq-empty">No products.</div>`}
   else{const sizes=[...new Set(linked.map(p=>p.cakeSize))].sort((a,b)=>szNum(a)-szNum(b));
     if(!sizes.includes(pdBcSize))pdBcSize=sizes[0]||"";
