@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793355699"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793370012"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -555,6 +555,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pd-fgrp > b{font-size:15px}.pd-fgrp > b small{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
 .pd-szs{display:flex;flex-wrap:wrap;gap:6px}
 .pd-szc{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:10px;background:var(--sunk);font-size:13px}
+.pd-szc>span:first-child,.pd-srow>span:first-child{display:inline-flex;align-items:center;gap:4px}
+.pd-shpi{width:17px;height:17px;flex:none;fill:none;stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
 .pd-szc b{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:12.5px}
 .pd-srows{display:grid}.pd-srow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:7px 2px;border-top:1px solid var(--line);font-size:14px}
 .pd-srow:first-child{border-top:0}.pd-srow small{color:var(--muted);font-family:var(--mono);font-size:12px}.pd-srow b{font-family:var(--mono);font-weight:500;color:var(--accent)}
@@ -5663,22 +5665,25 @@ function renderPd(){
    by size — pick a size, see which flavors come in it. Products not linked to a flavor are listed under "Other". */
 var pdBcMode="list",pdBcSize="";
 const szNum=k=>Number(k)||99;
+/* a size made for one shape only (its own ID / barcode / price) shows that shape's outline beside the size */
+const pdShp=p=>p.cakeShape&&SHAPES.some(s=>s.k===p.cakeShape)?`<svg class="pd-shpi" viewBox="0 0 40 40" role="img" aria-label="${esc(SHAPES.find(s=>s.k===p.cakeShape).n)}"><title>${esc(SHAPES.find(s=>s.k===p.cakeShape).n)}</title>${SHAPES.find(s=>s.k===p.cakeShape).svg}</svg>`:"";
+const shpOrd=p=>p.cakeShape?1+SHAPES.findIndex(s=>s.k===p.cakeShape):0;
 function renderPdBc(list,admin){const en=LANG==="en",linked=list.filter(p=>p.cakeFlavor&&p.cakeSize),other=list.filter(p=>!(p.cakeFlavor&&p.cakeSize));
   const szName=k=>(SIZES.find(s=>s.k===k)||{}).n||k,flvOf=k=>FLAVORS.find(x=>x.k===k)||{n:k},click=p=>admin?` data-pd="${esc(p.id)}" role="button" tabindex="0"`:"";
   const otherBox=other.length?`<div class="pd-fgrp pd-other"><b>${en?"Other (not linked to a Cake Orders flavor)":"အခြား (Cake Orders ကိတ်သားနဲ့ မချိတ်ရသေး)"} <small>${other.length}</small></b>
     <div class="pd-szs">${other.map(p=>`<span class="pd-szc"${click(p)}><span data-t="${esc(p.name)}"></span><b>${fmt(p.retail)}</b></span>`).join("")}</div></div>`:"";
   if(pdBcMode==="flavor"){
     const ks=[...new Set(linked.map(p=>p.cakeFlavor))].sort((a,b)=>(flvOf(a).no||99)-(flvOf(b).no||99));
-    $("pdList").innerHTML=(ks.map(k=>{const fl=flvOf(k),ps=linked.filter(p=>p.cakeFlavor===k).sort((a,b)=>szNum(a.cakeSize)-szNum(b.cakeSize));
+    $("pdList").innerHTML=(ks.map(k=>{const fl=flvOf(k),ps=linked.filter(p=>p.cakeFlavor===k).sort((a,b)=>szNum(a.cakeSize)-szNum(b.cakeSize)||shpOrd(a)-shpOrd(b));
       return`<div class="pd-fgrp"><b>${fl.no?fl.no+". ":""}${esc(fl.n)} <small>${ps.length} size${ps.length===1?"":"s"}</small></b>
-        <div class="pd-szs">${ps.map(p=>`<span class="pd-szc"${click(p)}><span>${esc(szName(p.cakeSize))}</span><b>${fmt(p.retail)}</b></span>`).join("")}</div></div>`}).join("")+otherBox)
+        <div class="pd-szs">${ps.map(p=>`<span class="pd-szc"${click(p)}><span>${esc(szName(p.cakeSize))}${pdShp(p)}</span><b>${fmt(p.retail)}</b></span>`).join("")}</div></div>`}).join("")+otherBox)
       ||`<div class="prq-empty">No products.</div>`}
   else{const sizes=[...new Set(linked.map(p=>p.cakeSize))].sort((a,b)=>szNum(a)-szNum(b));
     if(!sizes.includes(pdBcSize))pdBcSize=sizes[0]||"";
     $("pdBcSizes").innerHTML=sizes.map(k=>`<button type="button" class="chip" data-bcs="${esc(k)}" aria-pressed="${pdBcSize===k}">${esc(szName(k))} <small>${linked.filter(p=>p.cakeSize===k).length}</small></button>`).join("");
     const ps=linked.filter(p=>p.cakeSize===pdBcSize).sort((a,b)=>(flvOf(a.cakeFlavor).no||99)-(flvOf(b.cakeFlavor).no||99));
     $("pdList").innerHTML=ps.length?`<div class="pd-fgrp"><b>${esc(szName(pdBcSize))} <small>${ps.length} ${en?"flavors":"မျိုး"}</small></b>
-      <div class="pd-srows">${ps.map(p=>{const fl=flvOf(p.cakeFlavor);return`<div class="pd-srow"${click(p)}><span>${fl.no?fl.no+". ":""}${esc(fl.n)}</span><small>${esc(p.code||"")}</small><b>${fmt(p.retail)}</b></div>`}).join("")}</div></div>`+otherBox
+      <div class="pd-srows">${ps.map(p=>{const fl=flvOf(p.cakeFlavor);return`<div class="pd-srow"${click(p)}><span>${fl.no?fl.no+". ":""}${esc(fl.n)}${pdShp(p)}</span><small>${esc(p.code||"")}</small><b>${fmt(p.retail)}</b></div>`}).join("")}</div></div>`+otherBox
       :`<div class="prq-empty">No products${pdQ?" match the search":""}.</div>`}
   $("pdList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("pdBcView").addEventListener("click",e=>{const b=e.target.closest("[data-bcv]");if(!b)return;pdBcMode=b.dataset.bcv;renderPd()});
