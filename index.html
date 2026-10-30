@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793372838"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793373023"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2432,7 +2432,7 @@ function readForm(){
   /* how many of this same cake (cupcakes keep their own piece count): the cake price below is for one, times this */
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
-  const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?miniPrice(size):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
+  const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
   const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?`${qty} pcs`:""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
@@ -2735,11 +2735,12 @@ function renderSizes(want){
 function syncPrice(prefill){
   const k=document.querySelector('input[name="fFlavor"]:checked')?.value||"";
   const s=document.querySelector('input[name="fSize"]:checked')?.value||"";
-  const sk=smallKind(),on=sk?sk==="cupcake":manualPrice(k,s);   /* Mini cake is priced from the list; Cupcake is typed */
+  /* Mini cake is priced from the list (a Fondant Mini cake is typed for now); Cupcake is typed */
+  const sk=smallKind(),miniF=sk==="mini"&&$("fMiniDeco").value==="fondant",on=sk?sk==="cupcake"||miniF:manualPrice(k,s);
   $("priceWrap").hidden=!on;$("sizeWrap").hidden=!!sk||s!=="custom";
   const fl=FLAVORS.find(x=>x.k===k);
   if(prefill)$("fPrice").value="";
-  $("priceHint").textContent=sk==="cupcake"?"Cupcake ဈေးနှုန်း (အားလုံးပေါင်း) ကို ရိုက်ထည့်ပါ။":sk==="mini"?"Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":fondantOn()&&s==="custom"?"Fondant design · Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"
+  $("priceHint").textContent=sk==="cupcake"?"Cupcake ဈေးနှုန်း (အားလုံးပေါင်း) ကို ရိုက်ထည့်ပါ။":sk==="mini"?"Fondant Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":fondantOn()&&s==="custom"?"Fondant design · Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"
     :s==="custom"?"Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"စာရင်းမပါသော ကိတ်သားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။";
 }
 $("optFlavor").addEventListener("change",()=>{renderSizes();syncPrice(true)});
@@ -2748,7 +2749,7 @@ $("optSize").addEventListener("change",()=>syncPrice(true));
 $("optDeco").addEventListener("change",()=>{const c=document.querySelector('input[name="fFlavor"]:checked');
   if(fondantOn()&&c&&!FONDANT_OK.includes(c.value)){c.checked=false;toast("Fondant design: Rainbow Butter / Brownie ကိတ်သားသာ ရပါသည်")}
   renderSizes();syncPrice(true);updateReceipt()});
-$("fMiniDeco").addEventListener("change",updateReceipt);
+$("fMiniDeco").addEventListener("change",()=>{syncPrice(true);updateReceipt()});
 let moreOpen=false;
 function setMore(open){
   moreOpen=open;$("flvMore").hidden=!open;$("moreBtn").setAttribute("aria-expanded",open);
@@ -3207,7 +3208,7 @@ function fillForm(o){
   renderSizes(sz);syncPrice(false);
   $("fSizeCustom").value=sz==="custom"?(o.sizeName||""):"";
   /* a typed price (unlisted flavor, customized size, Wedding Cake) is per cake: an order of several holds price × count */
-  $("fPrice").value=o.cakeType==="wedding"||manualPrice(fk,sz)?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
+  $("fPrice").value=o.cakeType==="wedding"||manualPrice(fk,sz)||(o.decoType==="mini"&&o.miniDeco==="fondant")?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
   syncTierBox();
   document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;
   $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
