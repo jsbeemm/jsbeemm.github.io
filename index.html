@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793442262"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793442424"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2493,11 +2493,11 @@ function readTiers(){if(!hasTiers(tierKind()))return{};return{tiers:tierDraft.ma
 const flvName=k=>FLAVORS.find(x=>x.k===k)?.n||"";
 const szShort=k=>(SIZES.find(s=>s.k===k)?.n||"").replace(/\s*\(.*\)/,"");   /* '8"', or "1 1/2 lb" for a half size */
 /* each layer of a tiered / wedding cake is priced at its flavor's normal cake price for that size */
-/* a tiered cake of more than one layer in all is priced layer by layer at the tier price (အဆင့်ကိတ်ဈေး) where one is set;
-   a single tier of a single layer is just a cake, at the full cake price */
-const tierMulti=()=>tierDraft.filter(t=>!t.dummy).reduce((a,t)=>a+t.layers.length,0)>1;
-const layerPrice=(k,s,multi=tierMulti())=>{const tp=multi&&k?tierProd(k,s):null;return tp?Number(tp.retail):priceAt(FLAVORS.find(x=>x.k===k),sizeIdx(s))};
-const tierPrice=(t,m=1)=>t.dummy?0:t.layers.reduce((a,k)=>a+layerPrice(k,t.size)*m,0);
+/* the tier price (အဆင့်ကိတ်ဈေး) is only for a Fondant tiered cake where cakes of the same size are stacked in one tier
+   (e.g. two 6" layers); tiers of different sizes (6" on 8") and Cream design cakes are at the full cake price */
+const tierStacked=t=>!!t&&!t.dummy&&fondantOn()&&(t.layers||[]).length>1;
+const layerPrice=(k,s,stacked=false)=>{const tp=stacked&&k?tierProd(k,s):null;return tp?Number(tp.retail):priceAt(FLAVORS.find(x=>x.k===k),sizeIdx(s))};
+const tierPrice=(t,m=1)=>t.dummy?0:t.layers.reduce((a,k)=>a+layerPrice(k,t.size,tierStacked(t))*m,0);
 /* orders from before the tier builder kept tierN / tierSame / tierFlavors */
 function tiersOf(o){if(o.tiers)return o.tiers;if(!o.tierN)return[];
   const fl=[o.flavor,...(o.tierSame===false?(o.tierFlavors||[]):Array(o.tierN-1).fill(o.flavor))];
@@ -2512,7 +2512,7 @@ function renderTierList(){
   const wed=tierKind()==="wedding",n=tierDraft.length,m=fondantOn()?2:1,en=LANG==="en";
   const tl=i=>(en?`Tier ${i+1}`:`အဆင့် ${i+1}`)+(i===0?(en?" (bottom)":" (အောက်ဆုံး)"):i===n-1?(en?" (top)":" (အပေါ်ဆုံး)"):"");
   const sizeOpts=v=>SIZES.slice().sort((a,b)=>Number(a.k)-Number(b.k)).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
-  const flvOpts=(v,sz)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other").map(x=>{const p=layerPrice(x.k,sz)*m;
+  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other").map(x=>{const p=layerPrice(x.k,sz,st)*m;
     /* no flavor number here: "1." / "2." next to the sizes read like pounds */
     return`<option value="${x.k}" ${x.k===v?"selected":""} ${p||x.k===v?"":"disabled"}>${esc(x.n)}${p?(wed?"":` · ${p.toLocaleString("en-US")}`):` · ${en?"n/a":"မရပါ"}`}</option>`}).join("");   /* a Wedding Cake is priced as a whole, so its layers show no price */
   $("tierList").innerHTML=tierDraft.map((t,i)=>({t,i})).reverse().map(({t,i})=>`<div class="tier-card ${t.dummy?"dum":""}" data-ti="${i}">
@@ -2522,7 +2522,7 @@ function renderTierList(){
       <button type="button" class="rm" data-trm aria-label="Remove tier" ${n<=1?"disabled":""}>×</button></div>
     ${t.dummy?`<p class="tier-dnote">${en?"Dummy cake (display dummy) – no flavor":"Dummy cake (ပြသရန် အတု) – ကိတ်သား မလို"}</p>
       <div class="tier-layer tier-dl"><span>${en?"Height":"အမြင့်"}</span><span class="cnt"><button type="button" class="cnt-b" data-dh="-0.5" aria-label="${en?"Lower by ½ inch":"½ လက်မ နိမ့်ရန်"}" ${dumH(t)<=1?"disabled":""}>−</button><b>${dumH(t)}"</b><button type="button" class="cnt-b" data-dh="0.5" aria-label="${en?"Higher by ½ inch":"½ လက်မ မြင့်ရန်"}" ${dumH(t)>=12?"disabled":""}>+</button></span></div>`
-      :t.layers.map((k,j)=>`<div class="tier-layer" data-li="${j}"><span>${en?"Layer":"အလွှာ"} ${j+1}</span><select class="tier-flv" aria-label="Tier ${i+1} layer ${j+1} flavor">${flvOpts(k,t.size)}</select><button type="button" class="rm" data-lrm aria-label="Remove layer" ${t.layers.length<2?"disabled":""}>×</button></div>`).join("")
+      :t.layers.map((k,j)=>`<div class="tier-layer" data-li="${j}"><span>${en?"Layer":"အလွှာ"} ${j+1}</span><select class="tier-flv" aria-label="Tier ${i+1} layer ${j+1} flavor">${flvOpts(k,t.size,tierStacked(t))}</select><button type="button" class="rm" data-lrm aria-label="Remove layer" ${t.layers.length<2?"disabled":""}>×</button></div>`).join("")
        +`<button type="button" class="link tier-addl" data-ladd>+ ${en?"Add layer":"အလွှာ ထပ်ထည့်ရန်"}</button>`}
   </div>`).join("");
   drawTiers()}
