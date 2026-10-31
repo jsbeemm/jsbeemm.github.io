@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793443813"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793444164"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2760,7 +2760,10 @@ $("optSize").addEventListener("change",()=>syncPrice(true));
 /* switching to Fondant design drops a flavor it cannot be made on */
 $("optDeco").addEventListener("change",()=>{const c=document.querySelector('input[name="fFlavor"]:checked');
   if(fondantOn()&&c&&!FONDANT_OK.includes(c.value)){c.checked=false;toast("Fondant design: Rainbow Butter / Brownie ကိတ်သားသာ ရပါသည်")}
-  renderSizes();syncPrice(true);updateReceipt()});
+  renderSizes();syncPrice(true);
+  /* a tiered / wedding cake's layer prices (shown in its flavor lists) follow Cream / Fondant too */
+  if(hasTiers(tierKind()))renderTierList();
+  updateReceipt()});
 $("fMiniDeco").addEventListener("change",()=>{syncPrice(true);updateReceipt()});
 let moreOpen=false;
 function setMore(open){
