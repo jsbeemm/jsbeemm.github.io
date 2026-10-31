@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793373023"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793418365"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1334,7 +1334,7 @@ span.star-ic{cursor:default}
           <!-- Mini cake (4" / 5") and Cupcake (a number of pieces) take no flavor and a typed price -->
           <p class="grp" style="margin-top:12px" id="sizeGrp">အရွယ်အစား</p>
           <div class="opts" id="optSize"></div>
-          <label class="f" id="qtyWrap" style="margin-top:8px;max-width:220px" hidden><span>Cupcake အရေအတွက် <b>*</b> <small>(အနည်းဆုံး 6 လုံး)</small></span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="6"></label>
+          <label class="f" id="qtyWrap" style="margin-top:8px;max-width:220px" hidden><span>Cupcake အရေအတွက် <b>*</b></span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="1"></label>
           <label class="f" id="sizeWrap" style="margin-top:8px" hidden><span>Customized အရွယ်အစား <b>*</b></span><input id="fSizeCustom" placeholder="ဥပမာ – 18&quot; / 20 x 30 cm"></label>
           <div id="optFlavor">
             <p class="grp">ပုံမှန်ကိတ်သား</p>
@@ -2717,7 +2717,7 @@ function renderSizes(want){
   /* Mini cake: 4" / 5" only; Cupcake: a number of pieces instead of a size; neither picks a flavor or (cupcake) a shape */
   const sk=smallKind();
   $("optFlavor").hidden=!!sk;$("optSize").hidden=$("sizeGrp").hidden=sk==="cupcake";$("qtyWrap").hidden=sk!=="cupcake";$("cntWrap").hidden=sk==="cupcake";
-  $("shapeGrp").hidden=$("optShape").hidden=sk==="cupcake";if(sk==="cupcake"){$("shapeWrap").hidden=true;if(!$("fQty").value.trim())$("fQty").value="6"}
+  $("shapeGrp").hidden=$("optShape").hidden=sk==="cupcake";if(sk==="cupcake")$("shapeWrap").hidden=true;
   if(sk){$("otherWrap").hidden=true;
     $("optSize").innerHTML=sk==="mini"?SMALL.mini.sizes.map(s=>`<label class="opt sku sz"><input type="radio" name="fSize" value="${s.k}" ${s.k===want?"checked":""}><span><span class="sku-t">${s.n}</span><small class="sku-p">${miniPrice(s.k).toLocaleString("en-US")} Ks</small></span></label>`).join(""):"";return}
   const szBtn=(s,i)=>{const p=fl?priceAt(fl,i):1,off=!other&&!p;
@@ -3340,7 +3340,7 @@ function formMissing(f){
   if(isBak(f)){need(!bakItemsOf(f).length,"Bakery products","bakSet");need(!!f.date&&f.date<minDate,"ယနေ့ သို့မဟုတ် နောက်ရက် နေ့စွဲ","fDatePick");return{miss,at}}
   const sk=SMALL[f.decoType]?f.decoType:"";
   /* cupcakes: at least 6 pieces, more is fine */
-  if(sk==="cupcake")need(f.qty<6,"Cupcake အရေအတွက် (အနည်းဆုံး 6 လုံး)","fQty");else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
+  if(sk==="cupcake")need(f.qty<1,"Cupcake အရေအတွက်","fQty");   /* no minimum: any number from 1 */else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
   if(!sk&&!hasTiers(f.cakeType))need(!f.flavor,"ကိတ်သား","optFlavor");if(sk!=="cupcake")need(!f.shape,"ပုံသဏ္ဌာန်","optShape");
   /* every cake carries a message (cupcakes and Wedding Cakes excepted); write "-" when the customer wants none */
   if(msgNeeded(f))need(!String(f.msg||"").trim(),"ကိတ်ပေါ်ရေးမည့်စာ","fMsg");
