@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793442424"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793443657"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1303,18 +1303,6 @@ span.star-ic{cursor:default}
           <legend>ကိတ်အမျိုးအစား</legend>
           <div class="opts" id="optTiers"><label class="opt"><input type="radio" name="fTiersR" value="std" checked><span>ပုံမှန်</span></label><label class="opt"><input type="radio" name="fTiersR" value="tier"><span>အဆင့်ကိတ်</span></label><label class="opt"><input type="radio" name="fTiersR" value="custom"><span>Customized</span></label><label class="opt"><input type="radio" name="fTiersR" value="wedding"><span>Wedding Cake</span></label><label class="opt"><input type="radio" name="fTiersR" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fTiersR" value="cupcake"><span>Cupcake</span></label></div>
           <select id="fTiers" hidden aria-hidden="true" tabindex="-1"><option value="std">ပုံမှန်</option><option value="tier">အဆင့်ကိတ်</option><option value="custom">Customized</option><option value="wedding">Wedding Cake</option></select>
-          <!-- tiered / wedding cake builder: each tier has a size and one or more layers, each layer its own flavor;
-               a wedding cake tier can also be a Dummy cake (display dummy). The drawing beside it follows the chosen shape. -->
-          <div id="tierBox" class="tier-box" hidden>
-            <div class="tier-build">
-              <button type="button" class="add-charge" id="tierAdd">+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)</button>
-              <div id="tierList" class="tier-list"></div>
-              <p class="hint" id="tierHint" hidden></p>
-            </div>
-            <div class="tier-pic" id="tierPic" aria-label="Cake drawing"></div>
-          </div>
-          <label class="f" id="customWrap" style="margin-top:12px" hidden><span>Customized အသေးစိတ် <b>*</b></span>
-            <textarea id="fCustom" rows="3" placeholder="ဥပမာ – ၃ ဆင့်ကိတ်၊ အောက်ဆုံး 10&quot; Chiffon၊ အလယ် 8&quot; Brownie၊ အပေါ် 6&quot; Red Velvet"></textarea></label>
         </fieldset>
 
         <fieldset id="cakeSet">
@@ -1334,6 +1322,19 @@ span.star-ic{cursor:default}
           <label class="f" id="shapeWrap" style="margin-top:8px" hidden><span>Customized ပုံသဏ္ဌာန် <b>*</b></span>
             <input id="fShapeCustom" placeholder="ဥပမာ – ဂဏန်း 5 ပုံ၊ ကာတွန်းပုံ"></label>
           <!-- Mini cake (4" / 5") and Cupcake (a number of pieces) take no flavor and a typed price -->
+          <!-- (moved into the Cake frame, above Size) tiered / wedding cake builder: each tier has a size and one or more layers, each layer its own flavor;
+               a wedding cake tier can also be a Dummy cake (display dummy). The drawing beside it follows the chosen shape. -->
+          <div id="tierBox" class="tier-box" hidden>
+            <div class="tier-build">
+              <button type="button" class="add-charge" id="tierAdd">+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)</button>
+              <div id="tierList" class="tier-list"></div>
+              <p class="hint" id="tierHint" hidden></p>
+            </div>
+            <div class="tier-pic" id="tierPic" aria-label="Cake drawing"></div>
+          </div>
+          <label class="f" id="customWrap" style="margin-top:12px" hidden><span>Customized အသေးစိတ် <b>*</b></span>
+            <textarea id="fCustom" rows="3" placeholder="ဥပမာ – ၃ ဆင့်ကိတ်၊ အောက်ဆုံး 10&quot; Chiffon၊ အလယ် 8&quot; Brownie၊ အပေါ် 6&quot; Red Velvet"></textarea></label>
+
           <p class="grp" style="margin-top:12px" id="sizeGrp">အရွယ်အစား</p>
           <div class="opts" id="optSize"></div>
           <!-- cupcakes: how many in Cream design and how many in Fondant design (either can be 0) -->
