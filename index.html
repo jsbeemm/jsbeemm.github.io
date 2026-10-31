@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793443657"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793443813"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1364,7 +1364,7 @@ span.star-ic{cursor:default}
           <!-- order: design code, then the design note, then the design photos, then the cake message -->
           <div class="dc-row"><label class="f" style="margin-top:12px;max-width:220px"><span>Design Code</span><input id="fDesign" placeholder="ဥပမာ – D-012" autocapitalize="characters"></label>
             <!-- a design made for the first time -->
-            <label class="check dc-new"><input type="checkbox" id="fDesignNew"> New (အသစ်)</label></div>
+            <label class="check dc-new"><input type="checkbox" id="fDesignNew"> Design အသစ်</label></div>
           <label class="f" style="margin-top:12px"><span>ကိတ် Design မှတ်ချက်</span><textarea id="fDesignNote" rows="2" placeholder="ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…"></textarea></label>
           <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted);margin-top:12px">
             <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(၄ ပုံအထိ · ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)</small></span>
@@ -2161,8 +2161,8 @@ const cakeProd=(k,s,shp)=>{const L=cakeProds(k,s);if(!L.length)return null;const
 const FONDANT_OK=["f6","f7"];
 function fondantOn(){return document.querySelector('input[name="fDeco"]:checked')?.value==="fondant"}
 /* after the cake's name: Fondant design, and "× 10" for several of the same cake */
-/* the design code with "NEW" after it for a design made for the first time (or "NEW" alone) */
-const dcLabel=o=>[o.design,o.designNew?"NEW":""].filter(Boolean).join(" · ");
+/* the design code with "Design အသစ်" after it for a design made for the first time (or that alone) */
+const dcLabel=o=>[o.design,o.designNew?"Design အသစ်":""].filter(Boolean).join(" · ");
 const fondTag=o=>(o.decoType==="fondant"||o.miniDeco==="fondant"?" · Fondant design":"")+(o.count>1?` × ${o.count}`:"");
 /* Mini cake (4" or 5") and Cupcake (pieces): no flavor is picked and the price is typed */
 const SMALL={mini:{n:"Mini cake",sizes:[{k:"m4",n:'4"'},{k:"m5",n:'5"'}]},cupcake:{n:"Cupcake"}};
