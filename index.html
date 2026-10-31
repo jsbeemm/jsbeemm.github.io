@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793418365"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793421703"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1085,6 +1085,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pd-r1{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:6px;align-items:end}.pd-r2{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:6px}.pd-r3{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 @media (max-width:520px){.pd-r3{grid-template-columns:1fr 1fr}}
 .pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.cup-qrow{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px}.cup-qrow label.f{margin:0}
 .pd-addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pd-addrow select{width:auto;max-width:100%;flex:1 1 220px}
 .pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px}
 .pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
@@ -1334,7 +1335,10 @@ span.star-ic{cursor:default}
           <!-- Mini cake (4" / 5") and Cupcake (a number of pieces) take no flavor and a typed price -->
           <p class="grp" style="margin-top:12px" id="sizeGrp">အရွယ်အစား</p>
           <div class="opts" id="optSize"></div>
-          <label class="f" id="qtyWrap" style="margin-top:8px;max-width:220px" hidden><span>Cupcake အရေအတွက် <b>*</b></span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="1"></label>
+          <!-- cupcakes: how many in Cream design and how many in Fondant design (either can be 0) -->
+          <div id="qtyWrap" class="cup-qty" style="margin-top:8px" hidden><p class="grp" style="margin:0 0 4px">Cupcake အရေအတွက် <b style="color:var(--accent);font-weight:500">*</b></p>
+            <div class="cup-qrow"><label class="f"><span>Cream design</span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+            <label class="f"><span>Fondant design</span><input id="fQtyF" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label></div></div>
           <label class="f" id="sizeWrap" style="margin-top:8px" hidden><span>Customized အရွယ်အစား <b>*</b></span><input id="fSizeCustom" placeholder="ဥပမာ – 18&quot; / 20 x 30 cm"></label>
           <div id="optFlavor">
             <p class="grp">ပုံမှန်ကိတ်သား</p>
@@ -2423,7 +2427,8 @@ const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p
 const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
 function readForm(){
   /* flavor and size start unpicked on a new order ("") and must be chosen before saving */
-  const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qty=sk==="cupcake"?Math.max(0,parseInt(String($("fQty").value).replace(/\D/g,""))||0):0;
+  const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qn=id=>Math.max(0,parseInt(String($(id).value).replace(/\D/g,""))||0),
+    qC=sk==="cupcake"?qn("fQty"):0,qF=sk==="cupcake"?qn("fQtyF"):0,qty=qC+qF;
   const flavor=sk||tk?"":document.querySelector('input[name="fFlavor"]:checked')?.value||"";
   const size=tk?"":sk==="cupcake"?"cup":document.querySelector('input[name="fSize"]:checked')?.value||"";
   const fl=FLAVORS.find(x=>x.k===flavor),isOther=flavor==="other";
@@ -2433,7 +2438,7 @@ function readForm(){
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
   const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
-  const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?`${qty} pcs`:""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
+  const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?(qF?[qC&&`${qC} Cream`,`${qF} Fondant`].filter(Boolean).join(" + ")+" pcs":`${qty} pcs`):""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
     return{note:r.querySelector(".cn").value.trim(),amt:unit*qty,...(qty>1?{qty,unit}:{}),...(r.dataset.ph?{photo:r.dataset.ph}:{})}}).filter(c=>c.note||c.amt||c.photo);
@@ -2444,7 +2449,7 @@ function readForm(){
     channel:$("fChannel").value,
     chOther:$("fChannel").value==="Others"?$("fChOther").value.trim():"",flavor,flavorName,size,sizeName,basePrice,
     /* the Bakery Products short code of this flavor × size (used for costing); a wedding cake takes the "Wedding Cake" product's code */
-    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty}:{}),...(count>1?{count}:{}),
+    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty,...(qF?{cupCream:qC,cupFondant:qF}:{})}:{}),...(count>1?{count}:{}),
     shape:sk==="cupcake"?"":document.querySelector('input[name="fShape"]:checked')?.value||"",
     shapeCustom:sk!=="cupcake"&&document.querySelector('input[name="fShape"]:checked')?.value==="custom"?$("fShapeCustom").value.trim():"",cakeType:$("fTiers").value,custom:$("fTiers").value!=="std"?$("fCustom").value.trim():"",...readTiers(),
     msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
@@ -3203,7 +3208,7 @@ function fillForm(o){
   document.querySelectorAll('input[name="fFlavor"]').forEach(i=>i.checked=i.value===fk);
   $("fOtherName").value=fk==="other"?(o.flavorName||""):"";
   document.querySelector(`input[name="fDeco"][value="${DECO_N[o.decoType]?o.decoType:"cream"}"]`).checked=true;
-  $("fQty").value=o.decoType==="cupcake"?(o.qty||""):"";$("fCount").value=o.count>1?o.count:1;
+  $("fQty").value=o.decoType==="cupcake"?(o.cupFondant?(o.cupCream||""):(o.qty||"")):"";$("fQtyF").value=o.decoType==="cupcake"?(o.cupFondant||""):"";$("fCount").value=o.count>1?o.count:1;
   const sz=small?(o.size||""):SIZES.some(s=>s.k===o.size)||o.size==="custom"?o.size:"1";
   renderSizes(sz);syncPrice(false);
   $("fSizeCustom").value=sz==="custom"?(o.sizeName||""):"";
