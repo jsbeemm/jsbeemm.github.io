@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793421703"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793442132"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2528,10 +2528,11 @@ function renderTierList(){
 const szInch=k=>SIZES.find(s=>s.k===k)?.in||6;
 /* the cake mould's height in inches: round 6" and 8" moulds are 2.5", every other mould is 3" */
 const mouldH=(inch,sk)=>sk==="circle"&&(inch===6||inch===8)?2.5:3;
-function tiersSvg(tiers,shape,pick){const ts=(tiers||[]).map((t,i)=>t&&{...t,_i:i}).filter(t=>t&&t.size);if(!ts.length)return"";
+/* ink: on the printed slip the drawing uses only the slip's colour (the order-number colour): no black, no grey fills */
+function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t,_i:i}).filter(t=>t&&t.size);if(!ts.length)return"";
   /* a Dummy cake tier is one plain dashed block, as high as set in inches */
   const sk=shapeKey(shape||"circle"),kind=sk==="square"||sk==="rect"?"box":sk==="circle"?"cyl":"flat";
-  const INK="#2B1B23",MUT="#7A6570",ACC="#C8285F",BODY="#FFFFFF",SIDE="#EEE7EA",DUM="#EEE7EA";
+  const INK=ink||"#2B1B23",MUT=ink||"#7A6570",ACC=ink||"#C8285F",BODY="#FFFFFF",SIDE=ink?"#FFFFFF":"#EEE7EA",DUM=ink?"#FFFFFF":"#EEE7EA";
   const PX=20,parts=[];let y0=0,minY=0,maxX=0,botExt=0,totIn=0,topY=0;const dims=[];   /* 20 px per inch, across and up */
   /* label sizes grow with the cake: a tall cake is scaled down a lot on the slip, so its text starts bigger */
   const tierH=t=>{const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base?(Number(t.size)||1)/(Number(base.k)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,sk)*PX*hm};
@@ -3923,7 +3924,7 @@ function slipHTML(o,live=false){
     ${dn?`<div class="pl">${esc(tr("Design မှတ်ချက် –"))} ${esc(dn)}</div>`:""}
     ${o.msg?`<div class="pr-msg">${esc(o.msg)}</div>`:""}</div>
     ${(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
-      const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape)}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
+      const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape,false,live?undefined:printColor(o.date))}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
       return pics.length||tb?`<div class="pr-pics">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
     ${/* a bakery order has no Cake row, so Total's own top line follows the items; a second rule would double it */
       isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount?"":`<hr class="pr-rule">`}
