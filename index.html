@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545876"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545967"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7297,7 +7297,7 @@ function initItems(){
 const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
 function renderItems(){
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itPhotos").hidden=!admin||!canStore();$("itJsOnly").setAttribute("aria-pressed",itJs);
+  $("itImport").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
