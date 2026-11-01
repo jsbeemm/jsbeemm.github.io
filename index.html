@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526313"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526703"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2361,7 +2361,20 @@ addEventListener("online",()=>{if(mode==="db")setSync("db")});addEventListener("
 async function saveOrder(o){
   if(col){await col.doc(o.id).set(o)}
   else{const i=orders.findIndex(x=>x.id===o.id);if(i>=0)orders[i]=o;else orders.push(o);localSave();render()}
+  newFlavorTodos(o).catch(()=>{});
 }
+/* an order on a flavor that is not on the list ("အခြားကိတ်သား") puts two tasks on the Admins' to-do list:
+   work out its costing, and give it a short code. Once per flavor name; a shared list every Admin sees. */
+const ADMIN_TD="role:admin";
+const strHash=s=>{let h=5381;for(const c of String(s))h=((h*33)^c.codePointAt(0))>>>0;return h.toString(36)};
+async function newFlavorTodos(o){
+  const nm=String(o?.flavorName||"").trim();if(o?.flavor!=="other"||!nm||o.status==="cancelled")return;
+  if(FLAVORS.some(x=>x.k!=="other"&&pdNorm(x.n)===pdNorm(nm)))return;   /* already a flavor on the list */
+  const key=strHash(pdNorm(nm)),at=new Date().toISOString();
+  for(const[s,what]of[["cost","Costing တွက်ရန်"],["code","Short code ထည့်ရန်"]]){
+    const t={id:`nf-${key}-${s}`,owner:ADMIN_TD,text:`New flavor “${nm}” (Order ${o.no||""}) — ${what}`,done:false,at,auto:true};
+    if(db){const ref=db.collection("todos").doc(t.id);const ex=await ref.get();if(!ex.exists)await ref.set(t)}
+    else if(!tds.some(x=>x.id===t.id)){tds.push(t);tdLocalSave();renderTd();renderHome()}}}
 async function patchOrder(id,patch){
   if(col){await col.doc(id).update(patch)}
   else{const o=orders.find(x=>x.id===id);Object.assign(o,patch);localSave();render()}
@@ -5175,7 +5188,7 @@ function renderHome(){
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
   const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
-  const tdN=tds.filter(t=>!t.done&&!!t.assignTo&&!!tdMe()&&sameId(t.assignTo,tdMe())).length;
+  const tdN=tds.filter(t=>!t.done&&((!!t.assignTo&&!!tdMe()&&sameId(t.assignTo,tdMe()))||(t.owner===ADMIN_TD&&can("admin")))).length;
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
@@ -6281,7 +6294,7 @@ var tds=[],tdCol=null,tdUnsub=null,tdOwner=null,tdShowDone=false;
    they open their to-do list. They can tick it done; only the person who made it edits or deletes it. */
 var tdNotified=new Set();
 function tdMine(t){return!!db&&!!t&&!!t.assignTo&&sameId(t.assignTo,tdMe())&&!sameId(t.owner,tdMe())}
-function tdIsOwner(t){return!db||sameId(t.owner,tdMe())}
+function tdIsOwner(t){return!db||sameId(t.owner,tdMe())||(t.owner===ADMIN_TD&&can("admin"))}
 function renderTdNag(){const el=$("tdNag");if(!el||!tds||!tdNotified)return;const n=tds.filter(t=>!t.done&&tdMine(t)&&t.seen===false);
   el.hidden=!n.length||document.body.classList.contains("locked")||view==="mytodo";
   el.innerHTML=n.length?`<div class="due-h"><span>📝 သင့်ကို assign လုပ်ထားတဲ့ task အသစ် ${n.length} ခု ရှိပါတယ်</span><button type="button" class="btn" data-tdnag>ကြည့်ရန်</button></div>`:"";
@@ -6302,7 +6315,7 @@ function renderTd(){
   const row=t=>`<div class="td-item ${t.done?"done":""}" data-td="${esc(t.id)}">
       <label class="td-chk"><input type="checkbox" ${t.done?"checked":""} aria-label="Done"></label>
       <div class="td-main"><span class="td-text" data-t="${esc(t.text)}"></span>
-        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}</span></div>
+        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}${t.owner===ADMIN_TD?`<small class="td-due">👥 Admin</small>`:""}</span></div>
       ${tdIsOwner(t)?`<span class="ex-btns"><button type="button" class="o-ic" data-tdedit aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-tddel aria-label="Delete" title="Delete">${TRASH_IC}</button></span>`:""}</div>`;
   $("tdList").innerHTML=(open.length?open.map(row).join(""):`<div class="prq-empty">Nothing to do. Tap “+ New task”.</div>`)
     +(done.length?`<button type="button" class="td-dtog" id="tdDoneTog">${tdShowDone?"▾":"▸"} Done (${done.length})</button>${tdShowDone?done.map(row).join(""):""}`:"");
@@ -6398,10 +6411,12 @@ function initTd(){
   if(!u)return;
   tdCol=db.collection("todos");
   /* my own tasks and the tasks assigned to me, as one list */
-  let own=[],asg=[];const merge=()=>{const m=new Map();own.concat(asg).forEach(t=>m.set(t.id,t));tds=[...m.values()];renderTd();renderTdNag();if(view==="home"||view==="todo")renderHome()};
+  let own=[],asg=[],adm=[];const merge=()=>{const m=new Map();own.concat(asg,adm).forEach(t=>m.set(t.id,t));tds=[...m.values()];renderTd();renderTdNag();if(view==="home"||view==="todo")renderHome()};
   const u1=tdCol.where("owner","==",u).onSnapshot(s=>{own=s.docs.map(d=>({...d.data(),id:d.id})).filter(t=>t.owner===u);merge()},()=>{});
   const u2=tdCol.where("assignTo","==",u).onSnapshot(s=>{asg=s.docs.map(d=>({...d.data(),id:d.id})).filter(t=>t.assignTo===u);merge()},()=>{});
-  tdUnsub=()=>{u1();u2()};
+  /* Admins also get the shared Admin tasks (new flavor costing / short code) */
+  const u3=can("admin")?tdCol.where("owner","==",ADMIN_TD).onSnapshot(s=>{adm=s.docs.map(d=>({...d.data(),id:d.id}));merge()},()=>{}):()=>{};
+  tdUnsub=()=>{u1();u2();u3()};
 }
 
 
