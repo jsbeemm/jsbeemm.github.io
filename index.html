@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550450"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550723"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2138,7 +2138,7 @@ span.star-ic{cursor:default}
             <input id="soPhone" inputmode="tel" autocomplete="off" placeholder="Phone" aria-label="Phone"></div>
           <div class="vo-dl"><h3>Delivery Info</h3>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
-              <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change address</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
+              <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
           <div class="vo-no"><span class="k">SO No#</span><span id="soNoTxt">—</span>
             <span class="k">Channel#</span><select id="soChannel" class="cap" aria-label="Channel"></select>
             <span class="k">Date</span><span id="soDate" class="cap"></span></div>
@@ -7775,17 +7775,20 @@ $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-
 /* delivery info is one text: name and phone, then the address (older vouchers kept them apart) */
 const soDelivOf=v=>v?.deliv!=null?v.deliv:[[v?.dName,v?.dPhone].filter(Boolean).join(" "),v?.dAddr].filter(Boolean).join("\n");
 /* the address's own receiver if it has one, else the customer */
-function soDelivFor(p,i){const rc=ptRecvOf(p)[i]||{},addr=ptAddrsOf(p)[i]||"";
+function soDelivFor(p,i,own){const rc=own?{}:ptRecvOf(p)[i]||{},addr=ptAddrsOf(p)[i]||"";
   return[[(rc.n||$("soCustQ").value||p?.name||"").trim(),(rc.p||(rc.n?"":$("soPhone").value)).trim()].filter(Boolean).join(" "),addr].filter(Boolean).join("\n")}
 /* a customer with more than one address: pick which one goes on the voucher (the default one first) */
 /* "Change address" (shown when the customer has more than one) lists the customer's addresses; picking one puts it on the voucher */
 function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
   const rcs=ptRecvOf(p);
-  $("soAddrMenu").innerHTML=ads.map((a,i)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}"><span data-t="${esc((rcs[i]?.n?`${rcs[i].n} · `:"")+a)}"></span>${i===di?`<small>Default</small>`:""}</button>`).join("");
+  /* "Change info": each address with its own receiver, and also with the customer's own name and phone */
+  const who=(n,ph)=>[n,ph].filter(Boolean).join(" "),me0=who($("soCustQ").value.trim()||p?.name||"",$("soPhone").value.trim()||ptPhonesOf(p)[0]||"");
+  $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc(lbl+" · "+a)}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
+    return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):opt(true,me0)}).join("");
   $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=ads.length<2&&!rcs.some(Boolean)}
-$("soAddrBtn").addEventListener("click",()=>{$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
+$("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAddrs(pts.find(x=>x.id===$("soCust").value));$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
-  if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr));$("soAddrMenu").hidden=true});
+  if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true});
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
