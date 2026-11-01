@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793519731"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793519881"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5943,7 +5943,8 @@ $("pdFlvDel").addEventListener("click",async()=>{const k=pdFlv;if(!k||!can("admi
   try{await saveFlavors(flvList().filter(x=>x.k!==k));$("pdFlvSel").innerHTML=pdFlvOpts("");pdLoadFlavor("");toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 $("pdPandaAuto").addEventListener("change",pdSyncPanda);
 $("pdRetail").addEventListener("input",()=>{if($("pdPandaAuto").checked)pdSyncPanda();if($("pdDistAuto").checked)pdSyncDist()});
-$("pdDistAuto").addEventListener("change",pdSyncDist);
+/* unticking Auto clears the Distribution price (a product with none keeps no Distribution price) */
+$("pdDistAuto").addEventListener("change",()=>{if(!$("pdDistAuto").checked)$("pdDist").value="";pdSyncDist()});
 $("pdPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="pdFile"||!e.target.files[0])return;
   const f=e.target.files[0];pdPhoto={id:null,url:"",busy:true};
   try{const b=await shrinkImage(f,900);pdPhoto.url=await blobToData(b);pdRenderPhoto();const s=await storePhoto(b);pdPhoto={id:s.id,url:s.url}}
