@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544396"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544751"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -872,6 +872,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .prq-ph-btns .chip{display:inline-flex;align-items:center;gap:6px}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
 .home-tile .ht-logo{width:44px;height:44px;border-radius:12px;object-fit:cover}
+/* the shop tiles: just a big logo, with today's figures under it */
+.home-tile.ht-brand{justify-items:center;text-align:center;padding:16px 20px}
+.home-tile.ht-brand .ht-logo{width:120px;height:120px;border-radius:20px}
+@media (max-width:560px){.home-tile.ht-brand .ht-logo{width:96px;height:96px}}
 .brand-bar[hidden]{display:none}
 .brand-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .brand-btn{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;font-weight:700;padding:10px 14px;cursor:pointer;text-align:left}
@@ -1465,8 +1469,8 @@ span.star-ic{cursor:default}
   <section id="viewHome" hidden>
     <div class="home-grid">
       <!-- one tile per shop: Mr.Bee Bakery and JS Bakery Supply open their own Sale page -->
-      <button type="button" class="home-tile" id="goSale"><img class="ht-logo" src="img/brand-mrbee.jpg" alt=""><b>Mr.Bee Bakery</b><small id="homeSaleN"></small></button>
-      <button type="button" class="home-tile" id="goSaleJs"><img class="ht-logo" src="img/brand-js.jpg" alt=""><b>JS Bakery Supply</b><small id="homeSaleJsN"></small></button>
+      <button type="button" class="home-tile ht-brand" id="goSale" aria-label="Mr.Bee Bakery"><img class="ht-logo" src="img/brand-mrbee.jpg" alt="Mr.Bee Bakery"><small id="homeSaleN"></small></button>
+      <button type="button" class="home-tile ht-brand" id="goSaleJs" aria-label="JS Bakery Supply"><img class="ht-logo" src="img/brand-js.jpg" alt="JS Bakery Supply"><small id="homeSaleJsN"></small></button>
       <button type="button" class="home-tile" id="goTodo"><span class="ht-ic" aria-hidden="true">✅</span><b>To-do list</b><small id="homeTodoN"></small></button>
       <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Purchase &amp; Expense</b><small id="homePEN"></small></button>
       <button type="button" class="home-tile" id="goProd"><span class="ht-ic" aria-hidden="true">🥐</span><b>Bakery Products</b><small id="homeProdN"></small></button>
