@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793531695"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793543746"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -871,6 +871,17 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 @media (max-width:600px){.home-who{max-width:34vw}body:not(.off-home) .head-right{flex-direction:column-reverse;align-items:flex-end;gap:2px}body:not(.off-home) .sync{min-height:0}}
 .prq-ph-btns .chip{display:inline-flex;align-items:center;gap:6px}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.brand-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.brand-btn{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;font-weight:700;padding:10px 14px;cursor:pointer;text-align:left}
+.brand-btn img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none}
+.brand-btn[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+@media (max-width:560px){.brand-btn{padding:8px 10px;gap:8px;font-size:13px}.brand-btn img{width:40px;height:40px}}
+.it-list{display:grid;gap:6px}@media (max-width:560px){#viewItems .pd-bar{flex-wrap:wrap}#viewItems .pd-bar input[type=search]{flex:1 1 100%;max-width:none}}
+.it-row{display:grid;grid-template-columns:110px 1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.it-row code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.it-row .it-nm{font-weight:600;overflow-wrap:anywhere}
+.it-row small{grid-column:2/4;color:var(--muted)}.it-row .it-pr{font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
+.it-js{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#7a4a12;background:#f6e3c7;border-radius:999px;padding:1px 8px;vertical-align:middle}
+@media (max-width:560px){.it-row{grid-template-columns:1fr auto}.it-row code{grid-column:1/3}.it-row small{grid-column:1/3}}
 .home-tile{display:grid;justify-items:start;gap:4px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;padding:22px 20px;cursor:pointer;box-shadow:var(--shadow)}
 .home-tile:hover{border-color:var(--accent)}
 .home-tile .ht-ic{font-size:34px;line-height:1}
@@ -1461,11 +1472,27 @@ span.star-ic{cursor:default}
 
   <!-- SALE: Cake Orders · POS · Sales report -->
   <section id="viewSale" hidden>
+    <!-- Sale is split by shop: Mr.Bee Bakery and JS Bakery Supply, each with its own POS and Sales report -->
+    <div class="brand-bar" id="saleBrands" role="tablist" aria-label="Shop">
+      <button type="button" class="brand-btn" data-brand="mb" role="tab"><img src="img/brand-mrbee.jpg" alt=""><span>Mr.Bee Bakery</span></button>
+      <button type="button" class="brand-btn" data-brand="js" role="tab"><img src="img/brand-js.jpg" alt=""><span>JS Bakery Supply</span></button>
+    </div>
     <div class="home-grid">
       <button type="button" class="home-tile" id="goOrders"><span class="ht-ic" aria-hidden="true">🎂</span><b>Orders</b><small id="homeOrdersN"></small></button>
       <button type="button" class="home-tile" id="goPos"><span class="ht-ic" aria-hidden="true">🧾</span><b>POS</b><small id="homePosN"></small></button>
       <button type="button" class="home-tile" id="goSaleRep"><span class="ht-ic" aria-hidden="true">📊</span><b>Sales report</b><small id="homeSaleRepN"></small></button>
+      <button type="button" class="home-tile" id="goItems"><span class="ht-ic" aria-hidden="true">📦</span><b>Items</b><small id="homeItemsN"></small></button>
     </div>
+  </section>
+  <!-- ITEMS: every raw item (Items Excel). Those marked "Sales Allowed" with a Selling Price are sold at JS Bakery Supply;
+       Mr.Bee uses all of them (costing, toys / toppers charged on a cake) -->
+  <section id="viewItems" hidden>
+    <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search items" autocomplete="off">
+      <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
+      <button type="button" class="chip" id="itImport" hidden title="Items Excel (Short Code, Name, Category, … Selling Price) ထည့်ရန် / ပြင်ရန်">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden></div>
+    <div class="chips pd-cats" id="itCats"></div>
+    <p class="side-help" id="itCount"></p>
+    <div class="it-list" id="itList"></div>
   </section>
   <section id="viewPos" hidden>
     <div class="chips pos-tabs" id="posTabs" hidden><button type="button" class="chip" data-pos-tab="sell">Sell</button><button type="button" class="chip" data-pos-tab="report">Daily report</button></div>
@@ -4577,7 +4604,7 @@ $("tabNew").addEventListener("click",()=>{if(editingId)resetForm();refreshNo();u
 $("fabNew").addEventListener("click",()=>{if(view!=="orders"){if(!canWriteOrders())return;go("orders")}if(editingId)resetForm();refreshNo();updateReceipt();showTab("new");scrollTo({top:0})});
 /* the tab bar keeps "+ New order" only while the form is open; on the list the floating button replaces it */
 /* the page title already says "Cake Orders", so the tab bar only appears with the form (← back to the list · + new order) */
-function syncNewBtns(){const inOrders=view==="orders",onList=$("viewNew").hidden;$("tabBar").hidden=!inOrders||onList;$("tabRow").hidden=$("tabBar").hidden;$("tabNew").hidden=onList||!canWriteOrders();$("fabNew").hidden=!(inOrders&&onList||view==="sale"||view==="home")||!canWriteOrders()}   /* Home has it too */
+function syncNewBtns(){const inOrders=view==="orders",onList=$("viewNew").hidden;$("tabBar").hidden=!inOrders||onList;$("tabRow").hidden=$("tabBar").hidden;$("tabNew").hidden=onList||!canWriteOrders();$("fabNew").hidden=!(inOrders&&onList||view==="sale"&&saleBrand!=="js"||view==="home")||!canWriteOrders()}   /* Home has it too */
 /* back to top: shown once the page has scrolled about a screen down */
 const syncTop=()=>{$("toTop").hidden=scrollY<Math.max(400,innerHeight*.8)};
 addEventListener("scroll",syncTop,{passive:true});
@@ -5174,7 +5201,7 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["<span>Items</span>",""]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
@@ -5182,7 +5209,7 @@ function go(v){
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
-  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
+  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
@@ -5190,7 +5217,7 @@ function go(v){
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos")initItems();if(v==="items")renderItems();
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -5207,9 +5234,12 @@ function renderHome(){
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
-   $("homePosN").textContent=`Today · ${ts.length} sale${ts.length===1?"":"s"}`;$("homeSaleRepN").textContent=`Today · ${fmt(amt)}`;
+   /* the POS / Sales report tiles count the shop picked on the Sale page */
+   const bs=ts.filter(x=>brandOf(x)===saleBrand),bamt=bs.reduce((a,x)=>a+Number(x.total||0),0);
+   $("homePosN").textContent=`Today · ${bs.length} sale${bs.length===1?"":"s"}`;$("homeSaleRepN").textContent=`Today · ${fmt(bamt)}`;
    $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(amt)}`;
   }
+  syncSaleBrand();
   /* the account owner sees how much money is waiting for their confirmation */
   /* Sales report: people allowed in Accounts ("View sales report"), plus anyone with money waiting for their confirmation */
   $("goSaleRep").hidden=!can("sales.report")&&!sales.some(isMineToConf);
@@ -5244,7 +5274,7 @@ addEventListener("scroll",()=>{const y=scrollY,dy=y-botLastY;
 addEventListener("resize",placeHome);document.fonts?.ready.then(placeHome);
 $("homeBtn").addEventListener("click",()=>go("home"));
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale",items:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview and Print setup keep their ✕ on the right instead) */
@@ -6743,6 +6773,27 @@ function initRcv(){
   Object.values(RCV_LISTS).forEach(L=>db.doc(L.doc).onSnapshot(s=>{L.list=s.exists?s.data().list||null:null},()=>{}));
   rcvCol.onSnapshot(s=>{rcvs=s.docs.map(d=>({...d.data(),id:d.id}));rcvRefresh()},()=>{rcvCol=null});
 }
+/* ---------- Sale is split by shop: Mr.Bee Bakery ("mb") and JS Bakery Supply ("js"). Each has its own POS, its own sale
+   numbers (S… / J…) and its own Sales report. Mr.Bee sells Bakery Products; JS sells the Items marked "Sales Allowed"
+   with a Selling Price. Sales made before the split have no brand and count as Mr.Bee. ---------- */
+var saleBrand=(()=>{try{return localStorage.getItem("cakeSaleBrand")==="js"?"js":"mb"}catch(e){return"mb"}})();
+const brandOf=s=>s?.brand==="js"?"js":"mb";
+const BRAND_N={mb:"Mr.Bee Bakery",js:"JS Bakery Supply"};
+function setSaleBrand(b){if(b===saleBrand)return;saleBrand=b==="js"?"js":"mb";try{localStorage.setItem("cakeSaleBrand",saleBrand)}catch(e){}
+  /* a cart belongs to one shop */
+  posCart=[];posRet=[];posCustId="";posTier="retail";posCat="";posQ="";posMode="sell";const q=$("posQ");if(q)q.value="";
+  posRepPay=posRepProd=posRepRet=null;renderHome();syncNewBtns();if(saleBrand==="js")initItems()}
+function syncSaleBrand(){document.querySelectorAll("#saleBrands [data-brand]").forEach(b=>b.setAttribute("aria-selected",b.dataset.brand===saleBrand));
+  /* cake orders are Mr.Bee's only */
+  $("goOrders").hidden=saleBrand==="js";
+  const n=items.filter(i=>i.sale&&i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
+$("saleBrands").addEventListener("click",e=>{const b=e.target.closest("[data-brand]");if(b)setSaleBrand(b.dataset.brand)});
+/* the products a POS sells: Bakery Products at Mr.Bee, the JS sale items at JS (as products with one Retail price) */
+let jsPdCache=null,jsPdFrom=null;
+function jsPds(){if(jsPdFrom===items)return jsPdCache;jsPdFrom=items;
+  return jsPdCache=items.filter(i=>i.sale&&Number(i.price)>0).map(i=>({id:i.id,code:i.code||"",name:i.name,cat:i.cat||"Other",retail:Number(i.price),barcode:i.code||"",js:true}))}
+const posP=()=>saleBrand==="js"?jsPds():pds;
+const posCatList=()=>saleBrand==="js"?[...new Set(jsPds().map(p=>p.cat))].sort().map(name=>({name})):pdCats();
 /* ---------- POS: sell Bakery Products over the counter. Everyone signed in can sell; only Admins delete a sale.
    Each sale is a doc in the shared "sales" collection; the price list (Retail / Distribution / Food Panda) comes from Bakery Products. ---------- */
 const POS_TIERS=[["retail","Retail"],["dist","Wholesale"],["panda","Food Panda"]];
@@ -6751,17 +6802,18 @@ const tierName=k=>(POS_TIERS.find(t=>t[0]===k)||[,k])[1];
 /* the customer decides the price: none = Retail, Food Panda = Food Panda price, any other customer in the list = Wholesale (Distribution).
    A product without that price falls back: Wholesale → Retail, Food Panda → Retail + 30% rounded up to 500 */
 const has=v=>v!=null&&v!=="";
-const posPrice=(p,t=posTier)=>{if(!p)return null;if(t==="dist")return has(p.dist)?Number(p.dist):has(p.retail)?Number(p.retail):null;
+const posPrice=(p,t=posTier)=>{if(!p)return null;if(p.js)return has(p.retail)?Number(p.retail):null;if(t==="dist")return has(p.dist)?Number(p.dist):has(p.retail)?Number(p.retail):null;
   if(t==="panda")return has(p.panda)?Number(p.panda):has(p.retail)?pandaOf(p.retail):null;return has(p.retail)?Number(p.retail):null};
 const isPanda=c=>/food\s*panda/i.test(c?.name||"");
 const posCustObj=()=>posCustId?pts.find(p=>p.id===posCustId)||null:null;
 function posFillCust(){const sel=$("posCustSel");if(!sel)return;
-  /* POS sells to Mr.Bee customers only (JS customers are not listed) */
-  if(posCustObj()?.type==="js"){posCustId="";posTier="retail"}
-  const cs=pts.filter(p=>p.type==="customer").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  /* each shop sells to its own customers: Mr.Bee customers at Mr.Bee, JS customers at JS (JS has one price for everyone) */
+  const ct=saleBrand==="js"?"js":"customer";
+  if(posCustObj()&&posCustObj().type!==ct){posCustId="";posTier="retail"}
+  const cs=pts.filter(p=>p.type===ct).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   const opt=p=>`<option value="${esc(p.id)}" ${p.id===posCustId?"selected":""}>${esc(p.name)}</option>`;
   sel.innerHTML=`<option value="">Walk-in · Retail price</option>`
-    +[["customer","Mr.Bee Customers"]].map(([k,n])=>{const l=cs.filter(p=>p.type===k);return l.length?`<optgroup label="${n}">${l.map(opt).join("")}</optgroup>`:""}).join("");
+    +[[ct,saleBrand==="js"?"JS Customers":"Mr.Bee Customers"]].map(([k,n])=>{const l=cs.filter(p=>p.type===k);return l.length?`<optgroup label="${n}">${l.map(opt).join("")}</optgroup>`:""}).join("");
   $("posTierNote").textContent=tierName(posTier)+" price"}
 function saleLocalSave(){try{localStorage.setItem("cakeSales",JSON.stringify(sales))}catch(e){}}
 async function saveSale(s){if(saleCol){await saleCol.doc(s.id).set(s);return}
@@ -6792,7 +6844,7 @@ function renderPosCartBtn(){const n=posCount(),r=posRetCount(),b=$("posCartBtn")
 /* ---- POS: Birthday Cakes tagged with a Cake Orders flavor show as one tile per flavor; tapping it asks for the size
    (like the order form: flavor and size apart), and each size is still its own product with its own short code ---- */
 const grpOf=p=>p.cat==="Birthday Cake"&&p.cakeFlavor?p.cakeFlavor:null;
-const grpMembers=k=>pds.filter(p=>grpOf(p)===k).sort((a,b)=>(Number(a.cakeSize)||99)-(Number(b.cakeSize)||99));
+const grpMembers=k=>posP().filter(p=>grpOf(p)===k).sort((a,b)=>(Number(a.cakeSize)||99)-(Number(b.cakeSize)||99));
 /* the product list with each flavor's sizes folded into one entry, kept where its first size stood */
 function posItems(list){const seen=new Set(),out=[];
   for(const p of list){const k=grpOf(p);if(!k){out.push(p);continue}if(seen.has(k))continue;seen.add(k);out.push({__grp:k})}return out}
@@ -6812,7 +6864,7 @@ function renderPosSz(){
   $("posSzRows").innerHTML=grpMembers(posSzFl).map(p=>{const pr=ret?retPrice(p).price:posPrice(p),l=list.find(x=>x.pid===p.id);
     return`<div class="pos-line pos-szrow" data-szp="${esc(p.id)}"><div class="pos-ln"><b>${esc((SIZES.find(s=>s.k===p.cakeSize)||{}).n||p.cakeSize)}</b><small>${pr==null?"—":fmt(pr)} · ${esc(p.code||"")}</small></div>
       <div class="pos-qty"><button type="button" class="o-ic" data-szq="-1" aria-label="Less" ${l?"":"disabled"}>−</button><span>${l?l.qty:0}</span><button type="button" class="o-ic" data-szq="1" aria-label="More" ${pr==null?"disabled":""}>+</button></div></div>`}).join("")}
-$("posSzRows").addEventListener("click",e=>{const b=e.target.closest("[data-szq]");if(!b)return;const p=pds.find(x=>x.id===b.closest("[data-szp]").dataset.szp);if(!p)return;
+$("posSzRows").addEventListener("click",e=>{const b=e.target.closest("[data-szq]");if(!b)return;const p=posP().find(x=>x.id===b.closest("[data-szp]").dataset.szp);if(!p)return;
   if(Number(b.dataset.szq)>0)posAdd(p);else{const list=posMode==="return"?posRet:posCart,i=list.findIndex(l=>l.pid===p.id);if(i>=0){list[i].qty--;if(list[i].qty<=0)list.splice(i,1)}renderPosCartBtn()}
   renderPosSz();renderPos()});
 function renderPos(){
@@ -6822,6 +6874,7 @@ function renderPos(){
   $("posMode").hidden=posTab!=="sell";
   /* the POS tile opens Sell and the Sales report tile opens the report, so the Sell / Daily report switch is not shown */
   $("pageTitle").innerHTML=posTab==="report"?"Sales <span>report</span>":PAGES.pos[0];
+  $("pageSub").textContent=BRAND_N[saleBrand];$("pageSub").hidden=false;
   if(posTab==="report"){renderPosRep();return}
   posFillCust();
   /* walk-in returns are made from the invoice in Sales report, so "↩ Return" is offered only with a customer chosen */
@@ -6830,9 +6883,9 @@ function renderPos(){
   document.querySelectorAll("[data-pos-mode]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.posMode===posMode));
   $("posSell").classList.toggle("ret-mode",posMode==="return");
   $("posModeHint").textContent=posMode==="return"?"Tap the products that came back — valued at this customer's last price":"";
-  const q=pdNorm(posQ),inQ=pds.filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
+  const q=pdNorm(posQ),inQ=posP().filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
   $("posCats").innerHTML=`<button type="button" class="chip" data-poscat="" aria-pressed="${!posCat}">All</button>`
-    +pdCats().filter(c=>inQ.some(p=>p.cat===c.name)).map(c=>`<button type="button" class="chip" data-poscat="${esc(c.name)}" aria-pressed="${posCat===c.name}">${PD_IC[c.name]||"🏷️"} ${esc(c.name)}</button>`).join("");
+    +posCatList().filter(c=>inQ.some(p=>p.cat===c.name)).map(c=>`<button type="button" class="chip" data-poscat="${esc(c.name)}" aria-pressed="${posCat===c.name}">${PD_IC[c.name]||"🏷️"} ${esc(c.name)}</button>`).join("");
   const list=inQ.filter(p=>!posCat||p.cat===posCat).sort((a,b)=>(posPrice(a)==null)-(posPrice(b)==null)||String(a.barcode).localeCompare(String(b.barcode)));
   /* when anything is being returned, every tile in the cart keeps a Return row (empty if not returned) so Sell and Return line up across a row */
   const anyRet=posRet.length>0;
@@ -6846,25 +6899,25 @@ function renderPos(){
   $("posGrid").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 $("posMode").addEventListener("click",e=>{const b=e.target.closest("[data-pos-mode]");if(!b)return;posMode=b.dataset.posMode;renderPos()});
-$("posCustSel").addEventListener("change",e=>{posCustId=e.target.value;const c=posCustObj();posTier=!c?"retail":isPanda(c)?"panda":"dist";
+$("posCustSel").addEventListener("change",e=>{posCustId=e.target.value;const c=posCustObj();posTier=!c||saleBrand==="js"?"retail":isPanda(c)?"panda":"dist";
   /* sold lines take the new price list; returned lines this customer's last price; anything without a price is taken out */
   const drop=[];
-  posCart=posCart.filter(l=>{const pr=posPrice(pds.find(p=>p.id===l.pid));if(pr==null){drop.push(l.name);return false}l.price=pr;return true});
+  posCart=posCart.filter(l=>{const pr=posPrice(posP().find(p=>p.id===l.pid));if(pr==null){drop.push(l.name);return false}l.price=pr;return true});
   if(!posCustId&&posRet.length){posRet=[];toast("Walk-in return ကို Sales report ထဲက invoice ကနေ လုပ်ပါ",4000)}
-  posRet=posRet.filter(l=>{const p=pds.find(x=>x.id===l.pid),r=p?retPrice(p):{price:null};if(r.price==null){drop.push(l.name);return false}l.price=r.price;if(r.last)l.last=true;else delete l.last;return true});
+  posRet=posRet.filter(l=>{const p=posP().find(x=>x.id===l.pid),r=p?retPrice(p):{price:null};if(r.price==null){drop.push(l.name);return false}l.price=r.price;if(r.last)l.last=true;else delete l.last;return true});
   if(drop.length)toast(`${tierName(posTier)} ဈေးမရှိလို့ ဖယ်လိုက်ပါတယ် – ${drop.join(", ")}`,5000);renderPos();if(posCartShown())renderPosCart()});
 $("posCats").addEventListener("click",e=>{const b=e.target.closest("[data-poscat]");if(!b)return;posCat=b.dataset.poscat;renderPos()});
 $("posQ").addEventListener("input",e=>{posQ=e.target.value;renderPos()});
 /* a barcode scanner types the number and presses Enter: an exact barcode or ID goes straight into the cart */
 $("posQ").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const v=pdNorm(posQ);if(!v)return;
-  const p=pds.find(p=>String(p.barcode)===v||pdNorm(p.code)===v)||(()=>{const m=pds.filter(p=>pdNorm(p.name).includes(v));return m.length===1?m[0]:null})();
+  const p=posP().find(p=>String(p.barcode)===v||pdNorm(p.code)===v)||(()=>{const m=posP().filter(p=>pdNorm(p.name).includes(v));return m.length===1?m[0]:null})();
   if(p){posAdd(p);posQ="";e.target.value="";renderPos()}else toast("မတွေ့ပါ")});
 $("posGrid").addEventListener("click",e=>{
   /* − / + beside a count change that count only (whatever mode is on); at 0 the line goes */
   const a=e.target.closest("[data-adj]");if(a){const pid=a.closest("[data-posp]").dataset.posp,list=a.dataset.adj==="ret"?posRet:posCart,i=list.findIndex(l=>l.pid===pid);
     if(i>=0){list[i].qty+=Number(a.dataset.d);if(list[i].qty<=0)list.splice(i,1)}renderPosCartBtn();renderPos();return}
   const g=e.target.closest("[data-posfl]");if(g){posSzFl=g.dataset.posfl;renderPosSz();$("posSzDlg").hidden=false;return}
-  const t=e.target.closest("[data-posp]");if(!t)return;posAdd(pds.find(p=>p.id===t.dataset.posp));
+  const t=e.target.closest("[data-posp]");if(!t)return;posAdd(posP().find(p=>p.id===t.dataset.posp));
   t.classList.remove("hit");void t.offsetWidth;t.classList.add("hit");renderPos()});
 $("posTabs").addEventListener("click",e=>{const b=e.target.closest("[data-pos-tab]");if(!b)return;posTab=b.dataset.posTab;renderPos()});
 /* ---- camera barcode scan: live video where the browser allows the camera, otherwise a photo from the phone camera ---- */
@@ -6872,7 +6925,7 @@ let zxReader=null,scanSeen={};
 async function zxLib(){await loadLib("lib/zxing-0.21.3.min.js");return window.ZXing}
 /* a printed code may carry a check digit or a leading 0 (UPC/EAN), so those count as the same barcode */
 function scanFind(t){const v=String(t||"").trim(),n=v.replace(/^0+/,"");
-  return pds.find(p=>{const b=String(p.barcode||"");return b&&(b===v||b===n||(v.length===b.length+1&&v.startsWith(b))||(n.length===b.length+1&&n.startsWith(b)))})||pds.find(p=>pdNorm(p.code)===pdNorm(v))}
+  return posP().find(p=>{const b=String(p.barcode||"");return b&&(b===v||b===n||(v.length===b.length+1&&v.startsWith(b))||(n.length===b.length+1&&n.startsWith(b)))})||posP().find(p=>pdNorm(p.code)===pdNorm(v))}
 function scanNote(html,miss){const d=document.createElement("div");if(miss)d.className="miss";d.innerHTML=html;$("scanLast").prepend(d);while($("scanLast").children.length>4)$("scanLast").lastChild.remove()}
 function onScan(t){const now=Date.now();if(scanSeen[t]&&now-scanSeen[t]<2500)return;scanSeen[t]=now;   /* the same label held in view is read once */
   const p=scanFind(t);if(!p){scanNote(`✕ Not found: <b>${esc(t)}</b>`,true);return}
@@ -6958,13 +7011,13 @@ $("posRetLines").addEventListener("change",e=>{const s=e.target.closest("[data-w
 $("posClear").addEventListener("click",async()=>{if(!posCart.length&&!posRet.length)return;if(!await askConfirm("Clear the cart?","All items (sold and returned) are taken out.","Clear"))return;
   posCart=[];posRet=[];$("posDisc").value="";$("posPaid").value="";renderPosCart();renderPos()});
 /* sale numbers: S + yymmdd + running number for the day, e.g. S261003-004 */
-function nextSaleNo(d){const pre="S"+d.slice(2).replace(/-/g,"")+"-";const n=sales.filter(s=>String(s.no||"").startsWith(pre)).reduce((m,s)=>Math.max(m,Number(s.no.slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
+function nextSaleNo(d){const pre=(saleBrand==="js"?"J":"S")+d.slice(2).replace(/-/g,"")+"-";const n=sales.filter(s=>String(s.no||"").startsWith(pre)).reduce((m,s)=>Math.max(m,Number(s.no.slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
 $("posDone").addEventListener("click",async()=>{
   if(!posCart.length&&!posRet.length)return;const pay=$("posPay").value;if(!pay){toast("Payment method ရွေးပါ");return}
   const{sub,disc,ret,total}=posSums(),paid=total>0?Number($("posPaid").value)||0:0;
   if(paid&&paid<total){toast("ပေးငွေ မလောက်ပါ");$("posPaid").focus();return}
   const cp=posCustObj(),cn=cp?.name||"",now=new Date(),d=todayISO();
-  const s={id:"sl"+now.getTime().toString(36)+Math.random().toString(36).slice(2,5),no:nextSaleNo(d),date:d,at:now.toISOString(),by:me.id||null,byName:me.name||"",
+  const s={id:"sl"+now.getTime().toString(36)+Math.random().toString(36).slice(2,5),no:nextSaleNo(d),...(saleBrand==="js"?{brand:"js"}:{}),date:d,at:now.toISOString(),by:me.id||null,byName:me.name||"",
     tier:posTier,items:posCart.map(l=>({...l})),sub,discount:disc,...(disc&&$("posDiscUnit").value==="%"?{discPct:Number($("posDisc").value)}:{}),total,pay,
     ...(posRet.length?{returns:posRet.map(l=>({...l,reason:l.reason||"Expired"})),retTotal:ret}:{}),
     ...(paid?{paid,change:paid-total}:{}),...(cn?{customer:cn,...(cp?{custId:cp.id}:{})}:{})};
@@ -6981,7 +7034,7 @@ $("posOkNew").addEventListener("click",()=>{$("posOkDlg").hidden=true;$("posQ").
 /* the receipt goes through the same JPEG print path as the order slip: returned items first, then sold items, then the money */
 function receiptHTML(s){const money=n=>Number(n||0).toLocaleString("en-US"),row=(l,a,c="",i="")=>`<div class="pr-row ${c}"><span>${esc(l)}${i?` <small>${esc(i)}</small>`:""}</span><span>${money(a)}</span></div>`;
   const dt=new Date(s.at),rets=s.returns||[],items=s.items||[];
-  return`<div class="rc-shop">Mr.Bee Bakery</div><div class="rc-meta"><span>${esc(s.no)}</span><span>${fmtDate(s.date)} ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}</span></div>
+  return`<div class="rc-shop">${esc(BRAND_N[brandOf(s)])}</div><div class="rc-meta"><span>${esc(s.no)}</span><span>${fmtDate(s.date)} ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}</span></div>
     ${s.customer?`<div class="rc-meta"><span>Customer: <b>${esc(s.customer)}</b></span><span>${esc(tierName(s.tier))}</span></div>`:`<div class="rc-meta"><span></span><span>${esc(tierName(s.tier))}</span></div>`}
     ${s.refNo?`<div class="rc-meta"><span>↩ Return of ${esc(s.refNo)}</span><span></span></div>`:""}
     ${rets.length?`<hr class="pr-rule"><div class="pr-lbl">Returned</div>
@@ -7029,7 +7082,7 @@ function renderPosRep(){
   $("posRepDateBox").innerHTML=dateSelect("",posRepDate,"From","",false,todayISO());
   $("posRepToBox").innerHTML=dateSelect("",posRepTo,"To",posRepDate,false,todayISO());
   const inRng=d=>!!d&&d>=posRepDate&&d<=posRepTo,multi=posRepTo!==posRepDate;
-  const day=sales.filter(s=>inRng(s.date)).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
+  const day=sales.filter(s=>inRng(s.date)&&brandOf(s)===saleBrand).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
   const sum=k=>day.reduce((s,x)=>s+Number(x[k]||0),0),gross=sum("sub"),disc=sum("discount"),net=sum("total");
   const byPay={},byProd={};day.forEach(s=>{byPay[s.pay]=(byPay[s.pay]||0)+Number(s.total||0);
     s.items.forEach(l=>{const k=l.pid||l.name,o=byProd[k]||(byProd[k]={k,name:l.name,qty:0,amt:0});o.qty+=l.qty;o.amt+=l.price*l.qty})});
@@ -7038,7 +7091,7 @@ function renderPosRep(){
   const retRows={};let retSum=0;day.forEach(s=>(s.returns||[]).forEach(l=>{const k=l.pid||l.name,o=retRows[k]||(retRows[k]={k,name:l.name,qty:0,amt:0,why:{}}),w=l.reason||s.retReason||"Other";o.qty+=l.qty;o.amt+=l.price*l.qty;o.why[w]=(o.why[w]||0)+l.qty;retSum+=l.price*l.qty}));
   const retList=Object.values(retRows).sort((a,b)=>b.amt-a.amt);
   /* money taken on cake orders that day (deposits and later payments), cancelled orders left out */
-  const cake=orders.filter(o=>o.status!=="cancel").flatMap(o=>orderPayments(o).map((p,i)=>({o,p,i}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0)
+  const cake=(saleBrand==="js"?[]:orders).filter(o=>o.status!=="cancel").flatMap(o=>orderPayments(o).map((p,i)=>({o,p,i}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0)
     .sort((a,b)=>String(a.o.no||"").localeCompare(String(b.o.no||"")));
   const cakeSum=cake.reduce((s,x)=>s+Number(x.p.amt),0);cake.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   const cakeTbl=(list,total)=>`<table class="ex-tbl"><tbody>${list.map(x=>`<tr class="cake-pay" data-cake-o="${esc(x.o.id)}" tabindex="0" role="button" title="Order detail"><td><b>${esc(x.o.no||"")}</b> <span data-t="${esc(x.o.name||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${x.i?"Paid":"Deposit"} · ${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}
@@ -7090,9 +7143,9 @@ function renderPosRep(){
   $("posRepBody").innerHTML=`<div class="ex-rep">
     ${confCardHtml()}
     <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum)}</b>
-      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""}) · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})</small></div>
+      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?"":` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`}</small></div>
     <div class="ex-card"><p class="ac-h">By payment method</p>${Object.keys(byPay).length?`<table class="ex-tbl"><tbody>${Object.entries(byPay).map(([p,a])=>`<tr class="cake-pay" data-rep-pay="${esc(p)}" tabindex="0" role="button" title="Detail"><td>${esc(pmLabel(p))}</td><td class="ex-r">${fmt(a)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
-    <div class="ex-card"><p class="ac-h">🎂 Cake order payments</p>${cake.length?cakeTbl(cake,cakeSum):`<p class="side-help">No cake order payments in this period.</p>`}</div>
+    ${saleBrand==="js"?"":`<div class="ex-card"><p class="ac-h">🎂 Cake order payments</p>${cake.length?cakeTbl(cake,cakeSum):`<p class="side-help">No cake order payments in this period.</p>`}</div>`}
     <div class="ex-card"><p class="ac-h">POS · by product</p>${prods.length?`<table class="ex-tbl"><tbody>${prods.map(p=>`<tr class="cake-pay" data-rep-prod="${esc(p.k)}" tabindex="0" role="button" title="Detail"><td class="pd-n" data-t="${esc(p.name)}"></td><td class="ex-c">× ${p.qty}</td><td class="ex-r">${fmt(p.amt)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
     ${retList.length?`<div class="ex-card"><p class="ac-h">↩ Returned items</p><table class="ex-tbl"><tbody>${retList.map(r=>`<tr class="cake-pay" data-rep-ret="${esc(r.k)}" tabindex="0" role="button" title="Detail"><td><span data-t="${esc(r.name)}"></span><br><small class="ex-c">${esc(Object.entries(r.why).map(([w,q])=>`${w} ${q}`).join(" · "))}</small></td><td class="ex-c">× ${r.qty}</td><td class="ex-r">− ${fmt(r.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td></td><td class="ex-r"><b>− ${fmt(retSum)}</b></td></tr></tbody></table></div>`:""}
     <div class="ex-card"><p class="ac-h">POS sales</p>${day.length?saleList(day):`<p class="side-help">No sales in this period.</p>`}</div>
@@ -7196,7 +7249,72 @@ Confirm that this money has reached you.`,"Confirm"))return;
   try{await removeSale(s.id);toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 $("goSale").addEventListener("click",()=>go("sale"));
 $("goPos").addEventListener("click",()=>{posTab="sell";go("pos")});
+$("goItems").addEventListener("click",()=>go("items"));
 $("goSaleRep").addEventListener("click",()=>{if(!can("sales.report")&&!sales.some(isMineToConf))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
+/* ---------- Items: the raw items list (collection "items", one doc per Short Code), brought in from the Items Excel by an Admin.
+   Loaded the first time Sale, POS or Items is opened. ---------- */
+var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false;
+function initItems(){
+  if(!db){if(!itLoaded){try{items=JSON.parse(localStorage.getItem("cakeItems")||"[]")}catch(e){items=[]}itLoaded=true}return}
+  if(itCol)return;itCol=db.collection("items");
+  itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
+    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale")syncSaleBrand()},()=>{itCol=null});
+}
+const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
+function renderItems(){
+  if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
+  $("itImport").hidden=!admin;$("itJsOnly").setAttribute("aria-pressed",itJs);
+  const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.sale&&i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
+  const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
+  $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
+    +cats.map(c=>`<button type="button" class="chip" data-itcat="${esc(c)}" aria-pressed="${itCat===c}">${esc(c)} <small>${inQ.filter(i=>(i.cat||"Other")===c).length}</small></button>`).join("");
+  const list=inQ.filter(i=>!itCat||(i.cat||"Other")===itCat).sort((a,b)=>String(a.cat).localeCompare(String(b.cat))||String(a.sub||"").localeCompare(String(b.sub||""))||String(a.name).localeCompare(String(b.name)));
+  const MAX=300,shown=list.slice(0,MAX),byCode=new Map(items.map(i=>[pdNorm(i.code),i]));
+  $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
+    `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
+  $("itList").innerHTML=shown.map(i=>{const r=i.ref?byCode.get(pdNorm(i.ref)):null;
+    return`<div class="it-row"><code>${esc(i.code||"")}</code><span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.sale&&i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
+      <span class="it-pr">${i.price>0?fmt(i.price):""}</span>
+      <small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.unit?` · ${esc(i.unit)}`:""}${i.purUnit?` · buy ${esc(i.purUnit)}${i.purConv?` × ${esc(String(i.purConv))}`:""}`:""}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></div>`}).join("");
+  $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
+}
+$("itQ").addEventListener("input",e=>{itQ=e.target.value;renderItems()});
+$("itCats").addEventListener("click",e=>{const b=e.target.closest("[data-itcat]");if(b){itCat=b.dataset.itcat;renderItems()}});
+$("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
+$("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
+/* Import: the "Items" sheet (or the first one) with headers Short Code, Name, Category, Sub Category, Purchase Unit, Purchase Conversion,
+   Base Unit, Ref:, Stock Count Unit, Sales Allowed, Selling Price, Note, Usage, Old Name. Each row is matched by Short Code; only new or
+   changed items are written. Items missing from the file are left as they are. */
+$("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f||!can("admin"))return;
+  toast("Excel ဖတ်နေသည်…",20000);
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js");
+    const wb=XLSX.read(await f.arrayBuffer(),{type:"array",sheets:["Items",0],cellStyles:false,cellHTML:false,bookImages:false});
+    const ws=wb.Sheets.Items||wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{defval:"",raw:true,blankrows:false});
+    const S=v=>String(v??"").trim(),N=v=>{const s=S(v).replace(/,/g,"");if(s==="")return null;const n=Number(s);return isFinite(n)?n:null};
+    const pick=(r,...ks)=>{for(const k of ks){const hit=Object.keys(r).find(x=>pdNorm(x)===pdNorm(k));if(hit&&S(r[hit])!=="")return r[hit]}return""};
+    const now=new Date().toISOString(),seen=new Set(),plan=[];let dup=0;
+    for(const r of rows){const code=S(pick(r,"Short Code","Code")),name=S(pick(r,"Name"));if(!code||!name)continue;
+      if(seen.has(pdNorm(code))){dup++;continue}seen.add(pdNorm(code));
+      const it={code,name,cat:S(pick(r,"Category")),sub:S(pick(r,"Sub Category")),purUnit:S(pick(r,"Purchase Unit")),purConv:N(pick(r,"Purchase Conversion")),
+        unit:S(pick(r,"Base Unit")),ref:S(pick(r,"Ref:","Ref")),stockUnit:S(pick(r,"Stock Count Unit")),
+        sale:/^(yes|y|true|1)$/i.test(S(pick(r,"Sales Allowed"))),price:N(pick(r,"Selling Price")),note:S(pick(r,"Note")),usage:S(pick(r,"Usage")),oldName:S(pick(r,"Old Name"))};
+      Object.keys(it).forEach(k=>{if(it[k]===""||it[k]==null)delete it[k]});
+      const old=items.find(x=>pdNorm(x.code)===pdNorm(code)),id=old?.id||itIdOf(code);
+      const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","sale","price","note","usage","oldName"];
+      const same=old&&keys.every(k=>JSON.stringify(old[k]??null)===JSON.stringify(it[k]??null));
+      if(!same)plan.push({id,doc:{...it,...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
+    const nNew=plan.filter(p=>p.isNew).length,nChg=plan.length-nNew,nSale=rows.length?[...seen].length:0;
+    if(!plan.length){toast(`ပြောင်းစရာ မရှိပါ — Items ${nSale} ခု အားလုံး တူနေပါတယ်`,5000);return}
+    if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`))return;
+    let done=0;const pool=8,queue=plan.slice();
+    const work=async()=>{while(queue.length){const p=queue.shift();
+      if(db)await db.collection("items").doc(p.id).set(p.doc);else{const i=items.findIndex(x=>x.id===p.id);const d={...p.doc,id:p.id};if(i>=0)items[i]=d;else items.push(d)}
+      done++;if(done%50===0)toast(`သိမ်းနေသည်… ${done} / ${plan.length}`,20000)}};
+    await Promise.all(Array.from({length:pool},work));
+    if(!db){try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+    toast(`✓ Items ${plan.length} ခု သိမ်းပြီး`,5000)}
+  catch(x){console.error(x);toast("Excel မဖတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",5000)}});
 function initSales(){
   if(!db){try{sales=JSON.parse(localStorage.getItem("cakeSales")||"[]")}catch(e){sales=[]}return}
   if(saleCol)return;saleCol=db.collection("sales");
