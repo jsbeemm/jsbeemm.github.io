@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549645"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549957"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -924,6 +924,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
   .so-tbl td:nth-child(7){grid-column:1/-1}.vo-edit .vo-top h1{font-size:20px}}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
 .so-hit{display:grid;grid-template-columns:90px 1fr auto;gap:8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);padding:8px 12px;cursor:pointer}
+#ptDlg{z-index:40}.so-reg{grid-template-columns:1fr;color:var(--accent);font-weight:700}.so-noc{padding:8px 12px;margin:0}
 .so-hit:hover{background:var(--sunk)}.so-chit{grid-template-columns:1fr auto}.so-chit small{color:var(--muted)}.so-hit code{color:var(--muted);font-size:12px}
 .so-lines{display:grid;gap:6px}.so-lh,.so-line{display:grid;grid-template-columns:1fr 70px 100px 110px 34px;gap:6px;align-items:center}
 .so-lh{font-size:12px;color:var(--muted);font-weight:700}.so-line input{min-width:0;padding:7px 9px}.so-line .so-ln{grid-column:1/-1}.so-la{text-align:right}
@@ -6513,7 +6514,7 @@ $("ptForm").addEventListener("submit",async e=>{
   const f={otherName:v("ptOther"),phones:phones.length?phones:null,phone:phones.length?phones.join(", "):null,channel:v("ptChannel"),account:v("ptAcct"),
     addresses:addresses.length?addresses:null,defAddr:addresses.length>1?defAddr:null,address:addresses[defAddr]||null,address2:null,short,country:type==="supplier"?v("ptCountry"):null,currency:type==="supplier"?($("ptCur").value||null):null};
   for(const k in f)if(f[k]==null)delete p[k];else p[k]=f[k];
-  try{await savePt(p);$("ptDlg").hidden=true;ptEditing=null;ptType=type;renderPt();toast("သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}
+  try{await savePt(p);$("ptDlg").hidden=true;ptEditing=null;ptType=type;renderPt();toast("သိမ်းပြီး");if(typeof ptAfterSave==="function"){const f=ptAfterSave;ptAfterSave=null;f(p)}}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}
 });
 $("ptDel").addEventListener("click",async()=>{const p=ptEditing;if(!p||!can("admin"))return;
   if(!await askConfirm(`Delete “${p.name}”?`,PT_TYPES.find(t=>t[0]===p.type)[2]))return;
@@ -7732,7 +7733,9 @@ function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p
 function soCustHits(){const q=pdNorm($("soCustQ").value);
   const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,30);
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
-    :`<p class="side-help">စာရင်းထဲ မရှိပါ — ရိုက်ထားတဲ့ နာမည်နဲ့ Walk-in အဖြစ် သိမ်းပါမယ်</p>`;
+    :`<p class="side-help so-noc">Customer စာရင်းထဲ မရှိပါ</p>`;
+  /* a customer not on the list is registered first (from here, without leaving the voucher) */
+  if(q&&!cs.some(p=>pdNorm(p.name)===q))$("soCustHits").insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-so-reg><span>➕ Register “<span data-t="${esc($("soCustQ").value.trim())}"></span>” as a new JS customer</span></button>`);
   $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
 /* clearing the customer (or typing over a picked one) clears that customer's phone, channel and delivery info too */
 $("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust").value="";
@@ -7741,6 +7744,15 @@ $("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust
 $("soCustQ").addEventListener("focus",soCustHits);
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
+var ptAfterSave=null;
+function soRegister(){if(!canAddCust()){toast("Customer အသစ် Register လုပ်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
+  const nm=$("soCustQ").value.trim(),ph=$("soPhone").value.trim();ptType="js";openPtForm(null);
+  $("ptTypeSel").value="js";ptSyncType();$("ptName").value=nm;const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&ph)pi.value=ph;
+  const ai=$("ptAddrs").querySelector("textarea");if(ai&&$("soDeliv").value.trim())ai.value=$("soDeliv").value.trim();
+  $("soCustHits").hidden=true;
+  /* once saved, the new customer is picked on the voucher */
+  ptAfterSave=p=>{if(p.type!=="js")return;$("soCust").value=p.id;$("soCustQ").value=p.name;$("soCust").dispatchEvent(new Event("change"))}}
+$("soCustHits").addEventListener("click",e=>{if(e.target.closest("[data-so-reg]")){soRegister();return}});
 $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-cust]");if(!b)return;$("soCust").value=b.dataset.soCust;
   $("soCustQ").value=pts.find(p=>p.id===b.dataset.soCust)?.name||"";$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
 /* delivery info is one text: name and phone, then the address (older vouchers kept them apart) */
@@ -7809,8 +7821,9 @@ $("soHits").addEventListener("click",async e=>{const b=e.target.closest("[data-s
   $("soPickDlg").hidden=true;await renderSoLines();const qi=$("soLines").querySelector(`tr[data-i="${k}"] .so-lq`);if(qi){qi.focus();qi.select()}});
 $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEditing;
   let name=$("soCustQ").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soCustQ").focus();return}
-  /* a typed name that is exactly a JS customer's name links to that customer */
+  /* a typed name that is exactly a JS customer's name links to that customer; anyone else is registered first */
   if(!$("soCust").value){const p=pts.find(x=>x.type==="js"&&pdNorm(x.name)===pdNorm(name));if(p){$("soCust").value=p.id;name=p.name}}
+  if(!$("soCust").value){if(await askConfirm(`“${name}” ကို Customer စာရင်းထဲ မတွေ့ပါ`,"ဘောက်ချာ မသိမ်းခင် Customer အဖြစ် Register လုပ်ပါ။","Register"))soRegister();return}
   const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
   lines.forEach(l=>{if(!l.note)delete l.note});
   if(!lines.length){toast("Item အနည်းဆုံး ၁ ခု ထည့်ပါ");return}
