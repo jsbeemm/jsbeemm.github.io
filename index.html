@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546045"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546378"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -886,6 +886,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .it-row{display:grid;grid-template-columns:110px 1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .it-row code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.it-row .it-nm{font-weight:600;overflow-wrap:anywhere}
 .it-row small{grid-column:2/4;color:var(--muted)}.it-row .it-pr{font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
+.it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
+@media (max-width:560px){.it-grid{grid-template-columns:1fr}}
+#itDlg .side-panel{max-width:640px}
 .it-th{width:36px;height:36px;border-radius:8px;object-fit:cover;vertical-align:middle;margin-right:8px;background:var(--sunk)}
 .it-row[data-it]{cursor:pointer}.it-row[data-it]:hover{border-color:var(--accent)}.it-pl{font-family:inherit;font-size:10px;font-weight:700;color:var(--muted)}
 .it-js{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#7a4a12;background:#f6e3c7;border-radius:999px;padding:1px 8px;vertical-align:middle}
@@ -1500,6 +1503,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
+      <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
     <div class="chips pd-cats" id="itCats"></div>
     <p class="side-help" id="itCount"></p>
@@ -2018,11 +2022,28 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>📦 <span id="itDlgT">Item</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="itForm" class="side-body" novalidate>
-      <p class="side-help" id="itDlgSub"></p>
       <div class="pd-fphoto" id="itPhotoBox"></div>
-      <label class="prf"><span>JS Bakery Supply ရောင်းဈေး (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
+      <div class="it-grid">
+        <label class="prf"><span>Category</span><input id="itCat" list="itCatList" autocomplete="off"></label>
+        <label class="prf"><span>Sub Category</span><input id="itSub" list="itSubList" autocomplete="off"></label>
+        <label class="prf"><span>Short Code <b>*</b></span><input id="itCode" autocomplete="off"></label>
+        <label class="prf it-wide"><span>Name <b>*</b></span><input id="itName" autocomplete="off"></label>
+        <label class="prf"><span>Purchase Unit</span><input id="itPurUnit" list="itUnitList" autocomplete="off"></label>
+        <label class="prf"><span>Purchase Conversion</span><input id="itPurConv" inputmode="decimal" autocomplete="off"></label>
+        <label class="prf"><span>Base Unit</span><input id="itUnit" list="itUnitList" autocomplete="off"></label>
+        <label class="prf"><span>Ref:</span><input id="itRef" autocomplete="off" placeholder="Short Code"></label>
+        <label class="prf"><span>Stock Count Unit</span><input id="itStockUnit" list="itUnitList" autocomplete="off"></label>
+        <label class="pd-auto it-ck"><input type="checkbox" id="itTracked"><span>Stock Tracked</span></label>
+        <label class="prf"><span>Unit</span><input id="itUom" list="itUnitList" autocomplete="off"></label>
+        <label class="prf"><span>Consumed_ID</span><input id="itConsId" autocomplete="off"></label>
+        <label class="prf"><span>Consumed_Name</span><input id="itConsName" autocomplete="off"></label>
+        <label class="prf"><span>Consumed_Qty_Per_Unit</span><input id="itConsQty" inputmode="decimal" autocomplete="off"></label>
+        <label class="prf"><span>Selling Price · JS (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <label class="prf"><span>Selling Price · Mr.Bee (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <label class="prf it-wide"><span>Note</span><input id="itNote" autocomplete="off"></label>
+      </div>
       <p class="side-help">JS ရောင်းဈေး ထည့်ထားရင် JS Bakery Supply မှာ ရောင်းပါမယ်။</p>
-      <label class="prf"><span>Mr.Bee ရောင်းဈေး (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
+      <datalist id="itCatList"></datalist><datalist id="itSubList"></datalist><datalist id="itUnitList"></datalist>
       <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
     </form>
   </div>
@@ -7297,7 +7318,7 @@ function initItems(){
 const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
 function renderItems(){
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
+  $("itImport").hidden=!admin;$("itNewBtn").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
@@ -7322,22 +7343,39 @@ $("itPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="itPhFile"|
   try{const b=await shrinkImage(f,900);itPhoto.url=await blobToData(b);itRenderPhoto();const s=await storePhoto(b);itPhoto={id:s.id,url:s.url}}
   catch(x){itPhoto=null;toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}itRenderPhoto()});
 $("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPhoto=null;itRenderPhoto()}});
-function openItForm(i){if(!can("admin")||!i)return;itEditing=i;$("itDlgT").textContent=i.name;
-  itPhoto=i.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
-  $("itDlgSub").textContent=[i.code,[i.cat,i.sub].filter(Boolean).join(" › "),i.unit].filter(Boolean).join(" · ");
-  $("itPrice").value=i.price>0?i.price:"";$("itMbPrice").value=i.mbPrice>0?i.mbPrice:"";$("itDlg").hidden=false;$("itPrice").focus()}
+/* the form's boxes and the item fields they hold (text, number or yes/no) */
+const IT_F=[["itCat","cat"],["itSub","sub"],["itCode","code"],["itName","name"],["itPurUnit","purUnit"],["itPurConv","purConv","n"],["itUnit","unit"],["itRef","ref"],
+  ["itStockUnit","stockUnit"],["itTracked","tracked","b"],["itUom","uom"],["itConsId","consId"],["itConsName","consName"],["itConsQty","consQty","n"],["itNote","note"]];
+/* tapping an item opens it; "+ Add raw material" opens an empty one (Admins) */
+function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
+  itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
+  const uniq=f=>[...new Set(items.map(f).filter(Boolean))].sort();
+  $("itCatList").innerHTML=uniq(x=>x.cat).map(v=>`<option value="${esc(v)}">`).join("");
+  $("itSubList").innerHTML=uniq(x=>x.sub).map(v=>`<option value="${esc(v)}">`).join("");
+  $("itUnitList").innerHTML=[...new Set([...uniq(x=>x.unit),...uniq(x=>x.purUnit),...uniq(x=>x.stockUnit)])].sort().map(v=>`<option value="${esc(v)}">`).join("");
+  /* a new item starts in the category being looked at */
+  for(const[id,k,t]of IT_F){const el=$(id);if(t==="b")el.checked=!!i?.[k];else el.value=i?.[k]??(k==="cat"&&!i?itCat:"")}
+  $("itPrice").value=i?.price>0?i.price:"";$("itMbPrice").value=i?.mbPrice>0?i.mbPrice:"";$("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
+$("itNewBtn").addEventListener("click",()=>openItForm(null));
 $("itList").addEventListener("click",e=>{const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
 $("itList").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
-$("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEditing;if(!i||!can("admin"))return;
+$("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEditing;if(!can("admin"))return;
   const num=id=>{const v=String($(id).value).trim();return v===""?null:Math.max(0,Math.round(Number(v)))};
   if(itPhoto?.busy){toast("ပုံတင်နေဆဲပါ");return}
+  const v={};for(const[id,k,t]of IT_F){const el=$(id);
+    if(t==="b")v[k]=el.checked;else{const s=String(el.value).trim().replace(/\s+/g," ");v[k]=t==="n"?(s===""?null:(isFinite(Number(s))?Number(s):null)):s}}
+  if(!v.code){toast("Short Code ထည့်ပါ");$("itCode").focus();return}
+  if(!v.name){toast("Name ထည့်ပါ");$("itName").focus();return}
+  if(items.some(x=>x.id!==i?.id&&pdNorm(x.code)===pdNorm(v.code))){toast(`Short Code "${v.code}" ရှိပြီးသားပါ`);$("itCode").focus();return}
+  if(items.some(x=>x.id!==i?.id&&pdNorm(x.name)===pdNorm(v.name))){toast(`"${v.name}" ဆိုတဲ့ နာမည် ရှိပြီးသားပါ`);$("itName").focus();return}
   /* an item with a JS price is sold at JS */
-  const price=num("itPrice"),mbPrice=num("itMbPrice"),sale=price>0;
-  const d={...i,sale,updatedAt:new Date().toISOString(),updatedBy:me.id||null};delete d.id;
+  const price=num("itPrice"),mbPrice=num("itMbPrice"),now=new Date().toISOString(),id=i?.id||itIdOf(v.code);
+  const d={...(i||{at:now,by:me.id||null}),sale:price>0,updatedAt:now,updatedBy:me.id||null};delete d.id;
+  for(const k in v){if(v[k]===""||v[k]==null||v[k]===false)delete d[k];else d[k]=v[k]}
   if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
-  try{if(db)await db.collection("items").doc(i.id).set(d);
-    else{const k=items.findIndex(x=>x.id===i.id);items[k]={...d,id:i.id};items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+  try{if(db)await db.collection("items").doc(id).set(d);
+    else{const k=items.findIndex(x=>x.id===id);if(k>=0)items[k]={...d,id};else items.push({...d,id});items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
     $("itDlg").hidden=true;itEditing=null;toast("သိမ်းပြီး")}
   catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 /* many photos at once: each file's name (without .jpg) is matched to an item's Short Code first, then to its Name.
@@ -7382,12 +7420,13 @@ $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.targ
       if(seen.has(pdNorm(code))){dup++;continue}seen.add(pdNorm(code));
       const it={code,name,cat:S(pick(r,"Category")),sub:S(pick(r,"Sub Category")),purUnit:S(pick(r,"Purchase Unit")),purConv:N(pick(r,"Purchase Conversion")),
         unit:S(pick(r,"Base Unit")),ref:S(pick(r,"Ref:","Ref")),stockUnit:S(pick(r,"Stock Count Unit")),
+        tracked:/^(yes|y|true|1)$/i.test(S(pick(r,"Stock Tracked")))||null,uom:S(pick(r,"Unit")),consId:S(pick(r,"Consumed_ID")),consName:S(pick(r,"Consumed_Name")),consQty:N(pick(r,"Consumed_Qty_Per_Unit")),
         sale:/^(yes|y|true|1)$/i.test(S(pick(r,"Sales Allowed"))),price:N(pick(r,"Selling Price","JS Price")),mbPrice:N(pick(r,"Mr.Bee Price","MrBee Price")),note:S(pick(r,"Note")),usage:S(pick(r,"Usage")),oldName:S(pick(r,"Old Name"))};
       Object.keys(it).forEach(k=>{if(it[k]===""||it[k]==null)delete it[k]});
       const old=items.find(x=>pdNorm(x.code)===pdNorm(code)),id=old?.id||itIdOf(code);
       /* a price left empty in the file keeps the price set in the app (e.g. the JS / Mr.Bee prices that differ) */
       if(old){if(it.price==null&&old.price!=null)it.price=old.price;if(it.mbPrice==null&&old.mbPrice!=null)it.mbPrice=old.mbPrice}
-      const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","sale","price","mbPrice","note","usage","oldName"];
+      const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","tracked","uom","consId","consName","consQty","sale","price","mbPrice","note","usage","oldName"];
       const same=old&&keys.every(k=>JSON.stringify(old[k]??null)===JSON.stringify(it[k]??null));
       /* a photo added in the app stays */
       if(!same)plan.push({id,doc:{...it,...(old?.photo?{photo:old.photo}:{}),...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
