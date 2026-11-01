@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545967"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546045"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1236,7 +1236,7 @@ span.star-ic{cursor:default}
           <button type="button" class="set-btn" id="pmBtn" hidden>💳 Payment methods</button>
           <button type="button" class="set-btn" onclick="if(confirm('ဒီစက်ကို ဆိုင် account ကနေ ထွက်မလား?'))fbShopSignOut()">🔒 Shop sign out</button><button type="button" class="set-btn" id="logoutBtn" hidden style="display:none">⎋ Log out</button>   <!-- kept for its handler; the visible Log out is the icon beside Settings -->
           <p class="set-title" id="xlTitle" style="margin-top:8px" hidden>Excel</p>
-          <button type="button" class="set-btn" id="xlExport" hidden>📊 Excel ထုတ်မည်</button>
+          <button type="button" class="set-btn" id="xlExport" hidden>📤 Export Excel</button>
           <p class="set-hint" id="xlHint" hidden>စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)</p>
           <div id="bkBox" hidden>
             <p class="set-title" style="margin-top:8px">Backup</p>
@@ -1278,7 +1278,7 @@ span.star-ic{cursor:default}
       <input class="search" id="q" type="search" placeholder="အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်">
       <button type="button" class="chip ord-rep-btn" id="ordRepBtn">📊 Report</button>
       <!-- Excel of exactly the orders the filters above show (date, status, channel, search), to check by hand -->
-      <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ထုတ်ရန်">📥 Excel</button>
+      <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>
     </div>
     <div class="orders" id="orders"></div>
   </section>
@@ -1499,7 +1499,7 @@ span.star-ic{cursor:default}
   <section id="viewItems" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
-      <button type="button" class="chip" id="itImport" hidden title="Items Excel (Short Code, Name, Category, … Selling Price) ထည့်ရန် / ပြင်ရန်">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
+      <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
     <div class="chips pd-cats" id="itCats"></div>
     <p class="side-help" id="itCount"></p>
@@ -1555,7 +1555,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="pdQ" placeholder="Search name, ID or barcode" aria-label="Search products" autocomplete="off"><button type="button" class="chip" id="pdCatBtn">🏷️ Categories</button><button type="button" class="chip" id="pdSizeBtn" hidden>📏 Sizes</button>
       <button type="button" class="chip" id="pdXlBtn" hidden title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
       <button type="button" class="chip" id="pdBcTidy" hidden title="Distribution ဈေးရှိတဲ့ product တွေကလွဲပြီး ကျန်တာတွေရဲ့ Barcode ကို နံပါတ်စဉ် ပြန်စီရန်">🔢 Barcode ပြန်စီ</button>
-      <button type="button" class="chip" id="pdXlOut" hidden title="Products အားလုံးကို Excel ထုတ်ရန်">📤 Products Excel</button>
+      <button type="button" class="chip" id="pdXlOut" hidden title="Products အားလုံးကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>
       <button type="button" class="chip" id="pdTierLink" hidden title="နာမည်မှာ (အဆင့်) ပါတဲ့ product တွေကို သူ့ကိတ်သားနဲ့ size ထဲ ချိတ်ရန်">🔗 အဆင့်ကိတ်ဈေး ချိတ်ရန်</button>
       <button type="button" class="chip" id="pdReBtn" hidden title="Retail ဈေးကနေ Food Panda (+30%) နဲ့ Wholesale (−10%) ဈေး ပြန်တွက်ရန်">🔄 Panda / Wholesale ဈေး</button>
       <button type="button" class="btn prq-new fab" id="pdNewBtn">+ Add product</button></div>
@@ -5456,7 +5456,7 @@ function renderEx(){
   const notShared=list.filter(r=>!(r.shared||[]).length),nsSum=curSums(notShared,r=>Number(r.amount||0));
   const byPay=[...new Set(list.map(r=>r.pay).filter(Boolean))].map(p=>{const its=list.filter(r=>r.pay===p);return{p,count:its.length,sum:curSums(its,r=>Number(r.amount||0))}});
   $("exReport").innerHTML=`<div class="ex-rep">
-    <div class="ex-card ex-big"><small>${esc(label)} · ${list.length} expense${list.length===1?"":"s"}</small><b>${fmtSums(total)}</b>${list.length?`<button type="button" class="chip ex-xl" data-ex-xl title="Excel report">📥 Export Excel</button>`:""}</div>
+    <div class="ex-card ex-big"><small>${esc(label)} · ${list.length} expense${list.length===1?"":"s"}</small><b>${fmtSums(total)}</b>${list.length?`<button type="button" class="chip ex-xl" data-ex-xl title="ဒီ report ကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>`:""}</div>
     ${exBiz()?"":`<div class="ex-card"><p class="ac-h">Shared with — each person's share</p>
       <table class="ex-tbl"><tbody>${per.map(x=>`<tr><td>${esc(x.p.name)}</td><td class="ex-c">${x.count} item${x.count===1?"":"s"}</td><td class="ex-r">${fmtSums(x.sum)}</td><td class="ex-v">${vd(`data-vd-person="${esc(x.p.id)}"`)}</td></tr>`).join("")}
       ${notShared.length?`<tr class="ex-muted"><td>Not shared</td><td class="ex-c">${notShared.length} item${notShared.length===1?"":"s"}</td><td class="ex-r">${fmtSums(nsSum)}</td><td></td></tr>`:""}</tbody></table></div>`}
