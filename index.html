@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526703"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526828"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1979,7 +1979,7 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>📏 Cake Orders sizes</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="pdSizeForm" class="side-body" novalidate>
-      <p class="side-help">Order form နဲ့ Bakery Products ရဲ့ "Cake Orders size" မှာ ပေါ်မယ့် size တွေပါ။ lb က size တစ်ခုချင်းရဲ့ key ဖြစ်လို့ ထည့်ပြီးရင် ပြင်လို့မရပါ (1 1/2 lb ဆိုရင် 1.5)။ Inch က အဆင့်ကိတ်ပုံဆွဲဖို့ သုံးပါတယ်။ Product ချိတ်ထားတဲ့ size ကို မဖျက်နိုင်ပါ။</p>
+      <p class="side-help">Order form နဲ့ Bakery Products ရဲ့ "Cake Orders size" မှာ ပေါ်မယ့် size တွေပါ။ lb က ကိတ်အလေးချိန် (1 1/2 lb ဆိုရင် 1.5)၊ Inch က ကိတ်အချင်း ဖြစ်ပြီး size တွေ စီဖို့နဲ့ အဆင့်ကိတ်ပုံဆွဲဖို့ သုံးပါတယ်။ ထည့်တဲ့ size အသစ်တွေက 1 1/2 lb တို့ရဲ့ တန်းမှာ ပေါ်ပါမယ်။ Product ချိတ်ထားတဲ့ size ကို မဖျက်နိုင်ပါ။</p>
       <div class="pm-wrap"><table class="pm-tbl ppl-tbl"><thead><tr><th>Size</th><th>lb</th><th>Inch</th><th>Products</th><th></th></tr></thead><tbody id="pdSizeRows"></tbody></table></div>
       <div class="pd-catadd"><input id="pdSizeName" placeholder="Name (e.g. 18&quot;)" autocomplete="off" aria-label="Size name"><input id="pdSizeLb" inputmode="decimal" placeholder="lb" aria-label="Pounds" style="width:70px"><input id="pdSizeIn" inputmode="decimal" placeholder="inch" aria-label="Inch" style="width:70px"><button type="submit" class="btn">+ Add</button></div>
     </form>
@@ -2110,16 +2110,22 @@ const fbAssets={
    Bakery Products links keep working. "in" is the diameter in inches. The half sizes keep their lb name. */
 const SIZES=[{k:"1",n:'6"',in:6},{k:"2",n:'8"',in:8},{k:"3",n:'10"',in:10},{k:"4",n:'12"',in:12},{k:"5",n:'14"',in:14},{k:"6",n:'16"',in:16},
   /* half sizes (shown on their own row under the others; their prices come from Bakery Products) */
-  {k:"1.5",n:'1 1/2 lb (6")',half:true,in:6},{k:"2.5",n:'2 1/2 lb (8")',half:true,in:8}];
+  {k:"1.5",n:'1 1/2 lb (6")',half:true,in:6},{k:"2.5",n:'2 1/2 lb (8")',half:true,in:8},
+  /* a half (semicircle) 8" cake: 1 lb */
+  {k:"h8",n:'Half cake (8")',half:true,in:8,lb:1}];
 /* sizes can be added, renamed and removed in Bakery Products → 📏 Sizes (kept in meta/cakeSizes as {k,n,in,off}).
    k is the weight in lb; the built-in ones keep their place (flavor price columns follow it), new ones follow on.
    A removed size is only switched off, so old orders and products still show its name. */
 const SIZE_BUILTIN=SIZES.map(s=>({...s}));
-const szHalf=k=>Number(k)%1!==0;
+/* weight in lb: a size's own lb, else its key (the built-in keys are their weight) */
+const szLb=s=>s?(s.lb!=null?Number(s.lb):Number(s.k))||0:0;
+const szLbOf=k=>szLb(SIZES.find(s=>s.k===k))||Number(k)||1;
 function applySizes(list){const saved=Array.isArray(list)?list:[];SIZES.length=0;
-  for(const b of SIZE_BUILTIN){const s=saved.find(x=>x.k===b.k);SIZES.push(s?{...b,n:s.n||b.n,in:Number(s.in)||b.in,off:!!s.off}:{...b})}
-  for(const s of saved)if(!SIZE_BUILTIN.some(b=>b.k===s.k)&&s.k)SIZES.push({k:String(s.k),n:s.n||String(s.k),in:Number(s.in)||6,half:szHalf(s.k),off:!!s.off})}
-const sizeList=()=>SIZES.map(({k,n,in:i,off})=>({k,n,in:i,...(off?{off:true}:{})}));
+  for(const b of SIZE_BUILTIN){const s=saved.find(x=>x.k===b.k);SIZES.push(s?{...b,n:s.n||b.n,in:Number(s.in)||b.in,...(s.lb!=null?{lb:Number(s.lb)}:{}),off:!!s.off}:{...b})}
+  /* added sizes sit on the second row, with 1 1/2 lb and the others */
+  for(const s of saved)if(!SIZE_BUILTIN.some(b=>b.k===s.k)&&s.k)SIZES.push({k:String(s.k),n:s.n||String(s.k),in:Number(s.in)||6,lb:s.lb!=null?Number(s.lb):Number(s.k)||1,half:true,off:!!s.off})}
+const sizeList=()=>SIZES.map(s=>({k:s.k,n:s.n,in:s.in,lb:szLb(s),...(s.off?{off:true}:{})}));
+const szSort=(a,b)=>szLb(a)-szLb(b)||(a.in||0)-(b.in||0);
 const szOn=(s,cur)=>!s.off||s.k===cur;   /* sizes offered in a list: the switched-on ones, plus the one already picked */
 /* p = price per size column (1–6 lb); null = not available in that size */
 const FLAVORS=[
@@ -2553,7 +2559,7 @@ function tierText(o){const ts=tiersOf(o);if(!hasTiers(ctOf(o))||!ts.length)retur
 function renderTierList(){
   const wed=tierKind()==="wedding",n=tierDraft.length,m=fondantOn()?2:1,en=LANG==="en";
   const tl=i=>(en?`Tier ${i+1}`:`အဆင့် ${i+1}`)+(i===0?(en?" (bottom)":" (အောက်ဆုံး)"):i===n-1?(en?" (top)":" (အပေါ်ဆုံး)"):"");
-  const sizeOpts=v=>SIZES.filter(s=>szOn(s,v)).sort((a,b)=>Number(a.k)-Number(b.k)).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
+  const sizeOpts=v=>SIZES.filter(s=>szOn(s,v)).sort(szSort).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
   const fon=fondantOn();
   const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other"&&(!fon||fondantOk(x.k)||x.k===v)).map(x=>{const p=layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);   /* Fondant: only flavors that can be Fondant are listed */
     /* no flavor number here: "1." / "2." next to the sizes read like pounds */
@@ -2583,10 +2589,10 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
   const INK=ink||"#2B1B23",MUT=ink||"#7A6570",ACC=ink||"#C8285F",BODY="#FFFFFF",SIDE=ink?"#FFFFFF":"#EEE7EA",DUM=ink?"#FFFFFF":"#EEE7EA";
   const PX=20,parts=[];let y0=0,minY=0,maxX=0,botExt=0,totIn=0,topY=0;const dims=[];   /* 20 px per inch, across and up */
   /* label sizes grow with the cake: a tall cake is scaled down a lot on the slip, so its text starts bigger */
-  const tierH=t=>{const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base?(Number(t.size)||1)/(Number(base.k)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,sk)*PX*hm};
+  const tierH=t=>{const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base?szLbOf(t.size)/(szLb(base)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,sk)*PX*hm};
   const FS=Math.max(15,Math.round(ts.reduce((s,t)=>s+tierH(t),0)*.055)),FT=Math.round(FS*1.15);
   ts.forEach((t,i)=>{/* width follows the diameter (6", 8" …); a half size like 1 1/2 lb is as wide as 6" but taller — 1.5 × the height of 1 lb */
-    const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base?(Number(t.size)||1)/(Number(base.k)||1):1;
+    const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base?szLbOf(t.size)/(szLb(base)||1):1;
     const W=(sk==="rect"?150:120)+(inch-6)*20,L=t.dummy?1:Math.max(1,(t.layers||[]).length),h=t.dummy?dumH(t)*PX:L*mouldH(inch,sk)*PX*hm,lh=h/L;   /* each layer is one mould high, drawn to scale with the width; a Dump cake is as high as set */
     const ry=kind==="cyl"?W*.075:0,dx=kind==="box"?W*.16:0,dy=kind==="box"?W*.09:0,x=-W/2-dx/2,top=y0-h;
     const st=t.dummy?`fill="${DUM}" stroke="${MUT}" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"`:`fill="${BODY}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`;
@@ -6132,11 +6138,11 @@ $("pdCatForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("a
   catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 /* 📏 Sizes: rename / switch off rows, add new ones */
 let pdSizeEdit=null;
-function renderPdSizes(){$("pdSizeRows").innerHTML=SIZES.filter(s=>!s.off).sort((a,b)=>Number(a.k)-Number(b.k)).map(s=>{const n=pds.filter(p=>p.cakeSize===s.k).length;
+function renderPdSizes(){$("pdSizeRows").innerHTML=SIZES.filter(s=>!s.off).sort(szSort).map(s=>{const n=pds.filter(p=>p.cakeSize===s.k).length;
   return s.k===pdSizeEdit
-    ?`<tr class="editing" data-k="${esc(s.k)}"><td><input type="text" class="pds-name" value="${esc(s.n)}" aria-label="Size name"></td><td>${esc(s.k)}</td><td><input type="text" inputmode="decimal" class="pds-in" value="${esc(String(s.in||""))}" aria-label="Inch" style="width:60px"></td><td>${n}</td>
+    ?`<tr class="editing" data-k="${esc(s.k)}"><td><input type="text" class="pds-name" value="${esc(s.n)}" aria-label="Size name"></td><td><input type="text" inputmode="decimal" class="pds-lb" value="${esc(String(szLb(s)))}" aria-label="Pounds" style="width:50px"></td><td><input type="text" inputmode="decimal" class="pds-in" value="${esc(String(s.in||""))}" aria-label="Inch" style="width:60px"></td><td>${n}</td>
       <td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-pds-ok aria-label="Save" title="Save">✓</button><button type="button" class="o-ic" data-pds-no aria-label="Cancel" title="Cancel">✕</button></span></td></tr>`
-    :`<tr data-k="${esc(s.k)}"><td>${esc(s.n)}</td><td>${esc(s.k)}</td><td>${esc(String(s.in||""))}"</td><td>${n}</td>
+    :`<tr data-k="${esc(s.k)}"><td>${esc(s.n)}</td><td>${esc(String(szLb(s)))}</td><td>${esc(String(s.in||""))}"</td><td>${n}</td>
       <td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-pds-edit aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-pds-del aria-label="Delete" title="${n?"Products use this size — move them first":"Delete"}" ${n?'disabled':""}>${TRASH_IC}</button></span></td></tr>`}).join("");
   $("pdSizeRows").querySelector(".pds-name")?.focus()}
 async function saveSizes(list){
@@ -6144,10 +6150,10 @@ async function saveSizes(list){
   else{try{localStorage.setItem("cakeSizes",JSON.stringify(list))}catch(x){}}
   applySizes(list);flavorsChanged()}
 async function pdSizeSaveRow(k){const tr=$("pdSizeRows").querySelector(`tr[data-k="${CSS.escape(k)}"]`);if(!tr)return;
-  const n=tr.querySelector(".pds-name").value.trim().replace(/\s+/g," "),inch=Number(tr.querySelector(".pds-in").value);
-  if(!n){toast("Size နာမည် ထည့်ပါ");return}if(!(inch>0)){toast("Inch ထည့်ပါ");return}
+  const n=tr.querySelector(".pds-name").value.trim().replace(/\s+/g," "),inch=Number(tr.querySelector(".pds-in").value),lb=Number(tr.querySelector(".pds-lb").value);
+  if(!n){toast("Size နာမည် ထည့်ပါ");return}if(!(lb>0)){toast("lb ထည့်ပါ");return}if(!(inch>0)){toast("Inch ထည့်ပါ");return}
   if(SIZES.some(s=>s.k!==k&&!s.off&&pdNorm(s.n)===pdNorm(n))){toast(`"${n}" ရှိပြီးသားပါ`);return}
-  try{await saveSizes(sizeList().map(s=>s.k===k?{...s,n,in:inch}:s));pdSizeEdit=null;renderPdSizes();toast(`“${n}” သိမ်းပြီး`)}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}}
+  try{await saveSizes(sizeList().map(s=>s.k===k?{...s,n,in:inch,lb}:s));pdSizeEdit=null;renderPdSizes();toast(`“${n}” သိမ်းပြီး`)}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}}
 $("pdSizeRows").addEventListener("click",async e=>{if(!can("admin"))return;const tr=e.target.closest("tr[data-k]");if(!tr)return;const k=tr.dataset.k;
   if(e.target.closest("[data-pds-edit]")){pdSizeEdit=k;renderPdSizes();return}
   if(e.target.closest("[data-pds-no]")){pdSizeEdit=null;renderPdSizes();return}
@@ -6156,16 +6162,15 @@ $("pdSizeRows").addEventListener("click",async e=>{if(!can("admin"))return;const
     if(pds.some(p=>p.cakeSize===k)){toast("ဒီ Size ကို Product တွေ သုံးနေပါတယ်");return}
     if(!await askConfirm(`Delete “${s.n}”?`,"Order form မှာ မပေါ်တော့ပါ။ အရင် order တွေမှာတော့ နာမည် ကျန်ပါမယ်။"))return;
     try{await saveSizes(sizeList().map(x=>x.k===k?{...x,off:true}:x));renderPdSizes();toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}}});
-$("pdSizeRows").addEventListener("keydown",e=>{if(e.target.matches(".pds-name,.pds-in")){if(e.key==="Enter"){e.preventDefault();pdSizeSaveRow(e.target.closest("tr").dataset.k)}if(e.key==="Escape"){pdSizeEdit=null;renderPdSizes()}}});
+$("pdSizeRows").addEventListener("keydown",e=>{if(e.target.matches(".pds-name,.pds-in,.pds-lb")){if(e.key==="Enter"){e.preventDefault();pdSizeSaveRow(e.target.closest("tr").dataset.k)}if(e.key==="Escape"){pdSizeEdit=null;renderPdSizes()}}});
 $("pdSizeBtn").addEventListener("click",()=>{if(!can("admin"))return;pdSizeEdit=null;renderPdSizes();["pdSizeName","pdSizeLb","pdSizeIn"].forEach(i=>$(i).value="");$("pdSizeDlg").hidden=false;$("pdSizeName").focus()});
 $("pdSizeForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("admin"))return;
   const n=$("pdSizeName").value.trim().replace(/\s+/g," "),lb=Number($("pdSizeLb").value),inch=Number($("pdSizeIn").value);
   if(!n){toast("Size နာမည် ထည့်ပါ");return}if(!(lb>0)){toast("lb ထည့်ပါ (ဥပမာ 3 သို့မဟုတ် 1.5)");return}if(!(inch>0)){toast("Inch ထည့်ပါ");return}
-  const k=String(lb),old=SIZES.find(s=>s.k===k);
-  if(old&&!old.off){toast(`${k} lb က “${old.n}” အဖြစ် ရှိပြီးသားပါ`);return}
   if(SIZES.some(s=>!s.off&&pdNorm(s.n)===pdNorm(n))){toast(`"${n}" ရှိပြီးသားပါ`);return}
-  /* adding a size that was deleted before switches it back on */
-  const list=old?sizeList().map(s=>s.k===k?{k,n,in:inch}:s):sizeList().concat({k,n,in:inch});
+  /* adding a name that was deleted before switches that size back on; a new one gets a key of its own */
+  const old=SIZES.find(s=>s.off&&pdNorm(s.n)===pdNorm(n)),k=old?old.k:"s"+Date.now().toString(36);
+  const list=old?sizeList().map(s=>s.k===k?{k,n,in:inch,lb}:s):sizeList().concat({k,n,in:inch,lb});
   try{await saveSizes(list);["pdSizeName","pdSizeLb","pdSizeIn"].forEach(i=>$(i).value="");renderPdSizes();toast(`“${n}” ထည့်ပြီး`)}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 /* cake flavors are saved for everyone (meta/cakeFlavors), or on this device when the page is opened on its own */
 async function saveFlavors(list){
