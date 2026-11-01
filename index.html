@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793551712"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793551945"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7788,8 +7788,11 @@ const soDelivOf=v=>v?.deliv!=null?v.deliv:[[v?.dName,v?.dPhone].filter(Boolean).
 const soHasPhone=s=>/(\+?95|0)9[\d\s\-]{6,}/.test(String(s||""));
 /* Delivery Info grows with its text, so nothing hides behind a scroll bar */
 function soGrow(){const t=$("soDeliv");if(!t)return;t.style.height="auto";t.style.height=(t.scrollHeight+2)+"px"}
-function soDelivFor(p,i,own){const rc=own?{}:ptRecvOf(p)[i]||{},addr=ptAddrsOf(p)[i]||"";
+/* the address without the receiver written on its first lines (everything up to the last line with a phone number) */
+function soBareAddr(a){const ls=String(a||"").split("\n");let k=-1;ls.forEach((l,i)=>{if(soHasPhone(l))k=i});return k>=0&&k<ls.length-1?ls.slice(k+1).join("\n"):a}
+function soDelivFor(p,i,own){const rc=own?{}:ptRecvOf(p)[i]||{};let addr=ptAddrsOf(p)[i]||"";
   if(!own&&!rc.n&&!rc.p&&soHasPhone(addr))return addr;
+  if(own)addr=soBareAddr(addr);
   return[[(rc.n||$("soCustQ").value||p?.name||"").trim(),(rc.p||(rc.n?"":$("soPhone").value)).trim()].filter(Boolean).join(" "),addr].filter(Boolean).join("\n")}
 /* a customer with more than one address: pick which one goes on the voucher (the default one first) */
 /* "Change address" (shown when the customer has more than one) lists the customer's addresses; picking one puts it on the voucher */
@@ -7797,9 +7800,10 @@ function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
   const rcs=ptRecvOf(p);
   /* "Change info": each address with its own receiver, and also with the customer's own name and phone */
   const who=(n,ph)=>[n,ph].filter(Boolean).join(" "),me0=who($("soCustQ").value.trim()||p?.name||"",$("soPhone").value.trim()||ptPhonesOf(p)[0]||"");
-  $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc(lbl+" · "+a)}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
-    return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):opt(true,me0)}).join("");
-  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=ads.length<2&&!rcs.some(Boolean)}
+  $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc(lbl+" · "+(own?soBareAddr(a):a).replace(/\n/g," "))}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
+    /* a receiver kept on the address, or written into the address itself (it has a phone number): offer it and the customer's own name */
+    return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):soHasPhone(a)?opt(false,"As written")+opt(true,me0):opt(true,me0)}).join("");
+  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=!ads.length}
 $("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAddrs(pts.find(x=>x.id===$("soCust").value));$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
   if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true;soGrow()});
