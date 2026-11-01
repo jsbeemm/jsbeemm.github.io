@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548756"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548951"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2100,8 +2100,8 @@ span.star-ic{cursor:default}
     <div class="ed-tools pv-head"><b>📄 <span id="soDlgT">New voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="soForm" class="side-body" novalidate>
       <div class="it-grid">
-        <div class="prf"><span>Customer</span><div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Search name, short code or phone" autocomplete="off" aria-label="Customer"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div></div>
-        <label class="prf"><span>Customer name <b>*</b></span><input id="soName" autocomplete="off"></label>
+        <div class="prf it-wide"><span>Customer name <b>*</b></span><div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Type to search JS customers (name, short code, phone) or a new name" autocomplete="off" aria-label="Customer name"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div></div>
+
         <label class="prf"><span>Phone</span><input id="soPhone" inputmode="tel" autocomplete="off"></label>
         <label class="prf"><span>Channel</span><input id="soChannel" list="ptChList" autocomplete="off"></label>
         <div class="prf"><span>Date</span><div id="soDate"></div></div>
@@ -7692,21 +7692,22 @@ $("goSo").addEventListener("click",()=>go("so"));
 /* Customer: typing filters the JS customers (name, short code, phone); picking one fills the voucher. Typed text that is not
    picked from the list is a walk-in / other customer. */
 const soCustLbl=p=>p?`${p.name}${p.short?` (${p.short})`:""}`:"";
-function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=soCustLbl(pts.find(p=>p.id===cur));$("soCustHits").hidden=true}
+function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p=>p.id===cur)?.name||"";$("soCustHits").hidden=true}
 function soCustHits(){const q=pdNorm($("soCustQ").value);
   const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,30);
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
-    :`<p class="side-help">မတွေ့ပါ — Walk-in အဖြစ် နာမည်ကို အောက်မှာ ရိုက်ထည့်ပါ</p>`;
+    :`<p class="side-help">စာရင်းထဲ မရှိပါ — ရိုက်ထားတဲ့ နာမည်နဲ့ Walk-in အဖြစ် သိမ်းပါမယ်</p>`;
   $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
 $("soCustQ").addEventListener("input",()=>{$("soCust").value="";soCustHits()});
 $("soCustQ").addEventListener("focus",soCustHits);
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-cust]");if(!b)return;$("soCust").value=b.dataset.soCust;
-  $("soCustQ").value=soCustLbl(pts.find(p=>p.id===b.dataset.soCust));$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
+  $("soCustQ").value=pts.find(p=>p.id===b.dataset.soCust)?.name||"";$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";soFillCust(v?.custId||"");
-  for(const[id,k]of[["soName","customer"],["soPhone","phone"],["soChannel","channel"],["soDName","dName"],["soDPhone","dPhone"],["soDAddr","dAddr"],["soNote","note"]])$(id).value=v?.[k]||"";
+  $("soCustQ").value=v?.customer||$("soCustQ").value;
+  for(const[id,k]of[["soPhone","phone"],["soChannel","channel"],["soDName","dName"],["soDPhone","dPhone"],["soDAddr","dAddr"],["soNote","note"]])$(id).value=v?.[k]||"";
   $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"Date","",false,"");
   soLines=(v?.lines||[]).map(l=>({...l}));renderSoLines();
   /* "Paid now" is for a new voucher; later money goes in as a payment on the voucher */
@@ -7714,7 +7715,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soPickQ").value="";$("soHits").hidden=true;$("soDlg").hidden=false;(v?$("soPickQ"):$("soCust")).focus()}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;const ph=ptPhonesOf(p)[0]||"",ad=ptAddrsOf(p)[ptDefOf(p)]||"";
-  $("soName").value=p.name;$("soPhone").value=ph;$("soChannel").value=p.channel||"";$("soDName").value=p.name;$("soDPhone").value=ph;$("soDAddr").value=ad});
+  $("soPhone").value=ph;$("soChannel").value=p.channel||"";$("soDName").value=p.name;$("soDPhone").value=ph;$("soDAddr").value=ad});
 const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
 function renderSoLines(){
   $("soLines").innerHTML=soLines.length?`<div class="so-lh"><span>Description</span><span>Qty</span><span>Price</span><span>Amount</span><span></span></div>`+soLines.map((l,i)=>`<div class="so-line" data-i="${i}">
@@ -7739,7 +7740,9 @@ $("soHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-add]
   const ex=soLines.find(l=>l.pid===i.id);if(ex)ex.qty=Number(ex.qty||0)+1;else soLines.push({pid:i.id,code:i.code||"",name:i.name,qty:1,price:i.price>0?Number(i.price):0,...(i.photo?{photo:i.photo}:{})});
   $("soPickQ").value="";$("soHits").hidden=true;renderSoLines();$("soPickQ").focus()});
 $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEditing;
-  const name=$("soName").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soName").focus();return}
+  let name=$("soCustQ").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soCustQ").focus();return}
+  /* a typed name that is exactly a JS customer's name links to that customer */
+  if(!$("soCust").value){const p=pts.find(x=>x.type==="js"&&pdNorm(x.name)===pdNorm(name));if(p){$("soCust").value=p.id;name=p.name}}
   const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
   lines.forEach(l=>{if(!l.note)delete l.note});
   if(!lines.length){toast("Item အနည်းဆုံး ၁ ခု ထည့်ပါ");return}
