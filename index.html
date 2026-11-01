@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546378"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546719"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -886,6 +886,13 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .it-row{display:grid;grid-template-columns:110px 1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .it-row code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.it-row .it-nm{font-weight:600;overflow-wrap:anywhere}
 .it-row small{grid-column:2/4;color:var(--muted)}.it-row .it-pr{font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
+.itc-list{display:grid;gap:10px;margin-bottom:12px}
+.itc-row{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.itc-head{display:flex;align-items:center;gap:8px}.itc-head small,.itc-sub small{color:var(--muted)}.itc-head .pm-ab{margin-left:auto}
+.itc-subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.itc-sub{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 10px;font-size:13px;background:var(--sunk)}
+.itc-x{border:0;background:none;cursor:pointer;color:var(--muted);font:inherit;padding:0 3px}.itc-x:disabled{opacity:.3;cursor:not-allowed}
+.itc-ed{display:inline-flex;align-items:center;gap:4px}.itc-in{min-width:0;width:180px;padding:5px 10px;border-radius:8px}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
 @media (max-width:560px){.it-grid{grid-template-columns:1fr}}
 #itDlg .side-panel{max-width:640px}
@@ -1502,6 +1509,7 @@ span.star-ic{cursor:default}
   <section id="viewItems" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
+      <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
@@ -2024,8 +2032,8 @@ span.star-ic{cursor:default}
     <form id="itForm" class="side-body" novalidate>
       <div class="pd-fphoto" id="itPhotoBox"></div>
       <div class="it-grid">
-        <label class="prf"><span>Category</span><input id="itCat" list="itCatList" autocomplete="off"></label>
-        <label class="prf"><span>Sub Category</span><input id="itSub" list="itSubList" autocomplete="off"></label>
+        <label class="prf"><span>Category</span><select id="itCat"></select></label>
+        <label class="prf"><span>Sub Category</span><select id="itSub"></select></label>
         <label class="prf"><span>Short Code <b>*</b></span><input id="itCode" autocomplete="off"></label>
         <label class="prf it-wide"><span>Name <b>*</b></span><input id="itName" autocomplete="off"></label>
         <label class="prf"><span>Purchase Unit</span><input id="itPurUnit" list="itUnitList" autocomplete="off"></label>
@@ -2043,8 +2051,19 @@ span.star-ic{cursor:default}
         <label class="prf it-wide"><span>Note</span><input id="itNote" autocomplete="off"></label>
       </div>
       <p class="side-help">JS ရောင်းဈေး ထည့်ထားရင် JS Bakery Supply မှာ ရောင်းပါမယ်။</p>
-      <datalist id="itCatList"></datalist><datalist id="itSubList"></datalist><datalist id="itUnitList"></datalist>
-      <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
+      <datalist id="itUnitList"></datalist>
+      <div class="cfm-btns"><button type="button" class="btn ghost danger-t" id="itDel" hidden>Delete</button><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
+    </form>
+  </div>
+</div>
+<!-- Raw Material categories and sub categories: add, rename, delete (kept in meta/itemCats) -->
+<div class="editor" id="itCatDlg" hidden role="dialog" aria-modal="true" aria-label="Raw Material categories">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b>🏷️ Raw Material categories</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <form id="itCatForm" class="side-body" novalidate>
+      <p class="side-help">နာမည်ပြောင်းရင် အဲဒီ Category / Sub Category သုံးထားတဲ့ Item တွေလည်း လိုက်ပြောင်းပါမယ်။ Item သုံးထားတဲ့ဟာကို မဖျက်နိုင်ပါ။</p>
+      <div id="itCatRows" class="itc-list"></div>
+      <div class="pd-catadd"><input id="itCatNew" placeholder="New category name" autocomplete="off" aria-label="New category name"><button type="submit" class="btn">+ Add</button></div>
     </form>
   </div>
 </div>
@@ -7312,13 +7331,81 @@ var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false;
 function initItems(){
   if(!db){if(!itLoaded){try{items=JSON.parse(localStorage.getItem("cakeItems")||"[]")}catch(e){items=[]}itLoaded=true}return}
   if(itCol)return;itCol=db.collection("items");
+  db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
     if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand()},()=>{itCol=null});
 }
+/* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
+   changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
+const IT_CATS0=[["Asset",["Cutter","Display","Fondant Tool","Furniture & Fixture","Kitchen Tool","Knife","Machine & Electronics","Mould","Nozzle","Other Equipment","PC Mould","Plastic Ware","Scale","Tableware & Container","Uniform & Apparel"]],
+  ["Bouquet Accesories",[]],["Cheese",["Cheddar","Cream Cheese","Mascarpone","Mozzarella","Parmesan","Slice"]],["Chocolate",[]],["Color",["Liquid","Powder"]],["Current Asset",[]],
+  ["Decoration",["Ball","Crown","Ornament","Other Decoration","Printing","Sprinkle & Edible","Topper","Toy"]],["Egg",[]],["Expense",[]],["Flour",[]],["Fondant",[]],["Fruit",[]],["Jam",[]],
+  ["Liquid",["Alcohol","Cake Emulsifier","Flavour","Glaze & Chocolate","Milk & Cream","Other Liquid","Sauce & Condiment","Syrup & Honey","Water & Drink"]],["Meat",[]],["Oil",[]],
+  ["Other",["Biscuit","Service","Supply","Unsorted"]],
+  ["Packing",["Bag","Box","Cake Base & Stick","Cup & Container","Cupcake Liner","Cutlery","Label","Other Packing","Paper & Wrap","Party & Seasonal","Ribbon","Straw"]],
+  ["Packing - Birthday",["Cake Base","Cake Box"]],
+  ["Powder",["Cake Emulsifier","Coffee, Tea & Cocoa","Flavour","Milk & Creamer","Nut & Seed","Other Powder","Seasoning & Spice","Starch & Thickener","Sugar & Sweetener","Yeast & Leavening"]]].map(([cat,subs])=>({cat,subs}));
+var itCatsDoc=(()=>{try{return JSON.parse(localStorage.getItem("cakeItemCats")||"null")}catch(e){return null}})();
+function itCatTree(){const t=(itCatsDoc||IT_CATS0).map(c=>({cat:c.cat,subs:[...(c.subs||[])]}));
+  for(const i of items){if(!i.cat)continue;let c=t.find(x=>x.cat===i.cat);if(!c)t.push(c={cat:i.cat,subs:[]});if(i.sub&&!c.subs.includes(i.sub))c.subs.push(i.sub)}
+  return t}
+async function saveItCats(list){itCatsDoc=list;
+  if(db)await db.doc("meta/itemCats").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});else{try{localStorage.setItem("cakeItemCats",JSON.stringify(list))}catch(x){}}}
+/* items that use a category / sub category get the new name (or lose a deleted sub category) */
+async function itRecat(match,patch){const now=new Date().toISOString();
+  for(const i of items.filter(match)){const d={...i,...patch(i),updatedAt:now,updatedBy:me.id||null};delete d.id;Object.keys(d).forEach(k=>{if(d[k]==null||d[k]==="")delete d[k]});
+    if(db)await db.collection("items").doc(i.id).set(d);else{const k=items.findIndex(x=>x.id===i.id);items[k]={...d,id:i.id}}}
+  if(!db){items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}}}
+let itCatEdit=null;   /* {cat} or {cat,sub} being renamed, or {cat,add:true} for a new sub category */
+function renderItCats(){const n=(c,s)=>items.filter(i=>i.cat===c&&(s==null||i.sub===s)).length,E=itCatEdit;
+  const edBox=(v,ph)=>`<span class="itc-ed"><input type="text" class="itc-in" value="${esc(v||"")}" placeholder="${esc(ph)}" autocomplete="off"><button type="button" class="o-ic" data-itc-ok aria-label="Save" title="Save">✓</button><button type="button" class="o-ic" data-itc-no aria-label="Cancel" title="Cancel">✕</button></span>`;
+  $("itCatRows").innerHTML=itCatTree().map(c=>{const cn=n(c.cat);
+    const head=E&&E.cat===c.cat&&E.sub==null&&!E.add?edBox(c.cat,"Category name")
+      :`<b>${esc(c.cat)}</b> <small>${cn}</small><span class="pm-ab"><button type="button" class="o-ic" data-itc-edit aria-label="Rename" title="Rename">${PENCIL}</button><button type="button" class="o-ic danger" data-itc-del ${cn?`disabled title="Items use this category"`:`title="Delete"`} aria-label="Delete">${TRASH_IC}</button></span>`;
+    const subs=c.subs.map(s=>{const sn=n(c.cat,s);return E&&E.cat===c.cat&&E.sub===s?`<span class="itc-sub">${edBox(s,"Sub category")}</span>`
+      :`<span class="itc-sub" data-sub="${esc(s)}">${esc(s)} <small>${sn}</small><button type="button" class="itc-x" data-itc-sedit aria-label="Rename" title="Rename">✎</button><button type="button" class="itc-x" data-itc-sdel ${sn?`disabled title="Items use this sub category"`:`title="Delete"`} aria-label="Delete">✕</button></span>`}).join("");
+    const add=E&&E.cat===c.cat&&E.add?`<span class="itc-sub">${edBox("","New sub category")}</span>`:`<button type="button" class="chip itc-add" data-itc-sadd>+ Sub</button>`;
+    return`<div class="itc-row" data-cat="${esc(c.cat)}"><div class="itc-head">${head}</div><div class="itc-subs">${subs}${add}</div></div>`}).join("");
+  $("itCatRows").querySelector(".itc-in")?.focus()}
+async function itCatSave(){const E=itCatEdit,inp=$("itCatRows").querySelector(".itc-in");if(!E||!inp)return;
+  const v=inp.value.trim().replace(/\s+/g," ");if(!v){toast("နာမည် ထည့်ပါ");return}
+  const t=itCatTree(),c=t.find(x=>x.cat===E.cat);if(!c)return;
+  try{
+    if(E.add){if(c.subs.some(s=>pdNorm(s)===pdNorm(v))){toast(`"${v}" ရှိပြီးသားပါ`);return}c.subs.push(v);await saveItCats(t)}
+    else if(E.sub!=null){if(v!==E.sub&&c.subs.some(s=>pdNorm(s)===pdNorm(v))){toast(`"${v}" ရှိပြီးသားပါ`);return}
+      c.subs=c.subs.map(s=>s===E.sub?v:s);await saveItCats(t);await itRecat(i=>i.cat===E.cat&&i.sub===E.sub,()=>({sub:v}))}
+    else{if(v!==E.cat&&t.some(x=>pdNorm(x.cat)===pdNorm(v))){toast(`"${v}" ရှိပြီးသားပါ`);return}
+      c.cat=v;await saveItCats(t);await itRecat(i=>i.cat===E.cat,()=>({cat:v}));if(itCat===E.cat)itCat=v}
+    itCatEdit=null;renderItCats();renderItems();toast("သိမ်းပြီး")}
+  catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}}
+$("itCatBtn").addEventListener("click",()=>{if(!can("admin"))return;itCatEdit=null;renderItCats();$("itCatNew").value="";$("itCatDlg").hidden=false});
+$("itCatRows").addEventListener("click",async e=>{if(!can("admin"))return;const row=e.target.closest("[data-cat]");if(!row)return;const cat=row.dataset.cat,sub=e.target.closest("[data-sub]")?.dataset.sub;
+  if(e.target.closest("[data-itc-no]")){itCatEdit=null;renderItCats();return}
+  if(e.target.closest("[data-itc-ok]")){await itCatSave();return}
+  if(e.target.closest("[data-itc-edit]")){itCatEdit={cat};renderItCats();return}
+  if(e.target.closest("[data-itc-sedit]")){itCatEdit={cat,sub};renderItCats();return}
+  if(e.target.closest("[data-itc-sadd]")){itCatEdit={cat,add:true};renderItCats();return}
+  const t=itCatTree();
+  if(e.target.closest("[data-itc-del]")){if(items.some(i=>i.cat===cat)){toast("ဒီ Category ကို Item တွေ သုံးနေပါတယ်");return}
+    if(!await askConfirm(`Delete “${cat}”?`,"Sub category တွေပါ ဖျက်ပါမယ်"))return;
+    try{await saveItCats(t.filter(x=>x.cat!==cat));renderItCats();toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}return}
+  if(e.target.closest("[data-itc-sdel]")&&sub!=null){if(items.some(i=>i.cat===cat&&i.sub===sub)){toast("ဒီ Sub category ကို Item တွေ သုံးနေပါတယ်");return}
+    if(!await askConfirm(`Delete “${sub}”?`,cat))return;
+    try{const c=t.find(x=>x.cat===cat);c.subs=c.subs.filter(s=>s!==sub);await saveItCats(t);renderItCats();toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}}});
+$("itCatRows").addEventListener("keydown",e=>{if(!e.target.matches(".itc-in"))return;if(e.key==="Enter"){e.preventDefault();itCatSave()}if(e.key==="Escape"){itCatEdit=null;renderItCats()}});
+$("itCatForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("admin"))return;const v=$("itCatNew").value.trim().replace(/\s+/g," ");if(!v){toast("Category နာမည် ထည့်ပါ");return}
+  const t=itCatTree();if(t.some(x=>pdNorm(x.cat)===pdNorm(v))){toast(`"${v}" ရှိပြီးသားပါ`);return}
+  try{t.push({cat:v,subs:[]});t.sort((a,b)=>a.cat.localeCompare(b.cat));await saveItCats(t);$("itCatNew").value="";renderItCats();toast(`“${v}” ထည့်ပြီး`)}catch(x){toast("သိမ်းမရပါ")}});
+/* the item form's two lists: categories, then the picked category's sub categories (an item's own value stays offered) */
+function itFillCats(cur){const t=itCatTree(),opts=t.map(c=>c.cat);if(cur&&!opts.includes(cur))opts.push(cur);
+  $("itCat").innerHTML=`<option value="">— ရွေးပါ —</option>`+opts.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");$("itCat").value=cur||""}
+function itFillSubs(cur){const c=itCatTree().find(x=>x.cat===$("itCat").value),opts=[...(c?.subs||[])];if(cur&&!opts.includes(cur))opts.push(cur);
+  $("itSub").innerHTML=`<option value="">—</option>`+opts.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");$("itSub").value=cur||""}
+$("itCat").addEventListener("change",()=>itFillSubs(""));
 const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
 function renderItems(){
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itNewBtn").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
+  $("itImport").hidden=!admin;$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
@@ -7350,13 +7437,17 @@ const IT_F=[["itCat","cat"],["itSub","sub"],["itCode","code"],["itName","name"],
 function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
   const uniq=f=>[...new Set(items.map(f).filter(Boolean))].sort();
-  $("itCatList").innerHTML=uniq(x=>x.cat).map(v=>`<option value="${esc(v)}">`).join("");
-  $("itSubList").innerHTML=uniq(x=>x.sub).map(v=>`<option value="${esc(v)}">`).join("");
+  itFillCats(i?i.cat:itCat);itFillSubs(i?.sub||"");$("itDel").hidden=!i;
   $("itUnitList").innerHTML=[...new Set([...uniq(x=>x.unit),...uniq(x=>x.purUnit),...uniq(x=>x.stockUnit)])].sort().map(v=>`<option value="${esc(v)}">`).join("");
   /* a new item starts in the category being looked at */
-  for(const[id,k,t]of IT_F){const el=$(id);if(t==="b")el.checked=!!i?.[k];else el.value=i?.[k]??(k==="cat"&&!i?itCat:"")}
+  for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else el.value=i?.[k]??""}
   $("itPrice").value=i?.price>0?i.price:"";$("itMbPrice").value=i?.mbPrice>0?i.mbPrice:"";$("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
+/* deleting a raw material (Admins) */
+$("itDel").addEventListener("click",async()=>{const i=itEditing;if(!i||!can("admin"))return;
+  if(!await askConfirm(`Delete “${i.name}”?`,i.code))return;
+  try{if(db)await db.collection("items").doc(i.id).delete();else{items=items.filter(x=>x.id!==i.id);try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+    $("itDlg").hidden=true;itEditing=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 $("itList").addEventListener("click",e=>{const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
 $("itList").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
 $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEditing;if(!can("admin"))return;
