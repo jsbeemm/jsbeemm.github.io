@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544089"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544189"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1466,6 +1466,7 @@ span.star-ic{cursor:default}
       <button type="button" class="home-tile" id="goTodo"><span class="ht-ic" aria-hidden="true">✅</span><b>To-do list</b><small id="homeTodoN"></small></button>
       <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Purchase &amp; Expense</b><small id="homePEN"></small></button>
       <button type="button" class="home-tile" id="goProd"><span class="ht-ic" aria-hidden="true">🥐</span><b>Bakery Products</b><small id="homeProdN"></small></button>
+      <button type="button" class="home-tile" id="goItems"><span class="ht-ic" aria-hidden="true">🧺</span><b>Raw Material</b><small id="homeItemsN"></small></button>
       <button type="button" class="home-tile" id="goPt"><span class="ht-ic" aria-hidden="true">🤝</span><b>Customers &amp; Suppliers</b><small id="homePtN"></small></button>
       <button type="button" class="home-tile" id="goRcv"><span class="ht-ic" aria-hidden="true">📦</span><b>Goods Received</b><small id="homeRcvN"></small></button>
     </div>
@@ -1482,13 +1483,12 @@ span.star-ic{cursor:default}
       <button type="button" class="home-tile" id="goOrders"><span class="ht-ic" aria-hidden="true">🎂</span><b>Orders</b><small id="homeOrdersN"></small></button>
       <button type="button" class="home-tile" id="goPos"><span class="ht-ic" aria-hidden="true">🧾</span><b>POS</b><small id="homePosN"></small></button>
       <button type="button" class="home-tile" id="goSaleRep"><span class="ht-ic" aria-hidden="true">📊</span><b>Sales report</b><small id="homeSaleRepN"></small></button>
-      <button type="button" class="home-tile" id="goItems"><span class="ht-ic" aria-hidden="true">📦</span><b>Items</b><small id="homeItemsN"></small></button>
     </div>
   </section>
   <!-- ITEMS: every raw item (Items Excel). Those marked "Sales Allowed" with a Selling Price are sold at JS Bakery Supply;
        Mr.Bee uses all of them (costing, toys / toppers charged on a cake) -->
   <section id="viewItems" hidden>
-    <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search items" autocomplete="off">
+    <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel (Short Code, Name, Category, … Selling Price) ထည့်ရန် / ပြင်ရန်">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden></div>
     <div class="chips pd-cats" id="itCats"></div>
@@ -5215,7 +5215,7 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["<span>Items</span>",""]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["Raw <span>Material</span>",""]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
@@ -5288,7 +5288,7 @@ addEventListener("scroll",()=>{const y=scrollY,dy=y-botLastY;
 addEventListener("resize",placeHome);document.fonts?.ready.then(placeHome);
 $("homeBtn").addEventListener("click",()=>go("home"));
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale",items:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview and Print setup keep their ✕ on the right instead) */
@@ -7272,7 +7272,7 @@ function initItems(){
   if(!db){if(!itLoaded){try{items=JSON.parse(localStorage.getItem("cakeItems")||"[]")}catch(e){items=[]}itLoaded=true}return}
   if(itCol)return;itCol=db.collection("items");
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale")syncSaleBrand()},()=>{itCol=null});
+    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand()},()=>{itCol=null});
 }
 const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
 function renderItems(){
