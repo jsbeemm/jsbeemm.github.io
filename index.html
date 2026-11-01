@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793525826"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793525939"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2728,13 +2728,16 @@ function renderSku(f){
   /* size is picked first, so each flavor shows its price for that size; flavors not made in it are faded */
   document.querySelectorAll("#optFlavor .sku").forEach(l=>{
     const x=FLAVORS.find(y=>y.k===l.querySelector("input").value),p=l.querySelector(".sku-p");
-    /* Fondant design is made on Rainbow Butter or Brownie only */
-    const off=f.decoType==="fondant"&&!fondantOk(x?.k);l.classList.toggle("fd-off",off);l.querySelector("input").disabled=off;
+    /* Fondant design: only the flavors that can be made in Fondant are shown */
+    const off=f.decoType==="fondant"&&!fondantOk(x?.k);l.classList.toggle("fd-off",off);l.querySelector("input").disabled=off;l.hidden=off;
     if(!x||x.k==="other"||!p)return;
     const m=f.decoType==="fondant"?2:1,any=!f.size||f.size==="custom",v=any?0:priceAt(x,sizeIdx(f.size))*m,txt=any?(fromPrice(x)*m).toLocaleString()+" Ks မှ":v?v.toLocaleString()+" Ks":"မရပါ";
     if(p.textContent!==txt)p.textContent=txt;
     l.classList.toggle("na",!any&&!v);
   });
+  /* "See more" counts only the flavors that are showing, and goes away when none of them is */
+  {const n=[...$("flvMore").querySelectorAll(".sku")].filter(l=>!l.hidden).length;$("moreBtn").hidden=!n;
+    if(!moreOpen)$("moreBtn").textContent=`See more – အခြားကိတ်သား ${n} မျိုး ▾`}
   if(hasTiers(f.cakeType)){
     $("flvSel").innerHTML=`<i class="sku-ph" aria-hidden="true">🎂</i><span class="sku-info"><b class="sku-price">${esc(f.basePrice?`${f.basePrice.toLocaleString("en-US")} Ks`:tr("ကိတ်သား ရွေးပါ"))}</b><span class="sku-name">${esc(f.flavorName)}</span><span class="sku-size">${esc(f.sizeName)}${(f.tiers||[]).some(t=>t.dummy)?" · Dummy cake ဈေး မပါ":""}</span></span>`;return}
   if(SMALL[f.decoType]){const cup=f.decoType==="cupcake";
