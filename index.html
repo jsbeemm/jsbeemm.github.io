@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549645"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7734,7 +7734,10 @@ function soCustHits(){const q=pdNorm($("soCustQ").value);
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
     :`<p class="side-help">စာရင်းထဲ မရှိပါ — ရိုက်ထားတဲ့ နာမည်နဲ့ Walk-in အဖြစ် သိမ်းပါမယ်</p>`;
   $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
-$("soCustQ").addEventListener("input",()=>{$("soCust").value="";soCustHits()});
+/* clearing the customer (or typing over a picked one) clears that customer's phone, channel and delivery info too */
+$("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust").value="";
+  if(had||!$("soCustQ").value.trim()){$("soPhone").value="";$("soChannel").value="";$("soDeliv").value="";soFillAddrs(null)}
+  soCustHits()});
 $("soCustQ").addEventListener("focus",soCustHits);
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
