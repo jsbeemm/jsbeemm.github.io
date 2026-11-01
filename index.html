@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552914"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553058"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7927,9 +7927,11 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
-    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${SO_SIGN}</div>`}
+    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${soSignOn?SO_SIGN:""}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
+/* the staff marks are for the printed paper only; a saved picture leaves them out */
+var soSignOn=true;
 /* A5 / A4 can be portrait (the default) or landscape; a receipt has no orientation */
 const soLand=()=>$("soOrient").value==="L";
 function soSyncOrient(){$("soOrient").hidden=$("soPaper").value==="RC"}
@@ -7990,7 +7992,7 @@ function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid
     ${owe.length?`<div class="owe"><b>အကြွေးစာရင်း</b>${owe.map(x=>`<div class="two" style="margin:2px 0"><span>${esc(x.no)} · ${esc(soDate(x.date))}</span><span>${m(soBal(x))}</span></div>`).join("")}
       <div class="two b" style="margin:2px 0"><span>ယခင်ကျန်ငွေ</span><span>${m(oweSum)}</span></div><div class="two b" style="margin:2px 0"><span>စုစုပေါင်း ပေးရန်</span><span>${m(oweSum+bal)}</span></div></div>`:""}
     ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
-    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${SO_SIGN}</div>`}
+    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${soSignOn?SO_SIGN:""}</div>`}
 $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:0;height:0;border:0";document.body.appendChild(f);
   const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}`;
@@ -8001,7 +8003,7 @@ $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===so
 $("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   toast("ပုံ ပြင်ဆင်နေသည်…",8000);
   try{await loadLib("lib/html2canvas-1.4.1.min.js");
-    const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
+    const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";soSignOn=false;try{box.innerHTML=rc?soRcHtml(v):await soHtml(v)}finally{soSignOn=true}
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
     const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
     let page=shot;
