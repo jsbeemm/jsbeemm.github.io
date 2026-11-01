@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550090"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550266"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1131,6 +1131,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pt-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:17px}
 .pt-body{display:grid;gap:3px;min-width:0}.pt-name{font-size:15px;overflow-wrap:anywhere}.pt-other{font-size:12.5px;color:var(--muted)}
 .pt-tags{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0}.pt-tag{font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
+.pt-acol{flex:1;min-width:0;display:grid;gap:4px}.pt-rcv{display:grid;grid-template-columns:1fr 1fr;gap:4px}.pt-rcv input{font-size:13px;padding:6px 8px}
 .pt-multi{display:grid;gap:6px}.pt-row{display:flex;gap:6px;align-items:center}.pt-row input,.pt-row textarea{flex:1;min-width:0}.pt-arow{align-items:flex-start}.pt-aside{display:grid;gap:6px;justify-items:end}.pt-add{justify-self:start;margin-top:4px}.pt-def{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink);cursor:pointer}.pt-def input{width:16px;height:16px;margin:0;accent-color:var(--accent)}.pt-deftag{background:var(--mint-soft);color:var(--mint)}
 .pt-namerow{grid-template-columns:2fr 1fr}
 .pt-tag.code{font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}.pt-tag.sky{background:var(--sky-soft);color:var(--sky)}
@@ -6452,7 +6453,7 @@ function renderPt(){
         ${p.account&&p.account!==p.name?`<small class="pt-line">👤 <span data-t="${esc(p.account)}"></span></small>`:""}
         ${ptPhonesOf(p).length?`<small class="pt-line">📞 ${ptTel(ptPhonesOf(p).join(", "))}</small>`:""}
         ${(()=>{/* the default address comes first and is marked when there is more than one */
-          const ads=ptAddrsOf(p),di=ptDefOf(p),many=ads.length>1,a=ads.map((ad,i)=>[ad,i===di]).sort((x,y)=>y[1]-x[1]);
+          const ads=ptAddrsOf(p),di=ptDefOf(p),many=ads.length>1,rcs=ptRecvOf(p),a=ads.map((ad,i)=>[(rcs[i]?.n||rcs[i]?.p?`${[rcs[i].n,rcs[i].p].filter(Boolean).join(" ")} · `:"")+ad,i===di]).sort((x,y)=>y[1]-x[1]);
           return a.map(([ad,def])=>`<small class="pt-line">📍 <span data-t="${esc(ad)}"></span>${many&&def?` <span class="pt-tag pt-deftag">Default</span>`:""}</small>`).join("")})()}</div></article>`}).join("")
     :`<div class="prq-empty">Nothing here${q?" matches the search":" yet"}.</div>`;
   $("ptList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
@@ -6482,9 +6483,11 @@ const ptDefOf=p=>p?.addresses?Math.min(p.defAddr||0,Math.max(0,p.addresses.lengt
 const ptRmBtn=`<button type="button" class="o-ic danger" data-pt-rm aria-label="Remove" title="Remove">${TRASH_IC}</button>`;
 function ptPhoneRow(v=""){const d=document.createElement("div");d.className="pt-row";
   d.innerHTML=`<input class="pt-ph" inputmode="tel" autocomplete="off" placeholder="09…" aria-label="Phone">${ptRmBtn}`;d.querySelector("input").value=v;$("ptPhones").append(d);return d}
-function ptAddrRow(v="",def=false){const d=document.createElement("div");d.className="pt-row pt-arow";
-  d.innerHTML=`<textarea class="pt-ad" rows="2" aria-label="Address"></textarea><div class="pt-aside"><label class="pt-def"><input type="radio" name="ptDef"> Default</label>${ptRmBtn}</div>`;
-  d.querySelector("textarea").value=v;d.querySelector("input").checked=def;$("ptAddrs").append(d);return d}
+/* each address can have its own receiver (a name and phone other than the customer's), used on delivery */
+const ptRecvOf=p=>p?.recv||[];
+function ptAddrRow(v="",def=false,rc=null){const d=document.createElement("div");d.className="pt-row pt-arow";
+  d.innerHTML=`<div class="pt-acol"><div class="pt-rcv"><input class="pt-rn" placeholder="Receiver name" title="လက်ခံမယ့်သူ (Customer မဟုတ်ရင်)" aria-label="Receiver name"><input class="pt-rp" inputmode="tel" placeholder="Receiver phone" aria-label="Receiver phone"></div><textarea class="pt-ad" rows="2" aria-label="Address"></textarea></div><div class="pt-aside"><label class="pt-def"><input type="radio" name="ptDef"> Default</label>${ptRmBtn}</div>`;
+  d.querySelector("textarea").value=v;d.querySelector(".pt-rn").value=rc?.n||"";d.querySelector(".pt-rp").value=rc?.p||"";d.querySelector("input[name=ptDef]").checked=def;$("ptAddrs").append(d);return d}
 $("ptPhoneAdd").addEventListener("click",()=>ptPhoneRow().querySelector("input").focus());
 $("ptAddrAdd").addEventListener("click",()=>{const r=ptAddrRow("",!$("ptAddrs").children.length);r.querySelector("textarea").focus()});
 ["ptPhones","ptAddrs"].forEach(id=>$(id).addEventListener("click",e=>{const b=e.target.closest("[data-pt-rm]");if(!b)return;
@@ -6499,7 +6502,7 @@ function openPtForm(p){
   ptSyncCh(t);if(t==="customer"&&p)$("ptChannel").value=custChannel(p);
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
   $("ptPhones").innerHTML="";const phs=ptPhonesOf(p);(phs.length?phs:[""]).forEach(v=>ptPhoneRow(v));
-  $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di));
+  $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p),rcs=ptRecvOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di,rcs[i]));
   ptSyncType();$("ptDel").hidden=!p;$("ptDlg").hidden=false;$("ptName").focus();
 }
 $("ptTypeSel").addEventListener("change",ptSyncType);
@@ -6516,8 +6519,10 @@ $("ptForm").addEventListener("submit",async e=>{
     ...(ptEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   const clean=s=>s.trim().replace(/[ \t]+/g," ");
   const phones=[...$("ptPhones").querySelectorAll(".pt-ph")].map(i=>clean(i.value)).filter(Boolean);
-  const arows=[...$("ptAddrs").querySelectorAll(".pt-row")].map(r=>({a:clean(r.querySelector("textarea").value),d:r.querySelector("input[name=ptDef]").checked})).filter(x=>x.a);
+  const arows=[...$("ptAddrs").querySelectorAll(".pt-row")].map(r=>({a:clean(r.querySelector("textarea").value),d:r.querySelector("input[name=ptDef]").checked,
+    rn:clean(r.querySelector(".pt-rn")?.value||""),rp:clean(r.querySelector(".pt-rp")?.value||"")})).filter(x=>x.a);
   const addresses=arows.map(x=>x.a),defAddr=Math.max(0,arows.findIndex(x=>x.d));
+  const recv=arows.map(x=>x.rn||x.rp?{n:x.rn,p:x.rp}:null);p.recv=recv.some(Boolean)?recv:null;if(!p.recv)delete p.recv;
   /* "phone" and "address" (the default) are kept as well, for searching and for older screens */
   const f={otherName:v("ptOther"),phones:phones.length?phones:null,phone:phones.length?phones.join(", "):null,channel:v("ptChannel"),account:v("ptAcct"),
     addresses:addresses.length?addresses:null,defAddr:addresses.length>1?defAddr:null,address:addresses[defAddr]||null,address2:null,short,country:type==="supplier"?v("ptCountry"):null,currency:type==="supplier"?($("ptCur").value||null):null};
@@ -7765,15 +7770,18 @@ $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-
   $("soCustQ").value=pts.find(p=>p.id===b.dataset.soCust)?.name||"";$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
 /* delivery info is one text: name and phone, then the address (older vouchers kept them apart) */
 const soDelivOf=v=>v?.deliv!=null?v.deliv:[[v?.dName,v?.dPhone].filter(Boolean).join(" "),v?.dAddr].filter(Boolean).join("\n");
-function soDelivFor(p,addr){return[[($("soCustQ").value||p?.name||"").trim(),$("soPhone").value.trim()].filter(Boolean).join(" "),addr||""].filter(Boolean).join("\n")}
+/* the address's own receiver if it has one, else the customer */
+function soDelivFor(p,i){const rc=ptRecvOf(p)[i]||{},addr=ptAddrsOf(p)[i]||"";
+  return[[(rc.n||$("soCustQ").value||p?.name||"").trim(),(rc.p||(rc.n?"":$("soPhone").value)).trim()].filter(Boolean).join(" "),addr].filter(Boolean).join("\n")}
 /* a customer with more than one address: pick which one goes on the voucher (the default one first) */
 /* "Change address" (shown when the customer has more than one) lists the customer's addresses; picking one puts it on the voucher */
 function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
-  $("soAddrMenu").innerHTML=ads.map((a,i)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}"><span data-t="${esc(a)}"></span>${i===di?`<small>Default</small>`:""}</button>`).join("");
-  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;$("soAddrBtn").hidden=ads.length<2}
+  const rcs=ptRecvOf(p);
+  $("soAddrMenu").innerHTML=ads.map((a,i)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}"><span data-t="${esc((rcs[i]?.n?`${rcs[i].n} · `:"")+a)}"></span>${i===di?`<small>Default</small>`:""}</button>`).join("");
+  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=ads.length<2&&!rcs.some(Boolean)}
 $("soAddrBtn").addEventListener("click",()=>{$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
-  if(p)$("soDeliv").value=soDelivFor(p,ptAddrsOf(p)[Number(b.dataset.soAddr)]);$("soAddrMenu").hidden=true});
+  if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr));$("soAddrMenu").hidden=true});
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
@@ -7787,7 +7795,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus()}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
-  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").value=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptAddrsOf(p)[ptDefOf(p)])});
+  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").value=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p))});
 
 const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
 function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
