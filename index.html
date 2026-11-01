@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553058"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553171"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7994,10 +7994,14 @@ function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid
     ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
     <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${soSignOn?SO_SIGN:""}</div>`}
 $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
-  const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:0;height:0;border:0";document.body.appendChild(f);
+  /* the frame is laid out at the printable width, so the voucher's height tells how many pages it will take */
+  const mm=paper==="A4"?[210,297]:[148,210],[pw,ph]=soLand()?[mm[1],mm[0]]:mm,px=x=>Math.round(x*96/25.4);
+  const f=document.createElement("iframe");f.style.cssText=`position:fixed;left:-20000px;top:0;width:${rc?px(74):px(pw-16)}px;height:2000px;border:0`;document.body.appendChild(f);
   const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}`;
   const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v):await soHtml(v)}</body></html>`);d.close();
   await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
+  /* more than one page: "Page 1 of 2" at the bottom right of every page */
+  if(!rc&&d.body.scrollHeight>px(ph-16))d.head.insertAdjacentHTML("beforeend",`<style>@page{margin:8mm 8mm 12mm;@bottom-right{content:"Page " counter(page) " of " counter(pages);font:9pt system-ui,sans-serif;color:#555}}</style>`);
   try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
 /* save as a picture: the shape of an A5 / A4 page (portrait), or a receipt strip as long as it needs */
 $("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
