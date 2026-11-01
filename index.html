@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793446203"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793519731"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2519,9 +2519,10 @@ function renderTierList(){
   const wed=tierKind()==="wedding",n=tierDraft.length,m=fondantOn()?2:1,en=LANG==="en";
   const tl=i=>(en?`Tier ${i+1}`:`အဆင့် ${i+1}`)+(i===0?(en?" (bottom)":" (အောက်ဆုံး)"):i===n-1?(en?" (top)":" (အပေါ်ဆုံး)"):"");
   const sizeOpts=v=>SIZES.slice().sort((a,b)=>Number(a.k)-Number(b.k)).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
-  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other").map(x=>{const p=layerPrice(x.k,sz,st)*m;
+  const fon=fondantOn();
+  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other").map(x=>{const p=layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);
     /* no flavor number here: "1." / "2." next to the sizes read like pounds */
-    return`<option value="${x.k}" ${x.k===v?"selected":""} ${p||x.k===v?"":"disabled"}>${esc(x.n)}${p?(wed?"":` · ${p.toLocaleString("en-US")}`):` · ${en?"n/a":"မရပါ"}`}</option>`}).join("");   /* a Wedding Cake is priced as a whole, so its layers show no price */
+    return`<option value="${x.k}" ${x.k===v?"selected":""} ${(p&&!noF)||x.k===v?"":"disabled"}>${esc(x.n)}${noF?` · ${en?"no Fondant":"Fondant မရ"}`:p?(wed?"":` · ${p.toLocaleString("en-US")}`):` · ${en?"n/a":"မရပါ"}`}</option>`}).join("");   /* a Wedding Cake is priced as a whole, so its layers show no price */
   $("tierList").innerHTML=tierDraft.map((t,i)=>({t,i})).reverse().map(({t,i})=>`<div class="tier-card ${t.dummy?"dum":""}" data-ti="${i}">
     <div class="tier-head"><b>${tl(i)}</b>
       ${wed?`<span class="tier-kind"><label class="opt"><input type="radio" name="tk${i}" value="cake" ${t.dummy?"":"checked"} data-tkind><span>Cake</span></label><label class="opt"><input type="radio" name="tk${i}" value="dummy" ${t.dummy?"checked":""} data-tkind><span>Dummy cake</span></label></span>`:""}
@@ -2766,6 +2767,9 @@ $("optSize").addEventListener("change",()=>syncPrice(true));
 /* switching to Fondant design drops a flavor it cannot be made on */
 $("optDeco").addEventListener("change",()=>{const c=document.querySelector('input[name="fFlavor"]:checked');
   if(fondantOn()&&c&&!fondantOk(c.value)){c.checked=false;toast("ဒီကိတ်သားက Fondant design မရပါ")}
+  /* tier layers too: a layer whose flavor has no Fondant design is cleared so it is picked again */
+  if(fondantOn()&&hasTiers(tierKind())){let n=0;for(const t of tierDraft)if(!t.dummy)t.layers=t.layers.map(k=>k&&!fondantOk(k)?(n++,""):k);
+    if(n){toast("Fondant design မရတဲ့ ကိတ်သား "+n+" ခု ဖြုတ်လိုက်ပါတယ်။ ကိတ်သား ပြန်ရွေးပါ");drawTiers()}}
   renderSizes();syncPrice(true);
   /* a tiered / wedding cake's layer prices (shown in its flavor lists) follow Cream / Fondant too */
   if(hasTiers(tierKind()))renderTierList();
@@ -3370,6 +3374,7 @@ function formMissing(f){
   if(hasTiers(f.cakeType)){const ts=f.tiers||[];
     need(ts.length<1,"အဆင့် (အနည်းဆုံး ၁ ဆင့်)","tierList");
     need(ts.some(t=>!t.dummy&&t.layers.some(k=>!k)),"အလွှာတိုင်းရဲ့ ကိတ်သား","tierList");
+    need(f.decoType==="fondant"&&ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!fondantOk(k))),"Fondant design ရနိုင်သော ကိတ်သား","tierList");
     need(ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!layerPrice(k,t.size))),"ဒီ Size မှာ ရနိုင်သော ကိတ်သား","tierList");
     need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice")}
   need(f.shape==="custom"&&!f.shapeCustom,"Customized ပုံသဏ္ဌာန်","fShapeCustom");
@@ -4198,6 +4203,8 @@ $("dateFilters").addEventListener("click",e=>{if(!e.target.closest("[data-acc]")
   else{dateF="accepted";sortBeforeAcc=$("sortSel").value;$("sortSel").value="acc-new"}
   render()});
 $("dateFilters").addEventListener("change",e=>{if(e.target.id!=="dateSel")return;dateF=e.target.value;
+  /* picking Today also shows the Pending orders, sorted by pickup time */
+  if(dateF==="today"){statusF="new";$("sortSel").value="date"}
   if(dateF==="range"&&!$("fFrom").firstChild){$("fFrom").innerHTML=dateSelect("",todayISO(),"From");$("fTo").innerHTML=dateSelect("",todayISO(),"To")}render()});
 var fltOpen=false;
 $("filters").addEventListener("change",e=>{if(e.target.id==="stSel"){statusF=e.target.value;render()}});
