@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548951"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549318"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -896,7 +896,29 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 /* vouchers open full screen, not as a pop-up */
 #soDlg,#soView{padding:0;place-items:stretch}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
 #soDlg .side-body,#soView .side-body{width:min(100%,1000px);margin:0 auto}.so-h{margin:14px 0 6px}
-.so-pick{position:relative;margin-bottom:8px}.so-pick input{width:100%}
+.so-pick{position:relative;margin-bottom:6px}.so-pick input{width:100%}
+/* the voucher form looks like the voucher: boxes sit where the printed text goes */
+.vo-edit{padding:4px 2px}.vo-edit .req{color:var(--accent);font-family:inherit}
+.vo-edit input,.vo-edit select,.vo-edit textarea{font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;width:100%;box-sizing:border-box}
+.vo-edit .vo-cust input{margin-top:4px}.vo-edit .vo-dl{text-align:left}.vo-edit .vo-dl select{margin-bottom:4px}
+.vo-edit .vo-no>div{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-bottom:4px}.vo-edit .vo-no input{width:140px}
+.vo-edit .so-date .dp{font-size:13px}
+.vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
+.so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:100px}
+.so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:16%}.so-tbl th:nth-child(8){width:40px}
+.so-tbl td input{padding:5px 6px;width:100%;min-width:0}.so-tbl .so-lq,.so-tbl .so-lp{text-align:right}.so-tbl td{overflow:hidden}
+.so-addbtns .btn{width:auto}
+.so-tbl td.pic img{width:40px;height:40px;object-fit:cover;border-radius:6px}.so-empty{text-align:center;color:var(--muted);padding:18px}
+.vo-edit .vo-sum #soPaidW{display:flex;gap:6px;align-items:center;justify-content:flex-end}.vo-edit #soPaid{width:110px;text-align:right}.vo-edit #soPay{width:auto}
+.vo-edit .vo-note{margin-top:10px}
+.so-pcats{margin:8px 0}.so-plist{display:grid;gap:6px}
+.so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
+.so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
+.so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
+@media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no>div{justify-content:flex-start}
+  .so-tbl thead{display:none}.so-tbl tr{display:grid;grid-template-columns:28px 44px 1fr 34px;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
+  .so-tbl td{border:0;padding:2px}.so-tbl td:nth-child(3){grid-column:3/4}.so-tbl td:nth-child(4),.so-tbl td:nth-child(5),.so-tbl td:nth-child(6){grid-column:auto}
+  .so-tbl td:nth-child(7){grid-column:1/-1}.vo-edit .vo-top h1{font-size:20px}}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
 .so-hit{display:grid;grid-template-columns:90px 1fr auto;gap:8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);padding:8px 12px;cursor:pointer}
 .so-hit:hover{background:var(--sunk)}.so-chit{grid-template-columns:1fr auto}.so-chit small{color:var(--muted)}.so-hit code{color:var(--muted);font-size:12px}
@@ -2099,31 +2121,42 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel so-panel">
     <div class="ed-tools pv-head"><b>📄 <span id="soDlgT">New voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="soForm" class="side-body" novalidate>
-      <div class="it-grid">
-        <div class="prf it-wide"><span>Customer name <b>*</b></span><div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Type to search JS customers (name, short code, phone) or a new name" autocomplete="off" aria-label="Customer name"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div></div>
-
-        <label class="prf"><span>Phone</span><input id="soPhone" inputmode="tel" autocomplete="off"></label>
-        <label class="prf"><span>Channel</span><input id="soChannel" list="ptChList" autocomplete="off"></label>
-        <div class="prf"><span>Date</span><div id="soDate"></div></div>
+      <!-- the form is laid out like the printed voucher -->
+      <div class="vo vo-edit">
+        <div class="vo-top"><img src="img/brand-js.jpg" alt=""><div class="vo-shop"><h1>JS Myanmar Packaging &amp; Supplies</h1><p>09 402 222 446</p></div></div>
+        <div class="vo-meta">
+          <div class="vo-cust"><h3>Customer <b class="req">*</b></h3>
+            <div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Customer name (type to search)" autocomplete="off" aria-label="Customer name"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div>
+            <input id="soPhone" inputmode="tel" autocomplete="off" placeholder="Phone" aria-label="Phone"></div>
+          <div class="vo-dl"><h3>Delivery Info</h3>
+            <select id="soAddrSel" hidden aria-label="Customer address"></select>
+            <textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea></div>
+          <div class="vo-no"><div>SO No#<span id="soNoTxt">—</span></div>
+            <div>Channel#<input id="soChannel" list="ptChList" autocomplete="off" aria-label="Channel"></div>
+            <div class="so-date">Date<span id="soDate"></span></div></div>
+        </div>
+        <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th></tr></thead>
+          <tbody id="soLines"></tbody></table>
+        <div class="so-addbtns"><button type="button" class="btn" id="soAddItem">+ Add item</button><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div>
+        <div class="vo-sum"><span>Net Amount</span><span class="v" id="soNet">0</span><span class="c">MMK</span>
+          <span>Paid Amount</span><span class="v" id="soPaidW"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"><select id="soPay" aria-label="Payment method"></select></span><span class="c">MMK</span><span class="ln"></span>
+          <span>Balance</span><span class="v" id="soBalTxt">0</span><span class="c">MMK</span></div>
+        <div class="vo-note"><input id="soNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
       </div>
-      <p class="ac-h so-h">🚚 Delivery Info</p>
-      <div class="it-grid">
-        <label class="prf"><span>Name</span><input id="soDName" autocomplete="off"></label>
-        <label class="prf"><span>Phone</span><input id="soDPhone" inputmode="tel" autocomplete="off"></label>
-        <label class="prf it-wide"><span>Address</span><textarea id="soDAddr" rows="2"></textarea></label>
-      </div>
-      <p class="ac-h so-h">📦 Items</p>
-      <div class="so-pick"><input type="search" id="soPickQ" placeholder="Search item name or short code to add" autocomplete="off" aria-label="Add item"><div class="so-hits" id="soHits" hidden></div></div>
-      <div class="so-lines" id="soLines"></div>
-      <div class="so-addbtns"><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div>
-      <div class="so-tot"><span>Net Amount</span><b id="soNet">0</b></div>
-      <div class="it-grid" id="soPayNow">
-        <label class="prf"><span>Paid now (Ks)</span><input id="soPaid" type="number" min="0" step="1" placeholder="0"></label>
-        <label class="prf"><span>Payment method</span><select id="soPay"></select></label>
-      </div>
-      <label class="prf"><span>Note</span><input id="soNote" autocomplete="off"></label>
       <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="soSave">Save</button></div>
     </form>
+  </div>
+</div>
+<!-- JS voucher: pick items -->
+<div class="editor" id="soPickDlg" hidden role="dialog" aria-modal="true" aria-label="Add item">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b>📦 Add item</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body">
+      <input type="search" id="soPickQ" placeholder="Search item name or short code" autocomplete="off" aria-label="Search items">
+      <div class="chips pd-cats so-pcats" id="soPickCats"></div>
+      <div class="so-plist" id="soHits"></div>
+      <div class="cfm-btns"><button type="button" class="btn" data-close-dlg>Done</button></div>
+    </div>
   </div>
 </div>
 <!-- JS voucher: view, print, payments -->
@@ -7674,7 +7707,7 @@ function soNo(d){const pre="JS"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.sl
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
 const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-${MONTHS[Number(m)-1]}-${y}`:""};
 function renderSo(){if($("viewSo").hidden)return;
-  const q=pdNorm(soQ),hit=v=>!q||[v.no,v.customer,v.phone,v.dName,v.dPhone].some(x=>pdNorm(x).includes(q));
+  const q=pdNorm(soQ),hit=v=>!q||[v.no,v.customer,v.phone,soDelivOf(v)].some(x=>pdNorm(x).includes(q));
   const unpaid=vos.filter(v=>soBal(v)>0);
   $("soTabs").innerHTML=[["all","All",vos.length],["unpaid","Unpaid",unpaid.length]].map(([k,n,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${n} <small>${c}</small></button>`).join("");
   const list=(soTab==="unpaid"?unpaid:vos).filter(hit).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
@@ -7704,41 +7737,65 @@ $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-cust]");if(!b)return;$("soCust").value=b.dataset.soCust;
   $("soCustQ").value=pts.find(p=>p.id===b.dataset.soCust)?.name||"";$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
+/* delivery info is one text: name and phone, then the address (older vouchers kept them apart) */
+const soDelivOf=v=>v?.deliv!=null?v.deliv:[[v?.dName,v?.dPhone].filter(Boolean).join(" "),v?.dAddr].filter(Boolean).join("\n");
+function soDelivFor(p,addr){return[[($("soCustQ").value||p?.name||"").trim(),$("soPhone").value.trim()].filter(Boolean).join(" "),addr||""].filter(Boolean).join("\n")}
+/* a customer with more than one address: pick which one goes on the voucher (the default one first) */
+function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
+  $("soAddrSel").innerHTML=ads.map((a,i)=>`<option value="${i}" ${i===di?"selected":""}>${esc(a)}${i===di&&ads.length>1?" (Default)":""}</option>`).join("");$("soAddrSel").hidden=ads.length<2}
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
-  $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";soFillCust(v?.custId||"");
+  $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
-  for(const[id,k]of[["soPhone","phone"],["soChannel","channel"],["soDName","dName"],["soDPhone","dPhone"],["soDAddr","dAddr"],["soNote","note"]])$(id).value=v?.[k]||"";
-  $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"Date","",false,"");
-  soLines=(v?.lines||[]).map(l=>({...l}));renderSoLines();
-  /* "Paid now" is for a new voucher; later money goes in as a payment on the voucher */
-  $("soPayNow").hidden=!!v;$("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
-  $("soPickQ").value="";$("soHits").hidden=true;$("soDlg").hidden=false;(v?$("soPickQ"):$("soCust")).focus()}
+  for(const[id,k]of[["soPhone","phone"],["soChannel","channel"],["soNote","note"]])$(id).value=v?.[k]||"";
+  $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));
+  $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"","",false,"");
+  soLines=(v?.lines||[]).map(l=>({...l}));
+  /* "Paid Amount" is entered on a new voucher; later money goes in as a payment on the voucher */
+  $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
+  $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
+  renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus()}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
-$("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;const ph=ptPhonesOf(p)[0]||"",ad=ptAddrsOf(p)[ptDefOf(p)]||"";
-  $("soPhone").value=ph;$("soChannel").value=p.channel||"";$("soDName").value=p.name;$("soDPhone").value=ph;$("soDAddr").value=ad});
+$("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
+  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").value=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptAddrsOf(p)[ptDefOf(p)])});
+$("soAddrSel").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(p)$("soDeliv").value=soDelivFor(p,ptAddrsOf(p)[Number($("soAddrSel").value)])});
 const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
-function renderSoLines(){
-  $("soLines").innerHTML=soLines.length?`<div class="so-lh"><span>Description</span><span>Qty</span><span>Price</span><span>Amount</span><span></span></div>`+soLines.map((l,i)=>`<div class="so-line" data-i="${i}">
-      <input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty">
-      <input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"><b class="so-la">${fmt(Math.round(Number(l.qty||0)*Number(l.price||0)))}</b>
-      <button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button>
-      <input class="so-ln" value="${esc(l.note||"")}" placeholder="Note" aria-label="Note"></div>`).join(""):`<p class="side-help">Item မထည့်ရသေးပါ — အပေါ်မှာ ရှာပြီး ထည့်ပါ</p>`;
-  $("soNet").textContent=fmt(soNetOf(soLines))}
+function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
+  $("soNet").textContent=Number(net).toLocaleString("en-US");$("soPaidRo").hidden=!soEditing;$("soPaidRo").textContent=paid?Number(paid).toLocaleString("en-US"):"-";
+  $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
+async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(l.photo)));
+  $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
+      <td><input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}></td>
+      <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
+      <td class="r"><input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></td>
+      <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
+      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
+    :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
+  soSyncTot()}
 $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
   if(e.target.matches(".so-ld"))l.name=e.target.value;if(e.target.matches(".so-ln"))l.note=e.target.value;
   if(e.target.matches(".so-lq"))l.qty=Number(e.target.value)||0;if(e.target.matches(".so-lp"))l.price=Number(e.target.value)||0;
-  r.querySelector(".so-la").textContent=fmt(Math.round(Number(l.qty||0)*Number(l.price||0)));$("soNet").textContent=fmt(soNetOf(soLines))});
+  r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
+$("soPaid").addEventListener("input",soSyncTot);
 $("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
-$("soAddDeli").addEventListener("click",()=>{soLines.push({name:"Delivery",qty:1,price:0});renderSoLines();$("soLines").querySelector(".so-line:last-of-type .so-lp")?.focus()});
-$("soAddOther").addEventListener("click",()=>{soLines.push({name:"",qty:1,price:0});renderSoLines();$("soLines").querySelector(".so-line:last-of-type .so-ld")?.focus()});
-/* the item picker: JS items (with a JS price) first, then any other raw material */
-$("soPickQ").addEventListener("input",()=>{const q=pdNorm($("soPickQ").value);if(!q){$("soHits").hidden=true;return}
-  const m=items.filter(i=>pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,10);
-  $("soHits").innerHTML=m.length?m.map(i=>`<button type="button" class="so-hit" data-so-add="${esc(i.id)}"><code>${esc(i.code||"")}</code><span data-t="${esc(i.name)}"></span><b>${i.price>0?fmt(i.price):"—"}</b></button>`).join(""):`<p class="side-help">မတွေ့ပါ</p>`;
-  $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soHits").hidden=false});
+$("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-lp")?.focus()});
+$("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
+/* "+ Add item" opens a list to pick from: JS items (with a JS price) first; each tap adds one */
+let soPickCat="";
+function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
+  const cats=[...new Set(inQ.filter(i=>i.price>0).map(i=>i.cat||"Other"))].sort();if(soPickCat&&!cats.includes(soPickCat))soPickCat="";
+  $("soPickCats").innerHTML=`<button type="button" class="chip" data-sopc="" aria-pressed="${!soPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-sopc="${esc(c)}" aria-pressed="${soPickCat===c}">${esc(c)}</button>`).join("");
+  const m=inQ.filter(i=>(q||i.price>0)&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,80);
+  $("soHits").innerHTML=m.length?m.map(i=>{const n=soLines.find(l=>l.pid===i.id)?.qty||0;
+    return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(i.id)}">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
+      <span><span data-t="${esc(i.name)}"></span><br><code>${esc(i.code||"")}</code></span><b>${i.price>0?fmt(i.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
+    :`<p class="side-help">မတွေ့ပါ</p>`;
+  $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("soAddItem").addEventListener("click",()=>{initItems();soPickCat="";$("soPickQ").value="";renderSoPick();$("soPickDlg").hidden=false;$("soPickQ").focus()});
+$("soPickQ").addEventListener("input",renderSoPick);
+$("soPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-sopc]");if(b){soPickCat=b.dataset.sopc;renderSoPick()}});
 $("soHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-add]");if(!b)return;const i=items.find(x=>x.id===b.dataset.soAdd);if(!i)return;
   const ex=soLines.find(l=>l.pid===i.id);if(ex)ex.qty=Number(ex.qty||0)+1;else soLines.push({pid:i.id,code:i.code||"",name:i.name,qty:1,price:i.price>0?Number(i.price):0,...(i.photo?{photo:i.photo}:{})});
-  $("soPickQ").value="";$("soHits").hidden=true;renderSoLines();$("soPickQ").focus()});
+  renderSoPick();renderSoLines()});
 $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEditing;
   let name=$("soCustQ").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soCustQ").focus();return}
   /* a typed name that is exactly a JS customer's name links to that customer */
@@ -7750,8 +7807,8 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
   const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date),at:now,by:me.id||null,byName:me.name||"",payments:[]}),
     date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").value.trim()||null,
-    dName:$("soDName").value.trim()||null,dPhone:$("soDPhone").value.trim()||null,dAddr:$("soDAddr").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,
-    ...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+    deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+  delete v.dName;delete v.dPhone;delete v.dAddr;
   if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
   Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
   $("soSave").disabled=true;
@@ -7781,7 +7838,7 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
     <div class="vo-top"><img src="img/brand-js.jpg" alt=""><div class="vo-shop"><h1>JS Myanmar Packaging &amp; Supplies</h1><p>09 402 222 446</p></div></div>
     <div class="vo-meta">
       <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
-      <div class="vo-dl">${v.dName||v.dPhone||v.dAddr?`<h3>Delivery Info</h3><div>${esc([v.dName,v.dPhone].filter(Boolean).join(" "))}</div>${v.dAddr?`<div>${esc(v.dAddr)}</div>`:""}`:""}</div>
+      <div class="vo-dl">${soDelivOf(v)?`<h3>Delivery Info</h3><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div>`:""}</div>
       <div class="vo-no"><div>SO No#<span>${esc(v.no)}</span></div>${v.channel?`<div>Channel#<span>${esc(v.channel)}</span></div>`:""}<div>Date<span>${esc(soDate(v.date))}</span></div></div>
     </div>
     <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
