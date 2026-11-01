@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549957"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550090"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6464,6 +6464,14 @@ $("ptList").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches(
 $("goPt").addEventListener("click",()=>go("pt"));
 $("ptNewBtn").addEventListener("click",()=>openPtForm(null));
 const PT_CH_OTHER=["Walk in","Viber","Facebook","Tik Tok","WeChat"];
+/* boxes with a suggestion list (Channel, units …): a browser shows only the suggestions matching what is already in the box,
+   so after one is picked the others vanish. On focus the value steps aside (shown as the placeholder) so every suggestion shows;
+   leaving without typing puts it back. */
+document.addEventListener("focusin",e=>{const el=e.target;if(!el.matches?.("input[list]")||!el.value)return;
+  el.dataset.dlPrev=el.value;el.dataset.dlPh=el.placeholder;el.placeholder=el.value;el.value="";el.dataset.dlTyped=""});
+document.addEventListener("input",e=>{if(e.target.matches?.("input[list]"))e.target.dataset.dlTyped="1"},true);
+document.addEventListener("focusout",e=>{const el=e.target;if(!el.matches?.("input[list]")||el.dataset.dlPrev==null)return;
+  if(!el.value&&!el.dataset.dlTyped)el.value=el.dataset.dlPrev;el.placeholder=el.dataset.dlPh||"";delete el.dataset.dlPrev;delete el.dataset.dlPh});
 function ptSyncCh(t){$("ptChList").innerHTML=(t==="customer"?CHANNELS:PT_CH_OTHER).map(c=>`<option>${c}</option>`).join("");
   $("ptChannel").placeholder=t==="customer"?"Walk-in, Phone call, Distribution…":"Viber, Facebook, Walk in…"}
 function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
