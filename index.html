@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544189"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544396"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -871,6 +871,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 @media (max-width:600px){.home-who{max-width:34vw}body:not(.off-home) .head-right{flex-direction:column-reverse;align-items:flex-end;gap:2px}body:not(.off-home) .sync{min-height:0}}
 .prq-ph-btns .chip{display:inline-flex;align-items:center;gap:6px}
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.home-tile .ht-logo{width:44px;height:44px;border-radius:12px;object-fit:cover}
+.brand-bar[hidden]{display:none}
 .brand-bar{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .brand-btn{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;font-weight:700;padding:10px 14px;cursor:pointer;text-align:left}
 .brand-btn img{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none}
@@ -1462,7 +1464,9 @@ span.star-ic{cursor:default}
   <!-- HOME -->
   <section id="viewHome" hidden>
     <div class="home-grid">
-      <button type="button" class="home-tile" id="goSale"><span class="ht-ic" aria-hidden="true">🛍️</span><b>Sale</b><small id="homeSaleN"></small></button>
+      <!-- one tile per shop: Mr.Bee Bakery and JS Bakery Supply open their own Sale page -->
+      <button type="button" class="home-tile" id="goSale"><img class="ht-logo" src="img/brand-mrbee.jpg" alt=""><b>Mr.Bee Bakery</b><small id="homeSaleN"></small></button>
+      <button type="button" class="home-tile" id="goSaleJs"><img class="ht-logo" src="img/brand-js.jpg" alt=""><b>JS Bakery Supply</b><small id="homeSaleJsN"></small></button>
       <button type="button" class="home-tile" id="goTodo"><span class="ht-ic" aria-hidden="true">✅</span><b>To-do list</b><small id="homeTodoN"></small></button>
       <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Purchase &amp; Expense</b><small id="homePEN"></small></button>
       <button type="button" class="home-tile" id="goProd"><span class="ht-ic" aria-hidden="true">🥐</span><b>Bakery Products</b><small id="homeProdN"></small></button>
@@ -1475,7 +1479,7 @@ span.star-ic{cursor:default}
   <!-- SALE: Cake Orders · POS · Sales report -->
   <section id="viewSale" hidden>
     <!-- Sale is split by shop: Mr.Bee Bakery and JS Bakery Supply, each with its own POS and Sales report -->
-    <div class="brand-bar" id="saleBrands" role="tablist" aria-label="Shop">
+    <div class="brand-bar" id="saleBrands" role="tablist" aria-label="Shop" hidden>
       <button type="button" class="brand-btn" data-brand="mb" role="tab"><img src="img/brand-mrbee.jpg" alt=""><span>Mr.Bee Bakery</span></button>
       <button type="button" class="brand-btn" data-brand="js" role="tab"><img src="img/brand-js.jpg" alt=""><span>JS Bakery Supply</span></button>
     </div>
@@ -5251,14 +5255,20 @@ function renderHome(){
    /* the POS / Sales report tiles count the shop picked on the Sale page */
    const bs=ts.filter(x=>brandOf(x)===saleBrand),bamt=bs.reduce((a,x)=>a+Number(x.total||0),0);
    $("homePosN").textContent=`Today · ${bs.length} sale${bs.length===1?"":"s"}`;$("homeSaleRepN").textContent=`Today · ${fmt(bamt)}`;
-   $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(amt)}`;
+   const mb=ts.filter(x=>brandOf(x)==="mb"),js=ts.filter(x=>brandOf(x)==="js"),sum=l=>l.reduce((a,x)=>a+Number(x.total||0),0);
+   $("homeSaleN").textContent=`${open} open order${open===1?"":"s"} · Today ${fmt(sum(mb))}`;
+   $("homeSaleJsN").textContent=`Today · ${js.length} sale${js.length===1?"":"s"} · ${fmt(sum(js))}`;
   }
   syncSaleBrand();
   /* the account owner sees how much money is waiting for their confirmation */
   /* Sales report: people allowed in Accounts ("View sales report"), plus anyone with money waiting for their confirmation */
   $("goSaleRep").hidden=!can("sales.report")&&!sales.some(isMineToConf);
-  {const n=sales.filter(isMineToConf).length;["goSale","goSaleRep"].forEach(id=>{const t=$(id);t.classList.toggle("glow",n>0);t.querySelector(".ht-badge")?.remove();
+  /* money to confirm: each shop's tile counts its own sales; Sales report counts the shop that is open */
+  {const cnt=b=>sales.filter(s=>isMineToConf(s)&&brandOf(s)===b).length;
+   [["goSale",cnt("mb")],["goSaleJs",cnt("js")],["goSaleRep",cnt(saleBrand)]].forEach(([id,n])=>{const t=$(id);t.classList.toggle("glow",n>0);t.querySelector(".ht-badge")?.remove();
     if(n)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">🔔 ${n} to confirm</span>`)})}
+  /* decorators work on cake orders only, so JS is not shown to them */
+  $("goSaleJs").hidden=!!db&&myRole()==="decoration";
   /* decorators: the Sale tile shows only today's order count (no money), and lights up while today's cakes are not all finished */
   if(db&&myRole()==="decoration"){const t=todayISO(),gs=$("goSale"),td=orders.filter(o=>o.date===t&&isOpen(o)),left=td.filter(o=>!isBak(o)&&!o.deco?.endAt&&o.status==="new").length;
     $("homeSaleN").textContent=`Today ${td.length} order${td.length===1?"":"s"}`;
@@ -6134,7 +6144,7 @@ $("pdForm").addEventListener("submit",async e=>{
   if(!barcode||others.some(p=>String(p.barcode)===barcode)){toast("Barcode ထပ်နေပါတယ်");pdSyncBarcode();return}
   /* a product with a Distribution price is already out with its barcode, so moving it to another category asks first */
   if(pdEditing&&pdEditing.cat!==cat&&hasDist(pdEditing)&&String(pdEditing.barcode||"")!==barcode
-    &&!await askConfirm(`Category ပြောင်းရင် Barcode ပြောင်းပါမယ်`,`ဒီ product မှာ Distribution price ရှိပါတယ်။ Barcode ${pdEditing.barcode||"—"} → ${barcode} ပြောင်းမှာ သေချာလား?`))return;
+    &&!await askConfirm(`Category ပြောင်းရင် Barcode ပြောင်းပါမယ်`,`ဒီ product မှာ Distribution price ရှိပါတယ်။ Barcode ${pdEditing.barcode||"—"} → ${barcode} ပြောင်းမှာ သေချာလား?`,"Change"))return;
   const now=new Date().toISOString(),p={...(pdEditing||{}),id:pdEditing?.id||("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),code,name,cat,barcode,retail,pandaAuto,distAuto,
     ...(pdEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   delete p.cakeFlavor;delete p.cakeSize;   /* a single item is not part of a cake flavor */
@@ -6798,6 +6808,8 @@ function setSaleBrand(b){if(b===saleBrand)return;saleBrand=b==="js"?"js":"mb";tr
   posCart=[];posRet=[];posCustId="";posTier="retail";posCat="";posQ="";posMode="sell";const q=$("posQ");if(q)q.value="";
   posRepPay=posRepProd=posRepRet=null;renderHome();syncNewBtns();if(saleBrand==="js")initItems()}
 function syncSaleBrand(){document.querySelectorAll("#saleBrands [data-brand]").forEach(b=>b.setAttribute("aria-selected",b.dataset.brand===saleBrand));
+  /* the Sale page is titled with the shop it was opened for from Home */
+  if(view==="sale")$("pageTitle").innerHTML=saleBrand==="js"?"JS <span>Bakery Supply</span>":"Mr.Bee <span>Bakery</span>";
   /* cake orders are Mr.Bee's only */
   $("goOrders").hidden=saleBrand==="js";
   const n=items.filter(i=>i.sale&&i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
@@ -7261,7 +7273,8 @@ Confirm that this money has reached you.`,"Confirm"))return;
   const d=e.target.closest("[data-sale-del]");if(!d||!can("admin"))return;const s=sales.find(x=>x.id===d.dataset.saleDel);if(!s)return;
   if(!await askConfirm(`Delete sale ${s.no}?`,`${fmt(s.total)} · ${pmLabel(s.pay)}`))return;
   try{await removeSale(s.id);toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
-$("goSale").addEventListener("click",()=>go("sale"));
+$("goSale").addEventListener("click",()=>{setSaleBrand("mb");go("sale")});
+$("goSaleJs").addEventListener("click",()=>{setSaleBrand("js");go("sale")});
 $("goPos").addEventListener("click",()=>{posTab="sell";go("pos")});
 $("goItems").addEventListener("click",()=>go("items"));
 $("goSaleRep").addEventListener("click",()=>{if(!can("sales.report")&&!sales.some(isMineToConf))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
@@ -7339,7 +7352,7 @@ $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.targ
       if(!same)plan.push({id,doc:{...it,...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
     const nNew=plan.filter(p=>p.isNew).length,nChg=plan.length-nNew,nSale=rows.length?[...seen].length:0;
     if(!plan.length){toast(`ပြောင်းစရာ မရှိပါ — Items ${nSale} ခု အားလုံး တူနေပါတယ်`,5000);return}
-    if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`))return;
+    if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`,"Save"))return;
     let done=0;const pool=8,queue=plan.slice();
     const work=async()=>{while(queue.length){const p=queue.shift();
       if(db)await db.collection("items").doc(p.id).set(p.doc);else{const i=items.findIndex(x=>x.id===p.id);const d={...p.doc,id:p.id};if(i>=0)items[i]=d;else items.push(d)}
