@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793520787"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793524916"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -976,6 +976,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #ordRepBody .ex-c,#posRepBody .ex-c,#exReport .ex-c{width:78px;text-align:right;padding-right:10px}
 #ordRepBody .ex-r,#posRepBody .ex-r,#exReport .ex-r{width:112px}
 #posRepBody .ex-tbl td.ex-v{width:110px}@media (max-width:560px){#posRepBody .ex-tbl td.ex-v{width:72px;padding-left:6px}}
+#exReport .ex-big{position:relative}#exReport .ex-xl{position:absolute;top:10px;right:10px}
 #exReport .ex-tbl td.ex-v{width:104px}@media (max-width:560px){#exReport .ex-tbl td.ex-v{width:72px;padding-left:6px}#exReport .ex-c{width:58px;padding-right:6px;white-space:nowrap}#exReport .ex-r{width:88px}#exReport .ex-vd{padding:4px 8px}#exReport .ex-tbl td:first-child{overflow-wrap:normal;word-break:normal}}
 .ord-rep-btn{white-space:nowrap;padding:7px 14px;font-weight:600}
 #orFModes{margin-bottom:10px}.or-pick{margin-bottom:10px}.or-pick input[type=month]{width:auto}
@@ -5363,7 +5364,7 @@ function renderEx(){
   const notShared=list.filter(r=>!(r.shared||[]).length),nsSum=curSums(notShared,r=>Number(r.amount||0));
   const byPay=[...new Set(list.map(r=>r.pay).filter(Boolean))].map(p=>{const its=list.filter(r=>r.pay===p);return{p,count:its.length,sum:curSums(its,r=>Number(r.amount||0))}});
   $("exReport").innerHTML=`<div class="ex-rep">
-    <div class="ex-card ex-big"><small>${esc(label)} · ${list.length} expense${list.length===1?"":"s"}</small><b>${fmtSums(total)}</b></div>
+    <div class="ex-card ex-big"><small>${esc(label)} · ${list.length} expense${list.length===1?"":"s"}</small><b>${fmtSums(total)}</b>${list.length?`<button type="button" class="chip ex-xl" data-ex-xl title="Excel report">📥 Excel</button>`:""}</div>
     ${exBiz()?"":`<div class="ex-card"><p class="ac-h">Shared with — each person's share</p>
       <table class="ex-tbl"><tbody>${per.map(x=>`<tr><td>${esc(x.p.name)}</td><td class="ex-c">${x.count} item${x.count===1?"":"s"}</td><td class="ex-r">${fmtSums(x.sum)}</td><td class="ex-v">${vd(`data-vd-person="${esc(x.p.id)}"`)}</td></tr>`).join("")}
       ${notShared.length?`<tr class="ex-muted"><td>Not shared</td><td class="ex-c">${notShared.length} item${notShared.length===1?"":"s"}</td><td class="ex-r">${fmtSums(nsSum)}</td><td></td></tr>`:""}</tbody></table></div>`}
@@ -5371,7 +5372,36 @@ function renderEx(){
       ${byPay.length?`<table class="ex-tbl"><tbody>${byPay.map(x=>`<tr><td>${esc(pmLabel(x.p))}</td><td class="ex-c">${x.count} item${x.count===1?"":"s"}</td><td class="ex-r">${fmtSums(x.sum)}</td><td class="ex-v">${vd(`data-vd-pay="${esc(x.p)}"`)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
   </div>`;
 }
+/* Excel report of the period shown: a Summary sheet (each person's share, not shared, by payment method)
+   and an Expenses sheet (every expense, with each person's share in a column of their own) */
+async function exExcel(){const list=exInRange(),label=exRange()[2];if(!list.length){toast("ထုတ်စရာ မရှိပါ");return}
+  toast("Excel ပြင်ဆင်နေသည်…",8000);
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js");
+    const biz=exBiz(),money=(ws,rows,cols)=>{for(let r=1;r<rows.length;r++)cols.forEach(c=>{const cell=ws[XLSX.utils.encode_cell({r,c})];if(cell&&typeof cell.v==="number")cell.z="#,##0"})};
+    const rnd=n=>Math.round(Number(n)||0);
+    /* one row per currency, so amounts in different currencies are never added together */
+    const sumRows=(name,its,val)=>{const m=curSums(its,val),ks=Object.keys(m);return(ks.length?ks:["MMK"]).map(c=>[name,its.filter(r=>exCur(r)===c).length,rnd(m[c]||0),c])};
+    const S=[[`${biz?"Business":"Personal"} expense report`,label],[],["Total","Items","Amount","Currency"],...sumRows("Total",list,r=>Number(r.amount||0))];
+    if(!biz){S.push([],["Shared with — each person's share","Items","Share","Currency"]);
+      for(const p of exPpl()){const its=list.filter(r=>(r.shared||[]).includes(p.id));if(p.hidden&&!its.length)continue;S.push(...sumRows(p.name,its,r=>exShareOf(r,p.id)))}
+      const ns=list.filter(r=>!(r.shared||[]).length);if(ns.length)S.push(...sumRows("Not shared",ns,r=>Number(r.amount||0)))}
+    S.push([],["By payment method","Items","Amount","Currency"]);
+    for(const p of [...new Set(list.map(r=>r.pay).filter(Boolean))])S.push(...sumRows(pmLabel(p),list.filter(r=>r.pay===p),r=>Number(r.amount||0)));
+    const ws1=XLSX.utils.aoa_to_sheet(S);ws1["!cols"]=[{wch:34},{wch:10},{wch:14},{wch:10}];money(ws1,S,[2]);
+    const ppl=biz?[]:exPpl().filter(p=>list.some(r=>(r.shared||[]).includes(p.id)));
+    const H=["Date","Description","Amount","Currency","Payment method",...(biz?[]:["Shared with",...ppl.map(p=>p.name)])];
+    const E=[H,...list.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(r=>[r.date||"",r.desc||"",rnd(r.amount),exCur(r),pmLabel(r.pay||""),
+      ...(biz?[]:[(r.shared||[]).map(exPName).join(", "),...ppl.map(p=>(r.shared||[]).includes(p.id)?rnd(exShareOf(r,p.id)):"")])])];
+    const ws2=XLSX.utils.aoa_to_sheet(E);ws2["!cols"]=[12,36,12,9,16,...(biz?[]:[26,...ppl.map(()=>12)])].map(w=>({wch:w}));
+    ws2["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:E.length-1,c:H.length-1}})};
+    money(ws2,E,[2,...ppl.map((_,i)=>6+i)]);
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws1,"Summary");XLSX.utils.book_append_sheet(wb,ws2,"Expenses");
+    const blob=new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    const tag=label.replace(/[^\w\- ]+/g,"").trim().replace(/\s+/g,"-");
+    await saveFile(blob,`${biz?"business":"personal"}-expenses-${tag||todayISO()}.xlsx`,"Excel",false)}
+  catch(x){if(x?.code==="declined")return;toast("Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}}
 $("exReport").addEventListener("click",e=>{
+  if(e.target.closest("[data-ex-xl]")){exExcel();return}
   if(e.target.closest("[data-ex-back]")){exDetail=null;renderEx();scrollTo({top:0});return}
   const b=e.target.closest(".ex-vd");if(!b)return;
   exDetail=b.dataset.vdPerson!=null?{t:"person",k:b.dataset.vdPerson}:{t:"pay",k:b.dataset.vdPay};renderEx();scrollTo({top:0});
