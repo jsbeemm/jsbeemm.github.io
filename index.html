@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793547932"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548398"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,7 +897,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-pick{position:relative;margin-bottom:8px}.so-pick input{width:100%}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
 .so-hit{display:grid;grid-template-columns:90px 1fr auto;gap:8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);padding:8px 12px;cursor:pointer}
-.so-hit:hover{background:var(--sunk)}.so-hit code{color:var(--muted);font-size:12px}
+.so-hit:hover{background:var(--sunk)}.so-chit{grid-template-columns:1fr auto}.so-chit small{color:var(--muted)}.so-hit code{color:var(--muted);font-size:12px}
 .so-lines{display:grid;gap:6px}.so-lh,.so-line{display:grid;grid-template-columns:1fr 70px 100px 110px 34px;gap:6px;align-items:center}
 .so-lh{font-size:12px;color:var(--muted);font-weight:700}.so-line input{min-width:0;padding:7px 9px}.so-line .so-ln{grid-column:1/-1}.so-la{text-align:right}
 .so-line{padding-bottom:6px;border-bottom:1px dashed var(--line)}
@@ -2098,7 +2098,7 @@ span.star-ic{cursor:default}
     <div class="ed-tools pv-head"><b>📄 <span id="soDlgT">New voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="soForm" class="side-body" novalidate>
       <div class="it-grid">
-        <label class="prf"><span>Customer</span><select id="soCust"></select></label>
+        <div class="prf"><span>Customer</span><div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Search name, short code or phone" autocomplete="off" aria-label="Customer"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div></div>
         <label class="prf"><span>Customer name <b>*</b></span><input id="soName" autocomplete="off"></label>
         <label class="prf"><span>Phone</span><input id="soPhone" inputmode="tel" autocomplete="off"></label>
         <label class="prf"><span>Channel</span><input id="soChannel" list="ptChList" autocomplete="off"></label>
@@ -7687,8 +7687,21 @@ $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]"
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
 $("goSo").addEventListener("click",()=>go("so"));
 /* ---- the form ---- */
-function soFillCust(cur){const cs=pts.filter(p=>p.type==="js").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
-  $("soCust").innerHTML=`<option value="">Walk-in / other</option>`+cs.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.short?` (${esc(p.short)})`:""}</option>`).join("");$("soCust").value=cur||""}
+/* Customer: typing filters the JS customers (name, short code, phone); picking one fills the voucher. Typed text that is not
+   picked from the list is a walk-in / other customer. */
+const soCustLbl=p=>p?`${p.name}${p.short?` (${p.short})`:""}`:"";
+function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=soCustLbl(pts.find(p=>p.id===cur));$("soCustHits").hidden=true}
+function soCustHits(){const q=pdNorm($("soCustQ").value);
+  const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,30);
+  $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
+    :`<p class="side-help">မတွေ့ပါ — Walk-in အဖြစ် နာမည်ကို အောက်မှာ ရိုက်ထည့်ပါ</p>`;
+  $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
+$("soCustQ").addEventListener("input",()=>{$("soCust").value="";soCustHits()});
+$("soCustQ").addEventListener("focus",soCustHits);
+$("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
+$("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
+$("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-cust]");if(!b)return;$("soCust").value=b.dataset.soCust;
+  $("soCustQ").value=soCustLbl(pts.find(p=>p.id===b.dataset.soCust));$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";soFillCust(v?.custId||"");
   for(const[id,k]of[["soName","customer"],["soPhone","phone"],["soChannel","channel"],["soDName","dName"],["soDPhone","dPhone"],["soDAddr","dAddr"],["soNote","note"]])$(id).value=v?.[k]||"";
