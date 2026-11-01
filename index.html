@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793519881"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793520123"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1513,11 +1513,11 @@ span.star-ic{cursor:default}
   <!-- BAKERY PRODUCTS -->
   <section id="viewProd" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="pdQ" placeholder="Search name, ID or barcode" aria-label="Search products" autocomplete="off"><button type="button" class="chip" id="pdCatBtn">🏷️ Categories</button>
-      <button type="button" class="chip" id="pdXlBtn" title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
+      <button type="button" class="chip" id="pdXlBtn" hidden title="Excel ထဲက ID နဲ့ ဈေးနှုန်းအတိုင်း Retail ဈေး ပြောင်းရန်">📥 Retail ဈေး (Excel)</button><input type="file" id="pdXlFile" accept=".xlsx,.xls,.csv" hidden>
       <button type="button" class="chip" id="pdBcTidy" hidden title="Distribution ဈေးရှိတဲ့ product တွေကလွဲပြီး ကျန်တာတွေရဲ့ Barcode ကို နံပါတ်စဉ် ပြန်စီရန်">🔢 Barcode ပြန်စီ</button>
       <button type="button" class="chip" id="pdXlOut" hidden title="Products အားလုံးကို Excel ထုတ်ရန်">📤 Products Excel</button>
       <button type="button" class="chip" id="pdTierLink" hidden title="နာမည်မှာ (အဆင့်) ပါတဲ့ product တွေကို သူ့ကိတ်သားနဲ့ size ထဲ ချိတ်ရန်">🔗 အဆင့်ကိတ်ဈေး ချိတ်ရန်</button>
-      <button type="button" class="chip" id="pdReBtn" title="Retail ဈေးကနေ Food Panda (+30%) နဲ့ Wholesale (−10%) ဈေး ပြန်တွက်ရန်">🔄 Panda / Wholesale ဈေး</button>
+      <button type="button" class="chip" id="pdReBtn" hidden title="Retail ဈေးကနေ Food Panda (+30%) နဲ့ Wholesale (−10%) ဈေး ပြန်တွက်ရန်">🔄 Panda / Wholesale ဈေး</button>
       <button type="button" class="btn prq-new fab" id="pdNewBtn">+ Add product</button></div>
     <div class="chips pd-cats" id="pdCats"></div>
     <!-- Birthday Cake only: view one by one, by flavor (which sizes each flavor comes in) or by size (which flavors a size comes in) -->
@@ -5699,7 +5699,7 @@ function nextBarcode(code,skipId){const pre=BC_PREFIX+code;
 const pdNorm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function renderPd(){
   if(!$("viewProd")||$("viewProd").hidden)return;
-  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;$("pdXlBtn").hidden=!admin;$("pdReBtn").hidden=!admin;$("pdTierLink").hidden=!admin||!tierLinkPlan().length;$("pdBcTidy").hidden=!admin;$("pdXlOut").hidden=!admin;
+  const admin=can("admin");$("pdNewBtn").hidden=!admin;$("pdCatBtn").hidden=!admin;/* the one-off Retail-from-Excel, Panda/Wholesale and Barcode tidy buttons are retired (kept hidden) */$("pdTierLink").hidden=!admin||!tierLinkPlan().length;$("pdXlOut").hidden=!admin;
   const cats=pdCats(),q=pdNorm(pdQ);
   const inQ=pds.filter(p=>!q||pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q));
   $("pdCats").innerHTML=`<button type="button" class="chip" data-pdcat="" aria-pressed="${!pdCat}">All <small>${inQ.length}</small></button>`
