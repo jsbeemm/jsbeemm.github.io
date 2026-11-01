@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552790"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552914"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -937,7 +937,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-foot .ed-count{flex:1}#soView .side-panel.so-panel{grid-template-rows:auto minmax(0,1fr) auto}
 .so-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.so-paper{display:inline-flex;align-items:center;gap:6px;font-size:13px}.so-paper select{width:auto;padding:5px 8px}
 .so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
-.so-preview{overflow:hidden;border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff}#soPrev{width:760px;transform-origin:0 0}
+.so-preview{overflow:hidden;border-radius:10px;padding:14px;background:var(--sunk)}#soPrev{width:760px;transform-origin:0 0;background:#fff;box-sizing:border-box;box-shadow:0 2px 10px rgba(0,0,0,.18)}
 #soShot{position:fixed;left:-99999px;top:0;background:#fff;padding:0}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
@@ -7933,7 +7933,7 @@ const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပ�
 /* A5 / A4 can be portrait (the default) or landscape; a receipt has no orientation */
 const soLand=()=>$("soOrient").value==="L";
 function soSyncOrient(){$("soOrient").hidden=$("soPaper").value==="RC"}
-$("soOrient").addEventListener("change",e=>{try{localStorage.setItem("cakeSoOrient",e.target.value)}catch(x){}});
+$("soOrient").addEventListener("change",e=>{try{localStorage.setItem("cakeSoOrient",e.target.value)}catch(x){}const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
 const soPaperOf=()=>{try{const p=localStorage.getItem("cakeSoPaper");return p==="A4"||p==="RC"?p:"A5"}catch(e){return"A5"}};
 /* the preview follows the paper: the full voucher, or the receipt */
 $("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}soSyncOrient();const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
@@ -7944,7 +7944,10 @@ async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
   const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
-  $("soPrev").style.width=rc?"320px":"760px";$("soPrev").innerHTML=html;soFit()}
+  /* the preview is a sheet of the paper picked: A5 / A4 portrait or landscape (the voucher sits inside its margins), or the receipt strip */
+  const land=!rc&&soLand(),p=$("soPrev"),W=rc?320:land?1150:812;
+  p.style.width=W+"px";p.style.padding=rc?"10px":Math.round(W*.05)+"px";p.style.minHeight=rc?"":Math.round(land?W/1.4142:W*1.4142)+"px";
+  p.innerHTML=html;soFit()}
 var soViewSeq=0;
 /* the voucher keeps its paper layout and is scaled down to fit the dialog */
 function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const W=p.offsetWidth||760,k=Math.min(1,(box.clientWidth-28)/W);
