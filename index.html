@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550864"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550901"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7909,7 +7909,7 @@ async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soPrev").innerHTML=await soHtml(v);soFit()}
 /* the voucher keeps its paper layout and is scaled down to fit the dialog */
 function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const k=Math.min(1,(box.clientWidth-28)/760);
-  p.style.transform=`scale(${k})`;box.style.height=Math.ceil(p.scrollHeight*k+28)+"px"}
+  p.style.transform=`scale(${k})`;p.style.marginLeft=Math.max(0,(box.clientWidth-28-760*k)/2)+"px";box.style.height=Math.ceil(p.scrollHeight*k+28)+"px"}
 addEventListener("resize",soFit);
 $("soEditBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;$("soView").hidden=true;openSoForm(v)});
 $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v||!can("admin"))return;
