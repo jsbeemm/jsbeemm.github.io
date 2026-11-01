@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793551945"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552202"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2189,7 +2189,7 @@ span.star-ic{cursor:default}
       <button type="button" class="btn ghost pv-ic" id="soEditBtn" aria-label="Edit voucher" title="Edit voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
       <button type="button" class="btn ghost pv-del" id="soDelBtn" hidden aria-label="Delete voucher" title="Delete voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg></button>
       <span class="ed-count"></span>
-      <label class="so-paper">Paper <select id="soPaper"><option value="A5">A5</option><option value="A4">A4</option></select></label>
+      <label class="so-paper">Paper <select id="soPaper"><option value="A5">A5</option><option value="A4">A4</option><option value="RC">Receipt 80mm</option></select></label>
       <button type="button" class="btn ghost" id="soPayBtn">💵 + Payment</button>
       <button type="button" class="btn ghost pv-ic" id="soPrintBtn" aria-label="Print" title="Print"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
       <button type="button" class="btn pv-ic" id="soImgBtn" aria-label="Save image" title="Save image"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
@@ -7800,9 +7800,9 @@ function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
   const rcs=ptRecvOf(p);
   /* "Change info": each address with its own receiver, and also with the customer's own name and phone */
   const who=(n,ph)=>[n,ph].filter(Boolean).join(" "),me0=who($("soCustQ").value.trim()||p?.name||"",$("soPhone").value.trim()||ptPhonesOf(p)[0]||"");
-  $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc(lbl+" · "+(own?soBareAddr(a):a).replace(/\n/g," "))}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
+  $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc((lbl?lbl+" · ":"")+(own?soBareAddr(a):a).replace(/\n/g," "))}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
     /* a receiver kept on the address, or written into the address itself (it has a phone number): offer it and the customer's own name */
-    return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):soHasPhone(a)?opt(false,"As written")+opt(true,me0):opt(true,me0)}).join("");
+    return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):soHasPhone(a)?opt(false,"")+opt(true,me0):opt(true,me0)}).join("");
   $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=!ads.length}
 $("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAddrs(pts.find(x=>x.id===$("soCust").value));$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
@@ -7921,17 +7921,21 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
     <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div></div>`}
-const soPaperOf=()=>{try{return localStorage.getItem("cakeSoPaper")==="A4"?"A4":"A5"}catch(e){return"A5"}};
-$("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}});
+const soPaperOf=()=>{try{const p=localStorage.getItem("cakeSoPaper");return p==="A4"||p==="RC"?p:"A5"}catch(e){return"A5"}};
+/* the preview follows the paper: the full voucher, or the receipt */
+$("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
 function openSoView(v){soOpen=v.id;$("soPaper").value=soPaperOf();$("soPayForm").hidden=true;renderSoView(v);$("soView").hidden=false}
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;
   const ps=v.payments||[];
   $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
-  $("soPrev").innerHTML=await soHtml(v);soFit()}
+  /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
+  const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
+  $("soPrev").style.width=rc?"320px":"760px";$("soPrev").innerHTML=html;soFit()}
+var soViewSeq=0;
 /* the voucher keeps its paper layout and is scaled down to fit the dialog */
-function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const k=Math.min(1,(box.clientWidth-28)/760);
-  p.style.transform=`scale(${k})`;p.style.marginLeft=Math.max(0,(box.clientWidth-28-760*k)/2)+"px";box.style.height=Math.ceil(p.scrollHeight*k+28)+"px"}
+function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const W=p.offsetWidth||760,k=Math.min(1,(box.clientWidth-28)/W);
+  p.style.transform=`scale(${k})`;p.style.marginLeft=Math.max(0,(box.clientWidth-28-W*k)/2)+"px";box.style.height=Math.ceil(p.scrollHeight*k+28)+"px"}
 addEventListener("resize",soFit);
 $("soEditBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;$("soView").hidden=true;openSoForm(v)});
 $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v||!can("admin"))return;
@@ -7946,23 +7950,48 @@ $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpe
 $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-so-prm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const p=(v.payments||[])[Number(b.dataset.soPrm)];if(!p||!await askConfirm("Remove this payment?",`${soDate(p.date)} · ${fmt(p.amt)}`))return;
   const n={...v,payments:v.payments.filter((_,i)=>i!==Number(b.dataset.soPrm)),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
-/* print: a page of its own (A5 landscape by default, or A4) */
-$("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const a4=$("soPaper").value==="A4";
+/* ---- paper: A5 or A4 (both portrait), or an 80 mm thermal receipt ---- */
+const soRc=()=>$("soPaper").value==="RC";
+const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#000;background:#fff;font-size:12px;line-height:1.35;width:100%}
+.vr .c{text-align:center}.vr .r{text-align:right}.vr .b{font-weight:700}.vr .sh{font-size:17px;font-weight:700;line-height:1.2}.vr .sm{font-size:11px}
+.vr .meta{margin:6px 0}.vr .two{display:flex;justify-content:space-between;gap:8px;margin:6px 0}.vr .two>div:last-child{text-align:right}
+.vr table{width:100%;border-collapse:collapse;margin-top:4px}.vr th{font-weight:700;text-align:left;border-bottom:1px solid #000;padding:3px 0}
+.vr td{vertical-align:top;padding:4px 0}.vr td.q,.vr th.q{width:28px}.vr td.a,.vr th.a{text-align:right;white-space:nowrap;padding-left:6px}
+.vr .at{font-size:11px;color:#333}.vr .vr-tot td{padding:3px 0;font-weight:700;font-family:inherit;color:#000}.vr .vr-tot tr:first-child td{border-top:1px solid #000;padding-top:6px}
+.vr .owe{margin-top:6px;border-top:1px dashed #000;padding-top:4px;font-size:11px}.vr .thx{text-align:center;margin-top:10px;font-size:11px;line-height:1.7}`;
+document.head.insertAdjacentHTML("beforeend",`<style id="soRcCss">${SO_RC_CSS}</style>`);
+/* the receipt: shop, voucher number / channel / date, customer and delivery, then the lines (qty · item @ price · amount) and the money */
+function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
+  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0);
+  return`<div class="vr">
+    <div class="c sh">JS Myanmar<br>Packaging &amp; Supplies</div><div class="c sm">09 402 222 446</div>
+    <div class="r sm meta">SO No# ${esc(v.no)}${v.channel?`<br>Channel# ${esc(v.channel)}`:""}<br>${esc(soDate(v.date))}</div>
+    <div class="two sm"><div>${esc(v.customer||"")}${v.phone?`<br>${esc(v.phone)}`:""}</div><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div></div>
+    <table><thead><tr><th class="q">Qty</th><th>Description</th><th class="a">AMOUNT</th></tr></thead><tbody>
+      ${(v.lines||[]).map(l=>`<tr><td class="q">${m(l.qty)}</td><td>${esc(l.name)}<div class="at">@${m(l.price)}${l.note?` · ${esc(l.note)}`:""}</div></td><td class="a">${m(Math.round(l.qty*l.price))}</td></tr>`).join("")}
+    </tbody><tbody class="vr-tot"><tr><td colspan="2">Net Amount</td><td class="a">${m(v.net)}</td></tr><tr><td colspan="2">Payment</td><td class="a">${paid?m(paid):"-"}</td></tr><tr><td colspan="2">Balance</td><td class="a">${m(bal)}</td></tr></tbody></table>
+    ${owe.length?`<div class="owe"><b>အကြွေးစာရင်း</b>${owe.map(x=>`<div class="two" style="margin:2px 0"><span>${esc(x.no)} · ${esc(soDate(x.date))}</span><span>${m(soBal(x))}</span></div>`).join("")}
+      <div class="two b" style="margin:2px 0"><span>ယခင်ကျန်ငွေ</span><span>${m(oweSum)}</span></div><div class="two b" style="margin:2px 0"><span>စုစုပေါင်း ပေးရန်</span><span>${m(oweSum+bal)}</span></div></div>`:""}
+    ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
+    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div></div>`}
+$("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:0;height:0;border:0";document.body.appendChild(f);
-  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>@page{size:${a4?"A4 portrait":"A5 landscape"};margin:8mm}body{margin:0}${SO_CSS}</style></head><body>${await soHtml(v)}</body></html>`);d.close();
+  const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} portrait;margin:8mm}`;
+  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v):await soHtml(v)}</body></html>`);d.close();
   await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
-  try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — 💾 Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
-/* save as a picture the shape of the paper */
-$("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const a4=$("soPaper").value==="A4";
+  try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
+/* save as a picture: the shape of an A5 / A4 page (portrait), or a receipt strip as long as it needs */
+$("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   toast("ပုံ ပြင်ဆင်နေသည်…",8000);
   try{await loadLib("lib/html2canvas-1.4.1.min.js");
-    const box=$("soShot");box.style.width=(a4?760:1080)+"px";box.innerHTML=await soHtml(v);
+    const box=$("soShot");box.style.width=(rc?300:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
-    const shot=await html2canvas(box,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
-    const W=a4?1654:2480,H=a4?2339:1748,pad=Math.round(W*.04),page=document.createElement("canvas");page.width=W;page.height=H;
-    const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k);
-    const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));box.innerHTML="";
-    const name=`${v.no} ${v.customer||""}`.trim()+".jpg";
+    const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+    let page=shot;
+    if(!rc){const W=paper==="A4"?1654:1748,H=paper==="A4"?2339:2480,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
+      const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
+    const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));box.innerHTML="";box.style.padding="0";
+    const name=`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+".jpg";
     if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
     await saveFile(blob,name,"JPEG")}
   catch(x){if(x?.code==="declined")return;toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}});
