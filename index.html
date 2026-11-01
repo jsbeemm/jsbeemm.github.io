@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550266"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550320"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1932,7 +1932,7 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Other name</span><input id="ptOther" autocomplete="off"></label>
         <label class="prf"><span>Account name</span><input id="ptAcct" autocomplete="off"></label>
       </div>
-      <label class="prf"><span>Channel</span><input id="ptChannel" autocomplete="off" list="ptChList" placeholder="Viber, Facebook, Walk in…"></label>
+      <label class="prf"><span>Channel</span><select id="ptChannel"></select></label>
       <!-- as many phone numbers and addresses as needed; one address is the default -->
       <div class="prf"><span>Phone</span><div class="pt-multi" id="ptPhones"></div><button type="button" class="chip pt-add" id="ptPhoneAdd">+ Add phone</button></div>
       <datalist id="ptChList"><option>Walk in</option><option>Viber</option><option>Facebook</option><option>Tik Tok</option><option>WeChat</option></datalist>
@@ -2137,7 +2137,7 @@ span.star-ic{cursor:default}
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
               <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change address</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
           <div class="vo-no"><div>SO No#<span id="soNoTxt">—</span></div>
-            <div>Channel#<input id="soChannel" list="ptChList" autocomplete="off" aria-label="Channel"></div>
+            <div>Channel#<select id="soChannel" aria-label="Channel"></select></div>
             <div class="so-date">Date<span id="soDate"></span></div></div>
         </div>
         <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th></tr></thead>
@@ -6473,8 +6473,9 @@ document.addEventListener("focusin",e=>{const el=e.target;if(!el.matches?.("inpu
 document.addEventListener("input",e=>{if(e.target.matches?.("input[list]"))e.target.dataset.dlTyped="1"},true);
 document.addEventListener("focusout",e=>{const el=e.target;if(!el.matches?.("input[list]")||el.dataset.dlPrev==null)return;
   if(!el.value&&!el.dataset.dlTyped)el.value=el.dataset.dlPrev;el.placeholder=el.dataset.dlPh||"";delete el.dataset.dlPrev;delete el.dataset.dlPh});
-function ptSyncCh(t){$("ptChList").innerHTML=(t==="customer"?CHANNELS:PT_CH_OTHER).map(c=>`<option>${c}</option>`).join("");
-  $("ptChannel").placeholder=t==="customer"?"Walk-in, Phone call, Distribution…":"Viber, Facebook, Walk in…"}
+/* Channel is picked from a short list (no typing); a value saved before that is not on the list stays offered */
+function chFill(sel,list,v){v=v||"";sel.innerHTML=`<option value="">— ရွေးပါ —</option>`+[...list,...(v&&!list.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");sel.value=v}
+function ptSyncCh(t,v){chFill($("ptChannel"),t==="customer"?CHANNELS:PT_CH_OTHER,v??$("ptChannel").value)}
 function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
 /* any number of phones and addresses (older records kept "phone" as "09…, 09…" and up to two addresses) */
 const ptPhonesOf=p=>p?.phones||String(p?.phone||"").split(/,\s*/).filter(Boolean);
@@ -6498,8 +6499,8 @@ function openPtForm(p){
   if(!(can("admin")||(!p&&canAddCust()&&ptType!=="supplier")))return;ptEditing=p||null;const t=p?.type||ptType;
   $("ptFormTitle").textContent=(p?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2];
   $("ptTypeSel").innerHTML=PT_TYPES.filter(([k])=>can("admin")||k!=="supplier").map(([k,,n])=>`<option value="${k}" ${k===t?"selected":""}>${n}</option>`).join("");
-  for(const [id,k] of [["ptName","name"],["ptOther","otherName"],["ptChannel","channel"],["ptAcct","account"],["ptShort","short"],["ptCountry","country"]])$(id).value=p?.[k]||"";
-  ptSyncCh(t);if(t==="customer"&&p)$("ptChannel").value=custChannel(p);
+  for(const [id,k] of [["ptName","name"],["ptOther","otherName"],["ptAcct","account"],["ptShort","short"],["ptCountry","country"]])$(id).value=p?.[k]||"";
+  ptSyncCh(t,t==="customer"&&p?custChannel(p):(p?.channel||""));
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
   $("ptPhones").innerHTML="";const phs=ptPhonesOf(p);(phs.length?phs:[""]).forEach(v=>ptPhoneRow(v));
   $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p),rcs=ptRecvOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di,rcs[i]));
@@ -7752,7 +7753,7 @@ function soCustHits(){const q=pdNorm($("soCustQ").value);
   $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
 /* clearing the customer (or typing over a picked one) clears that customer's phone, channel and delivery info too */
 $("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust").value="";
-  if(had||!$("soCustQ").value.trim()){$("soPhone").value="";$("soChannel").value="";$("soDeliv").value="";soFillAddrs(null)}
+  if(had||!$("soCustQ").value.trim()){$("soPhone").value="";chFill($("soChannel"),PT_CH_OTHER,"");$("soDeliv").value="";soFillAddrs(null)}
   soCustHits()});
 $("soCustQ").addEventListener("focus",soCustHits);
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
@@ -7785,7 +7786,7 @@ $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-
 function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
-  for(const[id,k]of[["soPhone","phone"],["soChannel","channel"],["soNote","note"]])$(id).value=v?.[k]||"";
+  for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";chFill($("soChannel"),PT_CH_OTHER,v?.channel||"");
   $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));
   $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"","",false,"");
   soLines=(v?.lines||[]).map(l=>({...l}));
@@ -7795,7 +7796,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus()}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
-  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").value=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p))});
+  $("soPhone").value=ptPhonesOf(p)[0]||"";chFill($("soChannel"),PT_CH_OTHER,p.channel||"");soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p))});
 
 const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
 function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
