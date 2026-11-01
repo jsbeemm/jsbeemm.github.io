@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546876"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793547932"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -893,6 +893,20 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .itc-sub{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 10px;font-size:13px;background:var(--sunk)}
 .itc-x{border:0;background:none;cursor:pointer;color:var(--muted);font:inherit;padding:0 3px}.itc-x:disabled{opacity:.3;cursor:not-allowed}
 .itc-ed{display:inline-flex;align-items:center;gap:4px}.itc-in{min-width:0;width:180px;padding:5px 10px;border-radius:8px}
+.side-panel.so-panel{width:min(100%,900px);max-width:900px}.so-h{margin:14px 0 6px}
+.so-pick{position:relative;margin-bottom:8px}.so-pick input{width:100%}
+.so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
+.so-hit{display:grid;grid-template-columns:90px 1fr auto;gap:8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);padding:8px 12px;cursor:pointer}
+.so-hit:hover{background:var(--sunk)}.so-hit code{color:var(--muted);font-size:12px}
+.so-lines{display:grid;gap:6px}.so-lh,.so-line{display:grid;grid-template-columns:1fr 70px 100px 110px 34px;gap:6px;align-items:center}
+.so-lh{font-size:12px;color:var(--muted);font-weight:700}.so-line input{min-width:0;padding:7px 9px}.so-line .so-ln{grid-column:1/-1}.so-la{text-align:right}
+.so-line{padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.so-addbtns{display:flex;gap:6px;margin:8px 0}.so-tot{display:flex;justify-content:flex-end;gap:16px;font-size:16px;margin:6px 0 10px}.so-tot b{font-family:var(--mono)}
+.so-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.so-paper{display:inline-flex;align-items:center;gap:6px;font-size:13px}.so-paper select{width:auto;padding:5px 8px}
+.so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
+.so-preview{overflow:hidden;border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff}#soPrev{width:760px;transform-origin:0 0}
+#soShot{position:fixed;left:-99999px;top:0;background:#fff;padding:0}
+@media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
 @media (max-width:560px){.it-grid{grid-template-columns:1fr}}
 #itDlg .side-panel{max-width:640px}
@@ -1502,11 +1516,19 @@ span.star-ic{cursor:default}
     <div class="home-grid">
       <button type="button" class="home-tile" id="goOrders"><span class="ht-ic" aria-hidden="true">🎂</span><b>Orders</b><small id="homeOrdersN"></small></button>
       <button type="button" class="home-tile" id="goPos"><span class="ht-ic" aria-hidden="true">🧾</span><b>POS</b><small id="homePosN"></small></button>
+      <button type="button" class="home-tile" id="goSo" hidden><span class="ht-ic" aria-hidden="true">📄</span><b>Vouchers</b><small id="homeSoN"></small></button>
       <button type="button" class="home-tile" id="goSaleRep"><span class="ht-ic" aria-hidden="true">📊</span><b>Sales report</b><small id="homeSaleRepN"></small></button>
     </div>
   </section>
   <!-- ITEMS: every raw item (Items Excel). Those with a Selling Price (JS price) are sold at JS Bakery Supply;
        Mr.Bee uses all of them (costing, toys / toppers charged on a cake) -->
+  <!-- JS VOUCHERS (sales orders): a customer, the items with qty / price, delivery, paid amount and what is still owed -->
+  <section id="viewSo" hidden>
+    <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
+      <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
+    <div class="chips pd-cats" id="soTabs"></div>
+    <div class="ex-list" id="soList"></div>
+  </section>
   <section id="viewItems" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
@@ -2070,6 +2092,59 @@ span.star-ic{cursor:default}
     </form>
   </div>
 </div>
+<!-- JS voucher: new / edit -->
+<div class="editor" id="soDlg" hidden role="dialog" aria-modal="true" aria-label="Voucher">
+  <div class="ed-panel side-panel so-panel">
+    <div class="ed-tools pv-head"><b>📄 <span id="soDlgT">New voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <form id="soForm" class="side-body" novalidate>
+      <div class="it-grid">
+        <label class="prf"><span>Customer</span><select id="soCust"></select></label>
+        <label class="prf"><span>Customer name <b>*</b></span><input id="soName" autocomplete="off"></label>
+        <label class="prf"><span>Phone</span><input id="soPhone" inputmode="tel" autocomplete="off"></label>
+        <label class="prf"><span>Channel</span><input id="soChannel" list="ptChList" autocomplete="off"></label>
+        <div class="prf"><span>Date</span><div id="soDate"></div></div>
+      </div>
+      <p class="ac-h so-h">🚚 Delivery Info</p>
+      <div class="it-grid">
+        <label class="prf"><span>Name</span><input id="soDName" autocomplete="off"></label>
+        <label class="prf"><span>Phone</span><input id="soDPhone" inputmode="tel" autocomplete="off"></label>
+        <label class="prf it-wide"><span>Address</span><textarea id="soDAddr" rows="2"></textarea></label>
+      </div>
+      <p class="ac-h so-h">📦 Items</p>
+      <div class="so-pick"><input type="search" id="soPickQ" placeholder="Search item name or short code to add" autocomplete="off" aria-label="Add item"><div class="so-hits" id="soHits" hidden></div></div>
+      <div class="so-lines" id="soLines"></div>
+      <div class="so-addbtns"><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div>
+      <div class="so-tot"><span>Net Amount</span><b id="soNet">0</b></div>
+      <div class="it-grid" id="soPayNow">
+        <label class="prf"><span>Paid now (Ks)</span><input id="soPaid" type="number" min="0" step="1" placeholder="0"></label>
+        <label class="prf"><span>Payment method</span><select id="soPay"></select></label>
+      </div>
+      <label class="prf"><span>Note</span><input id="soNote" autocomplete="off"></label>
+      <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="soSave">Save</button></div>
+    </form>
+  </div>
+</div>
+<!-- JS voucher: view, print, payments -->
+<div class="editor" id="soView" hidden role="dialog" aria-modal="true" aria-label="Voucher">
+  <div class="ed-panel side-panel so-panel">
+    <div class="ed-tools pv-head"><b>📄 <span id="soViewT">Voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body">
+      <div class="so-acts">
+        <label class="so-paper">Paper <select id="soPaper"><option value="A5">A5</option><option value="A4">A4</option></select></label>
+        <button type="button" class="chip" id="soPrintBtn">🖨 Print</button><button type="button" class="chip" id="soImgBtn">💾 Save image</button>
+        <button type="button" class="chip" id="soPayBtn">💵 + Payment</button><button type="button" class="chip" id="soEditBtn">✎ Edit</button>
+        <button type="button" class="chip danger-t" id="soDelBtn" hidden>🗑 Delete</button></div>
+      <div class="so-payform" id="soPayForm" hidden>
+        <label class="prf"><span>Amount (Ks)</span><input id="soPAmt" type="number" min="0" step="1"></label>
+        <label class="prf"><span>Method</span><select id="soPMethod"></select></label>
+        <div class="prf"><span>Date</span><div id="soPDate"></div></div>
+        <button type="button" class="btn" id="soPSave">Save payment</button></div>
+      <div class="so-pays" id="soPays"></div>
+      <div class="so-preview"><div id="soPrev"></div></div>
+    </div>
+  </div>
+</div>
+<div id="soShot" aria-hidden="true"></div>
 <!-- Cake Orders sizes: add, rename and remove (kept in meta/cakeSizes) -->
 <div class="editor" id="pdSizeDlg" hidden role="dialog" aria-modal="true" aria-label="Cake Orders sizes">
   <div class="ed-panel side-panel">
@@ -5269,7 +5344,7 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["Raw <span>Material</span>",""]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
@@ -5277,7 +5352,7 @@ function go(v){
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
-  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
+  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
@@ -5285,7 +5360,7 @@ function go(v){
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos")initItems();if(v==="items")renderItems();
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||(v==="sale"&&saleBrand==="js")||(v==="pos"&&saleBrand==="js"))initSo();if(v==="so")renderSo();
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -5348,7 +5423,7 @@ addEventListener("scroll",()=>{const y=scrollY,dy=y-botLastY;
 addEventListener("resize",placeHome);document.fonts?.ready.then(placeHome);
 $("homeBtn").addEventListener("click",()=>go("home"));
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale",so:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview and Print setup keep their ✕ on the right instead) */
@@ -6862,7 +6937,8 @@ function syncSaleBrand(){document.querySelectorAll("#saleBrands [data-brand]").f
   /* the Sale page is titled with the shop it was opened for from Home */
   if(view==="sale")$("pageTitle").innerHTML=saleBrand==="js"?"JS <span>Bakery Supply</span>":"Mr.Bee <span>Bakery</span>";
   /* cake orders are Mr.Bee's only */
-  $("goOrders").hidden=saleBrand==="js";
+  $("goOrders").hidden=saleBrand==="js";$("goSo").hidden=saleBrand!=="js";
+  {const t=todayISO(),td=vos.filter(v=>v.date===t),owed=vos.filter(v=>soBal(v)>0).length;$("homeSoN").textContent=soLoaded?`Today ${td.length} · ${owed} unpaid`:""}
   const n=items.filter(i=>i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
 $("saleBrands").addEventListener("click",e=>{const b=e.target.closest("[data-brand]");if(b)setSaleBrand(b.dataset.brand)});
 /* the products a POS sells: Bakery Products at Mr.Bee, the JS sale items at JS (as products with one Retail price) */
@@ -7171,6 +7247,9 @@ function renderPosRep(){
   const cake=(saleBrand==="js"?[]:orders).filter(o=>o.status!=="cancel").flatMap(o=>orderPayments(o).map((p,i)=>({o,p,i}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0)
     .sort((a,b)=>String(a.o.no||"").localeCompare(String(b.o.no||"")));
   const cakeSum=cake.reduce((s,x)=>s+Number(x.p.amt),0);cake.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
+  /* JS: money received on vouchers in the period (each payment by its own date) */
+  const vop=saleBrand==="js"?vos.flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no))):[];
+  const voSum=vop.reduce((s,x)=>s+Number(x.p.amt),0);vop.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   const cakeTbl=(list,total)=>`<table class="ex-tbl"><tbody>${list.map(x=>`<tr class="cake-pay" data-cake-o="${esc(x.o.id)}" tabindex="0" role="button" title="Order detail"><td><b>${esc(x.o.no||"")}</b> <span data-t="${esc(x.o.name||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${x.i?"Paid":"Deposit"} · ${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}
       <tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(total)}</b></td></tr></tbody></table>`;
   const saleList=list=>`<div class="ex-list">${list.map(s=>{const t=new Date(s.at);return`<div class="ex-item sale-row" data-sale="${esc(s.id)}" tabindex="0" role="button">
@@ -7219,8 +7298,9 @@ function renderPosRep(){
     $("posRepBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);return}
   $("posRepBody").innerHTML=`<div class="ex-rep">
     ${confCardHtml()}
-    <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum)}</b>
-      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?"":` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`}</small></div>
+    <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum+voSum)}</b>
+      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?` · Vouchers ${fmt(voSum)} (${vop.length} payment${vop.length===1?"":"s"})`:` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`}</small></div>
+    ${saleBrand==="js"?`<div class="ex-card"><p class="ac-h">📄 Voucher payments</p>${vop.length?`<table class="ex-tbl"><tbody>${vop.map(x=>`<tr class="cake-pay" data-so-open="${esc(x.v.id)}" tabindex="0" role="button"><td><b>${esc(x.v.no)}</b> <span data-t="${esc(x.v.customer||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(voSum)}</b></td></tr></tbody></table>`:`<p class="side-help">No voucher payments in this period.</p>`}</div>`:""}
     <div class="ex-card"><p class="ac-h">By payment method</p>${Object.keys(byPay).length?`<table class="ex-tbl"><tbody>${Object.entries(byPay).map(([p,a])=>`<tr class="cake-pay" data-rep-pay="${esc(p)}" tabindex="0" role="button" title="Detail"><td>${esc(pmLabel(p))}</td><td class="ex-r">${fmt(a)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
     ${saleBrand==="js"?"":`<div class="ex-card"><p class="ac-h">🎂 Cake order payments</p>${cake.length?cakeTbl(cake,cakeSum):`<p class="side-help">No cake order payments in this period.</p>`}</div>`}
     <div class="ex-card"><p class="ac-h">POS · by product</p>${prods.length?`<table class="ex-tbl"><tbody>${prods.map(p=>`<tr class="cake-pay" data-rep-prod="${esc(p.k)}" tabindex="0" role="button" title="Detail"><td class="pd-n" data-t="${esc(p.name)}"></td><td class="ex-c">× ${p.qty}</td><td class="ex-r">${fmt(p.amt)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
@@ -7570,6 +7650,179 @@ async function itExcelPhotos(ab,plan){
   await Promise.all(Array.from({length:3},work));
   if(!db){try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
   toast(`✓ Excel ထဲက ပုံ ${done} ပုံ ထည့်ပြီး${fail?` · မတင်နိုင် ${fail} (ပြန် import လုပ်ရင် ကျန်တာ ဆက်တင်ပါမယ်)`:""}`,6000)}
+/* ---------- JS vouchers (sales orders): collection "jsSales". A voucher has the customer, delivery info, lines (an item from
+   Raw Material, or a free line such as Delivery), the net amount and its payments; the rest is owed. A voucher shows the
+   customer's other unpaid vouchers too (အကြွေးစာရင်း). Printed on A5 (landscape) by default, or A4. ---------- */
+var vos=[],soCol=null,soLoaded=false,soQ="",soTab="all",soEditing=null,soLines=[],soOpen=null;
+const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
+function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
+const soCanEdit=v=>can("admin")||(!!v&&!!me.id&&sameId(v.by,me.id));
+function initSo(){
+  if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
+  if(soCol)return;soCol=db.collection("jsSales");
+  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
+    if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{soCol=null});
+}
+async function saveSo(v){if(db){const d={...v};delete d.id;await db.collection("jsSales").doc(v.id).set(d);return}
+  const i=vos.findIndex(x=>x.id===v.id);if(i>=0)vos[i]=v;else vos.push(v);vos=vos.slice();try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
+async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete();return}vos=vos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
+/* JS26NOV01002 = JS + year + month + day + the day's running number */
+function soNo(d){const pre="JS"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
+  const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
+const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-${MONTHS[Number(m)-1]}-${y}`:""};
+function renderSo(){if($("viewSo").hidden)return;
+  const q=pdNorm(soQ),hit=v=>!q||[v.no,v.customer,v.phone,v.dName,v.dPhone].some(x=>pdNorm(x).includes(q));
+  const unpaid=vos.filter(v=>soBal(v)>0);
+  $("soTabs").innerHTML=[["all","All",vos.length],["unpaid","Unpaid",unpaid.length]].map(([k,n,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${n} <small>${c}</small></button>`).join("");
+  const list=(soTab==="unpaid"?unpaid:vos).filter(hit).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
+  $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(v=>{const b=soBal(v);
+    return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
+      <small>${esc(soDate(v.date))}${v.phone?` · ${esc(v.phone)}`:""} · ${(v.lines||[]).length} line${(v.lines||[]).length===1?"":"s"}</small></div>
+      <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b>${b>0?`<span class="conf-chip">Balance ${fmt(b)}</span>`:`<span class="conf-chip ok">✓ Paid</span>`}</span></div></div>`}).join("")
+    :`<div class="prq-empty">No vouchers${q?" match the search":""}. Tap “+ New voucher”.</div>`;
+  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
+$("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
+document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
+$("goSo").addEventListener("click",()=>go("so"));
+/* ---- the form ---- */
+function soFillCust(cur){const cs=pts.filter(p=>p.type==="js").sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  $("soCust").innerHTML=`<option value="">Walk-in / other</option>`+cs.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.short?` (${esc(p.short)})`:""}</option>`).join("");$("soCust").value=cur||""}
+function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
+  $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";soFillCust(v?.custId||"");
+  for(const[id,k]of[["soName","customer"],["soPhone","phone"],["soChannel","channel"],["soDName","dName"],["soDPhone","dPhone"],["soDAddr","dAddr"],["soNote","note"]])$(id).value=v?.[k]||"";
+  $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"Date","",false,"");
+  soLines=(v?.lines||[]).map(l=>({...l}));renderSoLines();
+  /* "Paid now" is for a new voucher; later money goes in as a payment on the voucher */
+  $("soPayNow").hidden=!!v;$("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
+  $("soPickQ").value="";$("soHits").hidden=true;$("soDlg").hidden=false;(v?$("soPickQ"):$("soCust")).focus()}
+$("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
+$("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;const ph=ptPhonesOf(p)[0]||"",ad=ptAddrsOf(p)[ptDefOf(p)]||"";
+  $("soName").value=p.name;$("soPhone").value=ph;$("soChannel").value=p.channel||"";$("soDName").value=p.name;$("soDPhone").value=ph;$("soDAddr").value=ad});
+const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
+function renderSoLines(){
+  $("soLines").innerHTML=soLines.length?`<div class="so-lh"><span>Description</span><span>Qty</span><span>Price</span><span>Amount</span><span></span></div>`+soLines.map((l,i)=>`<div class="so-line" data-i="${i}">
+      <input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty">
+      <input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"><b class="so-la">${fmt(Math.round(Number(l.qty||0)*Number(l.price||0)))}</b>
+      <button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button>
+      <input class="so-ln" value="${esc(l.note||"")}" placeholder="Note" aria-label="Note"></div>`).join(""):`<p class="side-help">Item မထည့်ရသေးပါ — အပေါ်မှာ ရှာပြီး ထည့်ပါ</p>`;
+  $("soNet").textContent=fmt(soNetOf(soLines))}
+$("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
+  if(e.target.matches(".so-ld"))l.name=e.target.value;if(e.target.matches(".so-ln"))l.note=e.target.value;
+  if(e.target.matches(".so-lq"))l.qty=Number(e.target.value)||0;if(e.target.matches(".so-lp"))l.price=Number(e.target.value)||0;
+  r.querySelector(".so-la").textContent=fmt(Math.round(Number(l.qty||0)*Number(l.price||0)));$("soNet").textContent=fmt(soNetOf(soLines))});
+$("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
+$("soAddDeli").addEventListener("click",()=>{soLines.push({name:"Delivery",qty:1,price:0});renderSoLines();$("soLines").querySelector(".so-line:last-of-type .so-lp")?.focus()});
+$("soAddOther").addEventListener("click",()=>{soLines.push({name:"",qty:1,price:0});renderSoLines();$("soLines").querySelector(".so-line:last-of-type .so-ld")?.focus()});
+/* the item picker: JS items (with a JS price) first, then any other raw material */
+$("soPickQ").addEventListener("input",()=>{const q=pdNorm($("soPickQ").value);if(!q){$("soHits").hidden=true;return}
+  const m=items.filter(i=>pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,10);
+  $("soHits").innerHTML=m.length?m.map(i=>`<button type="button" class="so-hit" data-so-add="${esc(i.id)}"><code>${esc(i.code||"")}</code><span data-t="${esc(i.name)}"></span><b>${i.price>0?fmt(i.price):"—"}</b></button>`).join(""):`<p class="side-help">မတွေ့ပါ</p>`;
+  $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soHits").hidden=false});
+$("soHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-add]");if(!b)return;const i=items.find(x=>x.id===b.dataset.soAdd);if(!i)return;
+  const ex=soLines.find(l=>l.pid===i.id);if(ex)ex.qty=Number(ex.qty||0)+1;else soLines.push({pid:i.id,code:i.code||"",name:i.name,qty:1,price:i.price>0?Number(i.price):0,...(i.photo?{photo:i.photo}:{})});
+  $("soPickQ").value="";$("soHits").hidden=true;renderSoLines();$("soPickQ").focus()});
+$("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEditing;
+  const name=$("soName").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soName").focus();return}
+  const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
+  lines.forEach(l=>{if(!l.note)delete l.note});
+  if(!lines.length){toast("Item အနည်းဆုံး ၁ ခု ထည့်ပါ");return}
+  const date=readDate($("soDate").querySelector(".dp"))||todayISO(),now=new Date().toISOString(),net=soNetOf(lines);
+  const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
+  const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date),at:now,by:me.id||null,byName:me.name||"",payments:[]}),
+    date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").value.trim()||null,
+    dName:$("soDName").value.trim()||null,dPhone:$("soDPhone").value.trim()||null,dAddr:$("soDAddr").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,
+    ...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+  if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
+  Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
+  $("soSave").disabled=true;
+  try{await saveSo(v);$("soDlg").hidden=true;soEditing=null;toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
+/* ---- the voucher itself (on screen, printed, or as a picture) ---- */
+const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#3b2a20;background:#fff;font-size:13px;line-height:1.35}
+.vo-top{display:flex;align-items:center;gap:16px}.vo-top img{width:78px;height:78px;object-fit:contain}
+.vo-shop{flex:1;text-align:center}.vo-shop h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;color:var(--vc)}.vo-shop p{margin:4px 0 0;font:18px Georgia,serif;color:var(--vc);letter-spacing:.5px}
+.vo-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 18px;margin-top:10px;align-items:start}
+.vo-meta h3{margin:0 0 2px;font:15px Georgia,serif;color:var(--vc)}.vo-cust b{font-size:14px;display:block}.vo-dl{text-align:center}
+.vo-no{text-align:right;color:var(--vc)}.vo-no div{margin-bottom:4px}.vo-no span{color:#3b2a20;margin-left:6px}
+.vo table{width:100%;border-collapse:collapse;margin-top:10px}.vo th{text-align:left;font-weight:700;color:#5a3a22;padding:6px 6px;border-bottom:1px solid var(--vc)}
+.vo td{padding:9px 6px;border-bottom:1px solid #c98b6a;vertical-align:middle}.vo .r{text-align:right;white-space:nowrap}.vo td.pic{width:52px}.vo td.pic img{width:44px;height:44px;object-fit:cover;border-radius:6px}
+.vo-sum{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;justify-content:end;margin:10px 0 0 auto;width:max-content;font-weight:700;color:#5a3a22}
+.vo-sum .v{text-align:right;min-width:110px}.vo-sum .c{font-size:12px}.vo-sum .ln{grid-column:1/-1;border-top:1px solid var(--vc)}
+.vo-owe{margin-top:12px;border:1px solid #c98b6a;border-radius:6px;padding:8px 10px}.vo-owe h4{margin:0 0 6px;color:var(--vc);font-size:13px}
+.vo-owe table{margin:0}.vo-owe td,.vo-owe th{padding:4px 6px;font-size:12px}
+.vo-note{margin-top:8px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
+document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
+/* in the Firebase app photos are fetched first, so they are in the picture / print */
+async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
+async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
+  const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(l.photo)));
+  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
+  const oweSum=owe.reduce((s,x)=>s+soBal(x),0);
+  return`<div class="vo">
+    <div class="vo-top"><img src="img/brand-js.jpg" alt=""><div class="vo-shop"><h1>JS Myanmar Packaging &amp; Supplies</h1><p>09 402 222 446</p></div></div>
+    <div class="vo-meta">
+      <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
+      <div class="vo-dl">${v.dName||v.dPhone||v.dAddr?`<h3>Delivery Info</h3><div>${esc([v.dName,v.dPhone].filter(Boolean).join(" "))}</div>${v.dAddr?`<div>${esc(v.dAddr)}</div>`:""}`:""}</div>
+      <div class="vo-no"><div>SO No#<span>${esc(v.no)}</span></div>${v.channel?`<div>Channel#<span>${esc(v.channel)}</span></div>`:""}<div>Date<span>${esc(soDate(v.date))}</span></div></div>
+    </div>
+    <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
+      ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
+    </tbody></table>
+    <div class="vo-sum"><span>Net Amount</span><span class="v">${m(v.net)}</span><span class="c">MMK</span>
+      <span>Paid Amount</span><span class="v">${paid?m(paid):"-"}</span><span class="c">MMK</span><span class="ln"></span>
+      <span>Balance</span><span class="v">${m(bal)}</span><span class="c">MMK</span></div>
+    ${owe.length?`<div class="vo-owe"><h4>အကြွေးစာရင်း (ယခင်ဘောက်ချာများ)</h4><table><thead><tr><th>SO No</th><th>Date</th><th class="r">Net</th><th class="r">Balance</th></tr></thead><tbody>
+      ${owe.map(x=>`<tr><td>${esc(x.no)}</td><td>${esc(soDate(x.date))}</td><td class="r">${m(x.net)}</td><td class="r">${m(soBal(x))}</td></tr>`).join("")}
+      <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
+      <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
+    ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
+    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div></div>`}
+const soPaperOf=()=>{try{return localStorage.getItem("cakeSoPaper")==="A4"?"A4":"A5"}catch(e){return"A5"}};
+$("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}});
+function openSoView(v){soOpen=v.id;$("soPaper").value=soPaperOf();$("soPayForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+async function renderSoView(v){$("soViewT").textContent=v.no;
+  $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;
+  const ps=v.payments||[];
+  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
+  $("soPrev").innerHTML=await soHtml(v);soFit()}
+/* the voucher keeps its paper layout and is scaled down to fit the dialog */
+function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const k=Math.min(1,(box.clientWidth-28)/760);
+  p.style.transform=`scale(${k})`;box.style.height=Math.ceil(p.scrollHeight*k+28)+"px"}
+addEventListener("resize",soFit);
+$("soEditBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;$("soView").hidden=true;openSoForm(v)});
+$("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v||!can("admin"))return;
+  if(!await askConfirm(`Delete ${v.no}?`,`${v.customer||""} · ${fmt(v.net||0)}`))return;try{await removeSo(v.id);$("soView").hidden=true;soOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
+$("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  $("soPAmt").value=soBal(v);$("soPMethod").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
+  $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=false;$("soPAmt").focus()});
+$("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const amt=Math.round(Number($("soPAmt").value)||0);
+  if(!(amt>0)){toast("ပေးငွေ ထည့်ပါ");return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
+  const now=new Date().toISOString(),n={...v,payments:[...(v.payments||[]),{amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||todayISO(),at:now,by:me.id||null}],updatedAt:now};
+  try{await saveSo(n);$("soPayForm").hidden=true;renderSoView(n);toast("✓ Payment သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}});
+$("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-so-prm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  const p=(v.payments||[])[Number(b.dataset.soPrm)];if(!p||!await askConfirm("Remove this payment?",`${soDate(p.date)} · ${fmt(p.amt)}`))return;
+  const n={...v,payments:v.payments.filter((_,i)=>i!==Number(b.dataset.soPrm)),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
+/* print: a page of its own (A5 landscape by default, or A4) */
+$("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const a4=$("soPaper").value==="A4";
+  const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:0;height:0;border:0";document.body.appendChild(f);
+  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>@page{size:${a4?"A4 portrait":"A5 landscape"};margin:8mm}body{margin:0}${SO_CSS}</style></head><body>${await soHtml(v)}</body></html>`);d.close();
+  await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
+  try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — 💾 Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
+/* save as a picture the shape of the paper */
+$("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const a4=$("soPaper").value==="A4";
+  toast("ပုံ ပြင်ဆင်နေသည်…",8000);
+  try{await loadLib("lib/html2canvas-1.4.1.min.js");
+    const box=$("soShot");box.style.width=(a4?760:1080)+"px";box.innerHTML=await soHtml(v);
+    await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
+    const shot=await html2canvas(box,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+    const W=a4?1654:2480,H=a4?2339:1748,pad=Math.round(W*.04),page=document.createElement("canvas");page.width=W;page.height=H;
+    const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k);
+    const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));box.innerHTML="";
+    const name=`${v.no} ${v.customer||""}`.trim()+".jpg";
+    if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
+    await saveFile(blob,name,"JPEG")}
+  catch(x){if(x?.code==="declined")return;toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}});
 function initSales(){
   if(!db){try{sales=JSON.parse(localStorage.getItem("cakeSales")||"[]")}catch(e){sales=[]}return}
   if(saleCol)return;saleCol=db.collection("sales");
