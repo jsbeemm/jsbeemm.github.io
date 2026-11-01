@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553171"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553496"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2194,6 +2194,7 @@ span.star-ic{cursor:default}
       <select id="soOrient" aria-label="Orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select>
       <button type="button" class="btn ghost" id="soPayBtn">💵 + Payment</button>
       <button type="button" class="btn ghost pv-ic" id="soPrintBtn" aria-label="Print" title="Print"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
+      <button type="button" class="btn ghost pv-ic" id="soShareBtn" aria-label="Share" title="Share"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button>
       <button type="button" class="btn pv-ic" id="soImgBtn" aria-label="Save image" title="Save image"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
     </div>
   </div>
@@ -7905,7 +7906,7 @@ document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
 const soLinePhoto=l=>(l.pid&&items.find(i=>i.id===l.pid)?.photo)||l.photo||"";
 async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
-async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
+async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
   const oweSum=owe.reduce((s,x)=>s+soBal(x),0);
@@ -7927,11 +7928,10 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
-    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${soSignOn?SO_SIGN:""}</div>`}
+    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${sign?SO_SIGN:""}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
-/* the staff marks are for the printed paper only; a saved picture leaves them out */
-var soSignOn=true;
+/* the staff marks (sign=true) are for the printed paper only; the preview and pictures leave them out */
 /* A5 / A4 can be portrait (the default) or landscape; a receipt has no orientation */
 const soLand=()=>$("soOrient").value==="L";
 function soSyncOrient(){$("soOrient").hidden=$("soPaper").value==="RC"}
@@ -7949,7 +7949,7 @@ async function renderSoView(v){$("soViewT").textContent=v.no;
   /* the preview is a sheet of the paper picked: A5 / A4 portrait or landscape (the voucher sits inside its margins), or the receipt strip */
   const land=!rc&&soLand(),p=$("soPrev"),W=rc?320:land?1150:812;
   p.style.width=W+"px";p.style.padding=rc?"10px":Math.round(W*.05)+"px";p.style.minHeight=rc?"":Math.round(land?W/1.4142:W*1.4142)+"px";
-  p.innerHTML=html;soFit()}
+  p.innerHTML=html;soFit();soPrepShare(v)}
 var soViewSeq=0;
 /* the voucher keeps its paper layout and is scaled down to fit the dialog */
 function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hidden)return;const W=p.offsetWidth||760,k=Math.min(1,(box.clientWidth-28)/W);
@@ -7980,7 +7980,7 @@ const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",sys
 .vr .owe{margin-top:6px;border-top:1px dashed #000;padding-top:4px;font-size:11px}.vr .thx{text-align:center;margin-top:10px;font-size:11px;line-height:1.7}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soRcCss">${SO_RC_CSS}</style>`);
 /* the receipt: shop, voucher number / channel / date, customer and delivery, then the lines (qty · item @ price · amount) and the money */
-function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
+function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0);
   return`<div class="vr">
     <div class="c sh">JS Myanmar<br>Packaging &amp; Supplies</div><div class="c sm">09 402 222 446</div>
@@ -7992,32 +7992,51 @@ function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid
     ${owe.length?`<div class="owe"><b>အကြွေးစာရင်း</b>${owe.map(x=>`<div class="two" style="margin:2px 0"><span>${esc(x.no)} · ${esc(soDate(x.date))}</span><span>${m(soBal(x))}</span></div>`).join("")}
       <div class="two b" style="margin:2px 0"><span>ယခင်ကျန်ငွေ</span><span>${m(oweSum)}</span></div><div class="two b" style="margin:2px 0"><span>စုစုပေါင်း ပေးရန်</span><span>${m(oweSum+bal)}</span></div></div>`:""}
     ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
-    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${soSignOn?SO_SIGN:""}</div>`}
+    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${sign?SO_SIGN:""}</div>`}
 $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   /* the frame is laid out at the printable width, so the voucher's height tells how many pages it will take */
   const mm=paper==="A4"?[210,297]:[148,210],[pw,ph]=soLand()?[mm[1],mm[0]]:mm,px=x=>Math.round(x*96/25.4);
   const f=document.createElement("iframe");f.style.cssText=`position:fixed;left:-20000px;top:0;width:${rc?px(74):px(pw-16)}px;height:2000px;border:0`;document.body.appendChild(f);
   const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}`;
-  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v):await soHtml(v)}</body></html>`);d.close();
+  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v,true):await soHtml(v,true)}</body></html>`);d.close();
   await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
   /* more than one page: "Page 1 of 2" at the bottom right of every page */
   if(!rc&&d.body.scrollHeight>px(ph-16))d.head.insertAdjacentHTML("beforeend",`<style>@page{margin:8mm 8mm 12mm;@bottom-right{content:"Page " counter(page) " of " counter(pages);font:9pt system-ui,sans-serif;color:#555}}</style>`);
   try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
-/* save as a picture: the shape of an A5 / A4 page (portrait), or a receipt strip as long as it needs */
-$("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
-  toast("ပုံ ပြင်ဆင်နေသည်…",8000);
-  try{await loadLib("lib/html2canvas-1.4.1.min.js");
-    const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";soSignOn=false;try{box.innerHTML=rc?soRcHtml(v):await soHtml(v)}finally{soSignOn=true}
+/* the voucher as a picture: an A5 / A4 page (portrait or landscape), or a receipt strip as long as it needs (no staff marks) */
+let soImgBusy=Promise.resolve();
+function soMakeImage(v,type="image/jpeg"){const job=soImgBusy.then(async()=>{const paper=$("soPaper").value,rc=paper==="RC";
+    await loadLib("lib/html2canvas-1.4.1.min.js");
+    const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
-    const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
-    let page=shot;
-    if(!rc){const S1=paper==="A4"?1654:1748,S2=paper==="A4"?2339:2480,W=land?S2:S1,H=land?S1:S2,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
-      const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
-    const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));box.innerHTML="";box.style.padding="0";
-    const name=`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+".jpg";
+    try{const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      let page=shot;
+      if(!rc){const S1=paper==="A4"?1654:1748,S2=paper==="A4"?2339:2480,W=land?S2:S1,H=land?S1:S2,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
+        const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
+      const blob=await new Promise(r=>page.toBlob(r,type,.92));
+      return{blob,name:`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+(type==="image/png"?".png":".jpg")}}
+    finally{box.innerHTML="";box.style.padding="0"}});
+  soImgBusy=job.catch(()=>{});return job}
+$("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  toast("ပုံ ပြင်ဆင်နေသည်…",8000);
+  try{const{blob,name}=await soMakeImage(v);
     if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
     await saveFile(blob,name,"JPEG")}
   catch(x){if(x?.code==="declined")return;toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}});
+/* Share (like the order preview): the picture is made ahead when the voucher opens, because a phone only lets the share sheet open
+   straight after a tap. Then: the share sheet with the picture → on a phone, the picture full-screen (press and hold → Share) →
+   on a computer, the picture copied to paste into a chat. */
+let soShare=null;
+function soPrepShare(v){const key=[v.id,v.updatedAt||v.at,$("soPaper").value,$("soOrient").value,soBal(v)].join("|");if(soShare?.key===key)return;
+  soShare={key,ready:soMakeImage(v,"image/png").then(r=>{if(soShare?.key===key)soShare.img=r;return r}).catch(()=>null)}}
+$("soShareBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soPrepShare(v);
+  let r=soShare.img;if(!r){toast("ပုံ ပြင်ဆင်နေသည်…",8000);r=await soShare.ready}if(!r){toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000);return}
+  const file=new File([r.blob],r.name,{type:"image/png"});
+  if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file]});return}catch(x){if(x?.name==="AbortError")return}}
+  if(isPhone()&&innerWidth<=600){showToSave(r.blob,"ပုံကို ဖိထားပြီး “Share” ကို ရွေးပါ → Telegram / Viber / Messenger",r.name);return}
+  if(isPhone()){saveFile(r.blob,r.name,"ပုံ");return}
+  try{await navigator.clipboard.write([new ClipboardItem({"image/png":r.blob})]);toast("ပုံ copy ကူးပြီး — Viber / Telegram / Messenger ထဲမှာ Paste လုပ်ပါ",4000);return}catch(x){}
+  toast("ဒီနေရာမှ တိုက်ရိုက် Share မရပါ — Save image နှိပ်ပြီး Viber / Telegram / Messenger ထဲက ပုံရွေး၍ ပို့ပါ",5000)});
 function initSales(){
   if(!db){try{sales=JSON.parse(localStorage.getItem("cakeSales")||"[]")}catch(e){sales=[]}return}
   if(saleCol)return;saleCol=db.collection("sales");
