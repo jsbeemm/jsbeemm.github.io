@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552394"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793552607"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -910,7 +910,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit #soDate .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #soDate .dp-ic{display:none}
 .vo-edit .so-date .dp{font-size:13px}
 .vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
-.so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:100px}
+.so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:190px}.so-pw{display:flex;gap:4px}.so-pw .so-lt{width:96px;flex:none;padding:5px 4px}.so-pw .so-lp{flex:1}
 .so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:16%}.so-tbl th:nth-child(8){width:40px}
 .so-tbl td input{padding:5px 6px;width:100%;min-width:0}.so-tbl .so-lq,.so-tbl .so-lp{text-align:right}.so-tbl td{overflow:hidden}
 .so-addbtns .btn{width:auto}
@@ -2191,6 +2191,7 @@ span.star-ic{cursor:default}
       <button type="button" class="btn ghost pv-del" id="soDelBtn" hidden aria-label="Delete voucher" title="Delete voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg></button>
       <span class="ed-count"></span>
       <label class="so-paper">Paper <select id="soPaper"><option value="A5">A5</option><option value="A4">A4</option><option value="RC">Receipt 80mm</option></select></label>
+      <select id="soOrient" aria-label="Orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select>
       <button type="button" class="btn ghost" id="soPayBtn">💵 + Payment</button>
       <button type="button" class="btn ghost pv-ic" id="soPrintBtn" aria-label="Print" title="Print"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
       <button type="button" class="btn pv-ic" id="soImgBtn" aria-label="Save image" title="Save image"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
@@ -7832,7 +7833,7 @@ async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPho
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
       <td><input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
-      <td class="r"><input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></td>
+      <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
       <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
@@ -7842,6 +7843,10 @@ $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");i
   if(e.target.matches(".so-lq"))l.qty=Number(e.target.value)||0;if(e.target.matches(".so-lp"))l.price=Number(e.target.value)||0;
   r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 $("soPaid").addEventListener("input",soSyncTot);
+/* Retail / Wholesale beside a line's price: picks that price of the item (the price can still be typed over) */
+$("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=items.find(x=>x.id===l.pid);if(!it)return;
+  l.tier=e.target.value;l.price=l.tier==="w"&&it.whPrice>0?Number(it.whPrice):Number(it.price)||0;if(l.tier!=="w")delete l.tier;
+  r.querySelector(".so-lp").value=l.price;r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 $("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
 $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-lp")?.focus()});
 $("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
@@ -7925,10 +7930,14 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
     <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${SO_SIGN}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
+/* A5 / A4 can be portrait (the default) or landscape; a receipt has no orientation */
+const soLand=()=>$("soOrient").value==="L";
+function soSyncOrient(){$("soOrient").hidden=$("soPaper").value==="RC"}
+$("soOrient").addEventListener("change",e=>{try{localStorage.setItem("cakeSoOrient",e.target.value)}catch(x){}});
 const soPaperOf=()=>{try{const p=localStorage.getItem("cakeSoPaper");return p==="A4"||p==="RC"?p:"A5"}catch(e){return"A5"}};
 /* the preview follows the paper: the full voucher, or the receipt */
-$("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
-function openSoView(v){soOpen=v.id;$("soPaper").value=soPaperOf();$("soPayForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+$("soPaper").addEventListener("change",e=>{try{localStorage.setItem("cakeSoPaper",e.target.value)}catch(x){}soSyncOrient();const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
+function openSoView(v){soOpen=v.id;$("soPaper").value=soPaperOf();try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=true;renderSoView(v);$("soView").hidden=false}
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;
   const ps=v.payments||[];
@@ -7981,7 +7990,7 @@ function soRcHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid
     <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${SO_SIGN}</div>`}
 $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   const f=document.createElement("iframe");f.style.cssText="position:fixed;right:0;bottom:0;width:0;height:0;border:0";document.body.appendChild(f);
-  const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} portrait;margin:8mm}`;
+  const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}`;
   const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v):await soHtml(v)}</body></html>`);d.close();
   await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
   try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
@@ -7989,11 +7998,11 @@ $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===so
 $("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   toast("ပုံ ပြင်ဆင်နေသည်…",8000);
   try{await loadLib("lib/html2canvas-1.4.1.min.js");
-    const box=$("soShot");box.style.width=(rc?300:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
+    const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
     const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
     let page=shot;
-    if(!rc){const W=paper==="A4"?1654:1748,H=paper==="A4"?2339:2480,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
+    if(!rc){const S1=paper==="A4"?1654:1748,S2=paper==="A4"?2339:2480,W=land?S2:S1,H=land?S1:S2,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
       const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
     const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));box.innerHTML="";box.style.padding="0";
     const name=`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+".jpg";
