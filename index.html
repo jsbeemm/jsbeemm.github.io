@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548398"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793548756"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -893,7 +893,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .itc-sub{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 10px;font-size:13px;background:var(--sunk)}
 .itc-x{border:0;background:none;cursor:pointer;color:var(--muted);font:inherit;padding:0 3px}.itc-x:disabled{opacity:.3;cursor:not-allowed}
 .itc-ed{display:inline-flex;align-items:center;gap:4px}.itc-in{min-width:0;width:180px;padding:5px 10px;border-radius:8px}
-.side-panel.so-panel{width:min(100%,900px);max-width:900px}.so-h{margin:14px 0 6px}
+/* vouchers open full screen, not as a pop-up */
+#soDlg,#soView{padding:0;place-items:stretch}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
+#soDlg .side-body,#soView .side-body{width:min(100%,1000px);margin:0 auto}.so-h{margin:14px 0 6px}
 .so-pick{position:relative;margin-bottom:8px}.so-pick input{width:100%}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
 .so-hit{display:grid;grid-template-columns:90px 1fr auto;gap:8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);padding:8px 12px;cursor:pointer}
