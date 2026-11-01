@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793543746"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793544089"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -880,6 +880,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .it-row{display:grid;grid-template-columns:110px 1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .it-row code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.it-row .it-nm{font-weight:600;overflow-wrap:anywhere}
 .it-row small{grid-column:2/4;color:var(--muted)}.it-row .it-pr{font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
+.it-row[data-it]{cursor:pointer}.it-row[data-it]:hover{border-color:var(--accent)}.it-pl{font-family:inherit;font-size:10px;font-weight:700;color:var(--muted)}
 .it-js{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#7a4a12;background:#f6e3c7;border-radius:999px;padding:1px 8px;vertical-align:middle}
 @media (max-width:560px){.it-row{grid-template-columns:1fr auto}.it-row code{grid-column:1/3}.it-row small{grid-column:1/3}}
 .home-tile{display:grid;justify-items:start;gap:4px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;padding:22px 20px;cursor:pointer;box-shadow:var(--shadow)}
@@ -2002,6 +2003,19 @@ span.star-ic{cursor:default}
     </form>
   </div>
       </div>
+<!-- Items: an Admin sets an item's selling prices — JS Bakery Supply and Mr.Bee can differ -->
+<div class="editor" id="itDlg" hidden role="dialog" aria-modal="true" aria-label="Item">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b>📦 <span id="itDlgT">Item</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <form id="itForm" class="side-body" novalidate>
+      <p class="side-help" id="itDlgSub"></p>
+      <label class="prf"><span>JS Bakery Supply ရောင်းဈေး (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
+      <label class="pd-auto"><input type="checkbox" id="itSale"><span>JS Bakery Supply မှာ ရောင်းမယ် (Sales Allowed)</span></label>
+      <label class="prf"><span>Mr.Bee ရောင်းဈေး (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="ဗလာဆိုရင် JS ဈေးအတိုင်း"></label>
+      <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
+    </form>
+  </div>
+</div>
 <!-- Cake Orders sizes: add, rename and remove (kept in meta/cakeSizes) -->
 <div class="editor" id="pdSizeDlg" hidden role="dialog" aria-modal="true" aria-label="Cake Orders sizes">
   <div class="ed-panel side-panel">
@@ -7273,11 +7287,28 @@ function renderItems(){
   $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
     `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
   $("itList").innerHTML=shown.map(i=>{const r=i.ref?byCode.get(pdNorm(i.ref)):null;
-    return`<div class="it-row"><code>${esc(i.code||"")}</code><span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.sale&&i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
-      <span class="it-pr">${i.price>0?fmt(i.price):""}</span>
+    return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><code>${esc(i.code||"")}</code><span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.sale&&i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
+      <span class="it-pr">${i.price>0?`${i.mbPrice>0?`<small class="it-pl">JS</small> `:""}${fmt(i.price)}`:""}${i.mbPrice>0?`${i.price>0?"<br>":""}<small class="it-pl">Mr.Bee</small> ${fmt(i.mbPrice)}`:""}</span>
       <small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.unit?` · ${esc(i.unit)}`:""}${i.purUnit?` · buy ${esc(i.purUnit)}${i.purConv?` × ${esc(String(i.purConv))}`:""}`:""}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
+/* tapping an item (Admin) opens its prices */
+let itEditing=null;
+function openItForm(i){if(!can("admin")||!i)return;itEditing=i;$("itDlgT").textContent=i.name;
+  $("itDlgSub").textContent=[i.code,[i.cat,i.sub].filter(Boolean).join(" › "),i.unit].filter(Boolean).join(" · ");
+  $("itPrice").value=i.price>0?i.price:"";$("itMbPrice").value=i.mbPrice>0?i.mbPrice:"";$("itSale").checked=!!i.sale;$("itDlg").hidden=false;$("itPrice").focus()}
+$("itList").addEventListener("click",e=>{const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
+$("itList").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
+$("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEditing;if(!i||!can("admin"))return;
+  const num=id=>{const v=String($(id).value).trim();return v===""?null:Math.max(0,Math.round(Number(v)))};
+  const price=num("itPrice"),mbPrice=num("itMbPrice"),sale=$("itSale").checked;
+  if(sale&&!(price>0)){toast("JS မှာ ရောင်းဖို့ JS ရောင်းဈေး ထည့်ပါ");$("itPrice").focus();return}
+  const d={...i,sale,updatedAt:new Date().toISOString(),updatedBy:me.id||null};delete d.id;
+  if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;
+  try{if(db)await db.collection("items").doc(i.id).set(d);
+    else{const k=items.findIndex(x=>x.id===i.id);items[k]={...d,id:i.id};items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+    $("itDlg").hidden=true;itEditing=null;toast("သိမ်းပြီး")}
+  catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 $("itQ").addEventListener("input",e=>{itQ=e.target.value;renderItems()});
 $("itCats").addEventListener("click",e=>{const b=e.target.closest("[data-itcat]");if(b){itCat=b.dataset.itcat;renderItems()}});
 $("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
@@ -7298,10 +7329,12 @@ $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.targ
       if(seen.has(pdNorm(code))){dup++;continue}seen.add(pdNorm(code));
       const it={code,name,cat:S(pick(r,"Category")),sub:S(pick(r,"Sub Category")),purUnit:S(pick(r,"Purchase Unit")),purConv:N(pick(r,"Purchase Conversion")),
         unit:S(pick(r,"Base Unit")),ref:S(pick(r,"Ref:","Ref")),stockUnit:S(pick(r,"Stock Count Unit")),
-        sale:/^(yes|y|true|1)$/i.test(S(pick(r,"Sales Allowed"))),price:N(pick(r,"Selling Price")),note:S(pick(r,"Note")),usage:S(pick(r,"Usage")),oldName:S(pick(r,"Old Name"))};
+        sale:/^(yes|y|true|1)$/i.test(S(pick(r,"Sales Allowed"))),price:N(pick(r,"Selling Price","JS Price")),mbPrice:N(pick(r,"Mr.Bee Price","MrBee Price")),note:S(pick(r,"Note")),usage:S(pick(r,"Usage")),oldName:S(pick(r,"Old Name"))};
       Object.keys(it).forEach(k=>{if(it[k]===""||it[k]==null)delete it[k]});
       const old=items.find(x=>pdNorm(x.code)===pdNorm(code)),id=old?.id||itIdOf(code);
-      const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","sale","price","note","usage","oldName"];
+      /* a price left empty in the file keeps the price set in the app (e.g. the JS / Mr.Bee prices that differ) */
+      if(old){if(it.price==null&&old.price!=null)it.price=old.price;if(it.mbPrice==null&&old.mbPrice!=null)it.mbPrice=old.mbPrice}
+      const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","sale","price","mbPrice","note","usage","oldName"];
       const same=old&&keys.every(k=>JSON.stringify(old[k]??null)===JSON.stringify(it[k]??null));
       if(!same)plan.push({id,doc:{...it,...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
     const nNew=plan.filter(p=>p.isNew).length,nChg=plan.length-nNew,nSale=rows.length?[...seen].length:0;
