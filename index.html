@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546719"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793546876"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1090,6 +1090,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pt-body{display:grid;gap:3px;min-width:0}.pt-name{font-size:15px;overflow-wrap:anywhere}.pt-other{font-size:12.5px;color:var(--muted)}
 .pt-tags{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0}.pt-tag{font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
 .pt-multi{display:grid;gap:6px}.pt-row{display:flex;gap:6px;align-items:center}.pt-row input,.pt-row textarea{flex:1;min-width:0}.pt-arow{align-items:flex-start}.pt-aside{display:grid;gap:6px;justify-items:end}.pt-add{justify-self:start;margin-top:4px}.pt-def{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--ink);cursor:pointer}.pt-def input{width:16px;height:16px;margin:0;accent-color:var(--accent)}.pt-deftag{background:var(--mint-soft);color:var(--mint)}
+.pt-namerow{grid-template-columns:2fr 1fr}
 .pt-tag.code{font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}.pt-tag.sky{background:var(--sky-soft);color:var(--sky)}
 .pt-line{font-size:12.5px;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere}.pt-line a{color:var(--sky);text-decoration:none;font-family:var(--mono)}
 .pd-bar{flex-wrap:nowrap;justify-content:flex-start}.pd-bar input[type=search]{flex:1;min-width:0;max-width:420px;margin-right:auto;padding:9px 14px;border-radius:999px}.pd-bar .chip{white-space:nowrap;padding:8px 14px}
@@ -1872,7 +1873,10 @@ span.star-ic{cursor:default}
     <div class="ed-tools pv-head"><b id="ptFormTitle">Add</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="ptForm" class="side-body" novalidate>
       <label class="prf"><span>Type</span><select id="ptTypeSel"></select></label>
-      <label class="prf"><span>Name <b>*</b></span><input id="ptName" autocomplete="off"></label>
+      <div class="ex-row2 pt-namerow">
+        <label class="prf"><span>Name <b>*</b></span><input id="ptName" autocomplete="off"></label>
+        <label class="prf"><span>Short code</span><input id="ptShort" autocomplete="off"></label>
+      </div>
       <div class="ex-row2">
         <label class="prf"><span>Other name</span><input id="ptOther" autocomplete="off"></label>
         <label class="prf"><span>Account name</span><input id="ptAcct" autocomplete="off"></label>
@@ -1881,10 +1885,9 @@ span.star-ic{cursor:default}
       <!-- as many phone numbers and addresses as needed; one address is the default -->
       <div class="prf"><span>Phone</span><div class="pt-multi" id="ptPhones"></div><button type="button" class="chip pt-add" id="ptPhoneAdd">+ Add phone</button></div>
       <datalist id="ptChList"><option>Walk in</option><option>Viber</option><option>Facebook</option><option>Tik Tok</option><option>WeChat</option></datalist>
-      <div id="ptSupW" hidden><div class="ex-row2">
-        <label class="prf"><span>Short code</span><input id="ptShort" autocomplete="off"></label>
+      <div id="ptSupW" hidden>
         <label class="prf"><span>Country</span><input id="ptCountry" autocomplete="off" list="ptCoList"></label>
-      </div><datalist id="ptCoList"><option>Myanmar</option><option>Thailand</option><option>China</option></datalist>
+        <datalist id="ptCoList"><option>Myanmar</option><option>Thailand</option><option>China</option></datalist>
         <label class="prf"><span>Default currency</span><select id="ptCur"></select></label></div>
       <div class="prf"><span>Address</span><div class="pt-multi" id="ptAddrs"></div><button type="button" class="chip pt-add" id="ptAddrAdd">+ Add address</button></div>
       <div class="prq-actions"><button type="button" class="btn ghost danger-t" id="ptDel" hidden>Delete</button><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
@@ -6384,7 +6387,8 @@ $("ptForm").addEventListener("submit",async e=>{
   if(!name){toast("Name ထည့်ပါ");$("ptName").focus();return}
   const others=pts.filter(p=>p.id!==ptEditing?.id&&p.type===type);
   if(others.some(p=>pdNorm(p.name)===pdNorm(name))){toast(`"${name}" ရှိပြီးသားပါ`);$("ptName").focus();return}
-  const short=type==="supplier"?v("ptShort"):null;
+  /* every customer and supplier can have a short code, unique within its type */
+  const short=v("ptShort");
   if(short&&others.some(p=>pdNorm(p.short)===pdNorm(short))){toast(`Short code "${short}" ရှိပြီးသားပါ`);$("ptShort").focus();return}
   const now=new Date().toISOString(),p={...(ptEditing||{}),id:ptEditing?.id||(type[0]+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),type,name,
     ...(ptEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
