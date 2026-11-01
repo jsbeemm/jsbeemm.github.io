@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545435"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545876"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1494,7 +1494,7 @@ span.star-ic{cursor:default}
       <button type="button" class="home-tile" id="goSaleRep"><span class="ht-ic" aria-hidden="true">📊</span><b>Sales report</b><small id="homeSaleRepN"></small></button>
     </div>
   </section>
-  <!-- ITEMS: every raw item (Items Excel). Those marked "Sales Allowed" with a Selling Price are sold at JS Bakery Supply;
+  <!-- ITEMS: every raw item (Items Excel). Those with a Selling Price (JS price) are sold at JS Bakery Supply;
        Mr.Bee uses all of them (costing, toys / toppers charged on a cake) -->
   <section id="viewItems" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
@@ -2021,8 +2021,8 @@ span.star-ic{cursor:default}
       <p class="side-help" id="itDlgSub"></p>
       <div class="pd-fphoto" id="itPhotoBox"></div>
       <label class="prf"><span>JS Bakery Supply ရောင်းဈေး (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
-      <label class="pd-auto"><input type="checkbox" id="itSale"><span>JS Bakery Supply မှာ ရောင်းမယ် (Sales Allowed)</span></label>
-      <label class="prf"><span>Mr.Bee ရောင်းဈေး (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="ဗလာဆိုရင် JS ဈေးအတိုင်း"></label>
+      <p class="side-help">JS ရောင်းဈေး ထည့်ထားရင် JS Bakery Supply မှာ ရောင်းပါမယ်။</p>
+      <label class="prf"><span>Mr.Bee ရောင်းဈေး (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
       <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
     </form>
   </div>
@@ -6805,8 +6805,8 @@ function initRcv(){
   rcvCol.onSnapshot(s=>{rcvs=s.docs.map(d=>({...d.data(),id:d.id}));rcvRefresh()},()=>{rcvCol=null});
 }
 /* ---------- Sale is split by shop: Mr.Bee Bakery ("mb") and JS Bakery Supply ("js"). Each has its own POS, its own sale
-   numbers (S… / J…) and its own Sales report. Mr.Bee sells Bakery Products; JS sells the Items marked "Sales Allowed"
-   with a Selling Price. Sales made before the split have no brand and count as Mr.Bee. ---------- */
+   numbers (S… / J…) and its own Sales report. Mr.Bee sells Bakery Products; JS sells the Items that have
+   a Selling Price. Sales made before the split have no brand and count as Mr.Bee. ---------- */
 var saleBrand=(()=>{try{return localStorage.getItem("cakeSaleBrand")==="js"?"js":"mb"}catch(e){return"mb"}})();
 const brandOf=s=>s?.brand==="js"?"js":"mb";
 const BRAND_N={mb:"Mr.Bee Bakery",js:"JS Bakery Supply"};
@@ -6819,12 +6819,12 @@ function syncSaleBrand(){document.querySelectorAll("#saleBrands [data-brand]").f
   if(view==="sale")$("pageTitle").innerHTML=saleBrand==="js"?"JS <span>Bakery Supply</span>":"Mr.Bee <span>Bakery</span>";
   /* cake orders are Mr.Bee's only */
   $("goOrders").hidden=saleBrand==="js";
-  const n=items.filter(i=>i.sale&&i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
+  const n=items.filter(i=>i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
 $("saleBrands").addEventListener("click",e=>{const b=e.target.closest("[data-brand]");if(b)setSaleBrand(b.dataset.brand)});
 /* the products a POS sells: Bakery Products at Mr.Bee, the JS sale items at JS (as products with one Retail price) */
 let jsPdCache=null,jsPdFrom=null;
 function jsPds(){if(jsPdFrom===items)return jsPdCache;jsPdFrom=items;
-  return jsPdCache=items.filter(i=>i.sale&&Number(i.price)>0).map(i=>({id:i.id,code:i.code||"",name:i.name,cat:i.cat||"Other",retail:Number(i.price),barcode:i.code||"",js:true,...(i.photo?{photo:i.photo}:{})}))}
+  return jsPdCache=items.filter(i=>Number(i.price)>0).map(i=>({id:i.id,code:i.code||"",name:i.name,cat:i.cat||"Other",retail:Number(i.price),barcode:i.code||"",js:true,...(i.photo?{photo:i.photo}:{})}))}
 const posP=()=>saleBrand==="js"?jsPds():pds;
 const posCatList=()=>saleBrand==="js"?[...new Set(jsPds().map(p=>p.cat))].sort().map(name=>({name})):pdCats();
 /* ---------- POS: sell Bakery Products over the counter. Everyone signed in can sell; only Admins delete a sale.
@@ -7298,7 +7298,7 @@ const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");r
 function renderItems(){
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
   $("itImport").hidden=!admin;$("itPhotos").hidden=!admin||!canStore();$("itJsOnly").setAttribute("aria-pressed",itJs);
-  const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.sale&&i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
+  const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
     +cats.map(c=>`<button type="button" class="chip" data-itcat="${esc(c)}" aria-pressed="${itCat===c}">${esc(c)} <small>${inQ.filter(i=>(i.cat||"Other")===c).length}</small></button>`).join("");
@@ -7307,7 +7307,7 @@ function renderItems(){
   $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
     `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
   $("itList").innerHTML=shown.map(i=>{const r=i.ref?byCode.get(pdNorm(i.ref)):null;
-    return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><code>${esc(i.code||"")}</code><span class="it-nm">${i.photo?`<img class="it-th" src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:""}<span data-t="${esc(i.name)}"></span>${i.sale&&i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
+    return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><code>${esc(i.code||"")}</code><span class="it-nm">${i.photo?`<img class="it-th" src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:""}<span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
       <span class="it-pr">${i.price>0?`${i.mbPrice>0?`<small class="it-pl">JS</small> `:""}${fmt(i.price)}`:""}${i.mbPrice>0?`${i.price>0?"<br>":""}<small class="it-pl">Mr.Bee</small> ${fmt(i.mbPrice)}`:""}</span>
       <small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.unit?` · ${esc(i.unit)}`:""}${i.purUnit?` · buy ${esc(i.purUnit)}${i.purConv?` × ${esc(String(i.purConv))}`:""}`:""}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
@@ -7325,14 +7325,14 @@ $("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPho
 function openItForm(i){if(!can("admin")||!i)return;itEditing=i;$("itDlgT").textContent=i.name;
   itPhoto=i.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
   $("itDlgSub").textContent=[i.code,[i.cat,i.sub].filter(Boolean).join(" › "),i.unit].filter(Boolean).join(" · ");
-  $("itPrice").value=i.price>0?i.price:"";$("itMbPrice").value=i.mbPrice>0?i.mbPrice:"";$("itSale").checked=!!i.sale;$("itDlg").hidden=false;$("itPrice").focus()}
+  $("itPrice").value=i.price>0?i.price:"";$("itMbPrice").value=i.mbPrice>0?i.mbPrice:"";$("itDlg").hidden=false;$("itPrice").focus()}
 $("itList").addEventListener("click",e=>{const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
 $("itList").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const r=e.target.closest("[data-it]");if(r)openItForm(items.find(x=>x.id===r.dataset.it))});
 $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEditing;if(!i||!can("admin"))return;
   const num=id=>{const v=String($(id).value).trim();return v===""?null:Math.max(0,Math.round(Number(v)))};
   if(itPhoto?.busy){toast("ပုံတင်နေဆဲပါ");return}
-  const price=num("itPrice"),mbPrice=num("itMbPrice"),sale=$("itSale").checked;
-  if(sale&&!(price>0)){toast("JS မှာ ရောင်းဖို့ JS ရောင်းဈေး ထည့်ပါ");$("itPrice").focus();return}
+  /* an item with a JS price is sold at JS */
+  const price=num("itPrice"),mbPrice=num("itMbPrice"),sale=price>0;
   const d={...i,sale,updatedAt:new Date().toISOString(),updatedBy:me.id||null};delete d.id;
   if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
