@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793525939"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526226"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5747,9 +5747,11 @@ async function savePd(p){if(pdCol){await pdCol.doc(p.id).set(p);return}
   const i=pds.findIndex(x=>x.id===p.id);if(i>=0)pds[i]=p;else pds.push(p);pdLocalSave();renderPd();renderHome()}
 async function removePd(id){if(pdCol){await pdCol.doc(id).delete();return}pds=pds.filter(x=>x.id!==id);pdLocalSave();renderPd();renderHome()}
 /* the next free barcode in a category */
+/* a new barcode takes the first free number in its category (a gap left by a moved or deleted product comes first) */
+const bcFirstFree=(pre,used,n=1)=>{const u=new Set(used);const out=[];for(let i=1;out.length<n;i++)if(!u.has(i))out.push(pre+String(i).padStart(4,"0"));return out};
 function nextBarcode(code,skipId){const pre=BC_PREFIX+code;
-  const max=pds.filter(p=>p.id!==skipId&&String(p.barcode||"").startsWith(pre)).reduce((m,p)=>Math.max(m,Number(String(p.barcode).slice(pre.length))||0),0);
-  return pre+String(max+1).padStart(4,"0")}
+  const used=pds.filter(p=>p.id!==skipId&&String(p.barcode||"").startsWith(pre)).map(p=>Number(String(p.barcode).slice(pre.length))||0);
+  return bcFirstFree(pre,used)[0]}
 const pdNorm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function renderPd(){
   if(!$("viewProd")||$("viewProd").hidden)return;
@@ -5868,7 +5870,7 @@ function pdFlvOpts(cur){return`<option value="">— No flavor (single item, e.g.
 /* the next free barcodes in a category, skipping the ones already given to new rows */
 function pdNextCodes(n){const c=pdCats().find(x=>x.name===BC);if(!c)return[];const pre=BC_PREFIX+c.code;
   const used=[...pds.map(p=>String(p.barcode||"")),...[...$("pdRows").querySelectorAll(".r-bc")].map(i=>i.value)].filter(b=>b.startsWith(pre)).map(b=>Number(b.slice(pre.length))||0);
-  let m=used.length?Math.max(...used):0;return Array.from({length:n},()=>pre+String(++m).padStart(4,"0"))}
+  return bcFirstFree(pre,used,n)}
 function pdRowHtml(p){return`<div class="pd-row" data-id="${esc(p?.id||"")}">
     <div class="pd-r1"><label><small>ID *</small><input class="r-code" autocomplete="off" value="${esc(p?.code||"")}"></label><label class="pd-rname"><small>Name *</small><input class="r-name" autocomplete="off" value="${esc(p?.name||"")}"></label>
       <button type="button" class="o-ic danger" data-rrm aria-label="Remove size" title="Remove size">${TRASH_IC}</button></div>
@@ -6057,6 +6059,9 @@ $("pdForm").addEventListener("submit",async e=>{
   if(others.some(p=>pdNorm(p.code)===pdNorm(code))){toast(`ID "${code}" ရှိပြီးသားပါ`);$("pdCode").focus();return}
   if(others.some(p=>pdNorm(p.name)===pdNorm(name))){toast(`"${name}" ဆိုတဲ့ နာမည် ရှိပြီးသားပါ`);$("pdName").focus();return}
   if(!barcode||others.some(p=>String(p.barcode)===barcode)){toast("Barcode ထပ်နေပါတယ်");pdSyncBarcode();return}
+  /* a product with a Distribution price is already out with its barcode, so moving it to another category asks first */
+  if(pdEditing&&pdEditing.cat!==cat&&hasDist(pdEditing)&&String(pdEditing.barcode||"")!==barcode
+    &&!await askConfirm(`Category ပြောင်းရင် Barcode ပြောင်းပါမယ်`,`ဒီ product မှာ Distribution price ရှိပါတယ်။ Barcode ${pdEditing.barcode||"—"} → ${barcode} ပြောင်းမှာ သေချာလား?`))return;
   const now=new Date().toISOString(),p={...(pdEditing||{}),id:pdEditing?.id||("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)),code,name,cat,barcode,retail,pandaAuto,distAuto,
     ...(pdEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   delete p.cakeFlavor;delete p.cakeSize;   /* a single item is not part of a cake flavor */
