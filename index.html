@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793520123"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793520393"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2520,7 +2520,7 @@ function renderTierList(){
   const tl=i=>(en?`Tier ${i+1}`:`အဆင့် ${i+1}`)+(i===0?(en?" (bottom)":" (အောက်ဆုံး)"):i===n-1?(en?" (top)":" (အပေါ်ဆုံး)"):"");
   const sizeOpts=v=>SIZES.slice().sort((a,b)=>Number(a.k)-Number(b.k)).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
   const fon=fondantOn();
-  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other").map(x=>{const p=layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);
+  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other"&&(!fon||fondantOk(x.k)||x.k===v)).map(x=>{const p=layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);   /* Fondant: only flavors that can be Fondant are listed */
     /* no flavor number here: "1." / "2." next to the sizes read like pounds */
     return`<option value="${x.k}" ${x.k===v?"selected":""} ${(p&&!noF)||x.k===v?"":"disabled"}>${esc(x.n)}${noF?` · ${en?"no Fondant":"Fondant မရ"}`:p?(wed?"":` · ${p.toLocaleString("en-US")}`):` · ${en?"n/a":"မရပါ"}`}</option>`}).join("");   /* a Wedding Cake is priced as a whole, so its layers show no price */
   $("tierList").innerHTML=tierDraft.map((t,i)=>({t,i})).reverse().map(({t,i})=>`<div class="tier-card ${t.dummy?"dum":""}" data-ti="${i}">
