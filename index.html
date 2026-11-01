@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793526828"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793528352"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1089,7 +1089,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .dc-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 16px}.dc-row .dc-new{margin:0 0 10px}
 .cup-qrow{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px}.cup-qrow label.f{margin:0}
 .pd-addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pd-addrow select{width:auto;max-width:100%;flex:1 1 220px}
-.pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px}
+.pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px;white-space:nowrap}
 .pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
 .pd-row .pd-sh{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px;font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 6px}
 .pd-sh span{display:flex;align-items:center;gap:4px;min-width:0}.pd-sh svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.5}
@@ -5894,7 +5894,7 @@ function pdRowHtml(p){return`<div class="pd-row" data-id="${esc(p?.id||"")}">
     <div class="pd-r1"><label><small>ID *</small><input class="r-code" autocomplete="off" value="${esc(p?.code||"")}"></label><label class="pd-rname"><small>Name *</small><input class="r-name" autocomplete="off" value="${esc(p?.name||"")}"></label>
       <button type="button" class="o-ic danger" data-rrm aria-label="Remove size" title="Remove size">${TRASH_IC}</button></div>
     <div class="pd-r2"><label><small>Cake Orders size</small><select class="r-size"><option value="">— Not in Cake Orders —</option>${SIZES.filter(s=>szOn(s,p?.cakeSize)).map(s=>`<option value="${s.k}" ${p?.cakeSize===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
-      <label class="pd-tierck"><small>အဆင့်ကိတ်ဈေး</small><span><input type="checkbox" class="r-tier" ${p?.cakeTier?"checked":""}> Tier</span></label>
+      <label class="pd-tierck"><small>အဆင့်ကိတ်ဈေး</small><span><input type="checkbox" class="r-tier" ${p?.cakeTier?"checked":""}> Fondant tier</span></label>
       <label ${p?.cakeTier?"hidden":""}><small>Shape</small><select class="r-shape"><option value="">— Any shape —</option>${SHAPES.map(s=>`<option value="${s.k}" ${p?.cakeShape===s.k?"selected":""}>${esc(s.n)}</option>`).join("")}</select></label>
       <label><small>Barcode</small><input class="r-bc ro" readonly value="${esc(p?.barcode||"")}"></label></div>
     <div class="pd-r3"><label><small>Retail *</small><input class="r-retail" type="number" inputmode="numeric" min="0" value="${p?.retail??""}"></label><label><small>Distribution</small><input class="r-dist" type="number" inputmode="numeric" min="0" value="${p?.dist??""}"></label>
