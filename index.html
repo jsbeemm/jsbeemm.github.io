@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549542"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793549610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7787,12 +7787,12 @@ $("soPaid").addEventListener("input",soSyncTot);
 $("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
 $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-lp")?.focus()});
 $("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
-/* "+ Add item" opens a list to pick from: JS items (with a JS price) first; a tap puts the item on the voucher and goes to its Qty */
+/* "+ Add item" opens a list to pick from: only items with a JS selling price; a tap puts the item on the voucher and goes to its Qty */
 let soPickCat="";
 function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.filter(i=>i.price>0).map(i=>i.cat||"Other"))].sort();if(soPickCat&&!cats.includes(soPickCat))soPickCat="";
   $("soPickCats").innerHTML=`<button type="button" class="chip" data-sopc="" aria-pressed="${!soPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-sopc="${esc(c)}" aria-pressed="${soPickCat===c}">${esc(c)}</button>`).join("");
-  const m=inQ.filter(i=>(q||i.price>0)&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,80);
+  const m=inQ.filter(i=>i.price>0&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,80);
   $("soHits").innerHTML=m.length?m.map(i=>{const n=soLines.find(l=>l.pid===i.id)?.qty||0;
     return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(i.id)}">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
       <span><span data-t="${esc(i.name)}"></span><br><code>${esc(i.code||"")}</code></span><b>${i.price>0?fmt(i.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
