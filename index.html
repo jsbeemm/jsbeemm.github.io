@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793551433"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793551518"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7482,7 +7482,7 @@ function initItems(){
   if(itCol)return;itCol=db.collection("items");
   db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand()},()=>{itCol=null});
+    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
 }
 /* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
    changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
@@ -7817,7 +7817,7 @@ const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price|
 function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
   $("soNet").textContent=Number(net).toLocaleString("en-US");$("soPaidRo").hidden=!soEditing;$("soPaidRo").textContent=paid?Number(paid).toLocaleString("en-US"):"-";
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
-async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(l.photo)));
+async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l))));
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
       <td><input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
@@ -7885,9 +7885,11 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 .vo-note{margin-top:8px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
+/* a line's picture: the item's photo as it is now (or the one kept on the line) */
+const soLinePhoto=l=>(l.pid&&items.find(i=>i.id===l.pid)?.photo)||l.photo||"";
 async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
 async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
-  const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(l.photo)));
+  const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
   const oweSum=owe.reduce((s,x)=>s+soBal(x),0);
   return`<div class="vo">
