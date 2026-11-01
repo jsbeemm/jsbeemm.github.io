@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545040"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793545435"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7371,7 +7371,8 @@ $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()}
 $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.target.value="";if(!f||!can("admin"))return;
   toast("Excel ဖတ်နေသည်…",20000);
   try{await loadLib("lib/xlsx-0.18.5.full.min.js");
-    const wb=XLSX.read(await f.arrayBuffer(),{type:"array",sheets:["Items",0],cellStyles:false,cellHTML:false,bookImages:false});
+    const ab=await f.arrayBuffer();
+    const wb=XLSX.read(ab,{type:"array",sheets:["Items",0],cellStyles:false,cellHTML:false,bookImages:false});
     const ws=wb.Sheets.Items||wb.Sheets[wb.SheetNames[0]];
     const rows=XLSX.utils.sheet_to_json(ws,{defval:"",raw:true,blankrows:false});
     const S=v=>String(v??"").trim(),N=v=>{const s=S(v).replace(/,/g,"");if(s==="")return null;const n=Number(s);return isFinite(n)?n:null};
@@ -7391,16 +7392,50 @@ $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.targ
       /* a photo added in the app stays */
       if(!same)plan.push({id,doc:{...it,...(old?.photo?{photo:old.photo}:{}),...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
     const nNew=plan.filter(p=>p.isNew).length,nChg=plan.length-nNew,nSale=rows.length?[...seen].length:0;
-    if(!plan.length){toast(`ပြောင်းစရာ မရှိပါ — Items ${nSale} ခု အားလုံး တူနေပါတယ်`,5000);return}
-    if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`,"Save"))return;
+    if(!plan.length){toast(`ပြောင်းစရာ မရှိပါ — Items ${nSale} ခု အားလုံး တူနေပါတယ်`,5000);await itExcelPhotos(ab,[]);return}
+    if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`,"Save")){await itExcelPhotos(ab,[]);return}
     let done=0;const pool=8,queue=plan.slice();
     const work=async()=>{while(queue.length){const p=queue.shift();
       if(db)await db.collection("items").doc(p.id).set(p.doc);else{const i=items.findIndex(x=>x.id===p.id);const d={...p.doc,id:p.id};if(i>=0)items[i]=d;else items.push(d)}
       done++;if(done%50===0)toast(`သိမ်းနေသည်… ${done} / ${plan.length}`,20000)}};
     await Promise.all(Array.from({length:pool},work));
     if(!db){try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
-    toast(`✓ Items ${plan.length} ခု သိမ်းပြီး`,5000)}
+    toast(`✓ Items ${plan.length} ခု သိမ်းပြီး`,5000);
+    await itExcelPhotos(ab,plan)}
   catch(x){console.error(x);toast("Excel မဖတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",5000)}});
+/* the pictures inside the Items Excel (the Items_Pic sheet): each picture's name is an item's Short Code or Name.
+   Only items that have no photo yet get one, so importing the same file again uploads nothing new. */
+async function itExcelPhotos(ab,plan){
+  let cfb;try{cfb=XLSX.CFB.read(new Uint8Array(ab),{type:"array"})}catch(x){return}
+  const file=p=>{const i=cfb.FullPaths.findIndex(x=>x.replace(/^Root Entry\//,"/").replace(/^\/?/,"/")===p);return i<0?null:cfb.FileIndex[i]};
+  const txt=e=>new TextDecoder().decode(e.content instanceof Uint8Array?e.content:new Uint8Array(e.content));
+  const draws=cfb.FullPaths.map(x=>x.replace(/^Root Entry\//,"/").replace(/^\/?/,"/")).filter(p=>/^\/xl\/drawings\/drawing\d+\.xml$/.test(p));
+  /* the items as they are now, with the rows just saved */
+  const cur=new Map(items.map(i=>[i.id,{...i}]));(plan||[]).forEach(p=>cur.set(p.id,{...(cur.get(p.id)||{}),...p.doc,id:p.id}));
+  const byCode=new Map(),byName=new Map();for(const i of cur.values()){if(i.code)byCode.set(phKey(i.code),i);if(i.name)byName.set(phKey(i.name),i)}
+  const todo=[],miss=[],seen=new Set();
+  for(const dp of draws){const de=file(dp),re=file(dp.replace(/drawings\/(drawing\d+\.xml)$/,"drawings/_rels/$1.rels"));if(!de||!re)continue;
+    const rels={};for(const m of txt(re).matchAll(/Id="([^"]+)"[^>]*Target="([^"]+)"/g))rels[m[1]]=m[2];
+    const doc=new DOMParser().parseFromString(txt(de),"application/xml");
+    for(const pic of doc.getElementsByTagNameNS("*","pic")){const nm=pic.getElementsByTagNameNS("*","cNvPr")[0]?.getAttribute("name")||"";
+      const rid=[...pic.getElementsByTagNameNS("*","blip")][0]?.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","embed");
+      const it=byCode.get(phKey(nm))||byName.get(phKey(nm));if(!it){if(nm)miss.push(nm);continue}
+      if(it.photo||seen.has(it.id)||!rels[rid])continue;seen.add(it.id);
+      const path="/xl/"+rels[rid].replace(/^\.\.\//,"");const me=file(path);if(me)todo.push({it,me,ext:(path.split(".").pop()||"jpg").toLowerCase()})}}
+  if(!todo.length){if(draws.length)toast(`Excel ထဲက ပုံတွေ ထည့်ပြီးသားပါ${miss.length?` · နာမည်မကိုက်လို့ မထည့်ရ ${miss.length}`:""}`,5000);return}
+  if(!canStore()){toast("ဒီနေရာမှာ ပုံ သိမ်းလို့ မရပါ");return}
+  if(!await askConfirm(`Excel ထဲက ပုံ ${todo.length} ပုံ ထည့်မလား?`,[`ပုံမရှိသေးတဲ့ Item ${todo.length} ခုမှာ ထည့်ပါမယ် (မိနစ်အနည်းငယ် ကြာနိုင်ပါတယ်)`,
+    miss.length?`Item Name / Short Code နဲ့ မကိုက်လို့ မထည့်ရ ${miss.length}: ${miss.slice(0,6).join(", ")}${miss.length>6?" …":""}`:""].filter(Boolean).join("\n"),"Save"))return;
+  let done=0,fail=0;const queue=todo.slice(),type={png:"image/png",gif:"image/gif",webp:"image/webp"};
+  const work=async()=>{while(queue.length){const{it,me,ext}=queue.shift();
+    try{const blob=new Blob([me.content],{type:type[ext]||"image/jpeg"}),b=await shrinkImage(blob,700),s=await storePhoto(b);
+      const d={...it,photo:s.id};delete d.id;
+      if(db)await db.collection("items").doc(it.id).set(d);else{const k=items.findIndex(x=>x.id===it.id);if(k>=0){items[k]={...d,id:it.id};items=items.slice()}}
+      done++}catch(x){fail++}
+    if((done+fail)%20===0)toast(`ပုံတင်နေသည်… ${done+fail} / ${todo.length}`,20000)}};
+  await Promise.all(Array.from({length:3},work));
+  if(!db){try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+  toast(`✓ Excel ထဲက ပုံ ${done} ပုံ ထည့်ပြီး${fail?` · မတင်နိုင် ${fail} (ပြန် import လုပ်ရင် ကျန်တာ ဆက်တင်ပါမယ်)`:""}`,6000)}
 function initSales(){
   if(!db){try{sales=JSON.parse(localStorage.getItem("cakeSales")||"[]")}catch(e){sales=[]}return}
   if(saleCol)return;saleCol=db.collection("sales");
