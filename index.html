@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550320"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793550450"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -904,7 +904,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-dlrow{display:flex;gap:6px;align-items:flex-start}.so-dlrow textarea{flex:1;min-width:0}
 .so-addrw{position:relative;flex:none}.so-addrw .chip{white-space:nowrap;font-size:12px;padding:6px 10px}
 .so-addrmenu{right:0;left:auto;width:min(320px,80vw);top:calc(100% + 4px)}
-.vo-edit .vo-no>div{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-bottom:4px}.vo-edit .vo-no input{width:140px}
+/* Channel and Date read like the printed voucher's text; tapping them still changes them */
+.vo-edit .vo-no{align-items:center}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
+  -webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:right 5px center,right 1px center;background-size:4px 4px;background-repeat:no-repeat}
+.vo-edit #soDate .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #soDate .dp-ic{display:none}
 .vo-edit .so-date .dp{font-size:13px}
 .vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
 .so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:100px}
@@ -918,7 +921,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
-@media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no>div{justify-content:flex-start}
+@media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
   .so-tbl thead{display:none}.so-tbl tr{display:grid;grid-template-columns:28px 44px 1fr 34px;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
   .so-tbl td{border:0;padding:2px}.so-tbl td:nth-child(3){grid-column:3/4}.so-tbl td:nth-child(4),.so-tbl td:nth-child(5),.so-tbl td:nth-child(6){grid-column:auto}
   .so-tbl td:nth-child(7){grid-column:1/-1}.vo-edit .vo-top h1{font-size:20px}}
@@ -2136,9 +2139,9 @@ span.star-ic{cursor:default}
           <div class="vo-dl"><h3>Delivery Info</h3>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
               <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change address</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
-          <div class="vo-no"><div>SO No#<span id="soNoTxt">—</span></div>
-            <div>Channel#<select id="soChannel" aria-label="Channel"></select></div>
-            <div class="so-date">Date<span id="soDate"></span></div></div>
+          <div class="vo-no"><span class="k">SO No#</span><span id="soNoTxt">—</span>
+            <span class="k">Channel#</span><select id="soChannel" class="cap" aria-label="Channel"></select>
+            <span class="k">Date</span><span id="soDate" class="cap"></span></div>
         </div>
         <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th></tr></thead>
           <tbody id="soLines"></tbody></table>
@@ -7860,7 +7863,7 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 .vo-shop{flex:1;text-align:center}.vo-shop h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;color:var(--vc)}.vo-shop p{margin:4px 0 0;font:18px Georgia,serif;color:var(--vc);letter-spacing:.5px}
 .vo-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 18px;margin-top:10px;align-items:start}
 .vo-meta h3{margin:0 0 2px;font:15px Georgia,serif;color:var(--vc)}.vo-cust b{font-size:14px;display:block}.vo-dl{text-align:center}
-.vo-no{text-align:right;color:var(--vc)}.vo-no div{margin-bottom:4px}.vo-no span{color:#3b2a20;margin-left:6px}
+.vo-no{display:grid;grid-template-columns:auto auto;justify-content:end;align-content:start;gap:4px 10px;text-align:left;color:#3b2a20}.vo-no .k{text-align:right;color:var(--vc)}
 .vo table{width:100%;border-collapse:collapse;margin-top:10px}.vo th{text-align:left;font-weight:700;color:#5a3a22;padding:6px 6px;border-bottom:1px solid var(--vc)}
 .vo td{padding:9px 6px;border-bottom:1px solid #c98b6a;vertical-align:middle}.vo .r{text-align:right;white-space:nowrap}.vo td.pic{width:52px}.vo td.pic img{width:44px;height:44px;object-fit:cover;border-radius:6px}
 .vo-sum{display:grid;grid-template-columns:1fr auto auto;gap:6px 14px;justify-content:end;margin:10px 0 0 auto;width:max-content;font-weight:700;color:#5a3a22}
@@ -7880,7 +7883,7 @@ async function soHtml(v){const m=n=>Number(n||0).toLocaleString("en-US"),paid=so
     <div class="vo-meta">
       <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
       <div class="vo-dl">${soDelivOf(v)?`<h3>Delivery Info</h3><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div>`:""}</div>
-      <div class="vo-no"><div>SO No#<span>${esc(v.no)}</span></div>${v.channel?`<div>Channel#<span>${esc(v.channel)}</span></div>`:""}<div>Date<span>${esc(soDate(v.date))}</span></div></div>
+      <div class="vo-no"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span></div>
     </div>
     <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
       ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
