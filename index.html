@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793599222"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793599479"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7774,7 +7774,8 @@ $("goSo").addEventListener("click",()=>go("so"));
 const soCustLbl=p=>p?`${p.name}${p.short?` (${p.short})`:""}`:"";
 function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p=>p.id===cur)?.name||"";$("soCustHits").hidden=true;requestAnimationFrame(soGrow)}
 function soCustHits(){const q=pdNorm($("soCustQ").value);
-  const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,30);
+  /* every matching customer (the list scrolls): a short list cut off the Myanmar names, which sort after the English ones */
+  const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
     :`<p class="side-help so-noc">Customer စာရင်းထဲ မရှိပါ</p>`;
   /* a customer not on the list is registered first (from here, without leaving the voucher) */
