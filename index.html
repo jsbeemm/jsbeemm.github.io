@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627173"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627658"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1910,9 +1910,9 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel unit-box">
     <div class="ed-tools pv-head"><b>📏 <span>Units</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <div class="side-body">
-      <p class="side-help">Raw Material ရဲ့ Base Unit၊ 1 Unit၊ Unit မှာ ဒီစာရင်းထဲက ရွေးရပါတယ်။ နာမည်ပြင်ရင် သုံးထားတဲ့ ပစ္စည်းအားလုံးမှာ လိုက်ပြောင်းပါတယ်။</p>
+      <p class="side-help">Raw Material ရဲ့ Purchase unit (1 Unit) မှာ ဒီစာရင်းထဲက ရွေးရပါတယ်။ နာမည်ပြင်ရင် သုံးထားတဲ့ ပစ္စည်းအားလုံးမှာ လိုက်ပြောင်းပါတယ်။</p>
       <div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>Unit</th><th>Items</th><th></th></tr></thead><tbody id="unitRows"></tbody></table></div>
-      <div class="unit-acts"><button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button><button type="button" class="chip pm-add" id="unitFromItems">⤓ Raw Material ထဲက unit တွေ ထည့်မည်</button></div>
+      <div class="unit-acts"><button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button><button type="button" class="chip pm-add" id="unitFromItems">⤓ Purchase unit ထဲက unit တွေ ထည့်မည်</button></div>
     </div>
   </div>
 </div>
@@ -5636,8 +5636,12 @@ $("pmForm").addEventListener("submit",e=>{e.preventDefault();$("pmDlg").hidden=t
 var unitDoc=null,unitEdit=-1;
 const U_KEYS=["unit","stockUnit","uom","purUnit"];
 const uSame=(a,b)=>String(a||"").trim().toLowerCase()===String(b||"").trim().toLowerCase();
+/* the units in the raw materials' Purchase unit rows: each row's 1 Unit (ct, pc, pk), and its Quantity unit when that is a
+   plain unit too (not the Base Unit g, not another row's Unit name like ct24); items without rows give their Purchase Unit */
 function unitsInItems(){const s=new Map();const add=v=>{v=String(v||"").trim();if(v&&!s.has(v.toLowerCase()))s.set(v.toLowerCase(),v)};
-  for(const i of items){U_KEYS.forEach(k=>add(i[k]));(i.units||[]).forEach(u=>add(u.u))}return[...s.values()]}
+  for(const i of items){const rs=i.units||[];if(!rs.length){add(i.purUnit);continue}
+    for(const r of rs){add(r.u);if(r.of&&!uSame(r.of,i.unit)&&!rs.some(x=>x.n&&!uSame(x.n,x.u)&&uSame(x.n,r.of)))add(r.of)}}
+  return[...s.values()]}
 const uList=()=>(unitDoc&&unitDoc.length?unitDoc:unitsInItems()).slice().sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
 /* the items that use a unit (as Base Unit, Stock Count Unit, Unit, or a unit row's 1 Unit / Quantity unit) */
 const uUsers=n=>items.filter(i=>U_KEYS.some(k=>uSame(i[k],n))||(i.units||[]).some(u=>uSame(u.u,n)||uSame(u.of,n)));
