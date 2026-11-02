@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793607676"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793607963"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7658,25 +7658,31 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
 /* unit rows: a name to sell / buy by (24pk), 1 unit (ct) = quantity (24) of a unit (pc), its size in the base unit worked out
    from the other rows (pc = 1000 g → 24 pc = 24,000 g), and its retail / wholesale selling prices */
-function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" placeholder="24pk" value="${esc(u.n||"")}" aria-label="Unit name">
-  <input class="it-uu" list="itUnitList" placeholder="ct" value="${esc(u.u||"")}" aria-label="1 unit"><span>=</span>
-  <input class="it-uc" inputmode="decimal" placeholder="24" value="${esc(u.c??"")}" aria-label="Quantity"><input class="it-uof" list="itUnitList" placeholder="pc" value="${esc(u.of||"")}" aria-label="of unit">
+function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" value="${esc(u.n||"")}" aria-label="Unit name">
+  <input class="it-uu" list="itUnitList" value="${esc(u.u||"")}" aria-label="1 unit"><span>=</span>
+  <input class="it-uc" inputmode="decimal" value="${esc(u.c??"")}" aria-label="Quantity"><select class="it-uof" data-v="${esc(u.of||"")}" aria-label="Quantity unit"></select>
   <span class="it-ub"></span>
-  <input class="it-up" type="number" min="0" step="1" placeholder="—" value="${u.p>0?u.p:""}" aria-label="Retail price"><input class="it-uw" type="number" min="0" step="1" placeholder="—" value="${u.w>0?u.w:""}" aria-label="Wholesale price">
+  <input class="it-up" type="number" min="0" step="1" value="${u.p>0?u.p:""}" aria-label="Retail price"><input class="it-uw" type="number" min="0" step="1" value="${u.w>0?u.w:""}" aria-label="Wholesale price">
   <button type="button" class="o-ic danger it-urm" aria-label="Remove unit" title="Remove">✕</button></div>`}
 function itUnitsFill(i){const us=i?.units?.length?i.units:i?.purUnit||i?.purConv?[{u:i.purUnit,c:i.purConv,of:Number(i.purConv)>=100?i.unit:(i.stockUnit||i.unit)}]:[{}];
   $("itUnits").innerHTML=us.map(itUnitRow).join("");itUnitsCalc()}
 function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0),w=Math.round(Number(t(".it-uw"))||0);
-  const o={u:t(".it-uu")};if(t(".it-un"))o.n=t(".it-un");if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;return o}).filter(o=>o.u||o.n)}
+  const o={u:t(".it-uu")};o.n=t(".it-un")||o.u;if(!o.n)delete o.n;   /* no unit name: the 1 Unit value is the name */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;return o}).filter(o=>o.u||o.n)}
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
 function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
   const r=rows.find(x=>String(x.u||"").toLowerCase()===k&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
-function itUnitsCalc(){const base=$("itUnit").value.trim(),rows=itUnitsRead(),els=[...$("itUnits").querySelectorAll(".it-urow")];
+function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];
+  /* the Quantity unit picks from the Base Unit and the 1 Unit of the rows */
+  const names=[...new Set([base,...els.map(el=>String(el.querySelector(".it-uu").value).trim())].filter(Boolean))];
+  els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=String(el.querySelector(".it-uu").value).trim(),cur=sel.value||sel.dataset.v||"";
+    const opts=[...new Set([...names.filter(n=>n!==own),...(cur&&cur!==own?[cur]:[])])];
+    const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
+  const rows=itUnitsRead();
   els.forEach(el=>{const t=c=>String(el.querySelector(c).value).trim(),c=Number(t(".it-uc")),f=itBaseOf(t(".it-uof"),rows,base);
     el.querySelector(".it-ub").textContent=c>0&&f!=null&&base&&t(".it-uof").toLowerCase()!==base.toLowerCase()?`= ${Number(c*f).toLocaleString("en-US")} ${base}`:""})}
-$("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({of:$("itStockUnit").value.trim()}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
+$("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
 $("itUnits").addEventListener("click",e=>{const b=e.target.closest(".it-urm");if(!b)return;b.closest(".it-urow").remove();if(!$("itUnits").children.length)$("itUnits").innerHTML=itUnitRow();itUnitsCalc()});
-$("itUnits").addEventListener("input",itUnitsCalc);$("itUnit").addEventListener("input",itUnitsCalc);
+$("itUnits").addEventListener("input",itUnitsCalc);$("itUnits").addEventListener("change",itUnitsCalc);$("itUnit").addEventListener("input",itUnitsCalc);
 /* deleting a raw material (Admins) */
 $("itDel").addEventListener("click",async()=>{const i=itEditing;if(!i||!can("admin"))return;
   if(!await askConfirm(`Delete “${i.name}”?`,i.code))return;
