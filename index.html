@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600201"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600572"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -923,6 +923,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit .so-add td{border:0;padding:6px 0}.vo-edit #soPaid{width:100%;text-align:right}.vo-edit #soPay{width:auto;min-width:0;max-width:120px;padding:5px 6px}
 .vo-edit .vo-note{margin-top:10px}
 .so-pcats{margin:8px 0}.so-plist{display:grid;gap:6px}
+/* Add item keeps one size while typing: the window has a fixed height, the categories stay on one line (scroll sideways), only the list scrolls */
+#soPickDlg .side-panel{height:min(88vh,760px);max-height:none}#soPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#soPickDlg #soPickQ,#soPickDlg .cfm-btns{flex:none}#soPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#soPickDlg .so-pcats .chip{flex:none}
+#soPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
