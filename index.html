@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793642748"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793642931"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7864,6 +7864,21 @@ $("itUnits").addEventListener("pointerdown",e=>{const h=e.target.closest(".it-dr
     window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",up);itUnitsCalc()};
   window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",up)});
 $("itUnits").addEventListener("input",itUnitsCalc);$("itUnits").addEventListener("change",itUnitsCalc);$("itUnit").addEventListener("input",itUnitsCalc);
+/* JS (Ks) worked out from Quantity × the price of its unit (1 ct = 12 pk, pk 40,500 → 486,000); the price of that unit is its own
+   row's JS price, else worked out through the base unit from any row that has a price. It fills an empty box (or one it filled
+   itself), selected so typing replaces it; a price typed by hand is never changed. */
+function itAutoJs(el,focus){const up=el.querySelector(".it-up");if(up.value.trim()!==""&&!up.dataset.auto)return;
+  const base=$("itUnit").value.trim(),c=Number(el.querySelector(".it-uc").value),ref=el.querySelector(".it-uof").value;
+  up.value="";   /* empty, or our own figure: it must not count as a price of its own */
+  let price=null;if(c>0&&ref){const rows=itUnitsRead(),fRef=itBaseOf(ref,rows,base);
+    const own=rows.find(r=>r.p>0&&[r.n,r.u].some(x=>uSame(x,ref)));
+    if(own)price=c*own.p;
+    else if(fRef!=null){for(const r of rows){if(!(r.p>0))continue;const fr=itBaseOf(r.n||r.u,rows,base);if(fr>0){price=c*fRef*(r.p/fr);break}}}}
+  if(price==null||!isFinite(price)){if(up.dataset.auto){up.value="";delete up.dataset.auto}return}
+  up.value=Math.round(price);up.dataset.auto="1";if(focus){up.focus();up.select()}}
+$("itUnits").addEventListener("input",e=>{if(e.target.matches(".it-up"))delete e.target.dataset.auto;else if(e.target.matches(".it-uc"))itAutoJs(e.target.closest(".it-urow"),false)});
+$("itUnits").addEventListener("change",e=>{if(e.target.matches(".it-uof"))itAutoJs(e.target.closest(".it-urow"),true)});
+$("itUnits").addEventListener("focusin",e=>{if(e.target.matches(".it-up")&&e.target.dataset.auto)setTimeout(()=>e.target.select(),0)});
 /* deleting a raw material (Admins) */
 $("itDel").addEventListener("click",async()=>{const i=itEditing;if(!i||!can("admin"))return;
   if(!await askConfirm(`Delete “${i.name}”?`,i.code))return;
