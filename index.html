@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793615867"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793616630"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -925,7 +925,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit #soDate .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #soDate .dp-ic{display:none}
 .vo-edit .so-date .dp{font-size:13px}
 .vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
-.so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:190px}.so-pw{display:flex;gap:4px}.so-pw .so-lt{width:96px;flex:none;padding:5px 4px}.so-pw .so-lp{flex:1}
+.so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:96px}.so-lqw{display:flex;align-items:center;gap:4px}.so-lqw .so-lq{flex:1;min-width:0}.so-lqu{flex:none;font-size:12px;color:var(--muted)}.so-tbl th:nth-child(5){width:190px}.so-pw{display:flex;gap:4px}.so-pw .so-lt{width:96px;flex:none;padding:5px 4px}.so-pw .so-lp{flex:1}
 .so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:13%}.so-tbl th:nth-child(8){width:78px}
 .so-tbl td input{padding:5px 6px;width:100%;min-width:0}
 /* every box on an item row is the same height; remove is a plain icon */
@@ -7986,7 +7986,7 @@ async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPho
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
       <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>${(()=>{const it=items.find(x=>x.id===l.pid),fam=it&&fm.get(soFamKey(it));
         return fam&&fam.length>1?`<select class="so-lu" aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${soOptOn(o,l)?"selected":""}>${esc(o.label)} · ${fmt(o.price)}</option>`).join("")}</select>`:""})()}`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
-      <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
+      <td class="r"><span class="so-lqw"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty">${(()=>{const u=soLineUnit(l);return u?`<span class="so-lqu">${esc(u)}</span>`:""})()}</span></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${soPP(it,l).w>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
       <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw"><label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
@@ -8024,6 +8024,8 @@ function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||
 function soFamMap(){const m=new Map();for(const i of items){const o=soOptsOf(i);if(!o.length)continue;const k=soFamKey(i);if(!m.has(k))m.set(k,[]);m.get(k).push(...o)}
   for(const a of m.values())a.sort((x,y)=>y.price-x.price);return m}
 const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${u.n||u.u}`};
+/* the unit a line's Qty counts in: the chosen unit row's 1 Unit (ct), else the item's Stock Count Unit */
+function soLineUnit(l){const it=l.pid&&items.find(x=>x.id===l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
 const soOptOn=(o,l)=>l.pid===o.it.id&&(l.u??-1)===o.k;
 /* the size: from the name ("… 5kg"), else from Purchase Conversion in the base unit (25000 g → 25kg), else the count unit (pk) */
 function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].replace(/\s+/g,"");
