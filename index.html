@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793614489"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793614699"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7676,8 +7676,8 @@ function itUnitNeed(els){const v=(el,c)=>String(el.querySelector(c).value).trim(
   els.forEach(el=>{const u=v(el,".it-uu"),n=v(el,".it-un")||u;if(u)cu[u]=(cu[u]||0)+1;if(n)cn[n]=(cn[n]||0)+1});
   return els.filter(el=>{const u=v(el,".it-uu"),n=v(el,".it-un");return(u&&cu[u]>1&&!n)||((n||u)&&cn[n||u]>1)})}
 function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];
-  /* the Quantity unit picks from the Base Unit and the other rows (their unit name, e.g. 24pk, and their 1 Unit) */
-  const nm=el=>[".it-un",".it-uu"].map(c=>String(el.querySelector(c).value).trim()).filter(Boolean);
+  /* the Quantity unit picks from the Base Unit and the other rows' unit names (24pk; a row with no name goes by its 1 Unit) */
+  const nm=el=>{const n=String(el.querySelector(".it-un").value).trim()||String(el.querySelector(".it-uu").value).trim();return n?[n]:[]};
   els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=nm(el),cur=sel.value||sel.dataset.v||"";
     const opts=[...new Set([base,...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
