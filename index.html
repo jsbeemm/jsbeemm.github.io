@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793632971"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793633152"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7744,6 +7744,11 @@ function prMovePlan(i){const p=Number(i.price)||0,w=Number(i.whPrice)||0,m=Numbe
       r.n=m[1]+u;if(f&&bf&&((["g","gm","kg"].includes(u))===(["g","gm","kg"].includes(b)))){r.c=+(n*f/bf).toFixed(4);r.of=i.unit}}
     rows.push(r)}
   if(p>0)r.p=p;if(w>0)r.w=w;if(m>0)r.m=m;return rows}
+/* a price can't go on its row as it is when that row is more than one count unit (1 ct = 12 pc), or is an old "1 bx = 24" with
+   no Stock Count Unit (24 of what is unknown) */
+function prMoveHold(i,rows){const r=rows.find(x=>x.p>0||x.w>0||x.m>0);if(!r)return false;
+  return Number(r.c)>1&&((!!r.of&&!uSame(r.of,i.unit))||(!i.units?.length&&!i.stockUnit&&Number(r.c)<100))}
+var itOldShow=false;   /* the old Selling Price boxes show only for a ⏸ item */
 /* the report: each item, the row its prices go to, and ⚠ where that row is new (not on the item before) — those first */
 let mvTodo=[];
 const mvOld=i=>i.units?.length||(i.purUnit||i.purConv?1:0);
@@ -7751,7 +7756,7 @@ $("itMovePr").addEventListener("click",()=>{if(!can("admin"))return;
   /* "hold": the row is more than one count unit (1 ct = 12 pc) — a price per count unit can't go there as it is, so it is not
      moved; it is listed at the top for checking by hand */
   mvTodo=items.map(i=>[i,prMovePlan(i)]).filter(([,r])=>r).map(([i,rows])=>{const r=rows.find(x=>x.p>0||x.w>0||x.m>0);
-      return{i,rows,r,nw:rows.length>mvOld(i),hold:Number(r.c)>1&&((!!r.of&&!uSame(r.of,i.unit))||(!i.units?.length&&!i.stockUnit&&Number(r.c)<100))}})   /* the second: an old "1 bx = 24" with no Stock Count Unit — 24 of what is unknown */
+      return{i,rows,r,nw:rows.length>mvOld(i),hold:prMoveHold(i,rows)}})
     .sort((a,b)=>b.hold-a.hold||b.nw-a.nw||String(a.i.code).localeCompare(String(b.i.code)));if(!mvTodo.length)return;
   const nh=mvTodo.filter(x=>x.hold).length,nn=mvTodo.filter(x=>x.nw&&!x.hold).length,go=mvTodo.length-nh,pr=v=>v>0?fmt(v):"—";
   $("itMoveSum").textContent=`ပစ္စည်း ${go} ခုရဲ့ ဈေးကို Purchase unit row ထဲ ရွှေ့ပါမယ်။ ဈေးပမာဏ မပြောင်းပါဘူး။`
@@ -7816,7 +7821,11 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
   /* a new item starts in the category being looked at */
   for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else if(el.tagName==="SELECT"){el.innerHTML="";el.dataset.v=i?.[k]??""}else el.value=i?.[k]??""}
   itUnitsFill(i);
-  $("itPrice").value=i?.price>0?i.price:"";$("itMbPrice").value=i?.mbPrice>0?i.mbPrice:"";$("itWhPrice").value=i?.whPrice>0?i.whPrice:"";$("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
+  /* the old Selling Price boxes are gone: a price that is only in them is put on its unit row now (and saved with the item);
+     only a price that can't go on a row as it is (⏸ in the price-move report) still shows the old boxes, to fix by hand */
+  const mv=i&&prMovePlan(i),hold=!!mv&&prMoveHold(i,mv);if(mv&&!hold)itUnitsFill({...i,units:mv});itOldShow=hold;
+  $("itPrice").value=hold&&i.price>0?i.price:"";$("itMbPrice").value=hold&&i.mbPrice>0?i.mbPrice:"";$("itWhPrice").value=hold&&i.whPrice>0?i.whPrice:"";itUnitsCalc();
+  $("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
 /* unit rows: a name to sell / buy by (24pk), 1 unit (ct) = quantity (24) of a unit (pc), its size in the base unit worked out
    from the other rows (pc = 1000 g → 24 pc = 24,000 g), and its retail / wholesale selling prices */
@@ -7849,7 +7858,7 @@ function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=cur;sel.dataset.v=sel.value}
   const rows=itUnitsRead();
   /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
-  const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced?"none":"");
+  const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced||!itOldShow?"none":"");
   els.forEach(el=>{const t=c=>String(el.querySelector(c).value).trim(),c=Number(t(".it-uc")),f=itBaseOf(t(".it-uof"),rows,base);
     /* a row whose 1 Unit is the Base Unit (bought / sold by the base unit itself): it is 1 of itself, nothing to type */
     const isBase=!!base&&uSame(t(".it-uu"),base),qc=el.querySelector(".it-uc"),qs=el.querySelector(".it-uof");el.classList.toggle("it-isbase",isBase);
