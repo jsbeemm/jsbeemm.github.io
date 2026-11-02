@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793598479"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793598625"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -943,6 +943,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
   .pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-width:38px;min-height:38px;padding-inline:8px}.pv-head .so-foot #soPayBtn{padding-inline:10px}}
 .so-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.so-paper{display:inline-flex;align-items:center;gap:6px;font-size:13px}.so-paper select{width:auto;padding:5px 8px}
 .so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
+/* the boxes and the Save button: one height, one bottom line */
+.so-payform input,.so-payform select,.so-payform .dp-btn,.so-payform .btn{height:44px;min-height:0;margin:0;box-sizing:border-box;vertical-align:bottom}
+.so-payform .dp,.so-payform .dp-btn{display:flex;width:100%;align-items:center}.so-payform .btn{width:auto;padding-block:0;display:inline-flex;align-items:center;justify-content:center}.so-payform .prf{margin:0}
 .so-preview{overflow:hidden;border-radius:10px;padding:14px;background:var(--sunk)}#soPrev{width:760px;transform-origin:0 0;background:#fff;box-sizing:border-box;box-shadow:0 2px 10px rgba(0,0,0,.18)}
 #soShot{position:fixed;left:-99999px;top:0;background:#fff;padding:0}
 /* an item picked from Raw Material shows its name as plain text; only free lines (Delivery, Other) are typed */
