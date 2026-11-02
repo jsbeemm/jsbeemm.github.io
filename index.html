@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793553496"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793596357"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7975,7 +7975,9 @@ const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",sys
 .vr .meta{margin:6px 0}.vr .two{display:flex;justify-content:space-between;gap:8px;margin:6px 0}.vr .two>div:last-child{text-align:right}
 .vr table{width:100%;border-collapse:collapse;margin-top:4px}.vr th{font-weight:700;text-align:left;border-bottom:1px solid #000;padding:3px 0}
 .vr td{vertical-align:top;padding:4px 0}.vr td.q,.vr th.q{width:28px}.vr td.a,.vr th.a{text-align:right;white-space:nowrap;padding-left:6px}
-.vr .at{font-size:11px;color:#333}.vr .vr-tot td{padding:3px 0;font-weight:700;font-family:inherit;color:#000}.vr .vr-tot tr:first-child td{border-top:1px solid #000;padding-top:6px}
+.vr .at{font-size:12px;color:#000}
+/* thermal printers turn grey and thin strokes into dots: numbers print in solid black, bold, in a plain font */
+.vr td.a,.vr td.q,.vr .at,.vr .meta,.vr .owe .two span:last-child{font-family:Arial,Helvetica,"Noto Sans Myanmar",sans-serif;font-weight:700;color:#000}.vr td.a{font-size:13px}.vr .vr-tot td{padding:3px 0;font-weight:700;font-family:inherit;color:#000}.vr .vr-tot tr:first-child td{border-top:1px solid #000;padding-top:6px}
 .vr .vo-sign{gap:8px;margin-top:14px}.vr .vo-sign span{height:22px}
 .vr .owe{margin-top:6px;border-top:1px dashed #000;padding-top:4px;font-size:11px}.vr .thx{text-align:center;margin-top:10px;font-size:11px;line-height:1.7}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soRcCss">${SO_RC_CSS}</style>`);
@@ -7997,7 +7999,7 @@ $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===so
   /* the frame is laid out at the printable width, so the voucher's height tells how many pages it will take */
   const mm=paper==="A4"?[210,297]:[148,210],[pw,ph]=soLand()?[mm[1],mm[0]]:mm,px=x=>Math.round(x*96/25.4);
   const f=document.createElement("iframe");f.style.cssText=`position:fixed;left:-20000px;top:0;width:${rc?px(74):px(pw-16)}px;height:2000px;border:0`;document.body.appendChild(f);
-  const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}`;
+  const page=rc?"@page{size:80mm auto;margin:3mm}body{width:74mm}":`@page{size:${paper==="A4"?"A4":"A5"} ${soLand()?"landscape":"portrait"};margin:8mm}.vo .vo-tot{display:table-row-group}`;
   const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(v.no)}</title><base href="${esc(location.href)}"><style>${page}body{margin:0}${SO_CSS}${SO_RC_CSS}</style></head><body>${rc?soRcHtml(v,true):await soHtml(v,true)}</body></html>`);d.close();
   await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
   /* more than one page: "Page 1 of 2" at the bottom right of every page */
