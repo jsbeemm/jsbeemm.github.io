@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793607231"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793607676"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -977,11 +977,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
 .it-units{margin:6px 0 8px}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
-.it-urow{display:grid;grid-template-columns:1fr 14px 1fr 1fr 1.2fr 30px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
+.it-urow{display:grid;grid-template-columns:1.1fr .9fr 12px .8fr .8fr 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
 .it-uhead{font-size:11px;opacity:.7;margin-bottom:2px}.it-urow>span{text-align:center}.it-uhead>span{text-align:left}.it-urow .o-ic{border:0;background:none;padding:0;width:28px;height:28px}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
 @media (max-width:560px){.it-grid{grid-template-columns:1fr}}
-#itDlg .side-panel{max-width:640px}
+#itDlg .side-panel{max-width:900px;width:min(100%,900px)}.it-ub{font-size:12px;opacity:.75;white-space:nowrap;text-align:left!important}
+@media (max-width:700px){.it-urow{grid-template-columns:1fr 1fr 12px 1fr 1fr 28px}.it-urow .it-ub{grid-column:1/-1}.it-uhead{display:none}}
 .it-th{width:36px;height:36px;border-radius:8px;object-fit:cover;vertical-align:middle;margin-right:8px;background:var(--sunk)}
 .it-row[data-it]{cursor:pointer}.it-row[data-it]:hover{border-color:var(--accent)}.it-pl{font-family:inherit;font-size:10px;font-weight:700;color:var(--muted)}
 .it-js{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#7a4a12;background:#f6e3c7;border-radius:999px;padding:1px 8px;vertical-align:middle}
@@ -2138,7 +2139,7 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Base Unit <small>(costing)</small></span><input id="itUnit" list="itUnitList" autocomplete="off" placeholder="g"></label>
         <!-- how it is bought / sold: 1 ct = 24 pcs, 1 ct = 48 pcs, … (a price makes it sellable in that unit) -->
         <div class="it-wide it-units"><span class="it-uh">Purchase Unit = Purchase Conversion</span>
-          <div class="it-urow it-uhead"><span>1 Unit</span><span></span><span>အရေအတွက်</span><span>ယူနစ် (pcs / g)</span><span>ရောင်းဈေး (Ks)</span><span></span></div>
+          <div class="it-urow it-uhead"><span>Unit name</span><span>1 Unit</span><span></span><span>Quantity</span><span>Unit</span><span></span><span>Retail (Ks)</span><span>Wholesale (Ks)</span><span></span></div>
           <div id="itUnits"></div><button type="button" class="chip" id="itUnitAdd">+ Add unit</button></div>
         <label class="prf"><span>Ref:</span><input id="itRef" autocomplete="off" placeholder="Short Code"></label>
         <label class="prf"><span>Stock Count Unit</span><input id="itStockUnit" list="itUnitList" autocomplete="off"></label>
@@ -7655,15 +7656,27 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
   itUnitsFill(i);
   $("itPrice").value=i?.price>0?i.price:"";$("itMbPrice").value=i?.mbPrice>0?i.mbPrice:"";$("itWhPrice").value=i?.whPrice>0?i.whPrice:"";$("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
-/* unit rows: Unit = Conversion of (unit), and a selling price if it is sold in that unit */
-function itUnitRow(u={}){return`<div class="it-urow"><input class="it-uu" list="itUnitList" placeholder="ct" value="${esc(u.u||"")}" aria-label="Unit"><span>=</span>
-  <input class="it-uc" inputmode="decimal" placeholder="24" value="${esc(u.c??"")}" aria-label="Conversion"><input class="it-uof" list="itUnitList" placeholder="pcs" value="${esc(u.of||"")}" aria-label="of unit">
-  <input class="it-up" type="number" min="0" step="1" placeholder="—" value="${u.p>0?u.p:""}" aria-label="Selling price"><button type="button" class="o-ic danger it-urm" aria-label="Remove unit" title="Remove">✕</button></div>`}
-function itUnitsFill(i){const us=i?.units?.length?i.units:i?.purUnit||i?.purConv?[{u:i.purUnit,c:i.purConv,of:Number(i.purConv)>=100?i.unit:(i.stockUnit||i.unit)}]:[{}];$("itUnits").innerHTML=us.map(itUnitRow).join("")}
-function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0);
-  const o={u:t(".it-uu")};if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;return o}).filter(o=>o.u)}
-$("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({of:$("itStockUnit").value.trim()}));$("itUnits").lastElementChild.querySelector(".it-uu").focus()});
-$("itUnits").addEventListener("click",e=>{const b=e.target.closest(".it-urm");if(!b)return;b.closest(".it-urow").remove();if(!$("itUnits").children.length)$("itUnits").innerHTML=itUnitRow()});
+/* unit rows: a name to sell / buy by (24pk), 1 unit (ct) = quantity (24) of a unit (pc), its size in the base unit worked out
+   from the other rows (pc = 1000 g → 24 pc = 24,000 g), and its retail / wholesale selling prices */
+function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" placeholder="24pk" value="${esc(u.n||"")}" aria-label="Unit name">
+  <input class="it-uu" list="itUnitList" placeholder="ct" value="${esc(u.u||"")}" aria-label="1 unit"><span>=</span>
+  <input class="it-uc" inputmode="decimal" placeholder="24" value="${esc(u.c??"")}" aria-label="Quantity"><input class="it-uof" list="itUnitList" placeholder="pc" value="${esc(u.of||"")}" aria-label="of unit">
+  <span class="it-ub"></span>
+  <input class="it-up" type="number" min="0" step="1" placeholder="—" value="${u.p>0?u.p:""}" aria-label="Retail price"><input class="it-uw" type="number" min="0" step="1" placeholder="—" value="${u.w>0?u.w:""}" aria-label="Wholesale price">
+  <button type="button" class="o-ic danger it-urm" aria-label="Remove unit" title="Remove">✕</button></div>`}
+function itUnitsFill(i){const us=i?.units?.length?i.units:i?.purUnit||i?.purConv?[{u:i.purUnit,c:i.purConv,of:Number(i.purConv)>=100?i.unit:(i.stockUnit||i.unit)}]:[{}];
+  $("itUnits").innerHTML=us.map(itUnitRow).join("");itUnitsCalc()}
+function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0),w=Math.round(Number(t(".it-uw"))||0);
+  const o={u:t(".it-uu")};if(t(".it-un"))o.n=t(".it-un");if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;return o}).filter(o=>o.u||o.n)}
+/* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
+function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
+  const r=rows.find(x=>String(x.u||"").toLowerCase()===k&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
+function itUnitsCalc(){const base=$("itUnit").value.trim(),rows=itUnitsRead(),els=[...$("itUnits").querySelectorAll(".it-urow")];
+  els.forEach(el=>{const t=c=>String(el.querySelector(c).value).trim(),c=Number(t(".it-uc")),f=itBaseOf(t(".it-uof"),rows,base);
+    el.querySelector(".it-ub").textContent=c>0&&f!=null&&base&&t(".it-uof").toLowerCase()!==base.toLowerCase()?`= ${Number(c*f).toLocaleString("en-US")} ${base}`:""})}
+$("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({of:$("itStockUnit").value.trim()}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
+$("itUnits").addEventListener("click",e=>{const b=e.target.closest(".it-urm");if(!b)return;b.closest(".it-urow").remove();if(!$("itUnits").children.length)$("itUnits").innerHTML=itUnitRow();itUnitsCalc()});
+$("itUnits").addEventListener("input",itUnitsCalc);$("itUnit").addEventListener("input",itUnitsCalc);
 /* deleting a raw material (Admins) */
 $("itDel").addEventListener("click",async()=>{const i=itEditing;if(!i||!can("admin"))return;
   if(!await askConfirm(`Delete “${i.name}”?`,i.code))return;
@@ -7953,7 +7966,7 @@ async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPho
       <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>${(()=>{const it=items.find(x=>x.id===l.pid),fam=it&&fm.get(soFamKey(it));
         return fam&&fam.length>1?`<select class="so-lu" aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${soOptOn(o,l)?"selected":""}>${esc(o.label)} · ${fmt(o.price)}</option>`).join("")}</select>`:""})()}`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
-      <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&l.u==null&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
+      <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${soPP(it,l).w>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
       <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw"><label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
@@ -7967,11 +7980,11 @@ $("soPaid").addEventListener("input",soSyncTot);
 /* another size of the same product: the line becomes that item, at its price */
 $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lu"))return;const l=soLines[Number(e.target.closest("[data-i]").dataset.i)];
   const[id,ks]=e.target.value.split("|"),it=items.find(x=>x.id===id),o=it&&soOptsOf(it).find(x=>x.k===Number(ks));if(!l||!o)return;
-  Object.assign(l,{pid:it.id,code:it.code||"",name:soOptName(o),price:o.k<0&&l.tier==="w"&&it.whPrice>0?Number(it.whPrice):o.price});
-  if(o.k>=0){l.u=o.k;delete l.tier}else{delete l.u;if(!(it.whPrice>0))delete l.tier}
+  Object.assign(l,{pid:it.id,code:it.code||"",name:soOptName(o)});if(o.k>=0)l.u=o.k;else delete l.u;
+  const pp=soPP(it,l);if(!(pp.w>0))delete l.tier;l.price=l.tier==="w"?pp.w:pp.r;
   if(it.photo)l.photo=it.photo;else delete l.photo;renderSoLines()});
 $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=items.find(x=>x.id===l.pid);if(!it)return;
-  l.tier=e.target.value;l.price=l.tier==="w"&&it.whPrice>0?Number(it.whPrice):Number(it.price)||0;if(l.tier!=="w")delete l.tier;
+  const pp=soPP(it,l);l.tier=e.target.value;l.price=l.tier==="w"&&pp.w>0?pp.w:pp.r;if(l.tier!=="w")delete l.tier;
   r.querySelector(".so-lp").value=l.price;r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 $("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
 $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-lp")?.focus()});
@@ -7984,10 +7997,12 @@ const SO_SIZE=/(\d+(?:\.\d+)?\s*(?:kg|gm|g|ltr|l|ml|lb|oz|pcs|pc)s?)(?![a-z])/i;
 const soFamKey=i=>pdNorm(i.ref||i.code||i.id);
 /* what an item sells as: its own price (in its count unit) and each unit row with a price (1 ct = 24 pcs …) */
 function soOptsOf(i){const o=[];if(i.price>0)o.push({it:i,k:-1,label:soUnitOf(i),price:Number(i.price)});
-  (i.units||[]).forEach((u,k)=>{if(u.u&&u.p>0)o.push({it:i,k,label:u.c?`${u.u} (${u.c}${u.of||""})`:u.u,price:Number(u.p)})});return o}
+  (i.units||[]).forEach((u,k)=>{if((u.u||u.n)&&u.p>0)o.push({it:i,k,label:u.n||(u.c?`${u.u} (${u.c}${u.of||""})`:u.u),price:Number(u.p)})});return o}
+/* a line's retail and wholesale prices: its unit's, or the item's own */
+function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||0,w:Number(u.w)||0}:{r:Number(it.price)||0,w:Number(it.whPrice)||0}}
 function soFamMap(){const m=new Map();for(const i of items){const o=soOptsOf(i);if(!o.length)continue;const k=soFamKey(i);if(!m.has(k))m.set(k,[]);m.get(k).push(...o)}
   for(const a of m.values())a.sort((x,y)=>y.price-x.price);return m}
-const soOptName=o=>o.k<0?o.it.name:`${o.it.name} (${o.it.units[o.k].u})`;
+const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${u.n||u.u}`};
 const soOptOn=(o,l)=>l.pid===o.it.id&&(l.u??-1)===o.k;
 /* the size: from the name ("… 5kg"), else from Purchase Conversion in the base unit (25000 g → 25kg), else the count unit (pk) */
 function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].replace(/\s+/g,"");
