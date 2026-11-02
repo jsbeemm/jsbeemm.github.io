@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640706"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640775"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7829,8 +7829,10 @@ function itUnitNeed(els){const v=(el,c)=>String(el.querySelector(c).value).trim(
 function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];  /* the Quantity unit picks from the Base Unit and the other rows' unit names (24pk; a row with no name goes by its 1 Unit) */
   const nm=el=>{const n=String(el.querySelector(".it-un").value).trim()||String(el.querySelector(".it-uu").value).trim();return n?[n]:[]};
   els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=nm(el),cur=sel.value||sel.dataset.v||"";
-    const opts=[...new Set([base,...itStdOf(base),...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
-    const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
+    /* one entry per unit whatever its capitals (kg / Kg are the same); a saved value picks the entry that matches it */
+    const opts=[];for(const n of [base,...itStdOf(base),...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.some(o=>uSame(o,cur))?[cur]:[])])if(n&&!opts.some(o=>uSame(o,n)))opts.push(n);
+    const pick=opts.find(o=>uSame(o,cur))||"";
+    const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=pick;sel.dataset.v=sel.value});
   const need=itUnitNeed(els);els.forEach(el=>{const b=el.querySelector(".it-un"),on=need.includes(el);b.classList.toggle("it-need",on);b.title=on?"Unit name ထည့်ပါ — 1 Unit တူတာ နှစ်ခုရှိနေပါတယ်":""});
   /* Stock Count Unit: the Base Unit or one of the unit names */
   {const sel=$("itStockUnit"),cur=sel.value||sel.dataset.v||"",opts=[...new Set([base,...els.flatMap(nm),...(cur?[cur]:[])].filter(Boolean))];
