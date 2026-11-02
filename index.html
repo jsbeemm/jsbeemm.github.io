@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640591"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640706"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7798,7 +7798,8 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
 /* unit rows: a name to sell / buy by (24pk), 1 unit (ct) = quantity (24) of a unit (pc), its size in the base unit worked out
    from the other rows (pc = 1000 g → 24 pc = 24,000 g), and its retail / wholesale selling prices */
-function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" value="${esc(u.n||"")}" aria-label="Unit name">
+/* the Unit name box shows only a name that was typed (an old copy of the 1 Unit in it shows as empty) */
+function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" value="${esc(u.n&&!uSame(u.n,u.u)?u.n:"")}" aria-label="Unit name">
   <input class="it-uu" list="itUnitList" value="${esc(u.u||"")}" aria-label="1 unit"><span>=</span>
   <input class="it-uc" inputmode="decimal" value="${esc(u.c??"")}" aria-label="Quantity"><select class="it-uof" data-v="${esc(u.of||"")}" aria-label="Quantity unit"></select>
   <span class="it-ub"></span>
@@ -7810,7 +7811,7 @@ function itUnitsFill(i){let us=i?.units?.length?i.units:i?.purUnit||i?.purConv?[
   $("itBP").value=br?.p>0?br.p:"";$("itBW").value=br?.w>0?br.w:"";$("itBM").value=br?.m>0?br.m:"";
   $("itUnits").innerHTML=us.map(itUnitRow).join("");itUnitsCalc()}
 function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0),w=Math.round(Number(t(".it-uw"))||0),mb=Math.round(Number(t(".it-um"))||0);
-  const o={u:t(".it-uu")};o.n=t(".it-un")||o.u;if(!o.n)delete o.n;   /* no unit name: the 1 Unit value is the name */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;if(mb>0)o.m=mb;return o}).filter(o=>o.u||o.n).concat(itBaseRowRead())}
+  const o={u:t(".it-uu")};if(t(".it-un"))o.n=t(".it-un");   /* a Unit name only when one is typed (labels fall back to quantity + unit, then the 1 Unit) */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;if(mb>0)o.m=mb;return o}).filter(o=>o.u||o.n).concat(itBaseRowRead())}
 /* the Base Unit row, kept as a unit row (after the others, so the first row stays the Purchase Unit) when it has a price */
 function itBaseRowRead(){const b=$("itUnit").value.trim().replace(/\s+/g," "),v=id=>Math.round(Number($(id).value)||0),p=v("itBP"),w=v("itBW"),m=v("itBM");
   if(!b||!(p>0||w>0||m>0))return[];const o={u:b,n:b};if(p>0)o.p=p;if(w>0)o.w=w;if(m>0)o.m=m;return[o]}
