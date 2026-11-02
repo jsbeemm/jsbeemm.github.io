@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793635079"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793635482"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -954,7 +954,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soLines .so-lue{flex:none;width:28px;height:28px;margin-top:1px;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 #soLines .so-lue svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 #soLines .so-lue:hover{color:var(--accent);background:var(--accent-soft)}#soLines .so-lue:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
+.so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}.so-pu{color:var(--muted);font-size:12px;margin-left:4px}
 @media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
   /* on a phone each line is a small card: No · picture · name · ✕ / Qty · price · amount / note */
   .so-tbl thead{display:none}.so-tbl,.so-tbl tbody#soLines{display:block;width:100%}.so-tbl tbody#soLines tr{display:grid;width:100%;grid-template-columns:22px 44px minmax(0,1fr) minmax(0,1fr) auto;
@@ -8239,13 +8239,14 @@ function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!
   const m=inQ.filter(i=>soOptsOf(i).length&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,80);
   const fm=soFamMap(),seen=new Set();
   $("soHits").innerHTML=m.length?m.map(i=>{const k=soFamKey(i),fam=fm.get(k)||soOptsOf(i);
-    if(fam.length>1||fam[0].k>=0){if(seen.has(k))return"";seen.add(k);const its=[...new Set(fam.map(o=>o.it))],ph=its.find(x=>x.photo)?.photo,on=fam.some(o=>soLines.some(l=>soOptOn(o,l)));
+    if(fam.length>1){if(seen.has(k))return"";seen.add(k);const its=[...new Set(fam.map(o=>o.it))],ph=its.find(x=>x.photo)?.photo,on=fam.some(o=>soLines.some(l=>soOptOn(o,l)));
       return`<div class="so-hit so-phit so-fam${on?" on":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
         <span><span data-t="${esc(soFamName(k,its))}"></span><span class="so-uchips">${fam.map(o=>{const q=soLines.find(l=>soOptOn(o,l))?.qty;
           return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" title="${esc(soOptName(o))} · ${esc(o.it.code||"")}">${esc(o.label)} <b>${fmt(o.price)}</b>${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
-    const n=soLines.find(l=>l.pid===i.id&&l.u==null)?.qty||0;
-    return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(i.id)}">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
-      <span><span data-t="${esc(i.name)}"></span><br><code>${esc(i.code||"")}</code></span><b>${i.price>0?fmt(i.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
+    /* one price only: the whole card adds it (its unit, if it is a unit row's price, shows beside the Short Code) */
+    const o=fam[0],n=soLines.find(l=>soOptOn(o,l))?.qty||0;
+    return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}">${o.it.photo?`<img src="${esc(photoUrl(o.it.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
+      <span><span data-t="${esc(o.it.name)}"></span><br><code>${esc(o.it.code||"")}</code>${o.k>=0&&o.label?` <small class="so-pu">${esc(o.label)}</small>`:""}</span><b>${o.price>0?fmt(o.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
   $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("soAddItem").addEventListener("click",()=>{initItems();soPickCat="";$("soPickQ").value="";renderSoPick();$("soPickDlg").hidden=false;$("soPickQ").focus()});
