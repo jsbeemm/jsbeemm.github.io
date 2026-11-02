@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793608813"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793609082"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7670,12 +7670,12 @@ function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(
   const o={u:t(".it-uu")};o.n=t(".it-un")||o.u;if(!o.n)delete o.n;   /* no unit name: the 1 Unit value is the name */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;if(mb>0)o.m=mb;return o}).filter(o=>o.u||o.n)}
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
 function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
-  const r=rows.find(x=>String(x.u||"").toLowerCase()===k&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
+  const r=rows.find(x=>[x.n,x.u].some(y=>String(y||"").toLowerCase()===k)&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
 function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];
-  /* the Quantity unit picks from the Base Unit and the 1 Unit of the rows */
-  const names=[...new Set([base,...els.map(el=>String(el.querySelector(".it-uu").value).trim())].filter(Boolean))];
-  els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=String(el.querySelector(".it-uu").value).trim(),cur=sel.value||sel.dataset.v||"";
-    const opts=[...new Set([...names.filter(n=>n!==own),...(cur&&cur!==own?[cur]:[])])];
+  /* the Quantity unit picks from the Base Unit and the other rows (their unit name, e.g. 24pk, and their 1 Unit) */
+  const nm=el=>[".it-un",".it-uu"].map(c=>String(el.querySelector(c).value).trim()).filter(Boolean);
+  els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=nm(el),cur=sel.value||sel.dataset.v||"";
+    const opts=[...new Set([base,...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
   const rows=itUnitsRead();
   /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
