@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600647"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793601709"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,9 +897,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soDlg,#soView,#poView{padding:0;place-items:stretch}#poView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;grid-template-rows:auto minmax(0,1fr)}
 #poView .side-body{width:min(100%,1000px);margin:0 auto}#poView .pv-head{flex-wrap:nowrap;gap:10px}#poView .pv-head>b{white-space:nowrap}
 #soDlg.po .so-money{display:none}
+.so-buy{display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;margin-bottom:3px;cursor:pointer}.so-buy input{width:auto;margin:0}
+.po-chips{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.po-buytag{font-size:11px;background:#FFF1D6;color:#8A5A00;border-radius:6px;padding:1px 6px}
+.po-fin{opacity:.75}.po-buy a{color:var(--accent)}
 .po-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0}.po-dl{white-space:pre-line;font-size:13px;opacity:.85;margin-top:4px}
 .po-meta{display:grid;grid-template-columns:auto auto;gap:2px 8px;align-content:start}.po-meta .k{text-align:right;opacity:.7}
-.po-tbl{width:100%}.po-tbl th,.po-tbl td{padding:6px 8px;text-align:left}.po-tbl .r{text-align:right}.po-tbl tr.po-ok td{opacity:.55}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
+.po-tbl{width:100%}.po-tbl th,.po-tbl td{padding:6px 8px;text-align:left}.po-tbl .r{text-align:right}.po-tbl tr.po-ok td{opacity:.55}#poView .po-tbl th:not(.r){text-align:left}#poView .po-tbl th.r{text-align:right}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
 #soDlg .side-body,#soView .side-body{width:min(100%,1000px);margin:0 auto}.so-h{margin:14px 0 6px}
 .so-pick{position:relative;margin-bottom:6px}.so-pick input{width:100%}#soCustQ{resize:none;overflow:hidden;line-height:1.4;min-height:0;display:block}
 /* the voucher form looks like the voucher: boxes sit where the printed text goes */
@@ -1581,7 +1584,7 @@ span.star-ic{cursor:default}
   <!-- JS VOUCHERS (sales orders): a customer, the items with qty / price, delivery, paid amount and what is still owed -->
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
-      <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
+      <button type="button" class="btn prq-new fab" id="soNewBtn">+ New order</button></div>
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
@@ -2185,12 +2188,12 @@ span.star-ic{cursor:default}
 <!-- JS voucher: pick items -->
 <div class="editor" id="poView" hidden role="dialog" aria-modal="true" aria-label="Preorder">
   <div class="ed-panel side-panel so-panel">
-    <div class="ed-tools pv-head"><b>📦 <span id="poViewT">Preorder</span></b>
+    <div class="ed-tools pv-head"><b>📋 <span id="poViewT">Order</span></b>
     <div class="ed-foot so-foot">
       <button type="button" class="btn ghost pv-ic" id="poEditBtn" aria-label="Edit preorder" title="Edit preorder"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
       <button type="button" class="btn ghost pv-del" id="poDelBtn" hidden aria-label="Delete preorder" title="Delete preorder"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12.5"/></svg></button>
       <span class="ed-count"></span>
-      <button type="button" class="btn" id="poGiveBtn">📄 ဘောက်ချာဖွင့်မည်</button>
+      <button type="button" class="btn ghost" id="poPartBtn">တစ်စိတ်ပေး</button><button type="button" class="btn" id="poGiveBtn">🚚 Delivered</button>
     </div>
     <button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <div class="side-body" id="poBody"></div>
@@ -7758,7 +7761,7 @@ async function itExcelPhotos(ab,plan){
 /* ---------- JS vouchers (sales orders): collection "jsSales". A voucher has the customer, delivery info, lines (an item from
    Raw Material, or a free line such as Delivery), the net amount and its payments; the rest is owed. A voucher shows the
    customer's other unpaid vouchers too (အကြွေးစာရင်း). Printed on A5 (landscape) by default, or A4. ---------- */
-var vos=[],soCol=null,soLoaded=false,soQ="",soTab="all",soEditing=null,soLines=[],soOpen=null;
+var vos=[],soCol=null,soLoaded=false,soQ="",soTab="todo",soEditing=null,soLines=[],soOpen=null;
 const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
 function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
@@ -7767,7 +7770,8 @@ function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
   soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
-    if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{soCol=null});
+    if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}
+    if(poOpen&&!$("poView").hidden){const p=pos.find(x=>x.id===poOpen);if(p)renderPoView(p)}},()=>{soCol=null});
 }
 async function saveSo(v){if(db){const d={...v};delete d.id;await db.collection("jsSales").doc(v.id).set(d);return}
   const i=vos.findIndex(x=>x.id===v.id);if(i>=0)vos[i]=v;else vos.push(v);vos=vos.slice();try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
@@ -7776,18 +7780,18 @@ async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete
 function soNo(d){const pre="JS"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
 const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-${MONTHS[Number(m)-1]}-${y}`:""};
+/* the list: orders by where they stand (to give / money owed / finished), what to buy, and all vouchers */
 function renderSo(){if($("viewSo").hidden)return;
   const q=pdNorm(soQ),hit=v=>!q||[v.no,v.customer,v.phone,soDelivOf(v)].some(x=>pdNorm(x).includes(q));
-  const unpaid=vos.filter(v=>soBal(v)>0);
-  $("soTabs").innerHTML=[["all","All",vos.length],["unpaid","Unpaid",unpaid.length],["po","Preorder",pos.filter(p=>!poDone(p)).length]].map(([k,n,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${n} <small>${c}</small></button>`).join("");
-  $("soNewBtn").textContent=soTab==="po"?"+ New preorder":"+ New voucher";if(soTab==="po"){renderPoList(q);renderSoDrafts();return}
-  const list=(soTab==="unpaid"?unpaid:vos).filter(hit).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
-  $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(v=>{const b=soBal(v);
-    return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
-      <small>${esc(soDate(v.date))}${v.phone?` · ${esc(v.phone)}`:""} · ${(v.lines||[]).length} line${(v.lines||[]).length===1?"":"s"}</small></div>
-      <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b>${b>0?`<span class="conf-chip">Balance ${fmt(b)}</span>`:`<span class="conf-chip ok">✓ Paid</span>`}</span></div></div>`}).join("")
-    :`<div class="prq-empty">No vouchers${q?" match the search":""}. Tap “+ New voucher”.</div>`;
-  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);renderSoDrafts()}
+  const n={todo:0,unpaid:0,done:0};pos.forEach(p=>n[poState(p)]++);vos.forEach(v=>{if(!v.poId)n[soBal(v)>0?"unpaid":"done"]++});
+  $("soTabs").innerHTML=[["todo","📦 မပေးရသေး",n.todo],["unpaid","💵 ငွေမရသေး",n.unpaid],["done","✓ ပြီးပြီ",n.done],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 Vouchers",vos.length]]
+    .map(([k,t,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${t} <small>${c}</small></button>`).join("");
+  if(soTab==="todo"||soTab==="unpaid"||soTab==="done")renderOrderList(q,soTab);
+  else if(soTab==="buy")renderBuyList(q);
+  else{const list=vos.filter(hit).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
+    $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(soRow).join(""):`<div class="prq-empty">No vouchers${q?" match the search":""}.</div>`;
+    $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+  renderSoDrafts()}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
@@ -7855,7 +7859,7 @@ $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-
 $("soDeliv").addEventListener("input",soGrow);
 /* the same form makes a preorder (mode "po"): no money on it */
 function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soMode=mode;soFromPo=null;$("soDlg").classList.toggle("po",mode==="po");soEditing=v||null;
-  $("soDlgT").textContent=v?`Edit ${v.no}`:mode==="po"?"New preorder":"New voucher";$("soNoK").textContent=mode==="po"?"PO No#":"SO No#";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
+  $("soDlgT").textContent=v?`Edit ${v.no}`:mode==="po"?"New order":"New voucher";$("soNoK").textContent=mode==="po"?"Order No#":"SO No#";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
   for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";$("soChannel").textContent=v?.channel||"";
   $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));requestAnimationFrame(soGrow);
@@ -7865,7 +7869,8 @@ function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soMode=mode;soFromPo
   $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
   renderSoLines();$("soDlg").hidden=false;soGrow();$("soCustQ").focus();soDraftId=null;soSnap=soState();if(!history.state?.soDlg)history.pushState({soDlg:1},"")}
-$("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null,soTab==="po"?"po":"so")});
+/* every sale starts as an order; the voucher comes with “🚚 Delivered” */
+$("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null,"po")});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
   $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow()});
 
@@ -7879,11 +7884,11 @@ async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPho
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
-      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
+      <td>${soMode==="po"?`<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label>`:""}<input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
   soSyncTot()}
 $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
-  if(e.target.matches(".so-ld"))l.name=e.target.value;if(e.target.matches(".so-ln"))l.note=e.target.value;
+  if(e.target.matches(".so-lb")){l.buy=e.target.checked;return}if(e.target.matches(".so-ld"))l.name=e.target.value;if(e.target.matches(".so-ln"))l.note=e.target.value;
   if(e.target.matches(".so-lq"))l.qty=Number(e.target.value)||0;if(e.target.matches(".so-lp"))l.price=Number(e.target.value)||0;
   r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 $("soPaid").addEventListener("input",soSyncTot);
@@ -7938,7 +7943,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
   Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
   $("soSave").disabled=true;
-  try{await saveSo(v);await poSync(v0,v).catch(()=>toast("Preorder ကို မပြင်နိုင်ပါ",4000));if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
+  try{await saveSo(v);await poSync(v0,v).catch(()=>toast("Order ကို မပြင်နိုင်ပါ",4000));if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
 /* ---- leaving a voucher half-written: ✕ / Cancel / the phone's Back button ask whether to keep it as a draft.
    Drafts sit in their own "jsDrafts" collection (no voucher number, not in the list, counts or reports) and show on top
    of the voucher list until they are finished or deleted. ---- */
@@ -7955,7 +7960,7 @@ function renderSoDrafts(){const el=$("soDraftBar");if(!el||$("viewSo").hidden)re
   const list=[...soDrafts].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
   el.hidden=!list.length;if(!list.length){el.innerHTML="";return}
   el.innerHTML=`<p class="dr-h">📝 မပြီးသေးသော Voucher Draft ${list.length} ခု — ဆက်ရေးဖို့ မမေ့ပါနဲ့</p>`+list.map(d=>{const f=d.form||{},n=(f.lines||[]).length;
-    return`<div class="dr-row"><div class="dr-who"><b data-t="${esc((f.mode==="po"?"📦 Preorder · ":"")+(f.customer||"(Customer မထည့်ရသေး)"))}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
+    return`<div class="dr-row"><div class="dr-who"><b data-t="${esc((f.mode==="po"?"📋 Order · ":"")+(f.customer||"(Customer မထည့်ရသေး)"))}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
       <div class="dr-btns"><button type="button" class="btn dr-go" data-sodr="${esc(d.id)}">ဆက်ရေးရန်</button><button type="button" class="link danger" data-sodr-del="${esc(d.id)}">ဖျက်ရန်</button></div></div>`}).join("");
   el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 $("soDraftBar").addEventListener("click",async e=>{const go=e.target.closest("[data-sodr]"),del=e.target.closest("[data-sodr-del]");
@@ -7999,10 +8004,11 @@ addEventListener("popstate",()=>{if(soSkipPop){soSkipPop=false;return}if($("soDl
   if(!$("soLeaveDlg").hidden){$("soLvStay").click();return}
   if(!$("soPickDlg").hidden){$("soPickDlg").hidden=true;return}
   soTryClose()});
-/* ---- Preorders (collection "jsPreorders"): items the customer ordered that are not given yet — quantity and price only,
-   no money. When goods arrive, "📄 ဘောက်ချာဖွင့်မည်" opens a voucher with what is still left; the quantities on it can be
-   lowered to what is given now. Saving the voucher counts those as given; the rest stays on the preorder. Editing or deleting
-   that voucher later puts the quantities back. ---- */
+/* ---- Orders (collection "jsPreorders"): every sale starts as an order — items, quantities and prices, no money.
+   "🚚 Delivered" gives everything left and makes the voucher; "တစ်စိတ်ပေး" opens a voucher with what is left so the
+   quantities can be lowered to what is given now. Money is taken on those vouchers. An order is finished (✓ ပြီးပြီ) only
+   when everything is given and every voucher from it is paid. An item without stock is ticked "မှာရန်" (to buy from the
+   supplier); the "မှာရန်" tab adds those up. Editing or deleting a voucher from an order puts the quantities back. ---- */
 var pos=[],poCol=null,poLoaded=false,poOpen=null,soMode="so",soFromPo=null;
 function initPo(){
   if(!db){if(!poLoaded){try{pos=JSON.parse(localStorage.getItem("cakeJsPreorders")||"[]")}catch(e){pos=[]}poLoaded=true}return}
@@ -8013,53 +8019,91 @@ async function savePo(p){if(db){const d={...p};delete d.id;await db.collection("
   const i=pos.findIndex(x=>x.id===p.id);if(i>=0)pos[i]=p;else pos.push(p);pos=pos.slice();try{localStorage.setItem("cakeJsPreorders",JSON.stringify(pos))}catch(x){}renderSo();
   if(poOpen===p.id&&!$("poView").hidden)renderPoView(p)}
 async function removePo(id){if(db){await db.collection("jsPreorders").doc(id).delete();return}pos=pos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsPreorders",JSON.stringify(pos))}catch(x){}renderSo()}
-/* PO26NOV01001, like the voucher number */
-function poNo(d){const pre="PO"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
+/* OR26NOV01001, like the voucher number (orders made before this were numbered PO…) */
+function poNo(d){const pre="OR"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=pos.filter(p=>String(p.no||"").startsWith(pre)).reduce((m,p)=>Math.max(m,Number(String(p.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
 const poLeft=l=>Math.max(0,Number(l.qty||0)-Number(l.given||0));
 const poLeftAll=p=>(p.lines||[]).reduce((s,l)=>s+poLeft(l),0);
+const poQtyAll=p=>(p.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0);
 const poDone=p=>poLeftAll(p)<=0;
 const poNum=n=>Number(n||0).toLocaleString("en-US");
-function renderPoList(q){
-  const hit=p=>!q||[p.no,p.customer,p.phone,soDelivOf(p)].some(x=>pdNorm(x).includes(q));
-  const list=pos.filter(hit).sort((a,b)=>poDone(a)-poDone(b)||(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
-  $("soList").innerHTML=!poLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(p=>{const left=poLeftAll(p),n=(p.lines||[]).length;
-    return`<div class="ex-item sale-row" data-po-open="${esc(p.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(p.no)} · <span data-t="${esc(p.customer||"")}"></span></b>
-      <small>${esc(soDate(p.date))}${p.phone?` · ${esc(p.phone)}`:""} · ${n} item${n===1?"":"s"}</small></div>
-      <div class="ex-side"><span class="sale-amt">${left>0?`<span class="conf-chip">ပေးရန်ကျန် ${poNum(left)}</span>`:`<span class="conf-chip ok">✓ ပေးပြီး</span>`}</span></div></div>`}).join("")
-    :`<div class="prq-empty">No preorders${q?" match the search":""}. Tap “+ New preorder”.</div>`;
+const poMade=p=>vos.filter(v=>v.poId===p.id);
+const poValue=p=>(p.lines||[]).reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
+/* where an order stands: "todo" (goods still to give), "unpaid" (all given, money still owed), "done" */
+function poState(p){if(poLeftAll(p)>0)return"todo";const m=poMade(p);return m.length&&m.every(v=>soBal(v)<=0)?"done":"unpaid"}
+/* the two chips: goods, and money */
+function poChips(p){const left=poLeftAll(p),all=poQtyAll(p),m=poMade(p),paid=m.reduce((s,v)=>s+soPaid(v),0),owed=m.reduce((s,v)=>s+soBal(v),0),val=poValue(p);
+  const g=left<=0?`<span class="conf-chip ok">📦 ပေးပြီး</span>`:left<all?`<span class="conf-chip">📦 တစ်စိတ်ပေးပြီး · ကျန် ${poNum(left)}</span>`:`<span class="conf-chip">📦 မပေးရသေး</span>`;
+  const done=m.length&&owed<=0&&paid>=val;
+  const c=done?`<span class="conf-chip ok">💵 ရှင်းပြီး</span>`:paid>0?`<span class="conf-chip">💵 တစ်စိတ်ရပြီး${owed>0?` · ကျန် ${fmt(owed)}`:""}</span>`:`<span class="conf-chip">💵 မရသေး</span>`;
+  return g+c}
+function soRow(v){const b=soBal(v);
+  return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
+      <small>${esc(soDate(v.date))}${v.phone?` · ${esc(v.phone)}`:""} · ${(v.lines||[]).length} line${(v.lines||[]).length===1?"":"s"}${v.poNo?` · 📋 ${esc(v.poNo)}`:""}</small></div>
+      <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b>${b>0?`<span class="conf-chip">Balance ${fmt(b)}</span>`:`<span class="conf-chip ok">✓ Paid</span>`}</span></div></div>`}
+function poRow(p){const n=(p.lines||[]).length,st=poState(p);
+  return`<div class="ex-item sale-row${st==="done"?" po-fin":""}" data-po-open="${esc(p.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(p.no)} · <span data-t="${esc(p.customer||"")}"></span></b>
+      <small>${esc(soDate(p.date))}${p.phone?` · ${esc(p.phone)}`:""} · ${n} item${n===1?"":"s"} · ${fmt(poValue(p))}</small></div>
+      <div class="ex-side"><span class="sale-amt po-chips">${st==="done"?`<span class="conf-chip ok">✓ ပြီးပြီ</span>`:poChips(p)}</span></div></div>`}
+/* the order tabs: orders in that state, plus (for "ငွေမရသေး" / "ပြီးပြီ") vouchers made before orders existed */
+function renderOrderList(q,tab){
+  const hit=x=>!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q));
+  const ps=pos.filter(p=>poState(p)===tab&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)}));
+  const old=tab==="todo"?[]:vos.filter(v=>!v.poId&&(tab==="unpaid"?soBal(v)>0:soBal(v)<=0)&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)}));
+  const list=[...ps,...old].sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
+  $("soList").innerHTML=!(poLoaded&&soLoaded)?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
+    :`<div class="prq-empty">${q?"No orders match the search.":tab==="todo"?"ပေးရန် Order မရှိပါ။ “+ New order” နှိပ်ပြီး ထည့်ပါ။":"မရှိပါ"}</div>`;
   $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
-document.addEventListener("click",e=>{const r=e.target.closest("[data-po-open]");if(!r)return;const p=pos.find(x=>x.id===r.dataset.poOpen);if(p)openPoView(p)});
-/* the preorder: what was ordered, what is given, what is left, and the vouchers made from it */
+/* "မှာရန်": items ticked as not in stock, still to give — added up per item, with the orders waiting for them */
+function poBuyRows(){const m=new Map();
+  for(const p of pos)(p.lines||[]).forEach(l=>{const left=poLeft(l);if(!l.buy||left<=0)return;const k=l.pid||pdNorm(l.name);
+    const r=m.get(k)||{name:l.name,code:l.code||"",photo:l.photo,qty:0,orders:[]};r.qty+=left;r.orders.push({p,qty:left});m.set(k,r)});
+  return[...m.values()].sort((a,b)=>String(a.name).localeCompare(String(b.name)))}
+function renderBuyList(q){const rows=poBuyRows().filter(r=>!q||pdNorm(r.name).includes(q)||pdNorm(r.code).includes(q)||r.orders.some(o=>pdNorm(o.p.customer).includes(q)));
+  $("soList").innerHTML=rows.length?`<p class="side-help">Stock မရှိလို့ supplier ဆီ မှာရမယ့် ပစ္စည်း (Order ထဲမှာ “မှာရန်” ခြစ်ထားပြီး မပေးရသေးတာ)</p>`+rows.map(r=>`<div class="ex-item po-buy"><div class="ex-main"><b data-t="${esc(r.name)}"></b>${r.code?` <code>${esc(r.code)}</code>`:""}
+      <small>${r.orders.map(o=>`<a href="#" data-po-open="${esc(o.p.id)}">${esc(o.p.no)}</a> <span data-t="${esc(o.p.customer||"")}"></span> × ${poNum(o.qty)}`).join(" · ")}</small></div>
+      <div class="ex-side"><b class="ex-amt">${poNum(r.qty)}</b></div></div>`).join("")
+    :`<div class="prq-empty">မှာရန် ပစ္စည်း မရှိပါ။ Order ထဲမှာ Stock မရှိတဲ့ ပစ္စည်းကို “မှာရန်” ခြစ်ထားရင် ဒီမှာ စုပြပါမယ်။</div>`;
+  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+document.addEventListener("click",e=>{const r=e.target.closest("[data-po-open]");if(!r)return;e.preventDefault();const p=pos.find(x=>x.id===r.dataset.poOpen);if(p)openPoView(p)});
+/* the order: what was ordered, what is given, what is left, the vouchers made from it and their money */
 function openPoView(p){poOpen=p.id;renderPoView(p);$("poView").hidden=false}
-function renderPoView(p){$("poViewT").textContent=p.no;const left=poLeftAll(p);
-  $("poEditBtn").hidden=!soCanEdit(p);$("poDelBtn").hidden=!can("admin");$("poGiveBtn").hidden=left<=0;
-  const made=vos.filter(v=>v.poId===p.id).sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
+function renderPoView(p){$("poViewT").textContent=p.no;const left=poLeftAll(p),st=poState(p);
+  $("poEditBtn").hidden=!soCanEdit(p);$("poDelBtn").hidden=!can("admin");$("poGiveBtn").hidden=$("poPartBtn").hidden=left<=0;
+  const made=poMade(p).sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
   $("poBody").innerHTML=`<div class="po-head"><div><b data-t="${esc(p.customer||"")}"></b>${p.phone?`<br><span>${esc(p.phone)}</span>`:""}${soDelivOf(p)?`<div class="po-dl" data-t="${esc(soDelivOf(p))}"></div>`:""}</div>
-      <div class="po-meta"><span class="k">PO No#</span><span>${esc(p.no)}</span>${p.channel?`<span class="k">Channel#</span><span>${esc(p.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(p.date))}</span></div></div>
-    <p>${left>0?`<span class="conf-chip">ပေးရန်ကျန် ${poNum(left)}</span>`:`<span class="conf-chip ok">✓ အကုန်ပေးပြီး</span>`}</p>
+      <div class="po-meta"><span class="k">Order No#</span><span>${esc(p.no)}</span>${p.channel?`<span class="k">Channel#</span><span>${esc(p.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(p.date))}</span></div></div>
+    <p class="po-chips">${st==="done"?`<span class="conf-chip ok">✓ ပြီးပြီ — ပစ္စည်းပေးပြီး၊ ငွေရှင်းပြီး</span>`:poChips(p)}</p>
     <table class="ex-tbl po-tbl"><thead><tr><th>No</th><th>Description</th><th class="r">Price</th><th class="r">Order</th><th class="r">ပေးပြီး</th><th class="r">ကျန်</th></tr></thead><tbody>
-      ${(p.lines||[]).map((l,i)=>`<tr${poLeft(l)?"":` class="po-ok"`}><td>${i+1}</td><td data-t="${esc(l.name||"")}"></td><td class="r">${poNum(l.price)}</td><td class="r">${poNum(l.qty)}</td><td class="r">${poNum(l.given)}</td><td class="r"><b>${poNum(poLeft(l))}</b></td></tr>`).join("")}
-    </tbody></table>
+      ${(p.lines||[]).map((l,i)=>`<tr${poLeft(l)?"":` class="po-ok"`}><td>${i+1}</td><td><span data-t="${esc(l.name||"")}"></span>${l.buy&&poLeft(l)?` <span class="po-buytag">မှာရန်</span>`:""}</td><td class="r">${poNum(l.price)}</td><td class="r">${poNum(l.qty)}</td><td class="r">${poNum(l.given)}</td><td class="r"><b>${poNum(poLeft(l))}</b></td></tr>`).join("")}
+    </tbody><tfoot><tr><td></td><td class="r"><b>Total</b></td><td></td><td></td><td></td><td class="r"><b>${fmt(poValue(p))}</b></td></tr></tfoot></table>
     ${p.note?`<p class="side-help">Note: <span data-t="${esc(p.note)}"></span></p>`:""}
-    <p class="ac-h">📄 ဒီ Preorder က ဖွင့်ထားတဲ့ ဘောက်ချာ</p>
-    ${made.length?`<div class="ex-list">${made.map(v=>`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)}</b><small>${esc(soDate(v.date))} · ${(v.lines||[]).filter(l=>l.po!=null).map(l=>`${l.name} × ${poNum(l.qty)}`).map(esc).join(", ")}</small></div>
-      <div class="ex-side"><b class="ex-amt">${fmt(v.net||0)}</b></div></div>`).join("")}</div>`:`<p class="side-help">မရှိသေးပါ — ပစ္စည်းရောက်ရင် “📄 ဘောက်ချာဖွင့်မည်” နှိပ်ပါ</p>`}`;
+    <p class="ac-h">📄 ပစ္စည်းပေးထားတဲ့ ဘောက်ချာ (ငွေ ဒီမှာ ယူပါ)</p>
+    ${made.length?`<div class="ex-list">${made.map(soRow).join("")}</div>`:`<p class="side-help">မရှိသေးပါ — ပစ္စည်းပေးရင် “🚚 Delivered” နှိပ်ပါ</p>`}`;
   $("poBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("poEditBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;$("poView").hidden=true;initItems();openSoForm(p,"po")});
 $("poDelBtn").addEventListener("click",async()=>{const p=pos.find(x=>x.id===poOpen);if(!p||!can("admin"))return;
-  const made=vos.filter(v=>v.poId===p.id).length;
-  if(!await askConfirm(`Delete ${p.no}?`,made?`ဒီ Preorder က ဖွင့်ထားတဲ့ ဘောက်ချာ ${made} စောင်ကတော့ မပျက်ပါ။`:(p.customer||"")))return;
+  const made=poMade(p).length;
+  if(!await askConfirm(`Delete ${p.no}?`,made?`ဒီ Order က ထွက်ထားတဲ့ ဘောက်ချာ ${made} စောင်ကတော့ မပျက်ပါ။`:(p.customer||"")))return;
   try{await removePo(p.id);$("poView").hidden=true;poOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
-/* goods arrived: a new voucher with everything still left (lower the quantities to what is given now) */
-$("poGiveBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;if(poLeftAll(p)<=0){toast("ပေးရန် မကျန်တော့ပါ");return}
+const poGiveLines=p=>(p.lines||[]).map((l,i)=>{const{given,buy,...r}=l;return{...r,qty:poLeft(l),po:i}}).filter(l=>l.qty>0);
+/* 🚚 Delivered: everything left is given now — the voucher is made straight away and opened (take the money there) */
+$("poGiveBtn").addEventListener("click",async()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;const lines=poGiveLines(p);if(!lines.length){toast("ပေးရန် မကျန်တော့ပါ");return}
+  if(!await askConfirm("Delivered?",`ကျန်တဲ့ ပစ္စည်း ${lines.length} မျိုး အကုန်ပေးပြီးအဖြစ် မှတ်ပြီး ဘောက်ချာ ထွက်ပါမယ်။ တစ်စိတ်ပဲ ပေးရင် “တစ်စိတ်ပေး” ကို နှိပ်ပါ။`,"🚚 Delivered"))return;
+  const date=todayISO(),now=new Date().toISOString();
+  const v={id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date),at:now,by:me.id||null,byName:me.name||"",payments:[],
+    date,custId:p.custId||null,customer:p.customer||"",phone:p.phone||null,channel:p.channel||null,deliv:soDelivOf(p)||null,note:p.note||null,
+    lines,net:soNetOf(lines),poId:p.id,poNo:p.no};
+  Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
+  try{await saveSo(v);await poSync(null,v);$("poView").hidden=true;toast(`✓ ${v.no} — Delivered`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}});
+/* only part is given now: a voucher with everything left, to lower to what is given */
+$("poPartBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;if(poLeftAll(p)<=0){toast("ပေးရန် မကျန်တော့ပါ");return}
   $("poView").hidden=true;initItems();openSoForm(null,"so");
   $("soCust").value=p.custId||"";$("soCustQ").value=p.customer||"";$("soPhone").value=p.phone||"";$("soChannel").textContent=p.channel||"";
   $("soDeliv").value=soDelivOf(p)||"";soFillAddrs(pts.find(x=>x.id===p.custId));$("soCustHits").hidden=true;
-  soLines=(p.lines||[]).map((l,i)=>{const{given,...r}=l;return{...r,qty:poLeft(l),po:i}}).filter(l=>l.qty>0);
-  soFromPo={id:p.id};$("soDlgT").textContent=`New voucher · ${p.no}`;renderSoLines();soGrow();
-  toast("ယခု ပေးမယ့် အရေအတွက်အတိုင်း Qty ကို ပြင်ပါ — ကျန်တာ Preorder မှာ ဆက်ကျန်ပါမယ်",5000)});
-/* a voucher made from a preorder was saved, edited or deleted: count the change on the preorder */
+  soLines=poGiveLines(p);soFromPo={id:p.id};$("soDlgT").textContent=`Delivered (part) · ${p.no}`;renderSoLines();soGrow();
+  toast("ယခု ပေးမယ့် အရေအတွက်အတိုင်း Qty ကို ပြင်ပါ — ကျန်တာ Order မှာ ဆက်ကျန်ပါမယ်",5000)});
+/* a voucher made from an order was saved, edited or deleted: count the change on the order */
 async function poSync(oldV,newV){const id=newV?.poId||oldV?.poId;if(!id)return;const p=pos.find(x=>x.id===id);if(!p)return;
   const d={};for(const l of oldV?.lines||[])if(l.po!=null)d[l.po]=(d[l.po]||0)-Number(l.qty||0);
   for(const l of newV?.lines||[])if(l.po!=null)d[l.po]=(d[l.po]||0)+Number(l.qty||0);
