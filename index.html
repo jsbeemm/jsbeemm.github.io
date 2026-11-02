@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793617525"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793625163"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7874,8 +7874,9 @@ const soDelivered=v=>soLeftAll(v)<=0;
 function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0)return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
 function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0),b=soBal(v),paid=soPaid(v);
   if(soStage(v)==="fin")return`<span class="conf-chip ok">✓ Finished</span>`;
-  return(left<=0?`<span class="conf-chip ok">📦 ပေးပြီး</span>`:left<all?`<span class="conf-chip">📦 ကျန် ${poNum(left)}</span>`:`<span class="conf-chip">📦 မပေးရသေး</span>`)
-    +(b<=0?`<span class="conf-chip ok">💵 ရှင်းပြီး</span>`:paid>0?`<span class="conf-chip">💵 ကျန် ${fmt(b)}</span>`:`<span class="conf-chip">💵 ${fmt(b)}</span>`)}
+  /* only what is still owed shows: goods still to give, money still to get */
+  return(left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"")
+    +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")}
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
@@ -8198,9 +8199,9 @@ const poValue=p=>(p.lines||[]).reduce((s,l)=>s+Math.round(Number(l.qty||0)*Numbe
 function poState(p){if(poLeftAll(p)>0)return"todo";const m=poMade(p);return m.length&&m.every(v=>soBal(v)<=0)?"done":"unpaid"}
 /* the two chips: goods, and money */
 function poChips(p){const left=poLeftAll(p),all=poQtyAll(p),m=poMade(p),paid=m.reduce((s,v)=>s+soPaid(v),0),owed=m.reduce((s,v)=>s+soBal(v),0),val=poValue(p);
-  const g=left<=0?`<span class="conf-chip ok">📦 ပေးပြီး</span>`:left<all?`<span class="conf-chip">📦 တစ်စိတ်ပေးပြီး · ကျန် ${poNum(left)}</span>`:`<span class="conf-chip">📦 မပေးရသေး</span>`;
-  const done=m.length&&owed<=0&&paid>=val;
-  const c=done?`<span class="conf-chip ok">💵 ရှင်းပြီး</span>`:paid>0?`<span class="conf-chip">💵 တစ်စိတ်ရပြီး${owed>0?` · ကျန် ${fmt(owed)}`:""}</span>`:`<span class="conf-chip">💵 မရသေး</span>`;
+  const g=left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"";
+  const due=Math.max(owed,val-paid);
+  const c=due>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(due)}</span>`:"";
   return g+c}
 function soRow(v){const b=soBal(v);
   return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
@@ -8240,7 +8241,7 @@ function renderPoView(p){$("poViewT").textContent=p.no;const left=poLeftAll(p),s
   const made=poMade(p).sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
   $("poBody").innerHTML=`<div class="po-head"><div><b data-t="${esc(p.customer||"")}"></b>${p.phone?`<br><span>${esc(p.phone)}</span>`:""}${soDelivOf(p)?`<div class="po-dl" data-t="${esc(soDelivOf(p))}"></div>`:""}</div>
       <div class="po-meta"><span class="k">Order No#</span><span>${esc(p.no)}</span>${p.channel?`<span class="k">Channel#</span><span>${esc(p.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(p.date))}</span></div></div>
-    <p class="po-chips">${st==="done"?`<span class="conf-chip ok">✓ ပြီးပြီ — ပစ္စည်းပေးပြီး၊ ငွေရှင်းပြီး</span>`:poChips(p)}</p>
+    <p class="po-chips">${st==="done"?`<span class="conf-chip ok">✓ Finished</span>`:poChips(p)}</p>
     <table class="ex-tbl po-tbl"><thead><tr><th>No</th><th>Description</th><th class="r">Price</th><th class="r">Order</th><th class="r">ပေးပြီး</th><th class="r">ကျန်</th></tr></thead><tbody>
       ${(p.lines||[]).map((l,i)=>`<tr${poLeft(l)?"":` class="po-ok"`}><td>${i+1}</td><td><span data-t="${esc(l.name||"")}"></span>${l.buy&&poLeft(l)?` <span class="po-buytag">မှာရန်</span>`:""}</td><td class="r">${poNum(l.price)}</td><td class="r">${poNum(l.qty)}</td><td class="r">${poNum(l.given)}</td><td class="r"><b>${poNum(poLeft(l))}</b></td></tr>`).join("")}
     </tbody><tfoot><tr><td></td><td class="r"><b>Total</b></td><td></td><td></td><td></td><td class="r"><b>${fmt(poValue(p))}</b></td></tr></tfoot></table>
