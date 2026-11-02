@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793641756"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793642057"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8220,7 +8220,8 @@ function soFamMap(){const m=new Map();for(const i of items){const o=soOptsOf(i);
   /* one item's sizes keep the order of its unit rows (sorted by hand in the item form); items of a family go dearest first */
   for(const[k,a]of m){const top=new Map();a.forEach(o=>top.set(o.it,Math.max(top.get(o.it)||0,o.price)));const its=[...top.keys()].sort((x,y)=>top.get(y)-top.get(x));
     m.set(k,its.flatMap(it=>a.filter(o=>o.it===it).sort((x,y)=>(x.k<0?1e9:x.k)-(y.k<0?1e9:y.k))))}return m}
-const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${u.n||u.u}`};
+/* a voucher line's description: the item's name, then what one of its unit is (Sugar 1pk=1kg) */
+const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${soULabel(u)}`.trim()};
 /* the unit a line's Qty counts in: the chosen unit row's 1 Unit (ct), else the item's Stock Count Unit */
 function soLineUnit(l){const it=l.pid&&items.find(x=>x.id===l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
 const soOptOn=(o,l)=>l.pid===o.it.id&&(l.u??-1)===o.k;
