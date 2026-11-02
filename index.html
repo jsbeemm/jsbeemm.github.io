@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793642931"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793643155"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4562,7 +4562,7 @@ function render(){
         ${o.deco?.endAt&&o.deco.photo?`<button type="button" class="deco-pic" data-zoom="${esc(photoUrl(o.deco.photo))}" aria-label="Finished cake photo" title="Finished cake"><img src="${esc(photoUrl(o.deco.photo))}" alt="Finished cake" loading="lazy"></button>`:""}
         <div class="money-box"><div class="tot">စုစုပေါင်း ${fmt(o.total)}</div><div class="bal ${bal?"owe":"paid"}">${bal?`<small>ကျန်ငွေ</small>${fmt(bal)}`:"✓ ငွေချေပြီး"}</div></div>
         <!-- ticked by hand once the slip has really been printed -->
-        ${o.status!=="cancel"&&printShown(o)?`<label class="prt-chk${o.printed?" on":""}" title="${o.printed?.at?esc(fmtDate(localDay(o.printed.at))+" "+new Date(o.printed.at).toTimeString().slice(0,5)):""}"><input type="checkbox" data-printed="${o.id}" ${o.printed?"checked":""} ${can("orders.print")?"":"disabled"}><span>${o.printed?"🖨 Print ပြီး":"🖨 Print မထုတ်ရသေး"}</span></label>`:""}
+        ${o.status!=="cancel"&&printShown(o)?`<label class="prt-chk${o.printed?" on":""}" title="${o.printed?.at?esc(fmtDate(localDay(o.printed.at))+" "+new Date(o.printed.at).toTimeString().slice(0,5)):""}"><input type="checkbox" data-printed="${o.id}" ${o.printed?"checked":""} ${can("orders.printed")?"":"disabled"}><span>${o.printed?"🖨 Print ပြီး":"🖨 Print မထုတ်ရသေး"}</span></label>`:""}
         <div class="o-actions">${pendingPay===o.id
           ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ"><span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
           :pendingCancel===o.id
@@ -4634,7 +4634,7 @@ const needPrint=o=>!o.printed&&o.status!=="cancel"&&o.status!=="done"&&(o.date||
 function printShown(o){return!isDecorator()||sameId(o?.createdBy,me.id)}
 var pvFormMode=false;
 function renderPrintNag(){const el=$("printNag");if(!el)return;
-  const np=can("orders.print")?orders.filter(needPrint).length:0;if(!np)npF=false;
+  const np=can("orders.printed")?orders.filter(needPrint).length:0;   /* only those who tick "Print ပြီး" (Admin, Sale) are reminded */if(!np)npF=false;
   el.hidden=!np||document.body.classList.contains("locked");
   el.innerHTML=np?`<div class="due-h"><span>🖨 Print မထုတ်ရသေးတဲ့ order ${np} ခု ရှိပါတယ်</span></div>`:""}
 function renderDue(){renderPrintNag();renderTdNag();
@@ -4821,7 +4821,7 @@ $("orders").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches(
 $("orders").addEventListener("change",async e=>{
   /* "Print ပြီး": ticked by hand after the slip is printed; remembers when and by whom */
   const pc=e.target.closest("[data-printed]");
-  if(pc){await patchOrder(pc.dataset.printed,{printed:pc.checked?{at:new Date().toISOString(),by:me.id||null}:null});return}
+  if(pc){if(!can("orders.printed")){pc.checked=!pc.checked;toast("Print ပြီး ကို Admin နဲ့ Sale ပဲ ခြစ်လို့ရပါတယ်");return}await patchOrder(pc.dataset.printed,{printed:pc.checked?{at:new Date().toISOString(),by:me.id||null}:null});return}
   const fin=e.target.closest("[data-deco-fin]");
   if(fin){const o=orders.find(x=>x.id===fin.dataset.decoFin),f=fin.files?.[0];fin.value="";if(o&&f&&(decoMineLive(o)||helpFinish(o)))decoFinish(o,f);return}
   const s=e.target.closest("[data-status]");if(!s)return;
@@ -5096,15 +5096,17 @@ const ROLES=[{k:"admin",n:"Admin"},{k:"staff",n:"Sale"},{k:"baking",n:"Productio
    accounts are written only by the artifact's Owner/Editors (db rule), so nobody can approve themselves.
    Passwords are never stored — only a salted PBKDF2 hash; the signed-in user is remembered on this device. */
 const PERMS=[["orders.add","Add & edit orders"],["orders.pay","Record payments"],["orders.status","Change order status"],["orders.delete","Delete / cancel orders"],
-  ["orders.print","Print / Save JPEG"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
-const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.report","sales.report","excel","pr.request","customers.add"],
+  ["orders.print","Print / Save JPEG"],["orders.printed","Tick “Print ပြီး” (printed)"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
+const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.printed","orders.report","sales.report","excel","pr.request","customers.add"],
   baking:["orders.print","pr.request"],decoration:["orders.add","orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
 const permsFor=r=>Object.fromEntries(PERMS.map(([k])=>[k,(ROLE_PERMS[r]||[]).includes(k)]));
 const ROLES_DEF=ROLES.filter(r=>r.k!=="admin").map(r=>({...r,perms:ROLE_PERMS[r.k].slice()}));
 var rolesDoc=null;
 /* roles saved before "Add customers" existed (no v:2) give it to Sale, as the starting set does */
 const roleList=()=>(rolesDoc||ROLES_DEF).map(r=>{const perms=(r.perms||[]).slice();
-  if((r.v||1)<2&&r.k==="staff"&&!perms.includes("customers.add"))perms.push("customers.add");return{...r,perms}});
+  if((r.v||1)<2&&r.k==="staff"&&!perms.includes("customers.add"))perms.push("customers.add");
+  /* roles saved before "Tick Print ပြီး" existed (below v:3) give it to Sale only */
+  if((r.v||1)<3&&r.k==="staff"&&!perms.includes("orders.printed"))perms.push("orders.printed");return{...r,perms}});
 /* the saved list replaces the roles and their usual permissions in place (Admin always has everything) */
 function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList();
   ROLES.length=0;ROLES.push({k:"admin",n:"Admin"},...L.map(r=>({k:r.k,n:r.n})));
@@ -5113,7 +5115,7 @@ function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList(
   $("acNewRole").innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k==="staff"?"selected":""}>${esc(x.n)}</option>`).join("");
   renderRoles();renderTeam()}
 async function saveRoles(list){
-  list=list.map(r=>({...r,v:2}));
+  list=list.map(r=>({...r,v:3}));
   if(db)await db.doc("meta/roles").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
   else{try{localStorage.setItem("cakeRoles",JSON.stringify(list))}catch(x){}}
   applyRoles(list)}
