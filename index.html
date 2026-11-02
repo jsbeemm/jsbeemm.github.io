@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793603581"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793603831"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,7 +897,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soDlg,#soView,#poView{padding:0;place-items:stretch}#poView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;grid-template-rows:auto minmax(0,1fr)}
 #poView .side-body{width:min(100%,1000px);margin:0 auto}#poView .pv-head{flex-wrap:nowrap;gap:10px}#poView .pv-head>b{white-space:nowrap}
 #soDlg.po .so-money{display:none}
-.so-buy{display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;margin-bottom:3px;cursor:pointer}.so-buy input{width:auto;margin:0}
+/* "မှာရန်" sits right beside the item name */
+.so-ldw{display:flex;align-items:center;gap:8px}.so-ldw .so-ldt,.so-ldw .so-ld{flex:1;min-width:0}
+.so-buy{display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;cursor:pointer;flex:none}.so-buy input{width:auto;margin:0}
 .po-chips{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.po-buytag{font-size:11px;background:#FFF1D6;color:#8A5A00;border-radius:6px;padding:1px 6px}
 .po-fin{opacity:.75}.po-buy .lnk{color:var(--accent);cursor:pointer;text-decoration:underline}
 .so-stage{margin:0 0 8px}.so-delform{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}.so-deltbl{width:100%}.so-deltbl th,.so-deltbl td{padding:5px 8px;text-align:left}.so-deltbl .r{text-align:right}
@@ -7925,11 +7927,11 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l))));
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
-      <td>${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</td>
+      <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label></div></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
-      <td><label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
+      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
   soSyncTot()}
 $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
