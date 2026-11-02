@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793632485"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793632971"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -995,7 +995,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 /* an item picked from Raw Material shows its name as plain text; only free lines (Delivery, Other) are typed */
 .so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
-.it-units{margin:6px 0 8px}#itUnits .it-un.it-need{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.it-units{margin:6px 0 8px}#itUnits .it-isbase .it-uc,#itUnits .it-isbase .it-uof{opacity:.4;background:var(--sunk);cursor:not-allowed}#itUnits .it-un.it-need{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
 .it-urow{display:grid;grid-template-columns:1.1fr .9fr 12px .8fr .8fr 1fr 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
 .it-uhead{font-size:11px;opacity:.7;margin-bottom:2px}.it-urow>span{text-align:center}.it-uhead>span{text-align:left}.it-urow .o-ic{border:0;background:none;padding:0;width:28px;height:28px}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
@@ -7851,9 +7851,16 @@ function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").
   /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
   const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced?"none":"");
   els.forEach(el=>{const t=c=>String(el.querySelector(c).value).trim(),c=Number(t(".it-uc")),f=itBaseOf(t(".it-uof"),rows,base);
-    el.querySelector(".it-ub").textContent=c>0&&f!=null&&base&&t(".it-uof").toLowerCase()!==base.toLowerCase()?`= ${Number(c*f).toLocaleString("en-US")} ${base}`:""})}
+    /* a row whose 1 Unit is the Base Unit (bought / sold by the base unit itself): it is 1 of itself, nothing to type */
+    const isBase=!!base&&uSame(t(".it-uu"),base),qc=el.querySelector(".it-uc"),qs=el.querySelector(".it-uof");el.classList.toggle("it-isbase",isBase);
+    if(isBase){qc.value="";qs.value="";qs.dataset.v=""}qc.disabled=qs.disabled=isBase;
+    el.querySelector(".it-ub").textContent=isBase?`= 1 ${base}`:c>0&&f!=null&&base&&t(".it-uof").toLowerCase()!==base.toLowerCase()?`= ${Number(c*f).toLocaleString("en-US")} ${base}`:""})}
 $("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
 $("itUnits").addEventListener("click",e=>{const b=e.target.closest(".it-urm");if(!b)return;b.closest(".it-urow").remove();if(!$("itUnits").children.length)$("itUnits").innerHTML=itUnitRow();itUnitsCalc()});
+/* a new item: the first row's 1 Unit follows the Base Unit as it is typed (until the row is changed by hand) */
+$("itUnit").addEventListener("input",()=>{if(itEditing)return;const rs=$("itUnits").querySelectorAll(".it-urow");if(rs.length!==1)return;
+  const uu=rs[0].querySelector(".it-uu");if(uu.dataset.hand)return;uu.value=$("itUnit").value.trim()});
+$("itUnits").addEventListener("input",e=>{if(e.target.matches(".it-uu"))e.target.dataset.hand="1"});
 $("itUnits").addEventListener("input",itUnitsCalc);$("itUnits").addEventListener("change",itUnitsCalc);$("itUnit").addEventListener("input",itUnitsCalc);
 /* deleting a raw material (Admins) */
 $("itDel").addEventListener("click",async()=>{const i=itEditing;if(!i||!can("admin"))return;
