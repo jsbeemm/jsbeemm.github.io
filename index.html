@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793609082"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793614489"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -976,7 +976,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 /* an item picked from Raw Material shows its name as plain text; only free lines (Delivery, Other) are typed */
 .so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
-.it-units{margin:6px 0 8px}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.it-units{margin:6px 0 8px}#itUnits .it-un.it-need{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
 .it-urow{display:grid;grid-template-columns:1.1fr .9fr 12px .8fr .8fr 1fr 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
 .it-uhead{font-size:11px;opacity:.7;margin-bottom:2px}.it-urow>span{text-align:center}.it-uhead>span{text-align:left}.it-urow .o-ic{border:0;background:none;padding:0;width:28px;height:28px}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
@@ -7671,12 +7671,17 @@ function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
 function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
   const r=rows.find(x=>[x.n,x.u].some(y=>String(y||"").toLowerCase()===k)&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
+/* two rows with the same 1 Unit (two ct) need their own unit names (ct24, ct48) so they can be told apart */
+function itUnitNeed(els){const v=(el,c)=>String(el.querySelector(c).value).trim().toLowerCase(),cu={},cn={};
+  els.forEach(el=>{const u=v(el,".it-uu"),n=v(el,".it-un")||u;if(u)cu[u]=(cu[u]||0)+1;if(n)cn[n]=(cn[n]||0)+1});
+  return els.filter(el=>{const u=v(el,".it-uu"),n=v(el,".it-un");return(u&&cu[u]>1&&!n)||((n||u)&&cn[n||u]>1)})}
 function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];
   /* the Quantity unit picks from the Base Unit and the other rows (their unit name, e.g. 24pk, and their 1 Unit) */
   const nm=el=>[".it-un",".it-uu"].map(c=>String(el.querySelector(c).value).trim()).filter(Boolean);
   els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=nm(el),cur=sel.value||sel.dataset.v||"";
     const opts=[...new Set([base,...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
+  const need=itUnitNeed(els);els.forEach(el=>{const b=el.querySelector(".it-un"),on=need.includes(el);b.classList.toggle("it-need",on);b.title=on?"Unit name ထည့်ပါ — 1 Unit တူတာ နှစ်ခုရှိနေပါတယ်":""});
   const rows=itUnitsRead();
   /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
   const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced?"none":"");
@@ -7708,6 +7713,7 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
   if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;if(whPrice>0)d.whPrice=whPrice;else delete d.whPrice;
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
   /* the unit rows; the first is also the item's Purchase Unit / Conversion (as before, and in Excel) */
+  {const need=itUnitNeed([...$("itUnits").querySelectorAll(".it-urow")]);if(need.length){toast("1 Unit တူတာ နှစ်ခုရှိနေပါတယ် — Unit name (ဥပမာ ct24, ct48) ထည့်ပါ",5000);need[0].querySelector(".it-un").focus();return}}
   const us=itUnitsRead();if(us.length){d.units=us;d.purUnit=us[0].u;if(us[0].c!=null)d.purConv=us[0].c;else delete d.purConv}else{delete d.units;delete d.purUnit;delete d.purConv}
   /* prices on the unit rows: the item's own JS / Wholesale / Mr.Bee prices (used by POS, reports, Excel) come from the row of its
      Stock Count Unit, else the first priced row */
