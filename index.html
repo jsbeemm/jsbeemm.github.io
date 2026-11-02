@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793603831"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793604095"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -897,7 +897,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soDlg,#soView,#poView{padding:0;place-items:stretch}#poView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;grid-template-rows:auto minmax(0,1fr)}
 #poView .side-body{width:min(100%,1000px);margin:0 auto}#poView .pv-head{flex-wrap:nowrap;gap:10px}#poView .pv-head>b{white-space:nowrap}
 #soDlg.po .so-money{display:none}
-/* "မှာရန်" sits right beside the item name */
+/* "မှာရန်" sits at the right end of the row, by the ✕ */
+.so-endw{display:flex;align-items:center;gap:6px;justify-content:flex-end}.so-endw .so-buy{flex-direction:column;gap:0;font-size:11px;line-height:1.1}.so-endw .o-ic{flex:none}
 .so-ldw{display:flex;align-items:center;gap:8px}.so-ldw .so-ldt,.so-ldw .so-ld{flex:1;min-width:0}
 .so-buy{display:flex;align-items:center;gap:4px;font-size:12px;white-space:nowrap;cursor:pointer;flex:none}.so-buy input{width:auto;margin:0}
 .po-chips{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}.po-buytag{font-size:11px;background:#FFF1D6;color:#8A5A00;border-radius:6px;padding:1px 6px}
@@ -925,7 +926,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit .so-date .dp{font-size:13px}
 .vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
 .so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:72px}.so-tbl th:nth-child(5){width:190px}.so-pw{display:flex;gap:4px}.so-pw .so-lt{width:96px;flex:none;padding:5px 4px}.so-pw .so-lp{flex:1}
-.so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:16%}.so-tbl th:nth-child(8){width:40px}
+.so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:13%}.so-tbl th:nth-child(8){width:78px}
 .so-tbl td input{padding:5px 6px;width:100%;min-width:0}.so-tbl .so-lq,.so-tbl .so-lp{text-align:right}.so-tbl td{overflow:hidden}
 .so-addbtns .btn{width:auto}
 .so-tbl td.pic img{width:40px;height:40px;object-fit:cover;border-radius:6px}.so-empty{text-align:center;color:var(--muted);padding:18px}
@@ -940,7 +941,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
 @media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
-  .so-tbl thead{display:none}.so-tbl tbody#soLines tr{display:grid;grid-template-columns:28px 44px 1fr 34px;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
+  .so-tbl thead{display:none}.so-tbl tbody#soLines tr{display:grid;grid-template-columns:28px 44px 1fr auto;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
   #soLines td{border:0;padding:2px}#soLines td:nth-child(3){grid-column:3/4}#soLines td:nth-child(4),#soLines td:nth-child(5),#soLines td:nth-child(6){grid-column:auto}
   #soLines td:nth-child(7){grid-column:1/-1}.vo-edit .vo-top h1{font-size:20px}}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
@@ -7927,11 +7928,11 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l))));
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
-      <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label></div></td>
+      <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
-      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></td></tr>`).join("")
+      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw"><label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
   soSyncTot()}
 $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
