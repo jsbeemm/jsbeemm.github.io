@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793599479"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600201"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -894,7 +894,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .itc-x{border:0;background:none;cursor:pointer;color:var(--muted);font:inherit;padding:0 3px}.itc-x:disabled{opacity:.3;cursor:not-allowed}
 .itc-ed{display:inline-flex;align-items:center;gap:4px}.itc-in{min-width:0;width:180px;padding:5px 10px;border-radius:8px}
 /* vouchers open full screen, not as a pop-up */
-#soDlg,#soView{padding:0;place-items:stretch}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
+#soDlg,#soView,#poView{padding:0;place-items:stretch}#poView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;grid-template-rows:auto minmax(0,1fr)}
+#poView .side-body{width:min(100%,1000px);margin:0 auto}#poView .pv-head{flex-wrap:nowrap;gap:10px}#poView .pv-head>b{white-space:nowrap}
+#soDlg.po .so-money{display:none}
+.po-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0}.po-dl{white-space:pre-line;font-size:13px;opacity:.85;margin-top:4px}
+.po-meta{display:grid;grid-template-columns:auto auto;gap:2px 8px;align-content:start}.po-meta .k{text-align:right;opacity:.7}
+.po-tbl{width:100%}.po-tbl th,.po-tbl td{padding:6px 8px;text-align:left}.po-tbl .r{text-align:right}.po-tbl tr.po-ok td{opacity:.55}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
 #soDlg .side-body,#soView .side-body{width:min(100%,1000px);margin:0 auto}.so-h{margin:14px 0 6px}
 .so-pick{position:relative;margin-bottom:6px}.so-pick input{width:100%}#soCustQ{resize:none;overflow:hidden;line-height:1.4;min-height:0;display:block}
 /* the voucher form looks like the voucher: boxes sit where the printed text goes */
@@ -937,7 +942,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-foot .ed-count{flex:1}#soView .side-panel.so-panel{grid-template-rows:auto minmax(0,1fr)}
 #soView .pv-head{flex-wrap:nowrap;gap:10px}#soView .pv-head>b{white-space:nowrap}.pv-head .so-foot{flex:1;border:0;padding:0;gap:6px}.pv-head .so-foot select{width:auto;padding:6px 8px}
 .pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-height:40px;min-width:42px;padding-inline:10px}.pv-head .so-foot .btn{padding-block:8px}
-@media (max-width:700px){#soView .pv-head{flex-wrap:wrap}.pv-head .so-foot{order:3;flex-basis:100%}}
+@media (max-width:700px){#soView .pv-head,#poView .pv-head{flex-wrap:wrap}.pv-head .so-foot{order:3;flex-basis:100%}}
 /* on a phone the tools fit one row: no spacer, short labels */
 @media (max-width:600px){.pv-head .so-foot .ed-count,.pv-head .so-foot .so-pl{display:none}.pv-head .so-foot{gap:4px}#soView .pv-head .so-foot select{padding:0 2px;height:38px;min-height:0;max-width:86px}#soView .pv-head .so-foot #soOrient{max-width:98px}
   .pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-width:38px;min-height:38px;padding-inline:8px}.pv-head .so-foot #soPayBtn{padding-inline:10px}}
@@ -2153,7 +2158,7 @@ span.star-ic{cursor:default}
           <div class="vo-dl"><h3>Delivery Info</h3>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
               <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
-          <div class="vo-no"><span class="k">SO No#</span><span id="soNoTxt">—</span>
+          <div class="vo-no"><span class="k" id="soNoK">SO No#</span><span id="soNoTxt">—</span>
             <span class="k">Channel#</span><span id="soChannel" class="cap" title="Customer ရဲ့ Channel"></span>
             <span class="k">Date</span><span id="soDate" class="cap"></span></div>
         </div>
@@ -2163,8 +2168,8 @@ span.star-ic{cursor:default}
           <tbody class="so-add"><tr><td colspan="8"><div class="so-addbtns"><button type="button" class="btn" id="soAddItem">+ Add item</button><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div></td></tr></tbody>
           <tfoot class="vo-tot">
             <tr><td colspan="5" class="r k">Net Amount</td><td class="r v" id="soNet">0</td><td class="c">MMK</td><td></td></tr>
-            <tr><td colspan="4" class="r k">Paid Amount</td><td class="r" id="soPaidW"><select id="soPay" aria-label="Payment method"></select></td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td></tr>
-            <tr class="ln"><td colspan="5" class="r k">Balance</td><td class="r v" id="soBalTxt">0</td><td class="c">MMK</td><td></td></tr>
+            <tr class="so-money"><td colspan="4" class="r k">Paid Amount</td><td class="r" id="soPaidW"><select id="soPay" aria-label="Payment method"></select></td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td></tr>
+            <tr class="ln so-money"><td colspan="5" class="r k">Balance</td><td class="r v" id="soBalTxt">0</td><td class="c">MMK</td><td></td></tr>
           </tfoot></table>
         <div class="vo-note"><input id="soNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
       </div>
@@ -2173,6 +2178,19 @@ span.star-ic{cursor:default}
   </div>
 </div>
 <!-- JS voucher: pick items -->
+<div class="editor" id="poView" hidden role="dialog" aria-modal="true" aria-label="Preorder">
+  <div class="ed-panel side-panel so-panel">
+    <div class="ed-tools pv-head"><b>📦 <span id="poViewT">Preorder</span></b>
+    <div class="ed-foot so-foot">
+      <button type="button" class="btn ghost pv-ic" id="poEditBtn" aria-label="Edit preorder" title="Edit preorder"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
+      <button type="button" class="btn ghost pv-del" id="poDelBtn" hidden aria-label="Delete preorder" title="Delete preorder"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4l1-12.5"/></svg></button>
+      <span class="ed-count"></span>
+      <button type="button" class="btn" id="poGiveBtn">📄 ဘောက်ချာဖွင့်မည်</button>
+    </div>
+    <button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body" id="poBody"></div>
+  </div>
+</div>
 <div class="editor" id="soPickDlg" hidden role="dialog" aria-modal="true" aria-label="Add item">
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>📦 Add item</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
@@ -7740,7 +7758,7 @@ const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV",
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
 function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
 const soCanEdit=v=>can("admin")||(!!v&&!!me.id&&sameId(v.by,me.id));
-function initSo(){initSoDrafts();
+function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
   soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
@@ -7756,7 +7774,8 @@ const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-
 function renderSo(){if($("viewSo").hidden)return;
   const q=pdNorm(soQ),hit=v=>!q||[v.no,v.customer,v.phone,soDelivOf(v)].some(x=>pdNorm(x).includes(q));
   const unpaid=vos.filter(v=>soBal(v)>0);
-  $("soTabs").innerHTML=[["all","All",vos.length],["unpaid","Unpaid",unpaid.length]].map(([k,n,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${n} <small>${c}</small></button>`).join("");
+  $("soTabs").innerHTML=[["all","All",vos.length],["unpaid","Unpaid",unpaid.length],["po","Preorder",pos.filter(p=>!poDone(p)).length]].map(([k,n,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${n} <small>${c}</small></button>`).join("");
+  $("soNewBtn").textContent=soTab==="po"?"+ New preorder":"+ New voucher";if(soTab==="po"){renderPoList(q);renderSoDrafts();return}
   const list=(soTab==="unpaid"?unpaid:vos).filter(hit).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
   $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(v=>{const b=soBal(v);
     return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
@@ -7829,8 +7848,9 @@ $("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAdd
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
   if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true;soGrow()});
 $("soDeliv").addEventListener("input",soGrow);
-function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
-  $("soDlgT").textContent=v?`Edit ${v.no}`:"New voucher";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
+/* the same form makes a preorder (mode "po"): no money on it */
+function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soMode=mode;soFromPo=null;$("soDlg").classList.toggle("po",mode==="po");soEditing=v||null;
+  $("soDlgT").textContent=v?`Edit ${v.no}`:mode==="po"?"New preorder":"New voucher";$("soNoK").textContent=mode==="po"?"PO No#":"SO No#";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
   for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";$("soChannel").textContent=v?.channel||"";
   $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));requestAnimationFrame(soGrow);
@@ -7840,7 +7860,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
   renderSoLines();$("soDlg").hidden=false;soGrow();$("soCustQ").focus();soDraftId=null;soSnap=soState();if(!history.state?.soDlg)history.pushState({soDlg:1},"")}
-$("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
+$("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null,soTab==="po"?"po":"so")});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
   $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow()});
 
@@ -7894,16 +7914,26 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
   lines.forEach(l=>{if(!l.note)delete l.note});
   if(!lines.length){toast("Item အနည်းဆုံး ၁ ခု ထည့်ပါ");return}
+  /* a preorder: quantities and prices only; an item cannot go below what is already given */
+  if(soMode==="po"){const bad=lines.find(l=>Number(l.given||0)>l.qty);if(bad){toast(`${bad.name} — ပေးပြီးသား ${bad.given} ထက် မနည်းရပါ`,4000);return}
+    const date=readDate($("soDate").querySelector(".dp"))||todayISO(),now=new Date().toISOString();
+    const p={...(v0||{id:"po"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:poNo(date),at:now,by:me.id||null,byName:me.name||""}),
+      date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
+      deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+    Object.keys(p).forEach(k=>{if(p[k]==null)delete p[k]});$("soSave").disabled=true;
+    try{await savePo(p);if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${p.no} သိမ်းပြီး`);openPoView(p)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}
+    return}
   const date=readDate($("soDate").querySelector(".dp"))||todayISO(),now=new Date().toISOString(),net=soNetOf(lines);
   const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
   const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date),at:now,by:me.id||null,byName:me.name||"",payments:[]}),
     date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
     deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
   delete v.dName;delete v.dPhone;delete v.dAddr;
+  if(!v0&&soFromPo){v.poId=soFromPo.id;v.poNo=pos.find(x=>x.id===soFromPo.id)?.no||""}
   if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
   Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
   $("soSave").disabled=true;
-  try{await saveSo(v);if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
+  try{await saveSo(v);await poSync(v0,v).catch(()=>toast("Preorder ကို မပြင်နိုင်ပါ",4000));if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
 /* ---- leaving a voucher half-written: ✕ / Cancel / the phone's Back button ask whether to keep it as a draft.
    Drafts sit in their own "jsDrafts" collection (no voucher number, not in the list, counts or reports) and show on top
    of the voucher list until they are finished or deleted. ---- */
@@ -7920,7 +7950,7 @@ function renderSoDrafts(){const el=$("soDraftBar");if(!el||$("viewSo").hidden)re
   const list=[...soDrafts].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
   el.hidden=!list.length;if(!list.length){el.innerHTML="";return}
   el.innerHTML=`<p class="dr-h">📝 မပြီးသေးသော Voucher Draft ${list.length} ခု — ဆက်ရေးဖို့ မမေ့ပါနဲ့</p>`+list.map(d=>{const f=d.form||{},n=(f.lines||[]).length;
-    return`<div class="dr-row"><div class="dr-who"><b data-t="${esc(f.customer||"(Customer မထည့်ရသေး)")}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
+    return`<div class="dr-row"><div class="dr-who"><b data-t="${esc((f.mode==="po"?"📦 Preorder · ":"")+(f.customer||"(Customer မထည့်ရသေး)"))}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
       <div class="dr-btns"><button type="button" class="btn dr-go" data-sodr="${esc(d.id)}">ဆက်ရေးရန်</button><button type="button" class="link danger" data-sodr-del="${esc(d.id)}">ဖျက်ရန်</button></div></div>`}).join("");
   el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 $("soDraftBar").addEventListener("click",async e=>{const go=e.target.closest("[data-sodr]"),del=e.target.closest("[data-sodr-del]");
@@ -7928,7 +7958,7 @@ $("soDraftBar").addEventListener("click",async e=>{const go=e.target.closest("[d
   if(del&&await askConfirm("Draft ဖျက်မလား?","ဖျက်ပြီးရင် ပြန်ယူလို့ မရပါ။","ဖျက်မည်")){try{await dropSoDraft(del.dataset.sodrDel)}catch(x){toast("ဖျက်မရပါ")}}});
 /* everything typed on the form, to tell whether anything changed since it opened */
 function soState(){return JSON.stringify([$("soCust").value,$("soCustQ").value,$("soPhone").value,$("soChannel").textContent,$("soDeliv").value,$("soNote").value,$("soPaid").value,readDate($("soDate").querySelector(".dp"))||"",soLines])}
-function openSoDraft(d){initItems();openSoForm(null);const f=d.form||{};
+function openSoDraft(d){initItems();const f=d.form||{};openSoForm(null,f.mode==="po"?"po":"so");soFromPo=f.fromPo?{id:f.fromPo}:null;
   $("soCust").value=f.cust||"";$("soCustQ").value=f.customer||"";$("soPhone").value=f.phone||"";$("soChannel").textContent=f.channel||"";
   $("soDeliv").value=f.deliv||"";$("soNote").value=f.note||"";$("soPaid").value=f.paid||"";if(f.pay)$("soPay").value=f.pay;
   $("soDate").innerHTML=dateSelect("",f.date||todayISO(),"","",false,"");soLines=(f.lines||[]).map(l=>({...l}));
@@ -7936,7 +7966,7 @@ function openSoDraft(d){initItems();openSoForm(null);const f=d.form||{};
   soDraftId=d.id;soSnap=soState()}
 async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.find(x=>x.id===soDraftId);
   const form=JSON.parse(JSON.stringify({cust:$("soCust").value||"",customer:$("soCustQ").value.trim(),phone:$("soPhone").value.trim(),channel:$("soChannel").textContent||"",
-    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines}));
+    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines,mode:soMode,fromPo:soFromPo?.id||""}));
   const d={...(old||{id:soDraftId||"sod"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),at:now}),form,updatedAt:now,by:me.id||null,byName:me.name||""};
   Object.keys(d).forEach(k=>{if(d[k]==null)delete d[k]});
   await putSoDraft(d)}
@@ -7964,6 +7994,73 @@ addEventListener("popstate",()=>{if(soSkipPop){soSkipPop=false;return}if($("soDl
   if(!$("soLeaveDlg").hidden){$("soLvStay").click();return}
   if(!$("soPickDlg").hidden){$("soPickDlg").hidden=true;return}
   soTryClose()});
+/* ---- Preorders (collection "jsPreorders"): items the customer ordered that are not given yet — quantity and price only,
+   no money. When goods arrive, "📄 ဘောက်ချာဖွင့်မည်" opens a voucher with what is still left; the quantities on it can be
+   lowered to what is given now. Saving the voucher counts those as given; the rest stays on the preorder. Editing or deleting
+   that voucher later puts the quantities back. ---- */
+var pos=[],poCol=null,poLoaded=false,poOpen=null,soMode="so",soFromPo=null;
+function initPo(){
+  if(!db){if(!poLoaded){try{pos=JSON.parse(localStorage.getItem("cakeJsPreorders")||"[]")}catch(e){pos=[]}poLoaded=true}return}
+  if(poCol)return;poCol=db.collection("jsPreorders");
+  poCol.onSnapshot(s=>{pos=s.docs.map(d=>({...d.data(),id:d.id}));poLoaded=true;if(view==="so")renderSo();
+    if(poOpen&&!$("poView").hidden){const p=pos.find(x=>x.id===poOpen);if(p)renderPoView(p)}},()=>{poCol=null})}
+async function savePo(p){if(db){const d={...p};delete d.id;await db.collection("jsPreorders").doc(p.id).set(d);return}
+  const i=pos.findIndex(x=>x.id===p.id);if(i>=0)pos[i]=p;else pos.push(p);pos=pos.slice();try{localStorage.setItem("cakeJsPreorders",JSON.stringify(pos))}catch(x){}renderSo();
+  if(poOpen===p.id&&!$("poView").hidden)renderPoView(p)}
+async function removePo(id){if(db){await db.collection("jsPreorders").doc(id).delete();return}pos=pos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsPreorders",JSON.stringify(pos))}catch(x){}renderSo()}
+/* PO26NOV01001, like the voucher number */
+function poNo(d){const pre="PO"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
+  const n=pos.filter(p=>String(p.no||"").startsWith(pre)).reduce((m,p)=>Math.max(m,Number(String(p.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
+const poLeft=l=>Math.max(0,Number(l.qty||0)-Number(l.given||0));
+const poLeftAll=p=>(p.lines||[]).reduce((s,l)=>s+poLeft(l),0);
+const poDone=p=>poLeftAll(p)<=0;
+const poNum=n=>Number(n||0).toLocaleString("en-US");
+function renderPoList(q){
+  const hit=p=>!q||[p.no,p.customer,p.phone,soDelivOf(p)].some(x=>pdNorm(x).includes(q));
+  const list=pos.filter(hit).sort((a,b)=>poDone(a)-poDone(b)||(b.date||"").localeCompare(a.date||"")||String(b.no).localeCompare(String(a.no)));
+  $("soList").innerHTML=!poLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(p=>{const left=poLeftAll(p),n=(p.lines||[]).length;
+    return`<div class="ex-item sale-row" data-po-open="${esc(p.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(p.no)} · <span data-t="${esc(p.customer||"")}"></span></b>
+      <small>${esc(soDate(p.date))}${p.phone?` · ${esc(p.phone)}`:""} · ${n} item${n===1?"":"s"}</small></div>
+      <div class="ex-side"><span class="sale-amt">${left>0?`<span class="conf-chip">ပေးရန်ကျန် ${poNum(left)}</span>`:`<span class="conf-chip ok">✓ ပေးပြီး</span>`}</span></div></div>`}).join("")
+    :`<div class="prq-empty">No preorders${q?" match the search":""}. Tap “+ New preorder”.</div>`;
+  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+document.addEventListener("click",e=>{const r=e.target.closest("[data-po-open]");if(!r)return;const p=pos.find(x=>x.id===r.dataset.poOpen);if(p)openPoView(p)});
+/* the preorder: what was ordered, what is given, what is left, and the vouchers made from it */
+function openPoView(p){poOpen=p.id;renderPoView(p);$("poView").hidden=false}
+function renderPoView(p){$("poViewT").textContent=p.no;const left=poLeftAll(p);
+  $("poEditBtn").hidden=!soCanEdit(p);$("poDelBtn").hidden=!can("admin");$("poGiveBtn").hidden=left<=0;
+  const made=vos.filter(v=>v.poId===p.id).sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
+  $("poBody").innerHTML=`<div class="po-head"><div><b data-t="${esc(p.customer||"")}"></b>${p.phone?`<br><span>${esc(p.phone)}</span>`:""}${soDelivOf(p)?`<div class="po-dl" data-t="${esc(soDelivOf(p))}"></div>`:""}</div>
+      <div class="po-meta"><span class="k">PO No#</span><span>${esc(p.no)}</span>${p.channel?`<span class="k">Channel#</span><span>${esc(p.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(p.date))}</span></div></div>
+    <p>${left>0?`<span class="conf-chip">ပေးရန်ကျန် ${poNum(left)}</span>`:`<span class="conf-chip ok">✓ အကုန်ပေးပြီး</span>`}</p>
+    <table class="ex-tbl po-tbl"><thead><tr><th>No</th><th>Description</th><th class="r">Price</th><th class="r">Order</th><th class="r">ပေးပြီး</th><th class="r">ကျန်</th></tr></thead><tbody>
+      ${(p.lines||[]).map((l,i)=>`<tr${poLeft(l)?"":` class="po-ok"`}><td>${i+1}</td><td data-t="${esc(l.name||"")}"></td><td class="r">${poNum(l.price)}</td><td class="r">${poNum(l.qty)}</td><td class="r">${poNum(l.given)}</td><td class="r"><b>${poNum(poLeft(l))}</b></td></tr>`).join("")}
+    </tbody></table>
+    ${p.note?`<p class="side-help">Note: <span data-t="${esc(p.note)}"></span></p>`:""}
+    <p class="ac-h">📄 ဒီ Preorder က ဖွင့်ထားတဲ့ ဘောက်ချာ</p>
+    ${made.length?`<div class="ex-list">${made.map(v=>`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)}</b><small>${esc(soDate(v.date))} · ${(v.lines||[]).filter(l=>l.po!=null).map(l=>`${l.name} × ${poNum(l.qty)}`).map(esc).join(", ")}</small></div>
+      <div class="ex-side"><b class="ex-amt">${fmt(v.net||0)}</b></div></div>`).join("")}</div>`:`<p class="side-help">မရှိသေးပါ — ပစ္စည်းရောက်ရင် “📄 ဘောက်ချာဖွင့်မည်” နှိပ်ပါ</p>`}`;
+  $("poBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("poEditBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;$("poView").hidden=true;initItems();openSoForm(p,"po")});
+$("poDelBtn").addEventListener("click",async()=>{const p=pos.find(x=>x.id===poOpen);if(!p||!can("admin"))return;
+  const made=vos.filter(v=>v.poId===p.id).length;
+  if(!await askConfirm(`Delete ${p.no}?`,made?`ဒီ Preorder က ဖွင့်ထားတဲ့ ဘောက်ချာ ${made} စောင်ကတော့ မပျက်ပါ။`:(p.customer||"")))return;
+  try{await removePo(p.id);$("poView").hidden=true;poOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
+/* goods arrived: a new voucher with everything still left (lower the quantities to what is given now) */
+$("poGiveBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;if(poLeftAll(p)<=0){toast("ပေးရန် မကျန်တော့ပါ");return}
+  $("poView").hidden=true;initItems();openSoForm(null,"so");
+  $("soCust").value=p.custId||"";$("soCustQ").value=p.customer||"";$("soPhone").value=p.phone||"";$("soChannel").textContent=p.channel||"";
+  $("soDeliv").value=soDelivOf(p)||"";soFillAddrs(pts.find(x=>x.id===p.custId));$("soCustHits").hidden=true;
+  soLines=(p.lines||[]).map((l,i)=>{const{given,...r}=l;return{...r,qty:poLeft(l),po:i}}).filter(l=>l.qty>0);
+  soFromPo={id:p.id};$("soDlgT").textContent=`New voucher · ${p.no}`;renderSoLines();soGrow();
+  toast("ယခု ပေးမယ့် အရေအတွက်အတိုင်း Qty ကို ပြင်ပါ — ကျန်တာ Preorder မှာ ဆက်ကျန်ပါမယ်",5000)});
+/* a voucher made from a preorder was saved, edited or deleted: count the change on the preorder */
+async function poSync(oldV,newV){const id=newV?.poId||oldV?.poId;if(!id)return;const p=pos.find(x=>x.id===id);if(!p)return;
+  const d={};for(const l of oldV?.lines||[])if(l.po!=null)d[l.po]=(d[l.po]||0)-Number(l.qty||0);
+  for(const l of newV?.lines||[])if(l.po!=null)d[l.po]=(d[l.po]||0)+Number(l.qty||0);
+  if(!Object.values(d).some(Boolean))return;
+  const lines=(p.lines||[]).map((l,i)=>({...l,given:Math.max(0,Number(l.given||0)+(d[i]||0))}));
+  await savePo({...p,lines,updatedAt:new Date().toISOString()})}
 /* ---- the voucher itself (on screen, printed, or as a picture) ---- */
 const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#3b2a20;background:#fff;font-size:13px;line-height:1.35}
 .vo-top{display:flex;align-items:center;gap:16px}.vo-top img{width:78px;height:78px;object-fit:contain}
@@ -8035,7 +8132,7 @@ function soFit(){const p=$("soPrev"),box=p.parentElement;if(!box||$("soView").hi
 addEventListener("resize",soFit);
 $("soEditBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;$("soView").hidden=true;openSoForm(v)});
 $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v||!can("admin"))return;
-  if(!await askConfirm(`Delete ${v.no}?`,`${v.customer||""} · ${fmt(v.net||0)}`))return;try{await removeSo(v.id);$("soView").hidden=true;soOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
+  if(!await askConfirm(`Delete ${v.no}?`,`${v.customer||""} · ${fmt(v.net||0)}`))return;try{await removeSo(v.id);poSync(v,null).catch(()=>{});$("soView").hidden=true;soOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 $("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
   $("soPAmt").value=soBal(v);$("soPMethod").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=false;$("soPAmt").focus()});
