@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627658"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627836"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5648,7 +5648,7 @@ const uUsers=n=>items.filter(i=>U_KEYS.some(k=>uSame(i[k],n))||(i.units||[]).som
 function unitLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeUnits")||"null")}catch(e){return null}}
 function renderUnits(){const l=uList();
   $("unitRows").innerHTML=l.length?l.map((n,i)=>`<tr data-i="${i}"><td>${esc(n)}</td><td class="unit-n">${uUsers(n).length||"—"}</td><td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-unit-edit aria-label="Edit" title="Edit">${PENCIL}</button></span></td></tr>`).join("")
-    :`<tr><td colspan="3" class="so-empty">Unit မရှိသေးပါ</td></tr>`;
+    :`<tr><td colspan="3" class="so-empty">${itLoaded?"Unit မရှိသေးပါ":"Loading…"}</td></tr>`;
   const dl=$("itUnitList");if(dl)dl.innerHTML=l.map(v=>`<option value="${esc(v)}">`).join("")}
 async function unitPersist(list){
   try{if(db)await db.doc("meta/units").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
@@ -5663,7 +5663,7 @@ async function unitRenameItems(from,to){const rn=v=>uSame(v,from)?to:v,now=new D
   if(db){for(let s=0;s<ch.length;s+=400){const b=db.batch();ch.slice(s,s+400).forEach(([i,d])=>b.update(db.collection("items").doc(i.id),d));await b.commit()}}
   else{items=items.map(i=>{const c=ch.find(([x])=>x.id===i.id);return c?{...i,...c[1]}:i});try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
   return ch.length}
-function openUnits(){if(!can("admin"))return;renderUnits();$("settingsPanel").hidden=true;$("unitDlg").hidden=false}
+function openUnits(){if(!can("admin"))return;initItems();renderUnits();$("settingsPanel").hidden=true;$("unitDlg").hidden=false}
 function openUnitEd(i){unitEdit=i;const n=i>=0?uList()[i]:"",used=n?uUsers(n).length:0;
   $("unitEdTitle").textContent=i>=0?"Edit unit":"Add unit";$("unitEdName").value=n;$("unitEdDel").hidden=i<0;
   $("unitEdUse").hidden=!used;$("unitEdUse").textContent=used?`ပစ္စည်း ${used} ခုမှာ သုံးထားပါတယ်`:"";
@@ -5671,8 +5671,9 @@ function openUnitEd(i){unitEdit=i;const n=i>=0?uList()[i]:"",used=n?uUsers(n).le
 $("unitBtn").addEventListener("click",openUnits);
 /* every unit the raw materials use goes into the saved list (ones already there are skipped) */
 $("unitFromItems").addEventListener("click",async()=>{if(!can("admin"))return;
+  if(!itLoaded){initItems();toast("Raw Material စာရင်း တင်နေဆဲပါ — ခဏနေမှ ပြန်နှိပ်ပါ");return}
   const saved=unitDoc&&unitDoc.length?unitDoc.slice():[],add=unitsInItems().filter(n=>!saved.some(x=>uSame(x,n)));
-  if(saved.length&&!add.length){toast("ထည့်စရာ unit အသစ် မရှိပါ — အကုန် စာရင်းထဲမှာ ရှိပြီးသားပါ");return}
+  if(!add.length){toast(saved.length?"ထည့်စရာ unit အသစ် မရှိပါ — အကုန် စာရင်းထဲမှာ ရှိပြီးသားပါ":"Purchase unit row ထဲမှာ unit မတွေ့ပါ");return}
   const list=[...saved,...add].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
   if(await unitPersist(list))toast(`Unit ${add.length} ခု ထည့်ပြီး (${add.slice(0,8).join(", ")}${add.length>8?"…":""})`,5000)});
 $("unitAdd").addEventListener("click",()=>openUnitEd(-1));
@@ -7638,7 +7639,7 @@ function initItems(){
   if(itCol)return;itCol=db.collection("items");
   db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items")renderItems();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
+    if(view==="items")renderItems();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
 }
 /* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
    changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
