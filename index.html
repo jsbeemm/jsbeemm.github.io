@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793604250"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793606325"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -942,6 +942,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
+.so-fam{cursor:default}.so-uchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.so-uchip{font-size:13px;padding:5px 10px}.so-uchip b{margin-left:4px}.so-uchip.on{border-color:var(--accent);color:var(--accent)}
+.so-ldw{flex-wrap:wrap}#soLines .so-lu{width:100%;flex-basis:100%;font-size:12px}
 .so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
 @media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
   .so-tbl thead{display:none}.so-tbl tbody#soLines tr{display:grid;grid-template-columns:28px 44px 1fr auto;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
@@ -7929,9 +7931,10 @@ const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price|
 function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
   $("soNet").textContent=Number(net).toLocaleString("en-US");$("soPaidRo").hidden=!soEditing;$("soPaidRo").textContent=paid?Number(paid).toLocaleString("en-US"):"-";
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
-async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l))));
+async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l)))),fm=soFamMap();
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
-      <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
+      <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>${(()=>{const it=items.find(x=>x.id===l.pid),fam=it&&fm.get(soFamKey(it));
+        return fam&&fam.length>1?`<select class="so-lu" aria-label="Size">${fam.map(x=>`<option value="${esc(x.id)}" ${x.id===l.pid?"selected":""}>${esc(soUnitOf(x))} · ${fmt(x.price)}</option>`).join("")}</select>`:""})()}`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
@@ -7944,6 +7947,10 @@ $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");i
   r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 $("soPaid").addEventListener("input",soSyncTot);
 /* Retail / Wholesale beside a line's price: picks that price of the item (the price can still be typed over) */
+/* another size of the same product: the line becomes that item, at its price */
+$("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lu"))return;const l=soLines[Number(e.target.closest("[data-i]").dataset.i)],it=items.find(x=>x.id===e.target.value);if(!l||!it)return;
+  Object.assign(l,{pid:it.id,code:it.code||"",name:it.name,price:l.tier==="w"&&it.whPrice>0?Number(it.whPrice):Number(it.price)||0});if(!(it.whPrice>0))delete l.tier;
+  if(it.photo)l.photo=it.photo;else delete l.photo;renderSoLines()});
 $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=items.find(x=>x.id===l.pid);if(!it)return;
   l.tier=e.target.value;l.price=l.tier==="w"&&it.whPrice>0?Number(it.whPrice):Number(it.price)||0;if(l.tier!=="w")delete l.tier;
   r.querySelector(".so-lp").value=l.price;r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
@@ -7952,11 +7959,29 @@ $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",
 $("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
 /* "+ Add item" opens a list to pick from: only items with a JS selling price; a tap puts the item on the voucher and goes to its Qty */
 let soPickCat="";
+/* one product in several sizes (Ref: — e.g. butter bought as 25kg and 5kg and repacked to 1kg): items that share a Ref
+   (or are that Ref) and have a selling price. A voucher shows the product once, with its sizes and their prices. */
+const SO_SIZE=/(\d+(?:\.\d+)?\s*(?:kg|gm|g|ltr|l|ml|lb|oz|pcs|pc)s?)(?![a-z])/i;
+const soFamKey=i=>pdNorm(i.ref||i.code||i.id);
+function soFamMap(){const m=new Map();for(const i of items){if(!(i.price>0))continue;const k=soFamKey(i);if(!m.has(k))m.set(k,[]);m.get(k).push(i)}
+  for(const a of m.values())a.sort((x,y)=>Number(y.price||0)-Number(x.price||0));return m}
+/* the size: from the name ("… 5kg"), else from Purchase Conversion in the base unit (25000 g → 25kg), else the count unit (pk) */
+function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].replace(/\s+/g,"");
+  const c=Number(i.purConv||0),u=String(i.unit||"").toLowerCase();
+  if(c>0&&(u==="g"||u==="gm"))return c>=1000?`${+(c/1000).toFixed(2)}kg`:`${c}g`;if(c>0&&u==="ml")return c>=1000?`${+(c/1000).toFixed(2)}L`:`${c}ml`;
+  if(c>0&&u)return`${c}${u}`;return i.stockUnit||i.uom||i.purUnit||i.code||""}
+function soFamName(k,fam){const base=items.find(x=>pdNorm(x.code)===k)||fam[0];return String(base.name||"").replace(SO_SIZE,"").replace(/[\s\-–(]+\)?\s*$/,"").replace(/\s{2,}/g," ").trim()||base.name}
 function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.filter(i=>i.price>0).map(i=>i.cat||"Other"))].sort();if(soPickCat&&!cats.includes(soPickCat))soPickCat="";
   $("soPickCats").innerHTML=`<button type="button" class="chip" data-sopc="" aria-pressed="${!soPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-sopc="${esc(c)}" aria-pressed="${soPickCat===c}">${esc(c)}</button>`).join("");
   const m=inQ.filter(i=>i.price>0&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>(b.price>0)-(a.price>0)||String(a.name).localeCompare(String(b.name))).slice(0,80);
-  $("soHits").innerHTML=m.length?m.map(i=>{const n=soLines.find(l=>l.pid===i.id)?.qty||0;
+  const fm=soFamMap(),seen=new Set();
+  $("soHits").innerHTML=m.length?m.map(i=>{const k=soFamKey(i),fam=fm.get(k)||[i];
+    if(fam.length>1){if(seen.has(k))return"";seen.add(k);const ph=fam.find(x=>x.photo)?.photo,on=fam.some(x=>soLines.some(l=>l.pid===x.id));
+      return`<div class="so-hit so-phit so-fam${on?" on":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
+        <span><span data-t="${esc(soFamName(k,fam))}"></span><span class="so-uchips">${fam.map(x=>{const q=soLines.find(l=>l.pid===x.id)?.qty;
+          return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-so-add="${esc(x.id)}" title="${esc(x.name)} · ${esc(x.code||"")}">${esc(soUnitOf(x))} <b>${fmt(x.price)}</b>${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
+    const n=soLines.find(l=>l.pid===i.id)?.qty||0;
     return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(i.id)}">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
       <span><span data-t="${esc(i.name)}"></span><br><code>${esc(i.code||"")}</code></span><b>${i.price>0?fmt(i.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
