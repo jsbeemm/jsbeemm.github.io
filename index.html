@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627836"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793628001"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1148,7 +1148,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .rcv-sn{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);text-align:center;min-width:1.6em}.rcv-pk .rcv-sn{font-size:15px;margin-right:2px}
 .rcv-pkbtns{display:flex;flex-wrap:wrap;gap:8px}.rcv-many{cursor:pointer}.rcv-todo-in{display:inline-block;margin:4px 0}
 .rcv-th.rcv-add{cursor:pointer}
-.city-box{width:min(100%,440px)}.unit-box{width:min(100%,440px)}#unitDlg .pm-tbl{min-width:0}#unitDlg .pm-tbl td:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl th:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl td.unit-n,#unitDlg .pm-tbl th:nth-child(2){width:80px;text-align:center}#unitDlg .pm-tbl td.unit-n{color:var(--muted)}#unitDlg .pm-acts{width:64px}.unit-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.unit-acts .pm-add{margin:0}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
+.city-box{width:min(100%,440px)}.unit-box{width:min(100%,440px)}#unitDlg .pm-tbl{min-width:0}#unitDlg .pm-tbl td:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl th:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl td.unit-n,#unitDlg .pm-tbl th:nth-child(2){width:80px;text-align:center}#unitDlg .pm-tbl td.unit-n{color:var(--muted)}#unitDlg .pm-acts{width:64px}.unit-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#unitDlg tr.unit-has{cursor:pointer}#unitDlg tr.unit-has:hover td{background:var(--accent-soft)}#unitDlg .unit-n{white-space:nowrap}.unit-chev{width:14px;height:14px;margin-left:4px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}#unitDlg tr.open .unit-chev{transform:rotate(180deg)}#unitDlg tr.unit-used td{padding:6px 10px 10px;background:var(--surface)}.unit-its{display:flex;flex-direction:column;gap:4px}.unit-it{display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:8px 10px;font:inherit;color:var(--ink);cursor:pointer}.unit-it:hover{border-color:var(--accent);color:var(--accent)}.unit-it code{flex:none;min-width:64px;font-size:12px;color:var(--muted)}.unit-acts .pm-add{margin:0}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
 .rcv-dno{margin-left:auto;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:3px 10px;white-space:nowrap}
 #rcvDlg,#pkgDlg{z-index:31}
 .rcv-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer}
@@ -5646,9 +5646,15 @@ const uList=()=>(unitDoc&&unitDoc.length?unitDoc:unitsInItems()).slice().sort((a
 /* the items that use a unit (as Base Unit, Stock Count Unit, Unit, or a unit row's 1 Unit / Quantity unit) */
 const uUsers=n=>items.filter(i=>U_KEYS.some(k=>uSame(i[k],n))||(i.units||[]).some(u=>uSame(u.u,n)||uSame(u.of,n)));
 function unitLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeUnits")||"null")}catch(e){return null}}
+/* tapping a unit's row opens the items that use it under it; tapping an item opens that raw material */
+var unitOpen=null;
+const U_CHEV=`<svg class="unit-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
 function renderUnits(){const l=uList();
-  $("unitRows").innerHTML=l.length?l.map((n,i)=>`<tr data-i="${i}"><td>${esc(n)}</td><td class="unit-n">${uUsers(n).length||"—"}</td><td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-unit-edit aria-label="Edit" title="Edit">${PENCIL}</button></span></td></tr>`).join("")
+  $("unitRows").innerHTML=l.length?l.map((n,i)=>{const us=uUsers(n),op=us.length&&uSame(unitOpen,n);
+    return`<tr data-i="${i}" class="${us.length?"unit-has":""}${op?" open":""}"${us.length?` aria-expanded="${!!op}"`:""}><td>${esc(n)}</td><td class="unit-n">${us.length?`${us.length}${U_CHEV}`:"—"}</td><td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-unit-edit aria-label="Edit" title="Edit">${PENCIL}</button></span></td></tr>`
+      +(op?`<tr class="unit-used"><td colspan="3"><div class="unit-its">${us.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(it=>`<button type="button" class="unit-it" data-unit-it="${esc(it.id)}"><code>${esc(it.code||"")}</code><span data-t="${esc(it.name||"")}"></span></button>`).join("")}</div></td></tr>`:"")}).join("")
     :`<tr><td colspan="3" class="so-empty">${itLoaded?"Unit မရှိသေးပါ":"Loading…"}</td></tr>`;
+  $("unitRows").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
   const dl=$("itUnitList");if(dl)dl.innerHTML=l.map(v=>`<option value="${esc(v)}">`).join("")}
 async function unitPersist(list){
   try{if(db)await db.doc("meta/units").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
@@ -5677,7 +5683,11 @@ $("unitFromItems").addEventListener("click",async()=>{if(!can("admin"))return;
   const list=[...saved,...add].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
   if(await unitPersist(list))toast(`Unit ${add.length} ခု ထည့်ပြီး (${add.slice(0,8).join(", ")}${add.length>8?"…":""})`,5000)});
 $("unitAdd").addEventListener("click",()=>openUnitEd(-1));
-$("unitRows").addEventListener("click",e=>{const tr=e.target.closest("tr[data-i]");if(tr&&e.target.closest("[data-unit-edit]"))openUnitEd(Number(tr.dataset.i))});
+$("unitRows").addEventListener("click",e=>{const it=e.target.closest("[data-unit-it]");
+  if(it){const i=items.find(x=>x.id===it.dataset.unitIt);if(i)openItForm(i);return}
+  const tr=e.target.closest("tr[data-i]");if(!tr)return;
+  if(e.target.closest("[data-unit-edit]")){openUnitEd(Number(tr.dataset.i));return}
+  if(!tr.classList.contains("unit-has"))return;const n=uList()[Number(tr.dataset.i)];unitOpen=uSame(unitOpen,n)?null:n;renderUnits()});
 $("unitEdForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("admin"))return;
   const n=$("unitEdName").value.trim().replace(/\s+/g," ");if(!n){toast("Unit ထည့်ပါ");$("unitEdName").focus();return}
   const l=uList(),old=unitEdit>=0?l[unitEdit]:null;
