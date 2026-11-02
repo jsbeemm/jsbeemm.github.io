@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793598149"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793598479"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -934,7 +934,13 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-line{padding-bottom:6px;border-bottom:1px dashed var(--line)}
 .so-addbtns{display:flex;gap:6px;margin:8px 0}.so-tot{display:flex;justify-content:flex-end;gap:16px;font-size:16px;margin:6px 0 10px}.so-tot b{font-family:var(--mono)}
 .so-foot .btn.pv-ic,.so-foot .btn.pv-del{padding-inline:14px;min-width:48px;min-height:48px;justify-content:center}.so-foot .btn.pv-del{color:var(--accent)}
-.so-foot .ed-count{flex:1}#soView .side-panel.so-panel{grid-template-rows:auto minmax(0,1fr) auto}
+.so-foot .ed-count{flex:1}#soView .side-panel.so-panel{grid-template-rows:auto minmax(0,1fr)}
+#soView .pv-head{flex-wrap:nowrap;gap:10px}#soView .pv-head>b{white-space:nowrap}.pv-head .so-foot{flex:1;border:0;padding:0;gap:6px}.pv-head .so-foot select{width:auto;padding:6px 8px}
+.pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-height:40px;min-width:42px;padding-inline:10px}.pv-head .so-foot .btn{padding-block:8px}
+@media (max-width:700px){#soView .pv-head{flex-wrap:wrap}.pv-head .so-foot{order:3;flex-basis:100%}}
+/* on a phone the tools fit one row: no spacer, short labels */
+@media (max-width:600px){.pv-head .so-foot .ed-count,.pv-head .so-foot .so-pl{display:none}.pv-head .so-foot{gap:4px}#soView .pv-head .so-foot select{padding:0 2px;height:38px;min-height:0;max-width:86px}#soView .pv-head .so-foot #soOrient{max-width:98px}
+  .pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-width:38px;min-height:38px;padding-inline:8px}.pv-head .so-foot #soPayBtn{padding-inline:10px}}
 .so-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.so-paper{display:inline-flex;align-items:center;gap:6px;font-size:13px}.so-paper select{width:auto;padding:5px 8px}
 .so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
 .so-preview{overflow:hidden;border-radius:10px;padding:14px;background:var(--sunk)}#soPrev{width:760px;transform-origin:0 0;background:#fff;box-sizing:border-box;box-shadow:0 2px 10px rgba(0,0,0,.18)}
@@ -2178,7 +2184,20 @@ span.star-ic{cursor:default}
 <!-- JS voucher: view, print, payments -->
 <div class="editor" id="soView" hidden role="dialog" aria-modal="true" aria-label="Voucher">
   <div class="ed-panel side-panel so-panel">
-    <div class="ed-tools pv-head"><b>📄 <span id="soViewT">Voucher</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="ed-tools pv-head"><b>📄 <span id="soViewT">Voucher</span></b>
+    <!-- the tools sit on the voucher number's row, so the voucher gets the whole height -->
+    <div class="ed-foot so-foot">
+      <button type="button" class="btn ghost pv-ic" id="soEditBtn" aria-label="Edit voucher" title="Edit voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
+      <button type="button" class="btn ghost pv-del" id="soDelBtn" hidden aria-label="Delete voucher" title="Delete voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg></button>
+      <span class="ed-count"></span>
+      <label class="so-paper"><span class="so-pl">Paper</span> <select id="soPaper" aria-label="Paper"><option value="A5">A5</option><option value="A4">A4</option><option value="RC">Receipt 80mm</option></select></label>
+      <select id="soOrient" aria-label="Orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select>
+      <button type="button" class="btn ghost" id="soPayBtn" aria-label="Add payment" title="Add payment">💵 +<span class="so-pl"> Payment</span></button>
+      <button type="button" class="btn ghost pv-ic" id="soPrintBtn" aria-label="Print" title="Print"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
+      <button type="button" class="btn ghost pv-ic" id="soShareBtn" aria-label="Share" title="Share"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button>
+      <button type="button" class="btn pv-ic" id="soImgBtn" aria-label="Save image" title="Save image"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+    </div>
+    <button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <div class="side-body">
       <div class="so-payform" id="soPayForm" hidden>
         <label class="prf"><span>Amount (Ks)</span><input id="soPAmt" type="number" min="0" step="1"></label>
@@ -2187,18 +2206,6 @@ span.star-ic{cursor:default}
         <button type="button" class="btn" id="soPSave">Save payment</button></div>
       <div class="so-pays" id="soPays"></div>
       <div class="so-preview"><div id="soPrev"></div></div>
-    </div>
-    <!-- the same footer as the order preview: edit / delete on the left; paper, payment, print and save on the right (icon-only) -->
-    <div class="ed-foot so-foot">
-      <button type="button" class="btn ghost pv-ic" id="soEditBtn" aria-label="Edit voucher" title="Edit voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
-      <button type="button" class="btn ghost pv-del" id="soDelBtn" hidden aria-label="Delete voucher" title="Delete voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg></button>
-      <span class="ed-count"></span>
-      <label class="so-paper">Paper <select id="soPaper"><option value="A5">A5</option><option value="A4">A4</option><option value="RC">Receipt 80mm</option></select></label>
-      <select id="soOrient" aria-label="Orientation"><option value="P">Portrait</option><option value="L">Landscape</option></select>
-      <button type="button" class="btn ghost" id="soPayBtn">💵 + Payment</button>
-      <button type="button" class="btn ghost pv-ic" id="soPrintBtn" aria-label="Print" title="Print"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></button>
-      <button type="button" class="btn ghost pv-ic" id="soShareBtn" aria-label="Share" title="Share"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button>
-      <button type="button" class="btn pv-ic" id="soImgBtn" aria-label="Save image" title="Save image"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
     </div>
   </div>
 </div>
