@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793626970"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793627173"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1148,7 +1148,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .rcv-sn{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);text-align:center;min-width:1.6em}.rcv-pk .rcv-sn{font-size:15px;margin-right:2px}
 .rcv-pkbtns{display:flex;flex-wrap:wrap;gap:8px}.rcv-many{cursor:pointer}.rcv-todo-in{display:inline-block;margin:4px 0}
 .rcv-th.rcv-add{cursor:pointer}
-.city-box{width:min(100%,440px)}.unit-box{width:min(100%,440px)}#unitDlg .pm-tbl{min-width:0}#unitDlg .pm-tbl td:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl th:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl td.unit-n,#unitDlg .pm-tbl th:nth-child(2){width:80px;text-align:center}#unitDlg .pm-tbl td.unit-n{color:var(--muted)}#unitDlg .pm-acts{width:64px}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
+.city-box{width:min(100%,440px)}.unit-box{width:min(100%,440px)}#unitDlg .pm-tbl{min-width:0}#unitDlg .pm-tbl td:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl th:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl td.unit-n,#unitDlg .pm-tbl th:nth-child(2){width:80px;text-align:center}#unitDlg .pm-tbl td.unit-n{color:var(--muted)}#unitDlg .pm-acts{width:64px}.unit-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.unit-acts .pm-add{margin:0}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
 .rcv-dno{margin-left:auto;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:3px 10px;white-space:nowrap}
 #rcvDlg,#pkgDlg{z-index:31}
 .rcv-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer}
@@ -1912,7 +1912,7 @@ span.star-ic{cursor:default}
     <div class="side-body">
       <p class="side-help">Raw Material ရဲ့ Base Unit၊ 1 Unit၊ Unit မှာ ဒီစာရင်းထဲက ရွေးရပါတယ်။ နာမည်ပြင်ရင် သုံးထားတဲ့ ပစ္စည်းအားလုံးမှာ လိုက်ပြောင်းပါတယ်။</p>
       <div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>Unit</th><th>Items</th><th></th></tr></thead><tbody id="unitRows"></tbody></table></div>
-      <button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button>
+      <div class="unit-acts"><button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button><button type="button" class="chip pm-add" id="unitFromItems">⤓ Raw Material ထဲက unit တွေ ထည့်မည်</button></div>
     </div>
   </div>
 </div>
@@ -5665,6 +5665,12 @@ function openUnitEd(i){unitEdit=i;const n=i>=0?uList()[i]:"",used=n?uUsers(n).le
   $("unitEdUse").hidden=!used;$("unitEdUse").textContent=used?`ပစ္စည်း ${used} ခုမှာ သုံးထားပါတယ်`:"";
   $("unitEdDlg").hidden=false;$("unitEdName").focus()}
 $("unitBtn").addEventListener("click",openUnits);
+/* every unit the raw materials use goes into the saved list (ones already there are skipped) */
+$("unitFromItems").addEventListener("click",async()=>{if(!can("admin"))return;
+  const saved=unitDoc&&unitDoc.length?unitDoc.slice():[],add=unitsInItems().filter(n=>!saved.some(x=>uSame(x,n)));
+  if(saved.length&&!add.length){toast("ထည့်စရာ unit အသစ် မရှိပါ — အကုန် စာရင်းထဲမှာ ရှိပြီးသားပါ");return}
+  const list=[...saved,...add].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
+  if(await unitPersist(list))toast(`Unit ${add.length} ခု ထည့်ပြီး (${add.slice(0,8).join(", ")}${add.length>8?"…":""})`,5000)});
 $("unitAdd").addEventListener("click",()=>openUnitEd(-1));
 $("unitRows").addEventListener("click",e=>{const tr=e.target.closest("tr[data-i]");if(tr&&e.target.closest("[data-unit-edit]"))openUnitEd(Number(tr.dataset.i))});
 $("unitEdForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("admin"))return;
