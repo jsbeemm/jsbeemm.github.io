@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597056"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597189"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -939,6 +939,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
 .so-preview{overflow:hidden;border-radius:10px;padding:14px;background:var(--sunk)}#soPrev{width:760px;transform-origin:0 0;background:#fff;box-sizing:border-box;box-shadow:0 2px 10px rgba(0,0,0,.18)}
 #soShot{position:fixed;left:-99999px;top:0;background:#fff;padding:0}
+/* an item picked from Raw Material shows its name as plain text; only free lines (Delivery, Other) are typed */
+.so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
 @media (max-width:560px){.it-grid{grid-template-columns:1fr}}
@@ -7834,7 +7836,7 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l))));
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
-      <td><input class="so-ld" value="${esc(l.name||"")}" aria-label="Description" ${l.pid?"readonly":""}></td>
+      <td>${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</td>
       <td class="r"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${it.whPrice>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
