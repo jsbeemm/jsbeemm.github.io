@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793626300"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793626970"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1148,7 +1148,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .rcv-sn{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);text-align:center;min-width:1.6em}.rcv-pk .rcv-sn{font-size:15px;margin-right:2px}
 .rcv-pkbtns{display:flex;flex-wrap:wrap;gap:8px}.rcv-many{cursor:pointer}.rcv-todo-in{display:inline-block;margin:4px 0}
 .rcv-th.rcv-add{cursor:pointer}
-.city-box{width:min(100%,440px)}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
+.city-box{width:min(100%,440px)}.unit-box{width:min(100%,440px)}#unitDlg .pm-tbl{min-width:0}#unitDlg .pm-tbl td:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl th:first-child{text-align:left;padding-left:14px}#unitDlg .pm-tbl td.unit-n,#unitDlg .pm-tbl th:nth-child(2){width:80px;text-align:center}#unitDlg .pm-tbl td.unit-n{color:var(--muted)}#unitDlg .pm-acts{width:64px}#cityDlg .pm-tbl{min-width:0}#cityDlg .pm-tbl td:nth-child(2),#cityDlg .pm-tbl th:nth-child(2){width:80px}#cityDlg .pm-acts{width:96px}.rcv-wt .o-ic{flex:none;width:42px;height:40px}
 .rcv-dno{margin-left:auto;font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:3px 10px;white-space:nowrap}
 #rcvDlg,#pkgDlg{z-index:31}
 .rcv-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer}
@@ -1349,6 +1349,7 @@ span.star-ic{cursor:default}
           <div class="set-me" id="meLine"></div>
           <button type="button" class="set-btn" id="teamBtn" hidden>👥 Accounts</button>
           <button type="button" class="set-btn" id="pmBtn" hidden>💳 Payment methods</button>
+          <button type="button" class="set-btn" id="unitBtn" hidden>📏 Units</button>
           <button type="button" class="set-btn" onclick="if(confirm('ဒီစက်ကို ဆိုင် account ကနေ ထွက်မလား?'))fbShopSignOut()">🔒 Shop sign out</button><button type="button" class="set-btn" id="logoutBtn" hidden style="display:none">⎋ Log out</button>   <!-- kept for its handler; the visible Log out is the icon beside Settings -->
           <p class="set-title" id="xlTitle" style="margin-top:8px" hidden>Excel</p>
           <button type="button" class="set-btn" id="xlExport" hidden>📤 Export Excel</button>
@@ -1903,6 +1904,23 @@ span.star-ic{cursor:default}
   <!-- who checks that the money arrived: each sale as it happens, or the day's total at closing (money a staff member holds, e.g. Cash) -->
   <div class="ex-row2"><label class="prf"><span>Account owner</span><select id="pmEdOwner"></select></label><label class="prf"><span>Owner confirms</span><select id="pmEdWhen"><option value="sale">Each sale</option><option value="closing">At closing (end of day)</option></select></label></div>
   <div class="cfm-btns"><button type="button" class="btn ghost danger-t" id="pmEdDel" hidden>Delete</button><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="pmEdSave">Save</button></div>
+</form></div>
+<!-- Settings → Units: the units raw materials are bought, counted and costed in (pc, pk, ct, g …) -->
+<div class="editor" id="unitDlg" hidden role="dialog" aria-modal="true" aria-label="Units">
+  <div class="ed-panel side-panel unit-box">
+    <div class="ed-tools pv-head"><b>📏 <span>Units</span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body">
+      <p class="side-help">Raw Material ရဲ့ Base Unit၊ 1 Unit၊ Unit မှာ ဒီစာရင်းထဲက ရွေးရပါတယ်။ နာမည်ပြင်ရင် သုံးထားတဲ့ ပစ္စည်းအားလုံးမှာ လိုက်ပြောင်းပါတယ်။</p>
+      <div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>Unit</th><th>Items</th><th></th></tr></thead><tbody id="unitRows"></tbody></table></div>
+      <button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button>
+    </div>
+  </div>
+</div>
+<div class="editor" id="unitEdDlg" hidden role="dialog" aria-modal="true" aria-labelledby="unitEdTitle" style="z-index:45"><form class="cfm-box pm-ed" id="unitEdForm" novalidate>
+  <h3 id="unitEdTitle">Add unit</h3>
+  <label class="prf"><span>Unit <b>*</b></span><input id="unitEdName" autocomplete="off"></label>
+  <p class="side-help" id="unitEdUse" hidden></p>
+  <div class="cfm-btns"><button type="button" class="btn ghost danger-t" id="unitEdDel" hidden>Delete</button><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="unitEdSave">Save</button></div>
 </form></div>
 <div class="editor" id="exDlg" hidden role="dialog" aria-modal="true" aria-label="Personal expense">
   <div class="ed-panel side-panel">
@@ -5283,6 +5301,7 @@ function renderMe(){
   /* only Admins (the artifact's Owner / Editors) approve accounts and set roles */
   $("teamBtn").hidden=!(db&&can("admin"));
   $("pmBtn").hidden=!can("admin");
+  $("unitBtn").hidden=!can("admin");
   $("bkBox").hidden=!can("admin");
   $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=true;   /* Excel is exported from Orders (the 📥 Excel button), not Settings */
   $("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");   /* Production (Baking / Decoration) does not see the order report */
@@ -5613,6 +5632,55 @@ $("pmEdForm").addEventListener("submit",async e=>{
   const b=$("pmEdSave");b.disabled=true;if(await pmPersist(list))$("pmEdDlg").hidden=true;b.disabled=false;
 });
 $("pmForm").addEventListener("submit",e=>{e.preventDefault();$("pmDlg").hidden=true});
+/* ---------- Settings → Units (Admins): kept in meta/units; until it is first saved, the list is the units the items already use ---------- */
+var unitDoc=null,unitEdit=-1;
+const U_KEYS=["unit","stockUnit","uom","purUnit"];
+const uSame=(a,b)=>String(a||"").trim().toLowerCase()===String(b||"").trim().toLowerCase();
+function unitsInItems(){const s=new Map();const add=v=>{v=String(v||"").trim();if(v&&!s.has(v.toLowerCase()))s.set(v.toLowerCase(),v)};
+  for(const i of items){U_KEYS.forEach(k=>add(i[k]));(i.units||[]).forEach(u=>add(u.u))}return[...s.values()]}
+const uList=()=>(unitDoc&&unitDoc.length?unitDoc:unitsInItems()).slice().sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
+/* the items that use a unit (as Base Unit, Stock Count Unit, Unit, or a unit row's 1 Unit / Quantity unit) */
+const uUsers=n=>items.filter(i=>U_KEYS.some(k=>uSame(i[k],n))||(i.units||[]).some(u=>uSame(u.u,n)||uSame(u.of,n)));
+function unitLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeUnits")||"null")}catch(e){return null}}
+function renderUnits(){const l=uList();
+  $("unitRows").innerHTML=l.length?l.map((n,i)=>`<tr data-i="${i}"><td>${esc(n)}</td><td class="unit-n">${uUsers(n).length||"—"}</td><td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-unit-edit aria-label="Edit" title="Edit">${PENCIL}</button></span></td></tr>`).join("")
+    :`<tr><td colspan="3" class="so-empty">Unit မရှိသေးပါ</td></tr>`;
+  const dl=$("itUnitList");if(dl)dl.innerHTML=l.map(v=>`<option value="${esc(v)}">`).join("")}
+async function unitPersist(list){
+  try{if(db)await db.doc("meta/units").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
+    else{try{localStorage.setItem("cakeUnits",JSON.stringify(list))}catch(x){}}
+    unitDoc=list;renderUnits();return true}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်");return false}}
+/* renaming a unit renames it on every item that uses it */
+async function unitRenameItems(from,to){const rn=v=>uSame(v,from)?to:v,now=new Date().toISOString(),ch=[];
+  for(const i of uUsers(from)){const d={};U_KEYS.forEach(k=>{if(uSame(i[k],from))d[k]=to});
+    if((i.units||[]).some(u=>uSame(u.u,from)||uSame(u.of,from)||uSame(u.n,from)))d.units=i.units.map(u=>{const x={...u};["u","of","n"].forEach(k=>{if(x[k]!=null)x[k]=rn(x[k])});return x});
+    ch.push([i,{...d,updatedAt:now,updatedBy:me.id||null}])}
+  if(!ch.length)return 0;
+  if(db){for(let s=0;s<ch.length;s+=400){const b=db.batch();ch.slice(s,s+400).forEach(([i,d])=>b.update(db.collection("items").doc(i.id),d));await b.commit()}}
+  else{items=items.map(i=>{const c=ch.find(([x])=>x.id===i.id);return c?{...i,...c[1]}:i});try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
+  return ch.length}
+function openUnits(){if(!can("admin"))return;renderUnits();$("settingsPanel").hidden=true;$("unitDlg").hidden=false}
+function openUnitEd(i){unitEdit=i;const n=i>=0?uList()[i]:"",used=n?uUsers(n).length:0;
+  $("unitEdTitle").textContent=i>=0?"Edit unit":"Add unit";$("unitEdName").value=n;$("unitEdDel").hidden=i<0;
+  $("unitEdUse").hidden=!used;$("unitEdUse").textContent=used?`ပစ္စည်း ${used} ခုမှာ သုံးထားပါတယ်`:"";
+  $("unitEdDlg").hidden=false;$("unitEdName").focus()}
+$("unitBtn").addEventListener("click",openUnits);
+$("unitAdd").addEventListener("click",()=>openUnitEd(-1));
+$("unitRows").addEventListener("click",e=>{const tr=e.target.closest("tr[data-i]");if(tr&&e.target.closest("[data-unit-edit]"))openUnitEd(Number(tr.dataset.i))});
+$("unitEdForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("admin"))return;
+  const n=$("unitEdName").value.trim().replace(/\s+/g," ");if(!n){toast("Unit ထည့်ပါ");$("unitEdName").focus();return}
+  const l=uList(),old=unitEdit>=0?l[unitEdit]:null;
+  if(l.some((x,j)=>j!==unitEdit&&uSame(x,n))){toast(`"${n}" ရှိပြီးသားပါ`);$("unitEdName").focus();return}
+  const b=$("unitEdSave");b.disabled=true;
+  try{const list=old!=null?l.map(x=>x===old?n:x):[...l,n];
+    if(old!=null&&old!==n){const c=await unitRenameItems(old,n);if(c)toast(`ပစ္စည်း ${c} ခုမှာ "${old}" → "${n}" ပြောင်းပြီး`)}
+    if(await unitPersist(list)){$("unitEdDlg").hidden=true;if(old==null||old===n)toast("သိမ်းပြီး")}}
+  catch(x){toast("သိမ်းမရပါ")}finally{b.disabled=false}});
+/* a unit in use cannot be deleted (rename it instead, or change those items first) */
+$("unitEdDel").addEventListener("click",async()=>{const n=uList()[unitEdit];if(n==null||!can("admin"))return;const used=uUsers(n);
+  if(used.length){toast(`ပစ္စည်း ${used.length} ခုမှာ သုံးထားလို့ ဖျက်မရပါ (${used.slice(0,3).map(i=>i.name).join(", ")}${used.length>3?"…":""})`,6000);return}
+  if(!await askConfirm(`Delete “${n}”?`,"This unit is removed from the list."))return;
+  if(await unitPersist(uList().filter(x=>x!==n)))$("unitEdDlg").hidden=true});
 /* ---------- Expenses: Personal (shared between people) and Business (Admins only) — what was spent, how it was paid, and who shares it ---------- */
 /* a new expense starts with this payment method picked (when it is ticked "Expense" in Settings) */
 const EX_DEFAULT_PAY="Kpay(WSY)";
@@ -7665,7 +7733,7 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
   const uniq=f=>[...new Set(items.map(f).filter(Boolean))].sort();
   itFillCats(i?i.cat:itCat);itFillSubs(i?.sub||"");$("itDel").hidden=!i;
-  $("itUnitList").innerHTML=[...new Set([...uniq(x=>x.unit),...uniq(x=>x.purUnit),...uniq(x=>x.stockUnit)])].sort().map(v=>`<option value="${esc(v)}">`).join("");
+  $("itUnitList").innerHTML=uList().map(v=>`<option value="${esc(v)}">`).join("");   /* Settings → Units */
   /* a new item starts in the category being looked at */
   for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else if(el.tagName==="SELECT"){el.innerHTML="";el.dataset.v=i?.[k]??""}else el.value=i?.[k]??""}
   itUnitsFill(i);
@@ -8498,7 +8566,7 @@ resetForm();render();go("home");
   downloads=null;
   db=await fbReady();
   if(!db){try{const rl=JSON.parse(localStorage.getItem("cakeRoles")||"null");if(rl)applyRoles(rl)}catch(e){}
-    orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");payMethods=pmLocalLoad();initPd();initPt();initTd();initSales();initRcv();try{lastNo=localStorage.getItem("cakeLastNo")}catch(e){}
+    orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");payMethods=pmLocalLoad();unitDoc=unitLocalLoad();initPd();initPt();initTd();initSales();initRcv();try{lastNo=localStorage.getItem("cakeLastNo")}catch(e){}
     localMode=true;setSync("local");renderMe();render();refreshNo();renderPhotos();
     await loadLocalPhotos();render();renderPR();return}
   syncAuth();   /* shared data: keep the app covered until the signed-in person is known */
@@ -8511,6 +8579,7 @@ resetForm();render();go("home");
   col.onSnapshot(snap=>{orders=snap.docs.map(d=>{const o={...d.data(),id:d.id};if(o.status==="baking")o.status="new";return o});if(mode!=="db")setSync("db");render();refreshNo()},
     ()=>{col=null;orders=localLoad();setSync("local");render()});
   db.doc("meta/payMethods").onSnapshot(s=>{payMethods=s.exists?s.data().list||null:null;render()},()=>{});
+  db.doc("meta/units").onSnapshot(s=>{unitDoc=s.exists?s.data().list||null:null;if(!$("unitDlg").hidden)renderUnits()},()=>{});
   db.doc("meta/exPeople").onSnapshot(s=>{exPplDoc=s.exists?s.data().list||null:null;initEx();renderEx();renderHome()},()=>{});
   db.doc("meta/orderNo").onSnapshot(s=>{lastNo=s.exists?s.data().last||null:null;refreshNo()},()=>{});
   initUsers();initPd();initPt();initSales();initRcv();
