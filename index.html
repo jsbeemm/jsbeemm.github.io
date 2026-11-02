@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597276"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597352"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8012,7 +8012,7 @@ async function renderSoView(v){$("soViewT").textContent=v.no;
   const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
   /* the preview is a sheet of the paper picked: A5 / A4 portrait or landscape (the voucher sits inside its margins), or the receipt strip */
   const land=!rc&&soLand(),p=$("soPrev"),W=rc?320:land?1150:812;
-  p.style.width=W+"px";p.style.padding=rc?"10px":Math.round(W*.05)+"px";p.style.minHeight=rc?"":Math.round(land?W/1.4142:W*1.4142)+"px";
+  p.style.width=W+"px";p.style.padding=rc?"10px":Math.round(W*.05)+"px";p.style.minHeight="";   /* as tall as the voucher, no empty paper below */
   p.innerHTML=html;soFit();soPrepShare(v)}
 var soViewSeq=0;
 /* the voucher keeps its paper layout and is scaled down to fit the dialog */
@@ -8077,8 +8077,10 @@ function soMakeImage(v,type="image/jpeg"){const job=soImgBusy.then(async()=>{con
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
     try{const shot=await html2canvas(box,{scale:rc?576/320:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
       let page=shot;
-      if(!rc){const S1=paper==="A4"?1654:1748,S2=paper==="A4"?2339:2480,W=land?S2:S1,H=land?S1:S2,pad=Math.round(W*.05);page=document.createElement("canvas");page.width=W;page.height=H;
-        const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,H);const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
+      if(!rc){const S1=paper==="A4"?1654:1748,S2=paper==="A4"?2339:2480,W=land?S2:S1,H=land?S1:S2,pad=Math.round(W*.05);
+        /* the paper's width, but only as tall as the voucher (no empty space below) */
+        const k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height),PH=Math.round(shot.height*k)+2*pad;page=document.createElement("canvas");page.width=W;page.height=PH;
+        const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,PH);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k)}
       const blob=await new Promise(r=>page.toBlob(r,type,.92));
       return{blob,name:`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+(type==="image/png"?".png":".jpg")}}
     finally{box.innerHTML="";box.style.padding="0"}});
