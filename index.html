@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793598625"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793599222"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -896,7 +896,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 /* vouchers open full screen, not as a pop-up */
 #soDlg,#soView{padding:0;place-items:stretch}#soDlg .side-panel.so-panel,#soView .side-panel.so-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
 #soDlg .side-body,#soView .side-body{width:min(100%,1000px);margin:0 auto}.so-h{margin:14px 0 6px}
-.so-pick{position:relative;margin-bottom:6px}.so-pick input{width:100%}
+.so-pick{position:relative;margin-bottom:6px}.so-pick input{width:100%}#soCustQ{resize:none;overflow:hidden;line-height:1.4;min-height:0;display:block}
 /* the voucher form looks like the voucher: boxes sit where the printed text goes */
 .vo-edit{padding:4px 2px}.vo-edit .req{color:var(--accent);font-family:inherit}
 .vo-edit input,.vo-edit select,.vo-edit textarea{font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;width:100%;box-sizing:border-box}
@@ -2148,7 +2148,7 @@ span.star-ic{cursor:default}
       <div class="vo vo-edit">
         <div class="vo-meta">
           <div class="vo-cust"><h3>Customer <b class="req">*</b></h3>
-            <div class="so-pick so-cpick"><input type="search" id="soCustQ" placeholder="Customer name (type to search)" autocomplete="off" aria-label="Customer name"><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div>
+            <div class="so-pick so-cpick"><textarea id="soCustQ" rows="1" placeholder="Customer name (type to search)" autocomplete="off" aria-label="Customer name"></textarea><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div>
             <input id="soPhone" inputmode="tel" autocomplete="off" placeholder="Phone" aria-label="Phone"></div>
           <div class="vo-dl"><h3>Delivery Info</h3>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
@@ -7772,7 +7772,7 @@ $("goSo").addEventListener("click",()=>go("so"));
 /* Customer: typing filters the JS customers (name, short code, phone); picking one fills the voucher. Typed text that is not
    picked from the list is a walk-in / other customer. */
 const soCustLbl=p=>p?`${p.name}${p.short?` (${p.short})`:""}`:"";
-function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p=>p.id===cur)?.name||"";$("soCustHits").hidden=true}
+function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p=>p.id===cur)?.name||"";$("soCustHits").hidden=true;requestAnimationFrame(soGrow)}
 function soCustHits(){const q=pdNorm($("soCustQ").value);
   const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,30);
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
@@ -7784,7 +7784,9 @@ function soCustHits(){const q=pdNorm($("soCustQ").value);
 $("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust").value="";
   if(had||!$("soCustQ").value.trim()){$("soPhone").value="";$("soChannel").textContent="";$("soDeliv").value="";soFillAddrs(null);soGrow()}
   soCustHits()});
-$("soCustQ").addEventListener("focus",soCustHits);
+$("soCustQ").addEventListener("focus",soCustHits);$("soCustQ").addEventListener("input",soGrow);
+/* one name, one paragraph: Enter does not start a new line */
+$("soCustQ").addEventListener("keydown",e=>{if(e.key==="Enter")e.preventDefault()});
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 var ptAfterSave=null;
@@ -7804,7 +7806,8 @@ const soDelivOf=v=>v?.deliv!=null?v.deliv:[[v?.dName,v?.dPhone].filter(Boolean).
 /* an address that already carries a phone number (a receiver written into it) is used as it is, without the customer line on top */
 const soHasPhone=s=>/(\+?95|0)9[\d\s\-]{6,}/.test(String(s||""));
 /* Delivery Info grows with its text, so nothing hides behind a scroll bar */
-function soGrow(){const t=$("soDeliv");if(!t)return;t.style.height="auto";t.style.height=(t.scrollHeight+2)+"px"}
+/* the customer name wraps onto more lines too, so a long name shows in full */
+function soGrow(){for(const id of["soDeliv","soCustQ"]){const t=$(id);if(!t||!t.offsetParent)continue;t.style.height="auto";t.style.height=(t.scrollHeight+2)+"px"}}
 /* the address without the receiver written on its first lines (everything up to the last line with a phone number) */
 function soBareAddr(a){const ls=String(a||"").split("\n");let k=-1;ls.forEach((l,i)=>{if(soHasPhone(l))k=i});return k>=0&&k<ls.length-1?ls.slice(k+1).join("\n"):a}
 function soDelivFor(p,i,own){const rc=own?{}:ptRecvOf(p)[i]||{};let addr=ptAddrsOf(p)[i]||"";
@@ -7835,7 +7838,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   /* "Paid Amount" is entered on a new voucher; later money goes in as a payment on the voucher */
   $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
-  renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus();soDraftId=null;soSnap=soState();if(!history.state?.soDlg)history.pushState({soDlg:1},"")}
+  renderSoLines();$("soDlg").hidden=false;soGrow();$("soCustQ").focus();soDraftId=null;soSnap=soState();if(!history.state?.soDlg)history.pushState({soDlg:1},"")}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
   $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow()});
@@ -7928,7 +7931,7 @@ function openSoDraft(d){initItems();openSoForm(null);const f=d.form||{};
   $("soCust").value=f.cust||"";$("soCustQ").value=f.customer||"";$("soPhone").value=f.phone||"";$("soChannel").textContent=f.channel||"";
   $("soDeliv").value=f.deliv||"";$("soNote").value=f.note||"";$("soPaid").value=f.paid||"";if(f.pay)$("soPay").value=f.pay;
   $("soDate").innerHTML=dateSelect("",f.date||todayISO(),"","",false,"");soLines=(f.lines||[]).map(l=>({...l}));
-  soFillAddrs(pts.find(p=>p.id===f.cust));renderSoLines();requestAnimationFrame(soGrow);$("soCustHits").hidden=true;
+  soFillAddrs(pts.find(p=>p.id===f.cust));renderSoLines();soGrow();$("soCustHits").hidden=true;
   soDraftId=d.id;soSnap=soState()}
 async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.find(x=>x.id===soDraftId);
   const form=JSON.parse(JSON.stringify({cust:$("soCust").value||"",customer:$("soCustQ").value.trim(),phone:$("soPhone").value.trim(),channel:$("soChannel").textContent||"",
