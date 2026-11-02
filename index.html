@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640363"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793640591"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7815,8 +7815,12 @@ function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(
 function itBaseRowRead(){const b=$("itUnit").value.trim().replace(/\s+/g," "),v=id=>Math.round(Number($(id).value)||0),p=v("itBP"),w=v("itBW"),m=v("itBM");
   if(!b||!(p>0||w>0||m>0))return[];const o={u:b,n:b};if(p>0)o.p=p;if(w>0)o.w=w;if(m>0)o.m=m;return[o]}
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
+/* metric units the Quantity unit can always be, worked out from the Base Unit: g → kg (1,000 g), ml → L (1,000 ml) */
+const IT_STD={g:{kg:1000},gm:{kg:1000},ml:{l:1000}};
+const itStdOf=base=>({g:["kg"],gm:["kg"],ml:["L"]})[String(base||"").toLowerCase()]||[];
 function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
-  const r=rows.find(x=>[x.n,x.u].some(y=>String(y||"").toLowerCase()===k)&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
+  const r=rows.find(x=>[x.n,x.u].some(y=>String(y||"").toLowerCase()===k)&&x.c>0&&String(x.of||"").toLowerCase()!==k);
+  if(!r){const s=IT_STD[String(base||"").toLowerCase()];return s&&s[k]?s[k]:null}const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
 /* two rows with the same 1 Unit (two ct) need their own unit names (ct24, ct48) so they can be told apart */
 function itUnitNeed(els){const v=(el,c)=>String(el.querySelector(c).value).trim().toLowerCase(),cu={},cn={};
   els.forEach(el=>{const u=v(el,".it-uu"),n=v(el,".it-un")||u;if(u)cu[u]=(cu[u]||0)+1;if(n)cn[n]=(cn[n]||0)+1});
@@ -7824,7 +7828,7 @@ function itUnitNeed(els){const v=(el,c)=>String(el.querySelector(c).value).trim(
 function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").querySelectorAll(".it-urow")];  /* the Quantity unit picks from the Base Unit and the other rows' unit names (24pk; a row with no name goes by its 1 Unit) */
   const nm=el=>{const n=String(el.querySelector(".it-un").value).trim()||String(el.querySelector(".it-uu").value).trim();return n?[n]:[]};
   els.forEach(el=>{const sel=el.querySelector(".it-uof"),own=nm(el),cur=sel.value||sel.dataset.v||"";
-    const opts=[...new Set([base,...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
+    const opts=[...new Set([base,...itStdOf(base),...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
   const need=itUnitNeed(els);els.forEach(el=>{const b=el.querySelector(".it-un"),on=need.includes(el);b.classList.toggle("it-need",on);b.title=on?"Unit name ထည့်ပါ — 1 Unit တူတာ နှစ်ခုရှိနေပါတယ်":""});
   /* Stock Count Unit: the Base Unit or one of the unit names */
