@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600572"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793600647"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -907,8 +907,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit input,.vo-edit select,.vo-edit textarea{font:inherit;font-size:13px;padding:6px 8px;border-radius:8px;width:100%;box-sizing:border-box}
 .vo-edit .vo-cust input{margin-top:4px}.vo-edit .vo-dl{text-align:left}
 .so-dlrow{display:flex;gap:6px;align-items:flex-start}.so-dlrow textarea{flex:1;min-width:0;min-height:64px;overflow:hidden;resize:none}
+/* "Change info" sits beside the Delivery Info title, so the box below gets the full width */
+.so-dlhead{display:flex;align-items:center;gap:8px;min-height:28px}.so-dlhead h3{margin:0}
 .so-addrw{position:relative;flex:none}.so-addrw .chip{white-space:nowrap;font-size:12px;padding:6px 10px}
-.so-addrmenu{right:0;left:auto;width:min(320px,80vw);top:calc(100% + 4px)}
+.so-addrmenu{left:0;right:auto;width:min(320px,80vw);top:calc(100% + 4px)}
 /* Channel and Date read like the printed voucher's text; tapping them still changes them */
 .vo-edit .vo-no{align-items:center}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
   -webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:right 5px center,right 1px center;background-size:4px 4px;background-repeat:no-repeat}
@@ -2159,9 +2161,8 @@ span.star-ic{cursor:default}
           <div class="vo-cust"><h3>Customer <b class="req">*</b></h3>
             <div class="so-pick so-cpick"><textarea id="soCustQ" rows="1" placeholder="Customer name (type to search)" autocomplete="off" aria-label="Customer name"></textarea><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div>
             <input id="soPhone" inputmode="tel" autocomplete="off" placeholder="Phone" aria-label="Phone"></div>
-          <div class="vo-dl"><h3>Delivery Info</h3>
-            <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea>
-              <div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div></div>
+          <div class="vo-dl"><div class="so-dlhead"><h3>Delivery Info</h3><div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div>
+            <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea></div></div>
           <div class="vo-no"><span class="k" id="soNoK">SO No#</span><span id="soNoTxt">—</span>
             <span class="k">Channel#</span><span id="soChannel" class="cap" title="Customer ရဲ့ Channel"></span>
             <span class="k">Date</span><span id="soDate" class="cap"></span></div>
@@ -7847,7 +7848,7 @@ function soFillAddrs(p){const ads=p?ptAddrsOf(p):[],di=p?ptDefOf(p):0;
   $("soAddrMenu").innerHTML=ads.map((a,i)=>{const rc=rcs[i],opt=(own,lbl)=>`<button type="button" class="so-hit so-chit" data-so-addr="${i}" ${own?'data-own="1"':""}><span data-t="${esc((lbl?lbl+" · ":"")+(own?soBareAddr(a):a).replace(/\n/g," "))}"></span>${i===di&&!own?`<small>Default</small>`:""}</button>`;
     /* a receiver kept on the address, or written into the address itself (it has a phone number): offer it and the customer's own name */
     return rc&&(rc.n||rc.p)?opt(false,who(rc.n,rc.p))+opt(true,me0):soHasPhone(a)?opt(false,"")+opt(true,me0):opt(true,me0)}).join("");
-  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;  $("soAddrBtn").hidden=!ads.length}
+  $("soAddrMenu").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soAddrMenu").hidden=true;$("soAddrBtn").hidden=ads.length<2}   /* only a customer with more than one address */
 $("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAddrs(pts.find(x=>x.id===$("soCust").value));$("soAddrMenu").hidden=!$("soAddrMenu").hidden});
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
   if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true;soGrow()});
