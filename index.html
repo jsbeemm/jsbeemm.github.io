@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793607963"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793608813"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -977,7 +977,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
 @media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
 .it-units{margin:6px 0 8px}.it-uh{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
-.it-urow{display:grid;grid-template-columns:1.1fr .9fr 12px .8fr .8fr 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
+.it-urow{display:grid;grid-template-columns:1.1fr .9fr 12px .8fr .8fr 1fr 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}.it-urow input{width:100%;min-width:0;height:38px;box-sizing:border-box;margin:0}
 .it-uhead{font-size:11px;opacity:.7;margin-bottom:2px}.it-urow>span{text-align:center}.it-uhead>span{text-align:left}.it-urow .o-ic{border:0;background:none;padding:0;width:28px;height:28px}
 .it-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}.it-grid .it-wide{grid-column:1/-1}.it-grid .it-ck{align-self:end;min-height:40px}
 @media (max-width:560px){.it-grid{grid-template-columns:1fr}}
@@ -2139,7 +2139,7 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Base Unit <small>(costing)</small></span><input id="itUnit" list="itUnitList" autocomplete="off" placeholder="g"></label>
         <!-- how it is bought / sold: 1 ct = 24 pcs, 1 ct = 48 pcs, … (a price makes it sellable in that unit) -->
         <div class="it-wide it-units"><span class="it-uh">Purchase Unit = Purchase Conversion</span>
-          <div class="it-urow it-uhead"><span>Unit name</span><span>1 Unit</span><span></span><span>Quantity</span><span>Unit</span><span></span><span>Retail (Ks)</span><span>Wholesale (Ks)</span><span></span></div>
+          <div class="it-urow it-uhead"><span>Unit name</span><span>1 Unit</span><span></span><span>Quantity</span><span>Unit</span><span></span><span>JS (Ks)</span><span>Wholesale (Ks)</span><span>Mr.Bee (Ks)</span><span></span></div>
           <div id="itUnits"></div><button type="button" class="chip" id="itUnitAdd">+ Add unit</button></div>
         <label class="prf"><span>Ref:</span><input id="itRef" autocomplete="off" placeholder="Short Code"></label>
         <label class="prf"><span>Stock Count Unit</span><input id="itStockUnit" list="itUnitList" autocomplete="off"></label>
@@ -2148,9 +2148,9 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Consumed_ID</span><input id="itConsId" autocomplete="off"></label>
         <label class="prf"><span>Consumed_Name</span><input id="itConsName" autocomplete="off"></label>
         <label class="prf"><span>Consumed_Qty_Per_Unit</span><input id="itConsQty" inputmode="decimal" autocomplete="off"></label>
-        <label class="prf"><span>Selling Price · JS (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
-        <label class="prf"><span>Selling Price · Wholesale (Ks)</span><input id="itWhPrice" type="number" min="0" step="1" placeholder="—"></label>
-        <label class="prf"><span>Selling Price · Mr.Bee (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <label class="prf it-oldp"><span>Selling Price · JS (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <label class="prf it-oldp"><span>Selling Price · Wholesale (Ks)</span><input id="itWhPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <label class="prf it-oldp"><span>Selling Price · Mr.Bee (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
         <label class="prf it-wide"><span>Note</span><input id="itNote" autocomplete="off"></label>
       </div>
       <p class="side-help">JS ရောင်းဈေး ထည့်ထားရင် JS Bakery Supply မှာ ရောင်းပါမယ်။</p>
@@ -7662,12 +7662,12 @@ function itUnitRow(u={}){return`<div class="it-urow"><input class="it-un" value=
   <input class="it-uu" list="itUnitList" value="${esc(u.u||"")}" aria-label="1 unit"><span>=</span>
   <input class="it-uc" inputmode="decimal" value="${esc(u.c??"")}" aria-label="Quantity"><select class="it-uof" data-v="${esc(u.of||"")}" aria-label="Quantity unit"></select>
   <span class="it-ub"></span>
-  <input class="it-up" type="number" min="0" step="1" value="${u.p>0?u.p:""}" aria-label="Retail price"><input class="it-uw" type="number" min="0" step="1" value="${u.w>0?u.w:""}" aria-label="Wholesale price">
+  <input class="it-up" type="number" min="0" step="1" value="${u.p>0?u.p:""}" aria-label="Retail price"><input class="it-uw" type="number" min="0" step="1" value="${u.w>0?u.w:""}" aria-label="Wholesale price"><input class="it-um" type="number" min="0" step="1" value="${u.m>0?u.m:""}" aria-label="Mr.Bee price">
   <button type="button" class="o-ic danger it-urm" aria-label="Remove unit" title="Remove">✕</button></div>`}
 function itUnitsFill(i){const us=i?.units?.length?i.units:i?.purUnit||i?.purConv?[{u:i.purUnit,c:i.purConv,of:Number(i.purConv)>=100?i.unit:(i.stockUnit||i.unit)}]:[{}];
   $("itUnits").innerHTML=us.map(itUnitRow).join("");itUnitsCalc()}
-function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0),w=Math.round(Number(t(".it-uw"))||0);
-  const o={u:t(".it-uu")};o.n=t(".it-un")||o.u;if(!o.n)delete o.n;   /* no unit name: the 1 Unit value is the name */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;return o}).filter(o=>o.u||o.n)}
+function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(r=>{const t=c=>String(r.querySelector(c).value).trim().replace(/\s+/g," "),c=t(".it-uc"),p=Math.round(Number(t(".it-up"))||0),w=Math.round(Number(t(".it-uw"))||0),mb=Math.round(Number(t(".it-um"))||0);
+  const o={u:t(".it-uu")};o.n=t(".it-un")||o.u;if(!o.n)delete o.n;   /* no unit name: the 1 Unit value is the name */if(c!==""&&isFinite(Number(c)))o.c=Number(c);if(t(".it-uof"))o.of=t(".it-uof");if(p>0)o.p=p;if(w>0)o.w=w;if(mb>0)o.m=mb;return o}).filter(o=>o.u||o.n)}
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
 function itBaseOf(unit,rows,base,d=0){const k=String(unit||"").toLowerCase();if(!k||d>6)return null;if(k===String(base||"").toLowerCase())return 1;
   const r=rows.find(x=>String(x.u||"").toLowerCase()===k&&x.c>0&&String(x.of||"").toLowerCase()!==k);if(!r)return null;const f=itBaseOf(r.of,rows,base,d+1);return f==null?null:r.c*f}
@@ -7678,6 +7678,8 @@ function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").
     const opts=[...new Set([...names.filter(n=>n!==own),...(cur&&cur!==own?[cur]:[])])];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
   const rows=itUnitsRead();
+  /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
+  const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced?"none":"");
   els.forEach(el=>{const t=c=>String(el.querySelector(c).value).trim(),c=Number(t(".it-uc")),f=itBaseOf(t(".it-uof"),rows,base);
     el.querySelector(".it-ub").textContent=c>0&&f!=null&&base&&t(".it-uof").toLowerCase()!==base.toLowerCase()?`= ${Number(c*f).toLocaleString("en-US")} ${base}`:""})}
 $("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
@@ -7707,6 +7709,11 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
   /* the unit rows; the first is also the item's Purchase Unit / Conversion (as before, and in Excel) */
   const us=itUnitsRead();if(us.length){d.units=us;d.purUnit=us[0].u;if(us[0].c!=null)d.purConv=us[0].c;else delete d.purConv}else{delete d.units;delete d.purUnit;delete d.purConv}
+  /* prices on the unit rows: the item's own JS / Wholesale / Mr.Bee prices (used by POS, reports, Excel) come from the row of its
+     Stock Count Unit, else the first priced row */
+  if(us.some(r=>r.p>0||r.w>0||r.m>0)){const st=String(d.stockUnit||"").toLowerCase(),is=r=>[r.u,r.n].some(x=>String(x||"").toLowerCase()===st);
+    const r0=us.find(r=>(r.p>0||r.m>0)&&is(r))||us.find(r=>r.p>0)||us.find(r=>r.m>0)||{},mb=r0.m>0?r0.m:(us.find(r=>r.m>0)||{}).m;
+    for(const[k,v]of[["price",r0.p],["whPrice",r0.w],["mbPrice",mb]]){if(v>0)d[k]=v;else delete d[k]}d.sale=d.price>0}
   try{if(db)await db.collection("items").doc(id).set(d);
     else{const k=items.findIndex(x=>x.id===id);if(k>=0)items[k]={...d,id};else items.push({...d,id});items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
     $("itDlg").hidden=true;itEditing=null;toast("သိမ်းပြီး")}
@@ -8002,7 +8009,7 @@ let soPickCat="";
 const SO_SIZE=/(\d+(?:\.\d+)?\s*(?:kg|gm|g|ltr|l|ml|lb|oz|pcs|pc)s?)(?![a-z])/i;
 const soFamKey=i=>pdNorm(i.ref||i.code||i.id);
 /* what an item sells as: its own price (in its count unit) and each unit row with a price (1 ct = 24 pcs …) */
-function soOptsOf(i){const o=[];if(i.price>0)o.push({it:i,k:-1,label:soUnitOf(i),price:Number(i.price)});
+function soOptsOf(i){const o=[];if(i.price>0&&!(i.units||[]).some(u=>u.p>0))o.push({it:i,k:-1,label:soUnitOf(i),price:Number(i.price)});
   (i.units||[]).forEach((u,k)=>{if((u.u||u.n)&&u.p>0)o.push({it:i,k,label:u.n||(u.c?`${u.u} (${u.c}${u.of||""})`:u.u),price:Number(u.p)})});return o}
 /* a line's retail and wholesale prices: its unit's, or the item's own */
 function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||0,w:Number(u.w)||0}:{r:Number(it.price)||0,w:Number(it.whPrice)||0}}
