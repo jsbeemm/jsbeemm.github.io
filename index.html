@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793631005"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793631685"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1628,6 +1628,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
+      <button type="button" class="chip" id="itMovePr" hidden title="အောက်က Selling Price box တွေမှာပဲ ဈေးရှိတဲ့ ပစ္စည်းတွေရဲ့ ဈေးကို Purchase unit row ထဲ ရွှေ့ရန်">⇄ ဈေးကို Purchase unit row ထဲ ရွှေ့မည်</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
@@ -7715,9 +7716,32 @@ function itFillSubs(cur){const c=itCatTree().find(x=>x.cat===$("itCat").value),o
   $("itSub").innerHTML=`<option value="">—</option>`+opts.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join("");$("itSub").value=cur||""}
 $("itCat").addEventListener("change",()=>itFillSubs(""));
 const itIdOf=code=>{const c=String(code||"").trim(),s=c.replace(/[^\w-]/g,"_");return"it_"+(s===c?s:s+"_"+strHash(c))};
+/* moving the old prices (Selling Price · JS / Wholesale / Mr.Bee boxes) onto the unit rows, for items whose rows have no price yet.
+   The old prices are per Stock Count Unit, so they go on that unit's row (made from Purchase Unit / Conversion if the item has
+   no rows; added if no row is that unit). Returns the new rows, or null when there is nothing to move. */
+function prMovePlan(i){const p=Number(i.price)||0,w=Number(i.whPrice)||0,m=Number(i.mbPrice)||0;if(!(p>0||w>0||m>0))return null;
+  if((i.units||[]).some(u=>u.p>0||u.w>0||u.m>0))return null;
+  const rows=i.units?.length?i.units.map(u=>({...u})):i.purUnit||i.purConv?[{u:i.purUnit||"",...(i.purConv!=null?{c:Number(i.purConv)}:{}),of:Number(i.purConv)>=100?i.unit:(i.stockUnit||i.unit)}]:[];
+  rows.forEach(r=>{if(!r.of)delete r.of;if(!r.u)delete r.u});
+  const su=String(i.stockUnit||"").trim()||(rows.length===1?rows[0].n||rows[0].u:"")||String(i.uom||"").trim();
+  let r=su&&!uSame(su,i.unit)?rows.find(x=>uSame(x.n,su)||uSame(x.u,su)):null;
+  if(!r&&su&&!uSame(su,i.unit)){r={u:su};rows.push(r)}
+  /* no count unit, or it is the Base Unit (g): the price is for one whole item — a "pc" row, sized from the name (250g = 250 g) */
+  if(!r){const m=String(i.name||"").match(/(\d+(?:\.\d+)?)\s*(kg|gm|g|ltr|l|ml)\b/i),b=String(i.unit||"").toLowerCase();r={u:b&&!["g","gm","kg","ml","l","ltr"].includes(b)?i.unit:"pc"};
+    if(m){const n=Number(m[1]),u=m[2].toLowerCase(),f={g:1,gm:1,kg:1000,ml:1,l:1000,ltr:1000}[u],bf={g:1,gm:1,kg:1000,ml:1,l:1000,ltr:1000}[b];
+      r.n=m[1]+u;if(f&&bf&&((["g","gm","kg"].includes(u))===(["g","gm","kg"].includes(b)))){r.c=+(n*f/bf).toFixed(4);r.of=i.unit}}
+    rows.push(r)}
+  if(p>0)r.p=p;if(w>0)r.w=w;if(m>0)r.m=m;return rows}
+$("itMovePr").addEventListener("click",async()=>{if(!can("admin"))return;const todo=items.map(i=>[i,prMovePlan(i)]).filter(([,r])=>r);if(!todo.length)return;
+  if(!await askConfirm(`ပစ္စည်း ${todo.length} ခုရဲ့ ဈေးကို Purchase unit row ထဲ ရွှေ့မလား?`,"Selling Price box တွေက ဈေးကို Stock Count Unit row (မရှိရင် row အသစ်) ထဲ ထည့်ပါမယ်။ ဈေးပမာဏ မပြောင်းပါဘူး။","ရွှေ့မည်"))return;
+  const now=new Date().toISOString(),up=todo.map(([i,rows])=>[i,{units:rows,...(!i.units?.length&&rows[0]?.u?{purUnit:rows[0].u}:{}),updatedAt:now,updatedBy:me.id||null}]);
+  try{if(db){for(let s=0;s<up.length;s+=400){const b=db.batch();up.slice(s,s+400).forEach(([i,d])=>b.update(db.collection("items").doc(i.id),d));await b.commit()}}
+    else{items=items.map(i=>{const c=up.find(([x])=>x.id===i.id);return c?{...i,...c[1]}:i});try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}}
+    renderItems();toast(`ပစ္စည်း ${up.length} ခုရဲ့ ဈေးကို Purchase unit row ထဲ ရွှေ့ပြီး`,5000)}catch(x){toast("ရွှေ့မရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 function renderItems(){
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
+  $("itImport").hidden=!admin;$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
+  {const n=admin&&itLoaded?items.filter(prMovePlan).length:0;$("itMovePr").hidden=!n;if(n)$("itMovePr").textContent=`⇄ ဈေးကို Purchase unit row ထဲ ရွှေ့မည် (${n})`}$("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   const q=pdNorm(itQ),inQ=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
