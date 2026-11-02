@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793616630"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793616721"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -943,7 +943,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .so-fam{cursor:default}.so-uchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.so-uchip{font-size:13px;padding:5px 10px}.so-uchip b{margin-left:4px}.so-uchip.on{border-color:var(--accent);color:var(--accent)}
-.so-ldw{flex-wrap:wrap}#soLines .so-lu{width:100%;flex-basis:100%;font-size:12px}
+.so-ldw{flex-wrap:wrap}#soLines .so-lu{width:100%;flex-basis:100%;font-size:12px}#soLines .so-lu[hidden],#soLines .so-lue[hidden]{display:none!important}#soLines .so-lue{width:24px;height:24px;font-size:14px;color:var(--muted);flex:none}
 .so-phit.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}.so-pn{font-weight:700;color:var(--accent)}
 @media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
   .so-tbl thead{display:none}.so-tbl tbody#soLines tr{display:grid;grid-template-columns:28px 44px 1fr auto;gap:4px 6px;border-bottom:1px solid #c98b6a;padding:6px 0}
@@ -7985,7 +7985,7 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l)))),fm=soFamMap();
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
       <td><div class="so-ldw">${l.pid?`<span class="so-ldt">${esc(l.name||"")}</span>${(()=>{const it=items.find(x=>x.id===l.pid),fam=it&&fm.get(soFamKey(it));
-        return fam&&fam.length>1?`<select class="so-lu" aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${soOptOn(o,l)?"selected":""}>${esc(o.label)} · ${fmt(o.price)}</option>`).join("")}</select>`:""})()}`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
+        return fam&&fam.length>1?`<button type="button" class="o-ic so-lue" aria-label="Change size / unit" title="Size / unit ပြောင်းရန်">✎</button><select class="so-lu" hidden aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${soOptOn(o,l)?"selected":""}>${esc(o.label)} · ${fmt(o.price)}</option>`).join("")}</select>`:""})()}`:`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
       <td class="r"><span class="so-lqw"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty">${(()=>{const u=soLineUnit(l);return u?`<span class="so-lqu">${esc(u)}</span>`:""})()}</span></td>
       <td class="r"><span class="so-pw">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid);return it?`<select class="so-lt" aria-label="Price type"><option value="r">Retail</option><option value="w" ${l.tier==="w"?"selected":""} ${soPP(it,l).w>0?"":"disabled"}>Wholesale</option></select>`:""})()}<input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></span></td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
@@ -8007,6 +8007,10 @@ $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lu"))return
 $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=items.find(x=>x.id===l.pid);if(!it)return;
   const pp=soPP(it,l);l.tier=e.target.value;l.price=l.tier==="w"&&pp.w>0?pp.w:pp.r;if(l.tier!=="w")delete l.tier;
   r.querySelector(".so-lp").value=l.price;r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
+/* ✎ beside a line's name: shows its sizes / units to pick from (hidden again if nothing is picked) */
+$("soLines").addEventListener("click",e=>{const b=e.target.closest(".so-lue");if(!b)return;const s=b.parentElement.querySelector(".so-lu");if(!s)return;
+  s.hidden=false;b.hidden=true;s.focus();try{s.showPicker()}catch(x){}});
+$("soLines").addEventListener("focusout",e=>{if(!e.target.matches(".so-lu"))return;const s=e.target;setTimeout(()=>{if(document.activeElement!==s&&s.isConnected){s.hidden=true;const b=s.parentElement.querySelector(".so-lue");if(b)b.hidden=false}},150)});
 $("soLines").addEventListener("click",e=>{if(!e.target.closest("[data-so-rm]"))return;soLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderSoLines()});
 $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-lp")?.focus()});
 $("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
