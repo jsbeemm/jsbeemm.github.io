@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793615605"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793615867"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2143,7 +2143,6 @@ span.star-ic{cursor:default}
           <div id="itUnits"></div><button type="button" class="chip" id="itUnitAdd">+ Add unit</button></div>
         <label class="prf"><span>Stock Count Unit</span><select id="itStockUnit"></select></label>
         <label class="prf"><span>Ref:</span><input id="itRef" autocomplete="off" placeholder="Short Code"></label>
-        <label class="pd-auto it-ck"><input type="checkbox" id="itTracked"><span>Stock Tracked</span></label>
         <label class="prf"><span>Unit</span><input id="itUom" list="itUnitList" autocomplete="off"></label>
         <label class="prf"><span>Consumed_ID</span><input id="itConsId" autocomplete="off"></label>
         <label class="prf"><span>Consumed_Name</span><input id="itConsName" autocomplete="off"></label>
@@ -7644,7 +7643,7 @@ $("itPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="itPhFile"|
 $("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPhoto=null;itRenderPhoto()}});
 /* the form's boxes and the item fields they hold (text, number or yes/no) */
 const IT_F=[["itCat","cat"],["itSub","sub"],["itCode","code"],["itName","name"],["itUnit","unit"],["itRef","ref"],
-  ["itStockUnit","stockUnit"],["itTracked","tracked","b"],["itUom","uom"],["itConsId","consId"],["itConsName","consName"],["itConsQty","consQty","n"],["itNote","note"]];
+  ["itStockUnit","stockUnit"],["itUom","uom"],["itConsId","consId"],["itConsName","consName"],["itConsQty","consQty","n"],["itNote","note"]];
 /* tapping an item opens it; "+ Add raw material" opens an empty one (Admins) */
 function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
