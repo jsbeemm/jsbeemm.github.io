@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793628001"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793628097"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1912,7 +1912,7 @@ span.star-ic{cursor:default}
     <div class="side-body">
       <p class="side-help">Raw Material ရဲ့ Purchase unit (1 Unit) မှာ ဒီစာရင်းထဲက ရွေးရပါတယ်။ နာမည်ပြင်ရင် သုံးထားတဲ့ ပစ္စည်းအားလုံးမှာ လိုက်ပြောင်းပါတယ်။</p>
       <div class="pm-wrap"><table class="pm-tbl"><thead><tr><th>Unit</th><th>Items</th><th></th></tr></thead><tbody id="unitRows"></tbody></table></div>
-      <div class="unit-acts"><button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button><button type="button" class="chip pm-add" id="unitFromItems">⤓ Purchase unit ထဲက unit တွေ ထည့်မည်</button></div>
+      <div class="unit-acts"><button type="button" class="chip pm-add" id="unitAdd">+ Add unit</button></div>
     </div>
   </div>
 </div>
@@ -5675,13 +5675,6 @@ function openUnitEd(i){unitEdit=i;const n=i>=0?uList()[i]:"",used=n?uUsers(n).le
   $("unitEdUse").hidden=!used;$("unitEdUse").textContent=used?`ပစ္စည်း ${used} ခုမှာ သုံးထားပါတယ်`:"";
   $("unitEdDlg").hidden=false;$("unitEdName").focus()}
 $("unitBtn").addEventListener("click",openUnits);
-/* every unit the raw materials use goes into the saved list (ones already there are skipped) */
-$("unitFromItems").addEventListener("click",async()=>{if(!can("admin"))return;
-  if(!itLoaded){initItems();toast("Raw Material စာရင်း တင်နေဆဲပါ — ခဏနေမှ ပြန်နှိပ်ပါ");return}
-  const saved=unitDoc&&unitDoc.length?unitDoc.slice():[],add=unitsInItems().filter(n=>!saved.some(x=>uSame(x,n)));
-  if(!add.length){toast(saved.length?"ထည့်စရာ unit အသစ် မရှိပါ — အကုန် စာရင်းထဲမှာ ရှိပြီးသားပါ":"Purchase unit row ထဲမှာ unit မတွေ့ပါ");return}
-  const list=[...saved,...add].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:"base"}));
-  if(await unitPersist(list))toast(`Unit ${add.length} ခု ထည့်ပြီး (${add.slice(0,8).join(", ")}${add.length>8?"…":""})`,5000)});
 $("unitAdd").addEventListener("click",()=>openUnitEd(-1));
 $("unitRows").addEventListener("click",e=>{const it=e.target.closest("[data-unit-it]");
   if(it){const i=items.find(x=>x.id===it.dataset.unitIt);if(i)openItForm(i);return}
