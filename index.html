@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793625163"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793626300"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8037,10 +8037,12 @@ $("soAddDeli").addEventListener("click",async()=>{soLines.push({name:"Delivery",
 $("soAddOther").addEventListener("click",async()=>{soLines.push({name:"",qty:1,price:0});await renderSoLines();$("soLines").querySelector("tr:last-child .so-ld")?.focus()});
 /* "+ Add item" opens a list to pick from: only items with a JS selling price; a tap puts the item on the voucher and goes to its Qty */
 let soPickCat="";
-/* one product in several sizes (Ref: — e.g. butter bought as 25kg and 5kg and repacked to 1kg): items that share a Ref
-   (or are that Ref) and have a selling price. A voucher shows the product once, with its sizes and their prices. */
+/* one product in several sizes (e.g. butter 25kg, 5kg and repacked 1kg): items that share a Ref (or are that Ref), have a
+   selling price, and whose names are the same apart from the size. A voucher shows the product once, with its sizes.
+   Items that share a Ref only for costing but are different things (Base Colour red / blue 250g) stay separate. */
 const SO_SIZE=/(\d+(?:\.\d+)?\s*(?:kg|gm|g|ltr|l|ml|lb|oz|pcs|pc)s?)(?![a-z])/i;
-const soFamKey=i=>pdNorm(i.ref||i.code||i.id);
+const soBaseName=i=>String(i.name||"").replace(SO_SIZE,"").replace(/[\s\-–(]+\)?\s*$/,"").replace(/\s{2,}/g," ").trim()||String(i.name||"");
+const soFamKey=i=>pdNorm(i.ref||i.code||i.id)+"|"+pdNorm(soBaseName(i));
 /* what an item sells as: its own price (in its count unit) and each unit row with a price (1 ct = 24 pcs …) */
 function soOptsOf(i){const o=[];if(i.price>0&&!(i.units||[]).some(u=>u.p>0))o.push({it:i,k:-1,label:soUnitOf(i),price:Number(i.price)});
   (i.units||[]).forEach((u,k)=>{if((u.u||u.n)&&u.p>0)o.push({it:i,k,label:u.n||(u.c?`${u.u} (${u.c}${u.of||""})`:u.u),price:Number(u.p)})});return o}
@@ -8058,7 +8060,7 @@ function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].
   const c=Number(i.purConv||0),u=String(i.unit||"").toLowerCase();
   if(c>0&&(u==="g"||u==="gm"))return c>=1000?`${+(c/1000).toFixed(2)}kg`:`${c}g`;if(c>0&&u==="ml")return c>=1000?`${+(c/1000).toFixed(2)}L`:`${c}ml`;
   if(c>0&&u)return`${c}${u}`;return i.stockUnit||i.uom||i.purUnit||i.code||""}
-function soFamName(k,fam){const base=items.find(x=>pdNorm(x.code)===k)||fam[0];return String(base.name||"").replace(SO_SIZE,"").replace(/[\s\-–(]+\)?\s*$/,"").replace(/\s{2,}/g," ").trim()||base.name}
+function soFamName(k,fam){return soBaseName(fam[0].it||fam[0])}
 function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.filter(i=>soOptsOf(i).length).map(i=>i.cat||"Other"))].sort();if(soPickCat&&!cats.includes(soPickCat))soPickCat="";
   $("soPickCats").innerHTML=`<button type="button" class="chip" data-sopc="" aria-pressed="${!soPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-sopc="${esc(c)}" aria-pressed="${soPickCat===c}">${esc(c)}</button>`).join("");
