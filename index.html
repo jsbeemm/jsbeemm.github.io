@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793614699"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793614956"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2142,7 +2142,7 @@ span.star-ic{cursor:default}
           <div class="it-urow it-uhead"><span>Unit name</span><span>1 Unit</span><span></span><span>Quantity</span><span>Unit</span><span></span><span>JS (Ks)</span><span>Wholesale (Ks)</span><span>Mr.Bee (Ks)</span><span></span></div>
           <div id="itUnits"></div><button type="button" class="chip" id="itUnitAdd">+ Add unit</button></div>
         <label class="prf"><span>Ref:</span><input id="itRef" autocomplete="off" placeholder="Short Code"></label>
-        <label class="prf"><span>Stock Count Unit</span><input id="itStockUnit" list="itUnitList" autocomplete="off"></label>
+        <label class="prf"><span>Stock Count Unit</span><select id="itStockUnit"></select></label>
         <label class="pd-auto it-ck"><input type="checkbox" id="itTracked"><span>Stock Tracked</span></label>
         <label class="prf"><span>Unit</span><input id="itUom" list="itUnitList" autocomplete="off"></label>
         <label class="prf"><span>Consumed_ID</span><input id="itConsId" autocomplete="off"></label>
@@ -7652,7 +7652,7 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
   itFillCats(i?i.cat:itCat);itFillSubs(i?.sub||"");$("itDel").hidden=!i;
   $("itUnitList").innerHTML=[...new Set([...uniq(x=>x.unit),...uniq(x=>x.purUnit),...uniq(x=>x.stockUnit)])].sort().map(v=>`<option value="${esc(v)}">`).join("");
   /* a new item starts in the category being looked at */
-  for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else el.value=i?.[k]??""}
+  for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else if(el.tagName==="SELECT"){el.innerHTML="";el.dataset.v=i?.[k]??""}else el.value=i?.[k]??""}
   itUnitsFill(i);
   $("itPrice").value=i?.price>0?i.price:"";$("itMbPrice").value=i?.mbPrice>0?i.mbPrice:"";$("itWhPrice").value=i?.whPrice>0?i.whPrice:"";$("itDlg").hidden=false;(i?$("itName"):$("itCat")).focus()}
 $("itNewBtn").addEventListener("click",()=>openItForm(null));
@@ -7682,6 +7682,9 @@ function itUnitsCalc(){const base=$("itUnit").value.trim(),els=[...$("itUnits").
     const opts=[...new Set([base,...els.filter(x=>x!==el).flatMap(nm),...(cur&&!own.includes(cur)?[cur]:[])].filter(Boolean))];
     const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=opts.includes(cur)?cur:"";sel.dataset.v=sel.value});
   const need=itUnitNeed(els);els.forEach(el=>{const b=el.querySelector(".it-un"),on=need.includes(el);b.classList.toggle("it-need",on);b.title=on?"Unit name ထည့်ပါ — 1 Unit တူတာ နှစ်ခုရှိနေပါတယ်":""});
+  /* Stock Count Unit: the Base Unit or one of the unit names */
+  {const sel=$("itStockUnit"),cur=sel.value||sel.dataset.v||"",opts=[...new Set([base,...els.flatMap(nm),...(cur?[cur]:[])].filter(Boolean))];
+    const html=`<option value=""></option>`+opts.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join("");if(sel.innerHTML!==html)sel.innerHTML=html;sel.value=cur;sel.dataset.v=sel.value}
   const rows=itUnitsRead();
   /* once a unit row has a price, the prices live on the rows: the old price boxes below go away */
   const priced=rows.some(r=>r.p>0||r.w>0||r.m>0);document.querySelectorAll("#itForm .it-oldp").forEach(el=>el.style.display=priced?"none":"");
