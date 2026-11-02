@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597352"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597687"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8036,7 +8036,8 @@ $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-s
 const soRc=()=>$("soPaper").value==="RC";
 const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#000;background:#fff;font-size:12px;line-height:1.35;width:100%}
 .vr .c{text-align:center}.vr .r{text-align:right}.vr .b{font-weight:700}.vr .sh{font-size:17px;font-weight:700;line-height:1.2}.vr .sm{font-size:11px}
-.vr .meta{margin:6px 0}.vr .two{display:flex;justify-content:space-between;gap:8px;margin:6px 0}.vr .two>div:last-child{text-align:right}
+/* labels right-aligned, their values left-aligned beside them, the block at the right */
+.vr .meta{margin:6px 0;display:grid;grid-template-columns:auto auto;justify-content:end;gap:1px 6px}.vr .meta .k{text-align:right}.vr .two{display:flex;justify-content:space-between;gap:8px;margin:6px 0}.vr .two>div:last-child{text-align:right}
 .vr table{width:100%;border-collapse:collapse;margin-top:4px}.vr th{font-weight:700;text-align:left;border-bottom:1px solid #000;padding:3px 0}
 .vr td{vertical-align:top;padding:4px 0}.vr td.q,.vr th.q{width:28px}.vr td.a,.vr th.a{text-align:right;white-space:nowrap;padding-left:6px}
 .vr .at{font-size:12px;color:#000}
@@ -8050,7 +8051,7 @@ function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=s
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0);
   return`<div class="vr">
     <div class="c sh">JS Myanmar<br>Packaging &amp; Supplies</div><div class="c sm">09 402 222 446</div>
-    <div class="r sm meta">SO No# ${esc(v.no)}${v.channel?`<br>Channel# ${esc(v.channel)}`:""}<br>${esc(soDate(v.date))}</div>
+    <div class="sm meta"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span></div>
     <div class="two sm"><div>${esc(v.customer||"")}${v.phone?`<br>${esc(v.phone)}`:""}</div><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div></div>
     <table><thead><tr><th class="q">Qty</th><th>Description</th><th class="a">AMOUNT</th></tr></thead><tbody>
       ${(v.lines||[]).map(l=>`<tr><td class="q">${m(l.qty)}</td><td>${esc(l.name)}<div class="at">@${m(l.price)}${l.note?` · ${esc(l.note)}`:""}</div></td><td class="a">${m(Math.round(l.qty*l.price))}</td></tr>`).join("")}
