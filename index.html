@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793596357"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793597056"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1560,6 +1560,7 @@ span.star-ic{cursor:default}
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
+    <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
   </section>
@@ -2225,6 +2226,7 @@ span.star-ic{cursor:default}
       </div>
 <div class="editor" id="leaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="leaveT" style="z-index:50"><div class="cfm-box"><h3 id="leaveT">ပြင်ဆင်ချက်တွေ သိမ်းမလား?</h3><p>ပြင်ထားတာတွေ မသိမ်းရသေးပါ။</p><div class="cfm-btns leave-btns"><button type="button" class="btn ghost" id="leaveStay">ဆက်ပြင်မည်</button><button type="button" class="btn ghost danger-t" id="leaveDrop">မသိမ်းပါ</button><button type="button" class="btn" id="leaveSave">သိမ်းမည်</button></div></div></div>
 <div class="editor" id="cfmDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" style="z-index:50"><div class="cfm-box"><h3 id="cfmTitle"></h3><p id="cfmMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="cfmNo">Cancel</button><button type="button" class="btn danger" id="cfmYes">Delete</button></div></div></div>
+<div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">ဆက်ရေးမည်</button><button type="button" class="btn ghost" id="soLvDrop">မသိမ်းဘဲ ထွက်မည်</button><button type="button" class="btn" id="soLvSave">Draft သိမ်းမည်</button></div></div></div>
 <div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
 
 <!-- ===== Firebase build: shop sign-in, Firestore database, photos kept in Firestore =====
@@ -7726,7 +7728,7 @@ const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV",
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
 function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
 const soCanEdit=v=>can("admin")||(!!v&&!!me.id&&sameId(v.by,me.id));
-function initSo(){
+function initSo(){initSoDrafts();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
   soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
@@ -7749,7 +7751,7 @@ function renderSo(){if($("viewSo").hidden)return;
       <small>${esc(soDate(v.date))}${v.phone?` · ${esc(v.phone)}`:""} · ${(v.lines||[]).length} line${(v.lines||[]).length===1?"":"s"}</small></div>
       <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b>${b>0?`<span class="conf-chip">Balance ${fmt(b)}</span>`:`<span class="conf-chip ok">✓ Paid</span>`}</span></div></div>`}).join("")
     :`<div class="prq-empty">No vouchers${q?" match the search":""}. Tap “+ New voucher”.</div>`;
-  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+  $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);renderSoDrafts()}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
@@ -7821,7 +7823,7 @@ function openSoForm(v){soEditing=v||null;if(v&&!soCanEdit(v))return;
   /* "Paid Amount" is entered on a new voucher; later money goes in as a payment on the voucher */
   $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
-  renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus()}
+  renderSoLines();$("soDlg").hidden=false;$("soCustQ").focus();soDraftId=null;soSnap=soState();if(!history.state?.soDlg)history.pushState({soDlg:1},"")}
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null)});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
   $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow()});
@@ -7885,7 +7887,67 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
   Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
   $("soSave").disabled=true;
-  try{await saveSo(v);$("soDlg").hidden=true;soEditing=null;toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
+  try{await saveSo(v);if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${v.no} သိမ်းပြီး`);openSoView(v)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}});
+/* ---- leaving a voucher half-written: ✕ / Cancel / the phone's Back button ask whether to keep it as a draft.
+   Drafts sit in their own "jsDrafts" collection (no voucher number, not in the list, counts or reports) and show on top
+   of the voucher list until they are finished or deleted. ---- */
+var soDrafts=[],soDraftCol=null,soDraftId=null,soSnap="",soSkipPop=false;
+function soDraftLocal(){try{localStorage.setItem("cakeSoDrafts",JSON.stringify(soDrafts))}catch(x){}}
+function initSoDrafts(){
+  if(!db){try{soDrafts=JSON.parse(localStorage.getItem("cakeSoDrafts")||"[]")}catch(e){soDrafts=[]}return}
+  if(soDraftCol)return;soDraftCol=db.collection("jsDrafts");
+  soDraftCol.onSnapshot(s=>{soDrafts=s.docs.map(d=>({...d.data(),id:d.id}));renderSoDrafts()},()=>{soDraftCol=null})}
+async function putSoDraft(d){if(db){const x={...d};delete x.id;await db.collection("jsDrafts").doc(d.id).set(x);return}
+  const i=soDrafts.findIndex(x=>x.id===d.id);if(i>=0)soDrafts[i]=d;else soDrafts.push(d);soDraftLocal();renderSoDrafts()}
+async function dropSoDraft(id){if(db){await db.collection("jsDrafts").doc(id).delete();return}soDrafts=soDrafts.filter(x=>x.id!==id);soDraftLocal();renderSoDrafts()}
+function renderSoDrafts(){const el=$("soDraftBar");if(!el||$("viewSo").hidden)return;
+  const list=[...soDrafts].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+  el.hidden=!list.length;if(!list.length){el.innerHTML="";return}
+  el.innerHTML=`<p class="dr-h">📝 မပြီးသေးသော Voucher Draft ${list.length} ခု — ဆက်ရေးဖို့ မမေ့ပါနဲ့</p>`+list.map(d=>{const f=d.form||{},n=(f.lines||[]).length;
+    return`<div class="dr-row"><div class="dr-who"><b data-t="${esc(f.customer||"(Customer မထည့်ရသေး)")}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
+      <div class="dr-btns"><button type="button" class="btn dr-go" data-sodr="${esc(d.id)}">ဆက်ရေးရန်</button><button type="button" class="link danger" data-sodr-del="${esc(d.id)}">ဖျက်ရန်</button></div></div>`}).join("");
+  el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+$("soDraftBar").addEventListener("click",async e=>{const go=e.target.closest("[data-sodr]"),del=e.target.closest("[data-sodr-del]");
+  if(go){const d=soDrafts.find(x=>x.id===go.dataset.sodr);if(d)openSoDraft(d);return}
+  if(del&&await askConfirm("Draft ဖျက်မလား?","ဖျက်ပြီးရင် ပြန်ယူလို့ မရပါ။","ဖျက်မည်")){try{await dropSoDraft(del.dataset.sodrDel)}catch(x){toast("ဖျက်မရပါ")}}});
+/* everything typed on the form, to tell whether anything changed since it opened */
+function soState(){return JSON.stringify([$("soCust").value,$("soCustQ").value,$("soPhone").value,$("soChannel").textContent,$("soDeliv").value,$("soNote").value,$("soPaid").value,readDate($("soDate").querySelector(".dp"))||"",soLines])}
+function openSoDraft(d){initItems();openSoForm(null);const f=d.form||{};
+  $("soCust").value=f.cust||"";$("soCustQ").value=f.customer||"";$("soPhone").value=f.phone||"";$("soChannel").textContent=f.channel||"";
+  $("soDeliv").value=f.deliv||"";$("soNote").value=f.note||"";$("soPaid").value=f.paid||"";if(f.pay)$("soPay").value=f.pay;
+  $("soDate").innerHTML=dateSelect("",f.date||todayISO(),"","",false,"");soLines=(f.lines||[]).map(l=>({...l}));
+  soFillAddrs(pts.find(p=>p.id===f.cust));renderSoLines();requestAnimationFrame(soGrow);$("soCustHits").hidden=true;
+  soDraftId=d.id;soSnap=soState()}
+async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.find(x=>x.id===soDraftId);
+  const form=JSON.parse(JSON.stringify({cust:$("soCust").value||"",customer:$("soCustQ").value.trim(),phone:$("soPhone").value.trim(),channel:$("soChannel").textContent||"",
+    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines}));
+  const d={...(old||{id:soDraftId||"sod"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),at:now}),form,updatedAt:now,by:me.id||null,byName:me.name||""};
+  Object.keys(d).forEach(k=>{if(d[k]==null)delete d[k]});
+  await putSoDraft(d)}
+/* the three choices: keep it (a draft, or for a saved voucher, save the changes) / leave without keeping / keep writing */
+function soAskLeave(){return new Promise(res=>{const ed=!!soEditing;
+  $("soLvT").textContent=ed?"ပြင်ထားတာ သိမ်းမလား?":"Draft သိမ်းမလား?";
+  $("soLvMsg").textContent=ed?"ပြင်ထားတာတွေ မသိမ်းရသေးပါ။":"ရေးလက်စ Voucher ကို Draft အဖြစ် သိမ်းထားရင် နောက်မှ ဆက်ရေးလို့ ရပါတယ်။";
+  $("soLvSave").textContent=ed?"သိမ်းမည်":"Draft သိမ်းမည်";$("soLeaveDlg").hidden=false;$("soLvSave").focus();
+  const done=v=>{$("soLeaveDlg").hidden=true;$("soLvSave").onclick=$("soLvDrop").onclick=$("soLvStay").onclick=$("soLeaveDlg").onclick=null;res(v)};
+  $("soLvSave").onclick=()=>done("save");$("soLvDrop").onclick=()=>done("drop");$("soLvStay").onclick=()=>done("stay");
+  $("soLeaveDlg").onclick=e=>{if(e.target===$("soLeaveDlg"))done("stay")}})}
+function soClose(){$("soDlg").hidden=true;soEditing=null;soDraftId=null;
+  if(history.state?.soDlg){soSkipPop=true;history.back()}}
+async function soTryClose(){if(!$("soLeaveDlg").hidden)return;
+  if(soState()===soSnap){soClose();return}
+  const r=await soAskLeave();if(r==="stay")return;
+  if(r==="save"){if(soEditing){$("soForm").requestSubmit();return}
+    try{await soSaveDraft();toast("📝 Draft သိမ်းပြီး — Voucher စာရင်းရဲ့ အပေါ်ဆုံးမှာ ရှိပါတယ်",4000)}catch(x){toast("Draft သိမ်းမရပါ");return}}
+  soClose()}
+/* ✕ and Cancel on the voucher form go through the question (caught before the general "close the dialog" handler) */
+$("soDlg").addEventListener("click",e=>{if(!e.target.closest("[data-close-dlg]"))return;e.stopPropagation();e.preventDefault();soTryClose()},true);
+/* the phone's Back button: the form adds a step to the history, so Back comes here instead of leaving the page */
+addEventListener("popstate",()=>{if(soSkipPop){soSkipPop=false;return}if($("soDlg").hidden)return;
+  history.pushState({soDlg:1},"");
+  if(!$("soLeaveDlg").hidden){$("soLvStay").click();return}
+  if(!$("soPickDlg").hidden){$("soPickDlg").hidden=true;return}
+  soTryClose()});
 /* ---- the voucher itself (on screen, printed, or as a picture) ---- */
 const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#3b2a20;background:#fff;font-size:13px;line-height:1.35}
 .vo-top{display:flex;align-items:center;gap:16px}.vo-top img{width:78px;height:78px;object-fit:contain}
