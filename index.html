@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793628655"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793630688"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -883,9 +883,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .brand-btn[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
 @media (max-width:560px){.brand-btn{padding:8px 10px;gap:8px;font-size:13px}.brand-btn img{width:40px;height:40px}}
 .it-list{display:grid;gap:6px}@media (max-width:560px){#viewItems .pd-bar{flex-wrap:wrap}#viewItems .pd-bar input[type=search]{flex:1 1 100%;max-width:none}}
-.it-row{display:grid;grid-template-columns:110px 1fr auto;gap:4px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-.it-row code{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.it-row .it-nm{font-weight:600;overflow-wrap:anywhere}
-.it-row small{grid-column:2/4;color:var(--muted)}.it-row .it-pr{font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
+.it-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"pic nm pr" "pic meta pr";gap:2px 12px;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.it-row .it-pic{grid-area:pic;align-self:center}.it-row .it-pic img,.it-row .it-noph{display:block;width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk)}
+.it-row .it-nm{grid-area:nm;align-self:end;font-weight:600;overflow-wrap:anywhere}
+.it-row .it-meta{grid-area:meta;align-self:start;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;min-width:0;color:var(--muted)}
+.it-row .it-meta code{flex:none;font-size:12px;color:var(--muted)}.it-row .it-meta small{color:var(--muted);overflow-wrap:anywhere}
+.it-row .it-pr{grid-area:pr;font-family:var(--mono,monospace);white-space:nowrap;text-align:right}
 .itc-list{display:grid;gap:10px;margin-bottom:12px}
 .itc-row{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .itc-head{display:flex;align-items:center;gap:8px}.itc-head small,.itc-sub small{color:var(--muted)}.itc-head .pm-ab{margin-left:auto}
@@ -1002,7 +1005,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .it-th{width:36px;height:36px;border-radius:8px;object-fit:cover;vertical-align:middle;margin-right:8px;background:var(--sunk)}
 .it-row[data-it]{cursor:pointer}.it-row[data-it]:hover{border-color:var(--accent)}.it-pl{font-family:inherit;font-size:10px;font-weight:700;color:var(--muted)}
 .it-js{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#7a4a12;background:#f6e3c7;border-radius:999px;padding:1px 8px;vertical-align:middle}
-@media (max-width:560px){.it-row{grid-template-columns:1fr auto}.it-row code{grid-column:1/3}.it-row small{grid-column:1/3}}
+@media (max-width:560px){.it-row{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"pic nm" "pic meta" "pic pr";gap:2px 10px;padding:10px 12px}.it-row .it-pic{align-self:start}.it-row .it-pr{text-align:left;margin-top:2px}.it-row .it-pr .it-pl{display:inline-block;min-width:68px}.it-row .it-pr:empty{display:none}}
 .home-tile{display:grid;justify-items:start;gap:4px;text-align:left;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;padding:22px 20px;cursor:pointer;box-shadow:var(--shadow)}
 .home-tile:hover{border-color:var(--accent)}
 .home-tile .ht-ic{font-size:34px;line-height:1}
@@ -7724,9 +7727,11 @@ function renderItems(){
   $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
     `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
   $("itList").innerHTML=shown.map(i=>{const r=i.ref?byCode.get(pdNorm(i.ref)):null;
-    return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><code>${esc(i.code||"")}</code><span class="it-nm">${i.photo?`<img class="it-th" src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:""}<span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
+    /* picture on the left; the name, and under it the Short Code with the category and details beside it; prices on the right */
+    return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><span class="it-pic">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="it-noph"></span>`}</span>
+      <span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}</span>
       <span class="it-pr">${[[i.price,i.whPrice>0||i.mbPrice>0?"JS":""],[i.whPrice,"Wholesale"],[i.mbPrice,"Mr.Bee"]].filter(([p])=>p>0).map(([p,l])=>`${l?`<small class="it-pl">${l}</small> `:""}${fmt(p)}`).join("<br>")}</span>
-      <small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.unit?` · ${esc(i.unit)}`:""}${i.purUnit?` · buy ${esc(i.purUnit)}${i.purConv?` × ${esc(String(i.purConv))}`:""}`:""}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></div>`}).join("");
+      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.unit?` · ${esc(i.unit)}`:""}${i.purUnit?` · buy ${esc(i.purUnit)}${i.purConv?` × ${esc(String(i.purConv))}`:""}`:""}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></span></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 /* tapping an item (Admin) opens its photo and prices */
