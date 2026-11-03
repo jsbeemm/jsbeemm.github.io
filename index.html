@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793721064"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793721585"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8788,7 +8788,7 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 .vo-owe{margin-top:12px;border:1px solid #c98b6a;border-radius:6px;padding:8px 10px}.vo-owe h4{margin:0 0 6px;color:var(--vc);font-size:13px}
 .vo-owe table{margin:0}.vo-owe td,.vo-owe th{padding:4px 6px;font-size:12px}
 .vo-sign{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}.vo-sign div{text-align:center}.vo-sign span{display:block;height:26px;border-bottom:1px solid currentColor;margin-bottom:4px}.vo-sign b{font-weight:600;font-size:12px}
-.vo-note{margin-top:8px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
+.vo-note{margin-top:8px}.vo-opic{margin-top:14px;text-align:center}.vo-opic img{width:340px;max-width:60%;border:1px solid #e3d6dc;border-radius:6px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
@@ -8816,6 +8816,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
+    ${v.orderPic?`<div class="vo-opic"><img src="${esc(v.orderPic)}" alt=""></div>`:""}
     ${sign?SO_SIGN:""}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
@@ -8925,7 +8926,9 @@ function orderVoucher(o){const lines=[],ln=(name,qty,price,extra={})=>lines.push
     deliv:o.delivery==="delivery"?[recv,o.addr].filter(Boolean).join("\n"):null,lines,net:o.total||0,payments:orderPayments(o).map(p=>({amt:p.amt})),note:null}}
 $("pvVoucher").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;const b=$("pvVoucher");b.disabled=true;
   toast("Voucher ပုံ ပြင်ဆင်နေသည်…",8000);
-  try{const{blob,name}=await soMakeImage(orderVoucher(o),"image/jpeg","A5");
+  /* the order picture (as in this preview) goes under the voucher */
+  const ov=orderVoucher(o),pic=$("pvImg").getAttribute("src")||"";if(pic.startsWith("data:"))ov.orderPic=pic;
+  try{const{blob,name}=await soMakeImage(ov,"image/jpeg","A5");
     if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
     await saveFile(blob,name,"JPEG")}
   catch(x){if(x?.code!=="declined")toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}finally{b.disabled=false}});
