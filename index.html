@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793701610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793720655"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -938,7 +938,11 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit .vo-cust input{margin-top:4px}.vo-edit .vo-dl{text-align:left}
 .so-dlrow{display:flex;gap:6px;align-items:flex-start}.so-dlrow textarea{flex:1;min-width:0;min-height:64px;overflow:hidden;resize:none}
 /* "Change info" sits beside the Delivery Info title, so the box below gets the full width */
-.so-dlhead{display:flex;align-items:center;gap:8px;min-height:28px}.so-dlhead h3{margin:0}
+/* the heading lines up with "Customer" beside it; "Change info" never makes it taller */
+.so-dlhead{display:flex;align-items:center;gap:8px}.so-dlhead .so-addrw{margin-block:-8px}#soAddrBtn{padding-block:1px;min-height:0;line-height:1.35;font-size:12px}.so-dlhead h3{margin:0}
+/* Delivery Info is ticked only for a delivery; untick (pickup) and the box, its "Change info" and the voucher's Delivery Info go away */
+.so-dlck{display:inline-flex;align-items:center;gap:6px;cursor:pointer}.so-dlck input{margin:0;width:auto}
+.vo-dl.dl-off .so-addrw,.vo-dl.dl-off .so-dlrow{display:none}.vo-dl.dl-off h3{opacity:.55}
 .so-addrw{position:relative;flex:none}.so-addrw .chip{white-space:nowrap;font-size:12px;padding:6px 10px}
 .so-addrmenu{left:0;right:auto;width:min(320px,80vw);top:calc(100% + 4px)}
 /* Channel and Date read like the printed voucher's text; tapping them still changes them */
@@ -2270,7 +2274,7 @@ span.star-ic{cursor:default}
           <div class="vo-cust"><h3>Customer <b class="req">*</b></h3>
             <div class="so-pick so-cpick"><textarea id="soCustQ" rows="1" placeholder="Customer name (type to search)" autocomplete="off" aria-label="Customer name"></textarea><input type="hidden" id="soCust"><div class="so-hits" id="soCustHits" hidden></div></div>
             <input id="soPhone" inputmode="tel" autocomplete="off" placeholder="Phone" aria-label="Phone"></div>
-          <div class="vo-dl"><div class="so-dlhead"><h3>Delivery Info</h3><div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div>
+          <div class="vo-dl" id="soDlBox"><div class="so-dlhead"><label class="so-dlck"><input type="checkbox" id="soIsDeliv"><h3>Delivery Info</h3></label><div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea></div></div>
           <div class="vo-no"><span class="k" id="soNoK">SO No#</span><span id="soNoTxt">—</span>
             <span class="k">Channel#</span><span id="soChannel" class="cap" title="Customer ရဲ့ Channel"></span>
@@ -8443,12 +8447,16 @@ $("soAddrBtn").addEventListener("click",()=>{if($("soAddrMenu").hidden)soFillAdd
 $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-addr]");if(!b)return;const p=pts.find(x=>x.id===$("soCust").value);
   if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true;soGrow()});
 $("soDeliv").addEventListener("input",soGrow);
+/* a delivery or not: only a delivery keeps (and prints) its Delivery Info; the customer's address still fills in behind the tick */
+const soDlOn=()=>$("soIsDeliv").checked;
+function soDlSet(on){$("soIsDeliv").checked=on;$("soDlBox").classList.toggle("dl-off",!on);if(on)requestAnimationFrame(soGrow)}
+$("soIsDeliv").addEventListener("change",()=>{soDlSet(soDlOn());if(soDlOn()&&!$("soDeliv").value.trim()){const p=pts.find(x=>x.id===$("soCust").value);if(p)$("soDeliv").value=soDelivFor(p,ptDefOf(p))}if(soDlOn())$("soDeliv").focus()});
 /* the same form makes a preorder (mode "po"): no money on it */
 function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soB=v?vBrand(v):mode==="po"?"js":saleBrand;soMode=mode;soFromPo=null;$("soDlg").classList.toggle("po",mode==="po");soEditing=v||null;
   $("soDlgT").textContent=v?`Edit ${v.no}`:mode==="po"?"New order":"New voucher";$("soNoK").textContent=mode==="po"?"Order No#":"SO No#";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
   for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";$("soChannel").textContent=v?.channel||"";
-  $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));requestAnimationFrame(soGrow);
+  $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));soDlSet(!!soDelivOf(v));requestAnimationFrame(soGrow);
   $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"","",false,"");
   soLines=(v?.lines||[]).map(l=>({...l}));
   /* "Paid Amount" is entered on a new voucher; later money goes in as a payment on the voucher */
@@ -8574,7 +8582,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
     const date=readDate($("soDate").querySelector(".dp"))||todayISO(),now=new Date().toISOString();
     const p={...(v0||{id:"po"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:poNo(date),at:now,by:me.id||null,byName:me.name||""}),
       date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
-      deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+      deliv:(soDlOn()?$("soDeliv").value.trim():"")||null,note:$("soNote").value.trim()||null,lines,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
     Object.keys(p).forEach(k=>{if(p[k]==null)delete p[k]});$("soSave").disabled=true;
     try{await savePo(p);if(soDraftId)dropSoDraft(soDraftId).catch(()=>{});soClose();toast(`✓ ${p.no} သိမ်းပြီး`);openPoView(p)}catch(x){toast("သိမ်းမရပါ")}finally{$("soSave").disabled=false}
     return}
@@ -8582,7 +8590,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
   const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date,soB),at:now,by:me.id||null,byName:me.name||"",payments:[],...(soB==="mb"?{brand:"mb"}:{})}),
     date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
-    deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+    deliv:(soDlOn()?$("soDeliv").value.trim():"")||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
   delete v.dName;delete v.dPhone;delete v.dAddr;
   if(!v0&&soFromPo){v.poId=soFromPo.id;v.poNo=pos.find(x=>x.id===soFromPo.id)?.no||""}
   if(!v0&&!soFromPo)v.pre=true;
@@ -8613,16 +8621,16 @@ $("soDraftBar").addEventListener("click",async e=>{const go=e.target.closest("[d
   if(go){const d=soDrafts.find(x=>x.id===go.dataset.sodr);if(d)openSoDraft(d);return}
   if(del&&await askConfirm("Draft ဖျက်မလား?","ဖျက်ပြီးရင် ပြန်ယူလို့ မရပါ။","ဖျက်မည်")){try{await dropSoDraft(del.dataset.sodrDel)}catch(x){toast("ဖျက်မရပါ")}}});
 /* everything typed on the form, to tell whether anything changed since it opened */
-function soState(){return JSON.stringify([$("soCust").value,$("soCustQ").value,$("soPhone").value,$("soChannel").textContent,$("soDeliv").value,$("soNote").value,$("soPaid").value,readDate($("soDate").querySelector(".dp"))||"",soLines])}
+function soState(){return JSON.stringify([$("soCust").value,$("soCustQ").value,$("soPhone").value,$("soChannel").textContent,soDlOn()?$("soDeliv").value:"",$("soNote").value,$("soPaid").value,readDate($("soDate").querySelector(".dp"))||"",soLines])}
 function openSoDraft(d){initItems();const f=d.form||{};openSoForm(null,f.mode==="po"?"po":"so");soFromPo=f.fromPo?{id:f.fromPo}:null;
   $("soCust").value=f.cust||"";$("soCustQ").value=f.customer||"";$("soPhone").value=f.phone||"";$("soChannel").textContent=f.channel||"";
-  $("soDeliv").value=f.deliv||"";$("soNote").value=f.note||"";$("soPaid").value=f.paid||"";if(f.pay)$("soPay").value=f.pay;
+  $("soDeliv").value=f.deliv||"";soDlSet(!!f.deliv);$("soNote").value=f.note||"";$("soPaid").value=f.paid||"";if(f.pay)$("soPay").value=f.pay;
   $("soDate").innerHTML=dateSelect("",f.date||todayISO(),"","",false,"");soLines=(f.lines||[]).map(l=>({...l}));
   soFillAddrs(pts.find(p=>p.id===f.cust));renderSoLines();soGrow();$("soCustHits").hidden=true;
   soDraftId=d.id;soSnap=soState()}
 async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.find(x=>x.id===soDraftId);
   const form=JSON.parse(JSON.stringify({cust:$("soCust").value||"",customer:$("soCustQ").value.trim(),phone:$("soPhone").value.trim(),channel:$("soChannel").textContent||"",
-    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines,mode:soMode,fromPo:soFromPo?.id||"",brand:soB}));
+    deliv:soDlOn()?$("soDeliv").value.trim():"",note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines,mode:soMode,fromPo:soFromPo?.id||"",brand:soB}));
   const d={...(old||{id:soDraftId||"sod"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),at:now}),form,updatedAt:now,by:me.id||null,byName:me.name||""};
   Object.keys(d).forEach(k=>{if(d[k]==null)delete d[k]});
   await putSoDraft(d)}
@@ -8748,7 +8756,7 @@ $("poGiveBtn").addEventListener("click",async()=>{const p=pos.find(x=>x.id===poO
 $("poPartBtn").addEventListener("click",()=>{const p=pos.find(x=>x.id===poOpen);if(!p)return;if(poLeftAll(p)<=0){toast("ပေးရန် မကျန်တော့ပါ");return}
   $("poView").hidden=true;initItems();openSoForm(null,"so");
   $("soCust").value=p.custId||"";$("soCustQ").value=p.customer||"";$("soPhone").value=p.phone||"";$("soChannel").textContent=p.channel||"";
-  $("soDeliv").value=soDelivOf(p)||"";soFillAddrs(pts.find(x=>x.id===p.custId));$("soCustHits").hidden=true;
+  $("soDeliv").value=soDelivOf(p)||"";soFillAddrs(pts.find(x=>x.id===p.custId));soDlSet(!!soDelivOf(p));$("soCustHits").hidden=true;
   soLines=poGiveLines(p);soFromPo={id:p.id};$("soDlgT").textContent=`Delivered (part) · ${p.no}`;renderSoLines();soGrow();
   toast("ယခု ပေးမယ့် အရေအတွက်အတိုင်း Qty ကို ပြင်ပါ — ကျန်တာ Order မှာ ဆက်ကျန်ပါမယ်",5000)});
 /* a voucher made from an order was saved, edited or deleted: count the change on the order */
@@ -8800,7 +8808,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
-    <div class="vo-thanks">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${sign?SO_SIGN:""}</div>`}
+    ${sign?SO_SIGN:""}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
 /* the staff marks (sign=true) are for the printed paper only; the preview and pictures leave them out */
@@ -8868,7 +8876,7 @@ function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=s
     ${owe.length?`<div class="owe"><b>အကြွေးစာရင်း</b>${owe.map(x=>`<div class="two" style="margin:2px 0"><span>${esc(x.no)} · ${esc(soDate(x.date))}</span><span>${m(soBal(x))}</span></div>`).join("")}
       <div class="two b" style="margin:2px 0"><span>ယခင်ကျန်ငွေ</span><span>${m(oweSum)}</span></div><div class="two b" style="margin:2px 0"><span>စုစုပေါင်း ပေးရန်</span><span>${m(oweSum+bal)}</span></div></div>`:""}
     ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
-    <div class="thx">အားပေးမှုကို အထူးကျေးဇူးတင်ရှိပါသည်။<br>ဝယ်ပြီးပစ္စည်းပြန်မလဲပါ။</div>${sign?SO_SIGN:""}</div>`}
+    ${sign?SO_SIGN:""}</div>`}
 $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const paper=$("soPaper").value,rc=paper==="RC";
   /* the frame is laid out at the printable width, so the voucher's height tells how many pages it will take */
   const mm=paper==="A4"?[210,297]:[148,210],[pw,ph]=soLand()?[mm[1],mm[0]]:mm,px=x=>Math.round(x*96/25.4);
