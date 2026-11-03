@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793699306"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793699705"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3911,8 +3911,13 @@ function formMissing(f){
 /* Save looks faded until everything needed is filled in */
 function syncSaveBtn(){try{const off=formMissing(readForm()).miss.length>0;$("saveBtn").classList.toggle("dim",off);$("previewBtn").classList.toggle("dim",off)}catch(e){}}
 $("form").addEventListener("change",syncSaveBtn);
+/* while an order is being saved, Save / Order preview / "Save order & image" are locked, so the same order is never saved twice */
+var formSaving=false;
+const SAVING_MSG="Order သိမ်းနေဆဲပါ — ခဏစောင့်ပါ";
+function setFormSaving(on){formSaving=on;$("saveBtn").disabled=on;$("previewBtn").disabled=on;$("pvSaveAll").disabled=on}
 $("form").addEventListener("submit",async e=>{
   e.preventDefault();
+  if(formSaving){toast(SAVING_MSG);return}
   if($("chargeList").querySelector(".charge[data-busy]")){toast("ပုံတင်နေဆဲပါ");return}
   const f=readForm(),err=$("formErr");
   const {miss,at}=formMissing(f);
@@ -3931,7 +3936,7 @@ $("form").addEventListener("submit",async e=>{
   /* who took it, who last changed it, and what each edit changed */
   if(prev){const ch=diffOrder(prev,o);o.history=ch.length?addHist(prev,"edit",ch):(prev.history||[]);o.updatedBy=ch.length?me.id||null:(prev.updatedBy??null)}
   else{o.history=addHist(null,"create");o.updatedBy=null}
-  $("saveBtn").disabled=true;
+  setFormSaving(true);
   let claimed=false;
   try{
     /* two people saving the same number at the same moment: only the first claim wins */
@@ -3948,7 +3953,7 @@ $("form").addEventListener("submit",async e=>{
     toast(prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no} သိမ်းပြီး`);resetForm(true);showTab("list");
     if(afterSave&&Date.now()-afterSave.at<60000){const c=afterSave.cont;afterSave=null;c()}afterSave=null}
   catch(x){if(claimed)releaseNo(no,id);err.textContent=x?.code==="quota_exceeded"?"သိမ်းဆည်းနေရာ ပြည့်နေပါသည်။ ပြီးဆုံးသော အော်ဒါအဟောင်းများကို ဖျက်ပါ။":"သိမ်းမရပါ။ ပြန်ကြိုးစားကြည့်ပါ။";err.hidden=false}
-  finally{$("saveBtn").disabled=false}
+  finally{setFormSaving(false)}
 });
 
 /* ---------- order preview card (photo to save / share) ---------- */
@@ -4218,7 +4223,7 @@ async function openPreview(o,fromForm=false){
   /* a data: picture (not a blob: link), so pressing and holding it on a phone saves / shares the picture itself */
   await new Promise(res=>{const fr=new FileReader();fr.onload=()=>{$("pvImg").src=fr.result;res()};fr.readAsDataURL(pvBlob)});
   $("pvSave").hidden=!$("pvSaveAll").hidden;   /* "Save order & image" replaces "Save image" while the order is being written */
-  $("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=false;$("pvNote").textContent=matchMedia("(pointer:coarse)").matches?"ပုံကို ဖိထားပြီး Save to Photos / Share ကို ရွေးပါ":"";
+  $("pvSave").disabled=$("pvShare").disabled=false;$("pvSaveAll").disabled=formSaving;$("pvNote").textContent=matchMedia("(pointer:coarse)").matches?"ပုံကို ဖိထားပြီး Save to Photos / Share ကို ရွေးပါ":"";
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
@@ -4351,7 +4356,7 @@ $("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
   else if(o&&myHelp(o))helpStop(o,"Stopped helping")});
 /* Save order & image: the picture is saved first (while the tap still counts, so the save / share sheet can open),
    then the order is saved exactly as the form's Save button does, and the preview closes */
-$("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;const b=$("pvSaveAll");b.disabled=true;
+$("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;if(formSaving){toast(SAVING_MSG);return}const b=$("pvSaveAll");b.disabled=true;
   try{await saveFile(pvBlob,pvName,"ပုံ")}catch(e){}
   const o=pvOrder;$("preview").hidden=true;b.disabled=false;$("form").requestSubmit();
   if(o&&can("orders.print"))printOrder(o)});   /* then Print setup, as with Save image */
@@ -4607,6 +4612,7 @@ async function saveFile(blob,name,what,isImage=true){
 $("pvSave").addEventListener("click",async()=>{if(!pvBlob)return;const o=pvOrder;try{await saveFile(pvBlob,pvName,"ပုံ")}catch(e){}
   if(o&&can("orders.print"))printOrder(o)});
 $("previewBtn").addEventListener("click",()=>{
+  if(formSaving){toast(SAVING_MSG);return}
   const f=readForm(),{total}=price(f);
   /* like Save: until the order is complete, a tap lists what is still missing instead of opening the preview */
   const {miss,at}=formMissing(f);
