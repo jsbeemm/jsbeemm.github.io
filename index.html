@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793697060"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793697198"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3754,8 +3754,10 @@ function draftLocalSave(){try{localStorage.setItem("cakeDrafts",JSON.stringify(d
 async function putDraft(d){if(draftCol){await draftCol.doc(d.id).set(d);return}
   const i=drafts.findIndex(x=>x.id===d.id);if(i>=0)drafts[i]=d;else drafts.push(d);draftLocalSave();render()}
 async function dropDraft(id){if(draftCol){await draftCol.doc(id).delete();return}drafts=drafts.filter(x=>x.id!==id);draftLocalSave();render()}
+/* decorators see only the drafts they wrote themselves; Sale and Admin (everyone else) see every draft */
+const seenDrafts=()=>isDecorator()?drafts.filter(d=>(d.createdBy??d.updatedBy)===me.id):drafts;
 function renderDrafts(){
-  const el=$("draftBar"),list=[...drafts].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+  const el=$("draftBar"),list=[...seenDrafts()].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
   el.hidden=!list.length;if(!list.length){el.innerHTML="";return}
   el.innerHTML=`<p class="dr-h">📝 မပြီးသေးသော Draft ${list.length} ခု — ဆက်ဖြည့်ဖို့ မမေ့ပါနဲ့</p>`+list.map(d=>{const f=d.form||{};
     return`<div class="dr-row"><div class="dr-who"><b>${esc(f.name||"(နာမည် မထည့်ရသေး)")}</b>${f.phone?` <span>${esc(f.phone)}</span>`:""}<small>${[f.channel==="Others"&&f.chOther?f.chOther:f.channel,fmtStamp(d.updatedAt),"by "+nameOf(d.updatedBy||d.createdBy)].filter(Boolean).map(esc).join(" · ")}</small></div>
@@ -5655,7 +5657,7 @@ function go(v){
 function renderHome(){
   if(!prs)return;
   const open=orders.filter(o=>["new","baking","ready","deli_req"].includes(o.status)).length,toBuy=prs.filter(r=>!r.done).length;
-  $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${drafts.length?` · 📝 ${drafts.length} draft${drafts.length===1?"":"s"}`:""}`;
+  $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${seenDrafts().length?` · 📝 ${seenDrafts().length} draft${seenDrafts().length===1?"":"s"}`:""}`;
   $("homePRN").textContent=`${toBuy} item${toBuy===1?"":"s"} to buy`;
   {const n=tds.filter(t=>!t.done).length;$("homeMyTodoN").textContent=`${n} open task${n===1?"":"s"}`;$("homeTodoN").textContent=`${toBuy} to buy · ${n} task${n===1?"":"s"}`}
   $("goPE").hidden=!can("admin")&&!canSeeEx();
