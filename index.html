@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793721585"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793722030"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1297,6 +1297,7 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 /* the ask-first pop-up used before deleting things */
 .cfm-box{background:var(--surface);border-radius:16px;width:min(100%,380px);padding:20px 20px 16px;box-shadow:0 10px 40px rgba(0,0,0,.3);display:grid;gap:10px}
 .cfm-box h3{margin:0;font-size:18px}.cfm-box p{margin:0;color:var(--muted);font-size:14.5px;white-space:pre-line}
+.ov-box{width:min(100%,420px)}.ov-list{display:grid;gap:6px;max-height:50vh;overflow:auto}.ov-row{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}.ov-row input{margin:3px 0 0;width:auto;flex:none}.ov-row small{display:block;color:var(--muted);font-size:12.5px}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .prq-assign{font-size:12.5px;font-weight:600;color:var(--sky);background:var(--sky-soft);border-radius:999px;padding:1px 10px;display:inline-block}
@@ -8788,7 +8789,7 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 .vo-owe{margin-top:12px;border:1px solid #c98b6a;border-radius:6px;padding:8px 10px}.vo-owe h4{margin:0 0 6px;color:var(--vc);font-size:13px}
 .vo-owe table{margin:0}.vo-owe td,.vo-owe th{padding:4px 6px;font-size:12px}
 .vo-sign{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}.vo-sign div{text-align:center}.vo-sign span{display:block;height:26px;border-bottom:1px solid currentColor;margin-bottom:4px}.vo-sign b{font-weight:600;font-size:12px}
-.vo-note{margin-top:8px}.vo-opic{margin-top:14px;text-align:center}.vo-opic img{width:340px;max-width:60%;border:1px solid #e3d6dc;border-radius:6px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
+.vo-note{margin-top:8px}.vo-opics{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.vo-opics img{height:170px;width:auto;max-width:48%;border:1px solid #e3d6dc;border-radius:6px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
@@ -8796,6 +8797,7 @@ const soLinePhoto=l=>(l.pid&&(items.find(i=>i.id===l.pid)||pds.find(p=>p.id===l.
 async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
 async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
+  const opics=(await Promise.all((v.orderPhotos||[]).map(soPhoto))).filter(Boolean);   /* an order voucher: the orders' photos under the items */
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
   const oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vo">
@@ -8816,7 +8818,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
       <tr><td colspan="3"><b>စုစုပေါင်း ပေးရန် (ဒီဘောက်ချာ အပါအဝင်)</b></td><td class="r"><b>${m(oweSum+bal)}</b></td></tr></tbody></table></div>`:""}
     ${v.note?`<div class="vo-note">Note: ${esc(v.note)}</div>`:""}
-    ${v.orderPic?`<div class="vo-opic"><img src="${esc(v.orderPic)}" alt=""></div>`:""}
+    ${opics.length?`<div class="vo-opics">${opics.map(u=>`<img src="${esc(u)}" alt="">`).join("")}</div>`:""}
     ${sign?SO_SIGN:""}</div>`}
 /* the four staff marks at the foot of a voucher / receipt: picked, checked, packed, sent */
 const SO_SIGN=`<div class="vo-sign">${["ချ","စစ်","ထည့်","ပို့"].map(w=>`<div><span></span><b>${w}</b></div>`).join("")}</div>`;
@@ -8912,23 +8914,39 @@ function soMakeImage(v,type="image/jpeg",paperAs=""){const job=soImgBusy.then(as
       return{blob,name:`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+(type==="image/png"?".png":".jpg")}}
     finally{box.innerHTML="";box.style.padding="0"}});
   soImgBusy=job.catch(()=>{});return job}
-/* a cake order shown as a Mr.Bee voucher (not saved as one): the cake (with its photo), charges, delivery, discount, payments */
-function orderVoucher(o){const lines=[],ln=(name,qty,price,extra={})=>lines.push({name,qty,price,...extra});
-  const pic=o.deco?.endAt&&o.deco.photo?o.deco.photo:(o.photos||[])[0]||"";
-  if(isBak(o))bakItemsOf(o).forEach(l=>ln(l.name,l.qty,l.price,l.pid?{pid:l.pid}:{}));
-  else if(o.cupItems?.length)o.cupItems.forEach((l,i)=>ln(cupLbl(l),l.qty,l.price,!i&&pic?{photo:pic}:{}));
-  else{const n=o.count>1?o.count:1;ln(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o),n,(o.basePrice||0)/n,{...(pic?{photo:pic}:{}),...(dcLabel(o)?{note:dcLabel(o)}:{})})}
-  orderCharges(o).forEach(c=>ln(c.note||"Additional",c.qty>1?c.qty:1,c.qty>1?c.unit:c.amt,c.photo?{photo:c.photo}:{}));
-  if(o.delivery==="delivery"&&o.delivAmt)ln("Delivery charge",1,o.delivAmt);
-  if(o.discount)ln("Discount",1,-o.discount);
-  const recv=o.recvName&&!o.recvSame?`${o.recvName} ${o.recvPhone||""}`.trim():"";
-  return{id:"ov-"+o.id,no:o.no,brand:"mb",customer:o.name||"",phone:o.phone||"",channel:o.channel?chLabel(o):"",date:localDay(o.createdAt)||todayISO(),
-    deliv:o.delivery==="delivery"?[recv,o.addr].filter(Boolean).join("\n"):null,lines,net:o.total||0,payments:orderPayments(o).map(p=>({amt:p.amt})),note:null}}
-$("pvVoucher").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;const b=$("pvVoucher");b.disabled=true;
+/* cake orders shown as one Mr.Bee voucher picture (not saved as a voucher): each order's cake, charges, delivery and discount,
+   the payments, and every photo of the orders under the item list. Several orders of one customer can go on one voucher. */
+function orderVoucher(list){const many=list.length>1,lines=[],photos=[];
+  const ln=(o,name,qty,price,extra={})=>lines.push({name:(many?o.no+" · ":"")+name,qty,price,...extra});
+  for(const o of list){
+    if(isBak(o))bakItemsOf(o).forEach(l=>ln(o,l.name,l.qty,l.price,l.pid?{pid:l.pid}:{}));
+    else if(o.cupItems?.length)o.cupItems.forEach(l=>ln(o,cupLbl(l),l.qty,l.price));
+    else{const n=o.count>1?o.count:1;ln(o,`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o),n,(o.basePrice||0)/n,dcLabel(o)?{note:dcLabel(o)}:{})}
+    orderCharges(o).forEach(c=>ln(o,c.note||"Additional",c.qty>1?c.qty:1,c.qty>1?c.unit:c.amt));
+    if(o.delivery==="delivery"&&o.delivAmt)ln(o,"Delivery charge",1,o.delivAmt);
+    if(o.discount)ln(o,"Discount",1,-o.discount);
+    photos.push(...(o.photos||[]),...(o.deco?.endAt&&o.deco.photo?[o.deco.photo]:[]),...orderCharges(o).map(c=>c.photo).filter(Boolean))}
+  const o0=list[0],dl=[...new Set(list.filter(o=>o.delivery==="delivery").map(o=>[o.recvName&&!o.recvSame?`${o.recvName} ${o.recvPhone||""}`.trim():"",o.addr].filter(Boolean).join("\n")))];
+  return{id:"ov-"+list.map(o=>o.id).join("-"),no:list.map(o=>o.no).join(" + "),brand:"mb",customer:o0.name||"",phone:o0.phone||"",channel:o0.channel?chLabel(o0):"",
+    date:many?todayISO():(localDay(o0.createdAt)||todayISO()),deliv:dl.length?dl.join("\n"):null,lines,
+    net:list.reduce((s,o)=>s+(o.total||0),0),payments:list.flatMap(o=>orderPayments(o).map(p=>({amt:p.amt}))),note:null,orderPhotos:[...new Set(photos)]}}
+/* the same customer's other open orders: tick which go on the voucher (all ticked to start) */
+function pickVoucherOrders(o){const same=orders.filter(x=>x.id===o.id||(x.status!=="cancel"&&isOpen(x)&&custPh(x.phone)&&custPh(x.phone)===custPh(o.phone)))
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
+  if(same.length<2)return Promise.resolve([o]);
+  return new Promise(res=>{const d=document.createElement("div");d.className="editor";d.style.zIndex="50";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");
+    d.innerHTML=`<div class="cfm-box ov-box"><h3>Voucher ထုတ်မည့် Order များ</h3><p>${esc(o.name||"")} ရဲ့ Order ${same.length} ခု ရှိပါတယ်။ Voucher တစ်စောင်ထဲ ထည့်မယ့် Order တွေကို ရွေးပါ။</p>
+      <div class="ov-list">${same.map(x=>`<label class="ov-row"><input type="checkbox" value="${esc(x.id)}" checked><span><b>${esc(x.no)}</b> · ${esc(fmtDate(x.date))} · ${esc(fmt(x.total||0))}<small>${esc(isBak(x)?"Bakery products":`${x.sizeName||""} ${x.flavorName||""}`.trim())}</small></span></label>`).join("")}</div>
+      <div class="cfm-btns"><button type="button" class="btn ghost" data-ov="no">Cancel</button><button type="button" class="btn" data-ov="yes">Voucher ထုတ်မည်</button></div></div>`;
+    document.body.append(d);
+    const done=v=>{d.remove();res(v)};
+    d.addEventListener("click",e=>{if(e.target===d)return done(null);const b=e.target.closest("[data-ov]");if(!b)return;if(b.dataset.ov==="no")return done(null);
+      const ids=[...d.querySelectorAll("input:checked")].map(i=>i.value);if(!ids.length){toast("Order အနည်းဆုံး ၁ ခု ရွေးပါ");return}
+      done(same.filter(x=>ids.includes(x.id)))})})}
+$("pvVoucher").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;
+  const list=await pickVoucherOrders(o);if(!list)return;const b=$("pvVoucher");b.disabled=true;
   toast("Voucher ပုံ ပြင်ဆင်နေသည်…",8000);
-  /* the order picture (as in this preview) goes under the voucher */
-  const ov=orderVoucher(o),pic=$("pvImg").getAttribute("src")||"";if(pic.startsWith("data:"))ov.orderPic=pic;
-  try{const{blob,name}=await soMakeImage(ov,"image/jpeg","A5");
+  try{const{blob,name}=await soMakeImage(orderVoucher(list),"image/jpeg","A5");
     if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
     await saveFile(blob,name,"JPEG")}
   catch(x){if(x?.code!=="declined")toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}finally{b.disabled=false}});
