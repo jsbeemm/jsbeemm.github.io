@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793679620"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793686547"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1454,7 +1454,7 @@ span.star-ic{cursor:default}
           <div class="sku-sum" id="flvSel" aria-live="polite"></div>
           <!-- Cream design (default) or Fondant design: fondant is made on Rainbow Butter or Brownie only, at twice that cake's price -->
           <p class="grp" id="decoGrp">Design</p>
-          <div class="opts as-select" id="optDeco"><label class="opt"><input type="radio" name="fDeco" value="cream" checked><span>Cream design</span></label><label class="opt"><input type="radio" name="fDeco" value="fondant"><span>Fondant design</span></label><label class="opt"><input type="radio" name="fDeco" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fDeco" value="cupcake"><span>Cupcake</span></label></div>
+          <div class="opts as-select" id="optDeco"><label class="opt"><input type="radio" name="fDeco" value="cream" checked><span>Cream design</span></label><label class="opt"><input type="radio" name="fDeco" value="fondant"><span>Fondant design</span></label><label class="opt"><input type="radio" name="fDeco" value="mixed"><span>Cream and fondant mixed</span></label><label class="opt"><input type="radio" name="fDeco" value="mini"><span>Mini cake</span></label><label class="opt"><input type="radio" name="fDeco" value="cupcake"><span>Cupcake</span></label></div>
           <!-- Design and Shape are picked from dropdowns; the radio buttons stay behind them (hidden) and carry the choice -->
           <select id="fDecoSel" class="opt-sel" aria-label="Design"></select>
           <!-- a Mini cake has its own Cream / Fondant choice (its Design value stays "mini") -->
@@ -2537,10 +2537,10 @@ function fondantOn(){return document.querySelector('input[name="fDeco"]:checked'
 /* after the cake's name: Fondant design, and "× 10" for several of the same cake */
 /* the design code with "Design အသစ်" after it for a design made for the first time (or that alone) */
 const dcLabel=o=>[o.design,o.designNew?"Design အသစ်":""].filter(Boolean).join(" · ");
-const fondTag=o=>(o.decoType==="fondant"||o.miniDeco==="fondant"?" · Fondant design":"")+(o.count>1?` × ${o.count}`:"");
+const fondTag=o=>(o.decoType==="fondant"||o.miniDeco==="fondant"?" · Fondant design":o.decoType==="mixed"?" · Cream and fondant mixed":"")+(o.count>1?` × ${o.count}`:"");
 /* Mini cake (4" or 5") and Cupcake (pieces): no flavor is picked and the price is typed */
 const SMALL={mini:{n:"Mini cake",sizes:[{k:"m4",n:'4"'},{k:"m5",n:'5"'}]},cupcake:{n:"Cupcake"}};
-const DECO_N={cream:"Cream design",fondant:"Fondant design",mini:"Mini cake",cupcake:"Cupcake"};
+const DECO_N={cream:"Cream design",fondant:"Fondant design",mixed:"Cream and fondant mixed",mini:"Mini cake",cupcake:"Cupcake"};
 const decoVal=()=>document.querySelector('input[name="fDeco"]:checked')?.value||"cream";
 const smallKind=()=>SMALL[decoVal()]?decoVal():"";
 /* Mini cake prices come from Bakery Products (Mini Butter Cake 4" / 5", codes 4"bt / 5"bt); these numbers are the fallback */
@@ -2830,7 +2830,7 @@ function readForm(){
   /* how many of this same cake (cupcakes keep their own piece count): the cake price below is for one, times this */
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
-  const basePrice=count*(tk?($("fTiers").value==="wedding"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
+  const basePrice=count*(tk?($("fTiers").value==="wedding"||decoVal()==="mixed"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
   const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?(qF?[qC&&`${qC} Cream`,`${qF} Fondant`].filter(Boolean).join(" + ")+" pcs":`${qty} pcs`):""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
@@ -2982,6 +2982,7 @@ function syncTierBox(){const on=hasTiers(tierKind());$("tierBox").hidden=!on;
   if(on)["optSize","sizeGrp","optFlavor","qtyWrap","sizeWrap","otherWrap","priceWrap"].forEach(id=>$(id).hidden=true);
   /* …except a Wedding Cake, whose price is typed for the whole cake */
   if(on&&tierKind()==="wedding"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Wedding Cake ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
+  else if(on&&decoVal()==="mixed"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Cream and fondant mixed ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
   /* Mini cake and Cupcake are picked under Cake type now (they still travel as the Design value): the Design choice is only
      Cream / Fondant, and it is not asked for a Mini cake or Cupcake */
   document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=true);
@@ -3018,7 +3019,8 @@ $("tierList").addEventListener("click",e=>{const c=e.target.closest("[data-ti]")
 /* a new tier goes on top, one size smaller than the tier below it */
 $("tierAdd").addEventListener("click",()=>{const top=tierDraft[tierDraft.length-1];tierDraft.push(newTier(top?String(Math.max(1,Number(top.size||2)-1)):"2"));renderTierList();updateReceipt()});
 /* custom size and unlisted flavors take a typed price */
-function manualPrice(flavor,size){return flavor==="other"||size==="custom"||size==="cup"}
+/* Cream and fondant mixed: the price is always typed */
+function manualPrice(flavor,size){return flavor==="other"||size==="custom"||size==="cup"||decoVal()==="mixed"}
 function price(f){
   const L=[];
   if(isBak(f))bakItemsOf(f).forEach(l=>L.push([`${l.name} × ${l.qty}`,l.price*l.qty]));else
@@ -3090,6 +3092,8 @@ function renderSku(f){
     /* Fondant design: only the flavors that can be made in Fondant are shown */
     const off=f.decoType==="fondant"&&!fondantOk(x?.k);l.classList.toggle("fd-off",off);l.querySelector("input").disabled=off;l.hidden=off;
     if(!x||x.k==="other"||!p)return;
+    /* Cream and fondant mixed: no list price, it is typed */
+    if(f.decoType==="mixed"){if(p.textContent)p.textContent="";l.classList.remove("na");return}
     const m=f.decoType==="fondant"?2:1,any=!f.size||f.size==="custom",v=any?0:priceAt(x,sizeIdx(f.size))*m,txt=any?(fromPrice(x)*m).toLocaleString()+" Ks မှ":v?v.toLocaleString()+" Ks":"မရပါ";
     if(p.textContent!==txt)p.textContent=txt;
     l.classList.toggle("na",!any&&!v);
@@ -3143,7 +3147,7 @@ function syncPrice(prefill){
   $("priceWrap").hidden=!on;$("sizeWrap").hidden=!!sk||s!=="custom";
   const fl=FLAVORS.find(x=>x.k===k);
   if(prefill)$("fPrice").value="";
-  $("priceHint").textContent=sk==="cupcake"?"Cupcake ဈေးနှုန်း (အားလုံးပေါင်း) ကို ရိုက်ထည့်ပါ။":sk==="mini"?"Fondant Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":fondantOn()&&s==="custom"?"Fondant design · Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"
+  $("priceHint").textContent=sk==="cupcake"?"Cupcake ဈေးနှုန်း (အားလုံးပေါင်း) ကို ရိုက်ထည့်ပါ။":sk==="mini"?"Fondant Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":decoVal()==="mixed"?"Cream and fondant mixed ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":fondantOn()&&s==="custom"?"Fondant design · Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"
     :s==="custom"?"Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"စာရင်းမပါသော ကိတ်သားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။";
 }
 $("optFlavor").addEventListener("change",()=>{renderSizes();syncPrice(true)});
@@ -3154,7 +3158,7 @@ $("optDeco").addEventListener("change",()=>{const c=document.querySelector('inpu
   /* tier layers too: a layer whose flavor has no Fondant design is cleared so it is picked again */
   if(fondantOn()&&hasTiers(tierKind())){let n=0;for(const t of tierDraft)if(!t.dummy)t.layers=t.layers.map(k=>k&&!fondantOk(k)?(n++,""):k);
     if(n){toast("Fondant design မရတဲ့ ကိတ်သား "+n+" ခု ဖြုတ်လိုက်ပါတယ်။ ကိတ်သား ပြန်ရွေးပါ");drawTiers()}}
-  renderSizes();syncPrice(true);
+  renderSizes();syncPrice(true);syncTierBox();
   /* a tiered / wedding cake's layer prices (shown in its flavor lists) follow Cream / Fondant too */
   if(hasTiers(tierKind()))renderTierList();
   updateReceipt()});
@@ -3617,7 +3621,7 @@ function fillForm(o){
   renderSizes(sz);syncPrice(false);
   $("fSizeCustom").value=sz==="custom"?(o.sizeName||""):"";
   /* a typed price (unlisted flavor, customized size, Wedding Cake) is per cake: an order of several holds price × count */
-  $("fPrice").value=o.cakeType==="wedding"||manualPrice(fk,sz)||(o.decoType==="mini"&&o.miniDeco==="fondant")?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
+  $("fPrice").value=o.cakeType==="wedding"||o.decoType==="mixed"||manualPrice(fk,sz)||(o.decoType==="mini"&&o.miniDeco==="fondant")?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
   syncTierBox();
   document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;
   $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
@@ -3760,7 +3764,7 @@ function formMissing(f){
     need(ts.some(t=>!t.dummy&&t.layers.some(k=>!k)),"အလွှာတိုင်းရဲ့ ကိတ်သား","tierList");
     need(f.decoType==="fondant"&&ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!fondantOk(k))),"Fondant design ရနိုင်သော ကိတ်သား","tierList");
     need(ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!layerPrice(k,t.size))),"ဒီ Size မှာ ရနိုင်သော ကိတ်သား","tierList");
-    need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice")}
+    need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice");need(f.cakeType!=="wedding"&&f.decoType==="mixed"&&!f.basePrice,"ကိတ်ဈေးနှုန်း","fPrice")}
   need(f.shape==="custom"&&!f.shapeCustom,"Customized ပုံသဏ္ဌာန်","fShapeCustom");
   need(f.flavor==="other"&&!f.flavorName,"ကိတ်သားအမည်","fOtherName");
   need(f.decoType==="fondant"&&!!f.flavor&&!fondantOk(f.flavor),"Fondant design ရနိုင်သော ကိတ်သား","optFlavor");
