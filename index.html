@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687254"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687583"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -380,6 +380,9 @@ label.f > span b{color:var(--accent);font-weight:500}
 .tier-card.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.tier-layer.hl select{border-color:var(--accent)}   /* the picked layer: outline only, no fill */
 #tierPic .tp-hit{cursor:pointer}#tierPic .tp-hit:hover{fill:rgba(200,40,95,.08)}
 .tier-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}.tier-head b{font-size:13.5px;margin-right:auto}
+.tier-dims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-right:38px}.tier-dims.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tier-dim{display:grid;gap:2px;min-width:0}.tier-dim small{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tier-dim input{width:100%;min-width:0;height:40px;padding:5px 8px;font-size:12.5px;box-sizing:border-box}
 .tier-opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;padding-right:38px}.tier-opts select,.tier-opts input{width:100%;min-width:0;height:40px;padding:5px 8px;font-size:12.5px}
 .tier-kind{display:flex;gap:4px}.tier-kind .opt > span{padding:3px 10px;font-size:12.5px}
 .tier-layer{display:grid;grid-template-columns:62px minmax(0,1fr) 32px;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
@@ -2891,12 +2894,21 @@ const newTier=(size,dummy)=>({dummy:!!dummy,size,layers:dummy?[]:[""],...(dummy?
 const defaultTiers=kind=>kind==="wedding"?[newTier("4",true),newTier("2"),newTier("1")]:[newTier("2"),newTier("1")];
 /* a tier's own size and shape: a Customized size is typed (csz, e.g. 7"); a shape left empty follows the cake's shape,
    a Customized shape is typed (cshp) */
-const tierXtra=t=>({...(t.size==="custom"?{csz:String(t.csz||"").trim()}:{}),...(t.shape?{shape:t.shape}:{}),...(t.shape==="custom"?{cshp:String(t.cshp||"").trim()}:{})});
+/* a Customized size is measured for its shape (inches): Rectangle length × width, Circle diameter, Square side; any other
+   shape is typed. Height is optional. csz keeps the size as text (7"×9"), for the slip and the lists */
+const tierXtra=t=>{const o={};if(t.size==="custom"){o.csz=String(t.csz||"").trim();for(const k of["cl","cw","cd","ch"])if(Number(t[k])>0)o[k]=Number(t[k])}
+  if(t.shape)o.shape=t.shape;if(t.shape==="custom")o.cshp=String(t.cshp||"").trim();return o};
+const tierSk=t=>shapeKey(t.shape||document.querySelector('input[name="fShape"]:checked')?.value||"circle");
+function tierCszOf(t){const k=tierSk(t),n=v=>Number(v)>0?`${+v}"`:"";
+  if(k==="rect"&&(t.cl||t.cw))return n(t.cl)&&n(t.cw)?`${n(t.cl)}×${n(t.cw)}`:"";
+  if((k==="circle"||k==="square")&&t.cd)return n(t.cd);
+  return String(t.csz||"").trim()}
 function readTiers(){if(!hasTiers(tierKind()))return{};return{tiers:tierDraft.map(t=>({dummy:!!t.dummy,size:t.size,layers:t.dummy?[]:t.layers.slice(),...(t.dummy?{dh:dumH(t)}:{}),...tierXtra(t)}))}}
 /* the whole cake's price is typed: a Wedding Cake, Cream and fondant mixed, or a tier in a Customized size */
 const tierManual=()=>tierKind()==="wedding"||decoVal()==="mixed"||tierDraft.some(t=>t.size==="custom");
 const tierSz=t=>t.size==="custom"?(String(t.csz||"").trim()||"Customized"):szShort(t.size);
-const tierInch=t=>t.size==="custom"?(parseFloat(t.csz)||6):szInch(t.size);
+const tierInch=t=>t.size==="custom"?(Number(t.cl)||Number(t.cd)||parseFloat(t.csz)||6):szInch(t.size);
+const tierHt=t=>t.size==="custom"&&Number(t.ch)>0?Number(t.ch):0;
 const tierShpN=t=>!t.shape?"":t.shape==="custom"?(String(t.cshp||"").trim()||"Customized"):(SHAPES.find(x=>x.k===t.shape)?.n||"");
 const flvName=k=>FLAVORS.find(x=>x.k===k)?.n||"";
 const szShort=k=>(SIZES.find(s=>s.k===k)?.n||"").replace(/\s*\(.*\)/,"");   /* '8"', or "1 1/2 lb" for a half size */
@@ -2912,9 +2924,15 @@ function tiersOf(o){if(o.tiers)return o.tiers;if(!o.tierN)return[];
   return fl.slice(0,o.tierN).map(k=>({dummy:false,size:o.size||"",layers:[k||""]}))}
 function tierLine(t){const sh=tierShpN(t)?` (${tierShpN(t)})`:"";if(t.dummy)return`${tierSz(t)}${sh} Dummy cake (${dumH(t)}" ${LANG==="en"?"high":"မြင့်"})`;
   const ls=t.layers.map(k=>flvName(k).replace(/ Cake$/,"")||"—"),same=ls.every(x=>x===ls[0]);
-  return`${tierSz(t)}${sh} ${same&&ls.length>1?`${ls[0]} ×${ls.length}`:ls.join(" + ")}`}
+  return`${tierSz(t)}${sh}${tierHt(t)?` · ${tierHt(t)}" ${LANG==="en"?"high":"မြင့်"}`:""} ${same&&ls.length>1?`${ls[0]} ×${ls.length}`:ls.join(" + ")}`}
 function tierText(o){const ts=tiersOf(o);if(!hasTiers(ctOf(o))||!ts.length)return"";
   return`${ts.length} ဆင့် · `+ts.map((t,i)=>`${i+1}: ${tierLine(t)}`).join(" / ")}
+/* a Customized size's boxes, by the tier's shape (inches; Height may be left empty) */
+function tierDims(t,i,en){const k=tierSk(t),box=(f,lbl,ph="")=>`<label class="tier-dim"><small>${lbl}</small><input type="number" inputmode="decimal" min="0" step="0.5" class="tier-dimv" data-k="${f}" value="${esc(String(t[f]??""))}" placeholder="${ph}" aria-label="Tier ${i+1} ${lbl}"></label>`;
+  const H=box("ch",en?'Height (")':'အမြင့် (")',en?"optional":"မထည့်လည်းရ");
+  if(k==="rect")return`<div class="tier-dims c3">${box("cl",en?'Length (")':'အလျား (")')}${box("cw",en?'Width (")':'အနံ (")')}${H}</div>`;
+  if(k==="circle"||k==="square")return`<div class="tier-dims">${box("cd",k==="circle"?(en?'Diameter (")':'အချင်း (")'):(en?'Side (")':'အလျား (")'))}${H}</div>`;
+  return`<div class="tier-dims"><label class="tier-dim"><small>Size</small><input class="tier-csz" value="${esc(t.csz||"")}" placeholder="${en?'e.g. 7"':'ဥပမာ 7"'}" aria-label="Tier ${i+1} customized size"></label>${H}</div>`}
 /* the builder: shown top tier first, the way the cake stands */
 function renderTierList(){
   const wed=tierKind()==="wedding",n=tierDraft.length,m=fondantOn()?2:1,en=LANG==="en";
@@ -2935,8 +2953,8 @@ function renderTierList(){
     <!-- size and shape side by side; a Customized one has its typed box right under it -->
     <div class="tier-opts"><select class="tier-size" aria-label="Tier ${i+1} size">${sizeOpts(t.size)}<option value="custom" ${t.size==="custom"?"selected":""}>Customized</option></select>
       <select class="tier-shp" aria-label="Tier ${i+1} shape">${shpOpts(t.shape||"")}</select>
-      ${t.size==="custom"||t.shape==="custom"?(t.size==="custom"?`<input class="tier-csz" value="${esc(t.csz||"")}" placeholder="${en?'e.g. 7"':'ဥပမာ 7"'}" aria-label="Tier ${i+1} customized size">`:"<span></span>")
-        +(t.shape==="custom"?`<input class="tier-cshp" value="${esc(t.cshp||"")}" placeholder="${en?"e.g. number 5":"ဥပမာ ဂဏန်း 5"}" aria-label="Tier ${i+1} customized shape">`:""):""}</div>
+      ${t.shape==="custom"?`<span></span><input class="tier-cshp" value="${esc(t.cshp||"")}" placeholder="${en?"e.g. number 5":"ဥပမာ ဂဏန်း 5"}" aria-label="Tier ${i+1} customized shape">`:""}</div>
+    ${t.size==="custom"?tierDims(t,i,en):""}
     ${t.dummy?`<p class="tier-dnote">${en?"Dummy cake (display dummy) – no flavor":"Dummy cake (ပြသရန် အတု) – ကိတ်သား မလို"}</p>
       <div class="tier-layer tier-dl"><span>${en?"Height":"အမြင့်"}</span><span class="cnt"><button type="button" class="cnt-b" data-dh="-0.5" aria-label="${en?"Lower by ½ inch":"½ လက်မ နိမ့်ရန်"}" ${dumH(t)<=1?"disabled":""}>−</button><b>${dumH(t)}"</b><button type="button" class="cnt-b" data-dh="0.5" aria-label="${en?"Higher by ½ inch":"½ လက်မ မြင့်ရန်"}" ${dumH(t)>=12?"disabled":""}>+</button></span></div>`
       :t.layers.map((k,j)=>`<div class="tier-layer" data-li="${j}"><span>${en?"Layer":"အလွှာ"} ${j+1}</span><select class="tier-flv" aria-label="Tier ${i+1} layer ${j+1} flavor">${flvOpts(k,t.size,tierStacked(t))}</select><button type="button" class="rm" data-lrm aria-label="Remove layer" ${t.layers.length<2?"disabled":""}>×</button></div>`).join("")
@@ -2959,12 +2977,12 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
   const INK=ink||"#2B1B23",MUT=ink||"#7A6570",ACC=ink||"#C8285F",BODY="#FFFFFF",SIDE=ink?"#FFFFFF":"#EEE7EA",DUM=ink?"#FFFFFF":"#EEE7EA";
   const PX=20,parts=[];let y0=0,minY=0,maxX=0,botExt=0,totIn=0,topY=0;const dims=[];   /* 20 px per inch, across and up */
   /* label sizes grow with the cake: a tall cake is scaled down a lot on the slip, so its text starts bigger */
-  const tierH=t=>{const inch=tierInch(t),base=t.size!=="custom"&&SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,skOf(t))*PX*hm};
+  const tierH=t=>{const inch=tierInch(t),base=t.size!=="custom"&&SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;return t.dummy?dumH(t)*PX:tierHt(t)?tierHt(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,skOf(t))*PX*hm};
   const FS=Math.max(15,Math.round(ts.reduce((s,t)=>s+tierH(t),0)*.055)),FT=Math.round(FS*1.15);
   ts.forEach((t,i)=>{/* width follows the diameter (6", 8" …); a half size like 1 1/2 lb is as wide as 6" but taller — 1.5 × the height of 1 lb */
     const sk=skOf(t),kind=kindOf(sk);
     const inch=tierInch(t),base=t.size!=="custom"&&SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;
-    const W=(sk==="rect"?150:120)+(inch-6)*20,L=t.dummy?1:Math.max(1,(t.layers||[]).length),h=t.dummy?dumH(t)*PX:L*mouldH(inch,sk)*PX*hm,lh=h/L;   /* each layer is one mould high, drawn to scale with the width; a Dump cake is as high as set */
+    const W=(sk==="rect"?150:120)+(inch-6)*20,L=t.dummy?1:Math.max(1,(t.layers||[]).length),h=t.dummy?dumH(t)*PX:tierHt(t)?tierHt(t)*PX:L*mouldH(inch,sk)*PX*hm,lh=h/L;   /* each layer is one mould high, drawn to scale with the width; a Dump cake is as high as set */
     const ry=kind==="cyl"?W*.075:0,dx=kind==="box"?W*.16:0,dy=kind==="box"?W*.09:0,x=-W/2-dx/2,top=y0-h;
     const st=t.dummy?`fill="${DUM}" stroke="${MUT}" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"`:`fill="${BODY}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`;
     const sideSt=t.dummy?st:`fill="${SIDE}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`,ln=`fill="none" stroke="${t.dummy?MUT:INK}" stroke-width="1.5"`;
@@ -3041,12 +3059,15 @@ $("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name
   syncTierBox()});
 $("tierList").addEventListener("change",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const t=tierDraft[Number(c.dataset.ti)];if(!t)return;
   if(e.target.matches(".tier-size")){t.size=e.target.value;renderTierList();syncTierBox();updateReceipt()}
-  else if(e.target.matches(".tier-shp")){t.shape=e.target.value;if(!t.shape)delete t.shape;renderTierList();updateReceipt()}
+  else if(e.target.matches(".tier-shp")){t.shape=e.target.value;if(!t.shape)delete t.shape;if(t.size==="custom")t.csz=tierCszOf(t);renderTierList();updateReceipt()}
   else if(e.target.matches(".tier-flv")){t.layers[Number(e.target.closest("[data-li]").dataset.li)]=e.target.value;drawTiers()}
   else if(e.target.matches("[data-tkind]")){t.dummy=e.target.value==="dummy";t.layers=t.dummy?[]:t.layers.length?t.layers:[""];if(t.dummy)t.dh=dumH(t);renderTierList()}});
 /* typing a tier's Customized size / shape: kept as typed, the drawing follows (the list is not redrawn, so typing goes on) */
-$("tierList").addEventListener("input",e=>{if(!e.target.matches(".tier-csz,.tier-cshp"))return;const t=tierDraft[Number(e.target.closest("[data-ti]").dataset.ti)];if(!t)return;
-  if(e.target.matches(".tier-csz"))t.csz=e.target.value;else t.cshp=e.target.value;drawTiers();updateReceipt()});
+$("tierList").addEventListener("input",e=>{if(!e.target.matches(".tier-csz,.tier-cshp,.tier-dimv"))return;const t=tierDraft[Number(e.target.closest("[data-ti]").dataset.ti)];if(!t)return;
+  if(e.target.matches(".tier-dimv")){t[e.target.dataset.k]=e.target.value;t.csz=tierCszOf(t)}
+  else if(e.target.matches(".tier-csz"))t.csz=e.target.value;else t.cshp=e.target.value;drawTiers();updateReceipt()});
+/* the cake's shape changes the boxes of tiers that follow it */
+$("optShape").addEventListener("change",()=>{if(!hasTiers(tierKind()))return;tierDraft.forEach(t=>{if(t.size==="custom"&&!t.shape)t.csz=tierCszOf(t)});renderTierList()});
 $("tierList").addEventListener("click",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const i=Number(c.dataset.ti),t=tierDraft[i];if(!t)return;
   if(e.target.closest("[data-trm]")){tierDraft.splice(i,1);renderTierList();syncTierBox();updateReceipt();return}
   const dh=e.target.closest("[data-dh]");if(dh){t.dh=Math.min(12,Math.max(1,dumH(t)+Number(dh.dataset.dh)));delete t.dl;renderTierList();updateReceipt();return}   /* Dummy cake: 1"–12" high, ½" a tap */
