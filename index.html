@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793698526"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793698908"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2435,7 +2435,11 @@ function fbNetBar(){let b=document.getElementById("fbNet");if(!b){b=document.cre
     b.style.cssText="position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:999;background:#3A2A31;color:#fff;font:600 13.5px/1.4 'Noto Sans Myanmar',system-ui,sans-serif;padding:8px 14px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center";
     document.body.appendChild(b)}
   b.textContent="📴 Internet မရှိပါ — ဆက်သုံးလို့ရပါတယ်၊ Internet ပြန်ရရင် အလိုလို sync ပါမယ်";b.hidden=navigator.onLine}
-addEventListener("online",fbNetBar);addEventListener("offline",fbNetBar);addEventListener("DOMContentLoaded",()=>{if(!navigator.onLine)fbNetBar()});
+addEventListener("online",fbNetBar);addEventListener("offline",fbNetBar);
+/* back online: photos that could not be fetched while offline are fetched now and swapped in place (no reload, the page stays where it is) */
+addEventListener("online",()=>{if(!fbDb)return;const ids=new Set();
+  document.querySelectorAll("img,[data-zoom],[data-src]").forEach(el=>["src","data-zoom","data-src"].forEach(a=>{const v=el.getAttribute(a)||"",i=v.indexOf("#fbph=");if(i>=0)ids.add(decodeURIComponent(v.slice(i+6)))}));
+  ids.forEach(id=>fbPhotoGet(id))});addEventListener("DOMContentLoaded",()=>{if(!navigator.onLine)fbNetBar()});
 /* keep a copy of the app on this phone (sw.js), so it opens even when the network blocks the site's address */
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 function fbShopSignOut(){if(window.firebase)firebase.auth().signOut().then(()=>location.reload())}
