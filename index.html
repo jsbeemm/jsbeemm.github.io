@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793722913"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793723613"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8797,8 +8797,9 @@ async function poSync(oldV,newV){const id=newV?.poId||oldV?.poId;if(!id)return;c
   await savePo({...p,lines,updatedAt:new Date().toISOString()})}
 /* ---- the voucher itself (on screen, printed, or as a picture) ---- */
 const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#3b2a20;background:#fff;font-size:13px;line-height:1.35}
-.vo-top{display:flex;align-items:center;gap:16px}.vo-top img{width:78px;height:78px;object-fit:contain}
-.vo-shop{flex:1;text-align:center}.vo-shop h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;color:var(--vc)}.vo-shop p{margin:4px 0 0;font:18px Georgia,serif;color:var(--vc);letter-spacing:.5px}
+/* the shop logo sits right at the left of the shop name; the two together are centred */
+.vo-top{display:flex;align-items:center;justify-content:center;gap:14px}.vo-top img{width:78px;height:78px;object-fit:contain}
+.vo-shop{flex:none;text-align:left}.vo-shop h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;color:var(--vc)}.vo-shop p{margin:4px 0 0;font:18px Georgia,serif;color:var(--vc);letter-spacing:.5px}
 .vo-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 18px;margin-top:10px;align-items:start}
 .vo-meta h3{margin:0 0 2px;font:15px Georgia,serif;color:var(--vc)}.vo-cust b{font-size:14px;display:block}.vo-dl{text-align:center}
 .vo-no{display:grid;grid-template-columns:auto auto;justify-content:end;align-content:start;gap:4px 10px;text-align:left;color:#3b2a20}.vo-no .k{text-align:right;color:var(--vc)}
