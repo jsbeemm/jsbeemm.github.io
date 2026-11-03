@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793701358"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793701610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -271,11 +271,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .lightbox,.lightbox button,.lightbox p{-webkit-user-select:none;user-select:none}
 .lightbox img{-webkit-touch-callout:default!important}
 .lb-foot{display:grid;gap:10px;justify-items:center}
+.lb-save .bi{width:18px;height:18px}
 .lb-save{width:auto;margin:0}
 .lb-tip{margin:12px 0 0;color:#fff;font-size:15px;text-align:center;background:rgba(0,0,0,.4);padding:8px 14px;border-radius:10px}
 .lb-close{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:16px;border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;background:#fff;color:#2B1B23;cursor:pointer;z-index:21}
 .lightbox img{max-width:min(100%,720px);max-height:80vh;border-radius:10px;object-fit:contain}
 .lightbox img:not([src]){display:none}
+.lb-save{margin-top:12px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:9px 18px 9px 14px;font:inherit;font-size:14px;font-weight:700;background:#fff;color:#2B1B23;cursor:pointer}
 .o-msg{margin:6px 0 0;font-size:13.5px;background:var(--accent-soft);border-radius:8px;padding:4px 10px;display:inline-block;white-space:pre-line}
 .o-meta{margin:6px 0 0;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 14px}
 .o-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
@@ -2372,7 +2374,7 @@ span.star-ic{cursor:default}
 <div class="editor" id="leaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="leaveT" style="z-index:50"><div class="cfm-box"><h3 id="leaveT">ပြင်ဆင်ချက်တွေ သိမ်းမလား?</h3><p>ပြင်ထားတာတွေ မသိမ်းရသေးပါ။</p><div class="cfm-btns leave-btns"><button type="button" class="btn ghost" id="leaveStay">ဆက်ပြင်မည်</button><button type="button" class="btn ghost danger-t" id="leaveDrop">မသိမ်းပါ</button><button type="button" class="btn" id="leaveSave">သိမ်းမည်</button></div></div></div>
 <div class="editor" id="cfmDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" style="z-index:50"><div class="cfm-box"><h3 id="cfmTitle"></h3><p id="cfmMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="cfmNo">Cancel</button><button type="button" class="btn danger" id="cfmYes">Delete</button></div></div></div>
 <div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">ဆက်ရေးမည်</button><button type="button" class="btn ghost" id="soLvDrop">မသိမ်းဘဲ ထွက်မည်</button><button type="button" class="btn" id="soLvSave">Draft သိမ်းမည်</button></div></div></div>
-<div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
+<div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><button type="button" class="lb-save" id="lbSave" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>Save image</span></button><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
 
 <!-- ===== Firebase build: shop sign-in, Firestore database, photos kept in Firestore =====
      Added by firebase/build.pl in front of the app's own script. The app itself is the same file as on Claude;
@@ -4807,6 +4809,15 @@ try{const s=localStorage.getItem("cakeSort");if(s&&[...$("sortSel").options].som
 $("sortSel").addEventListener("change",()=>{try{localStorage.setItem("cakeSort",$("sortSel").value)}catch(e){}render()});
 /* close on the dark background or ✕ only, so pressing and holding the picture to save it never closes it */
 $("lightbox").addEventListener("click",e=>{if(e.target===$("lightbox")||e.target.closest("#lbClose"))$("lightbox").hidden=true});
+/* a photo shown large with a "Save image" button (phones can also press and hold the picture) */
+let lbSaveName="";
+function openPhotoSave(src,name){lbSaveName=String(name||"photo.jpg").replace(/[\\/:*?"<>|]+/g," ").trim();$("lightImg").src=src;
+  $("lbTip").textContent="ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်";$("lbTip").hidden=!matchMedia("(pointer:coarse)").matches;
+  $("lbSave").hidden=false;$("lightbox").hidden=false}
+$("lbSave").addEventListener("click",async e=>{e.stopPropagation();const b=$("lbSave");b.disabled=true;
+  try{const blob=await (await fetch($("lightImg").src)).blob();await saveFile(blob,lbSaveName||"photo.jpg","ပုံ")}catch(x){toast("ပုံ သိမ်းမရပါ")}finally{b.disabled=false}});
+/* the button belongs to that photo only: any other picture shown in the viewer, or closing it, hides it */
+new MutationObserver(()=>{if($("lightbox").hidden)$("lbSave").hidden=true}).observe($("lightbox"),{attributes:true,attributeFilter:["hidden"]});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lightbox").hidden=true});
 /* ---------- time warnings (checked every minute, shown on every page and on the order card):
    · a Pending Order whose time is within the next hour (or already past) — the cake is not started yet
@@ -6678,7 +6689,8 @@ $("pdPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="pdFile"||!
   const f=e.target.files[0];pdPhoto={id:null,url:"",busy:true};
   try{const b=await shrinkImage(f,900);pdPhoto.url=await blobToData(b);pdRenderPhoto();const s=await storePhoto(b);pdPhoto={id:s.id,url:s.url}}
   catch(x){pdPhoto=null;toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}pdRenderPhoto()});
-$("pdPhotoBox").addEventListener("click",e=>{if(e.target.id==="pdPhotoRm"){pdPhoto=null;pdRenderPhoto()}});
+$("pdPhotoBox").addEventListener("click",e=>{if(e.target.id==="pdPhotoRm"){pdPhoto=null;pdRenderPhoto();return}
+  if(e.target.closest(".pd-fph img")&&pdPhoto?.url)openPhotoSave(pdPhoto.url,`${pdEditing?.name||"product"}.jpg`)});
 /* saving a flavor sheet: every row is checked (ID, Name, Barcode and Cake Orders size may not repeat), then saved as its own product */
 async function savePdSheet(){
   const rows=[...$("pdRows").querySelectorAll(".pd-row")],num=v=>{v=String(v).trim();return v===""?null:Math.round(Number(v))};
@@ -8022,7 +8034,9 @@ $("itPhotoBox").addEventListener("change",async e=>{if(e.target.id!=="itPhFile"|
   const f=e.target.files[0];itPhoto={id:null,url:"",busy:true};
   try{const b=await shrinkImage(f,900);itPhoto.url=await blobToData(b);itRenderPhoto();const s=await storePhoto(b);itPhoto={id:s.id,url:s.url}}
   catch(x){itPhoto=null;toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}itRenderPhoto()});
-$("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPhoto=null;itRenderPhoto()}});
+$("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPhoto=null;itRenderPhoto();return}
+  /* tapping the photo opens it large, with Save image */
+  if(e.target.closest(".pd-fph img")&&itPhoto?.url)openPhotoSave(itPhoto.url,`${$("itName")?.value||itEditing?.name||"item"}.jpg`)});
 /* the form's boxes and the item fields they hold (text, number or yes/no) */
 const IT_F=[["itCat","cat"],["itSub","sub"],["itCode","code"],["itName","name"],["itUnit","unit"],["itRef","ref"],
   ["itStockUnit","stockUnit"],["itUnitOk","unitOk","b"],["itUom","uom"],["itConsId","consId"],["itConsName","consName"],["itConsQty","consQty","n"],["itNote","note"]];
