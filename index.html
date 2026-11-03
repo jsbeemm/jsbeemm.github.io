@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793723613"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793724039"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1298,6 +1298,7 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .cfm-box{background:var(--surface);border-radius:16px;width:min(100%,380px);padding:20px 20px 16px;box-shadow:0 10px 40px rgba(0,0,0,.3);display:grid;gap:10px}
 .cfm-box h3{margin:0;font-size:18px}.cfm-box p{margin:0;color:var(--muted);font-size:14.5px;white-space:pre-line}
 .ov-box{width:min(100%,420px)}.ov-list{display:grid;gap:6px;max-height:50vh;overflow:auto}.ov-row{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}.ov-row input{margin:3px 0 0;width:auto;flex:none}.ov-row small{display:block;color:var(--muted);font-size:12.5px}
+#resetBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px}#resetBtn .rs-ic{width:18px;height:18px}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .prq-assign{font-size:12.5px;font-weight:600;color:var(--sky);background:var(--sky-soft);border-radius:999px;padding:1px 10px;display:inline-block}
@@ -3756,7 +3757,7 @@ function resetForm(keepFresh){
   $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value=nextNo();$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
-  setKind("cake");setCups([]);syncDcWho();
+  setKind("cake");setCups([]);syncDcWho();syncResetBtn();
 }
 const custNm=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ");
 async function renameSameCust(prev,o){
@@ -3817,7 +3818,7 @@ function fillForm(o){
   $("draftBtn").hidden=true;   /* drafts are for new orders only */
   editSnap=null;setTimeout(()=>{if(editingId===o.id)editSnap=formSig()},60);
   setKind(o.kind,o.items,o.custId);
-  $("formErr").hidden=true;updateReceipt();checkNo();
+  $("formErr").hidden=true;updateReceipt();checkNo();syncResetBtn();
 }
 /* the same customer orders again: a new order with only the customer, channel and delivery details copied (the cake is picked fresh) */
 function orderAgain(o){
@@ -3852,7 +3853,7 @@ function renderDrafts(){
 function fillDraft(d){
   resetForm();const o={...(d.form||{})};
   fillForm({...o,id:null});
-  editingId=null;draftId=d.id;$("draftBtn").hidden=false;
+  editingId=null;draftId=d.id;$("draftBtn").hidden=false;syncResetBtn();
   /* fields left empty in the draft stay empty (the order form would otherwise pick defaults) */
   if(!o.shape)document.querySelectorAll('input[name="fShape"]').forEach(i=>i.checked=false);
   if(!o.flavor){document.querySelectorAll('input[name="fFlavor"]').forEach(i=>i.checked=false);$("fOtherName").value=""}
@@ -3935,7 +3936,13 @@ const afterTyping=e=>{if(e?.isComposing)return;clearTimeout(typeT);typeT=setTime
 $("form").addEventListener("input",afterTyping);
 $("form").addEventListener("compositionend",afterTyping);
 $("form").addEventListener("change",updateReceipt);
-$("resetBtn").addEventListener("click",()=>{resetForm();showTab("list")});
+/* Cancel; while a draft is being continued it becomes "Delete draft": the draft is removed (after asking) */
+function syncResetBtn(){const b=$("resetBtn"),dr=!!draftId;b.classList.toggle("danger-t",dr);if(dr)b.innerHTML=`${TRASH_IC.replace('class="ic"','class="bi rs-ic"')}<span>Draft ဖျက်ရန်</span>`;else b.textContent="ပယ်ဖျက် / ရှင်းလင်း"}
+$("resetBtn").addEventListener("click",async()=>{
+  if(draftId){const d=drafts.find(x=>x.id===draftId),f=d?.form||{};
+    if(!await askConfirm("Delete this draft?",[f.name,f.phone].filter(Boolean).join(" · ")||"","Delete"))return;
+    const id=draftId;draftId=null;try{await dropDraft(id);toast("Draft ဖျက်ပြီး")}catch(x){toast("Draft ဖျက်မရပါ")}}
+  resetForm();showTab("list")});
 /* scroll to the first field that still needs filling (top of the form first), flash it and put the cursor there */
 function goToField(els){
   const el=els.filter(Boolean).sort((a,b)=>a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING?-1:1)[0];if(!el)return;
@@ -5236,7 +5243,7 @@ const EN={
   "Settings":"Settings","ဘာသာစကား ရွေးရန်":"Choose language","⚙ ဆက်တင်":"⚙ Settings","ဆက်တင်":"Settings",
   /* labels that read Burmese in Burmese mode and English in English mode */
   "ဝယ်သူ":"Customer","ပို့ဆောင်ရေး အချက်အလက်":"Delivery info","ငွေပေးချေမှု":"Payment",
-  "အော်ဒါ သိမ်းမည်":"Save","ပြင်ဆင်ချက်တွေ သိမ်းမလား?":"Save your changes?","ပြင်ထားတာတွေ မသိမ်းရသေးပါ။":"You have changes that are not saved yet.","ဆက်ပြင်မည်":"Keep editing","မသိမ်းပါ":"Don't save","သိမ်းမည်":"Save","ပြင်ဆင်ချက် သိမ်းမည်":"Save","ပယ်ဖျက် / ရှင်းလင်း":"Cancel",
+  "အော်ဒါ သိမ်းမည်":"Save","ပြင်ဆင်ချက်တွေ သိမ်းမလား?":"Save your changes?","ပြင်ထားတာတွေ မသိမ်းရသေးပါ။":"You have changes that are not saved yet.","ဆက်ပြင်မည်":"Keep editing","မသိမ်းပါ":"Don't save","သိမ်းမည်":"Save","ပြင်ဆင်ချက် သိမ်းမည်":"Save","Draft ဖျက်ရန်":"Delete draft","ပယ်ဖျက် / ရှင်းလင်း":"Cancel",
   "ပြင်ရန်":"Edit","ဖျက်ရန်":"Delete","အစမ်းကြည့်ရန်":"Preview",
   "အရွယ်":"Size","Admin – အားလုံး လုပ်နိုင် (အော်ဒါ ဖျက်ခြင်း၊ Role သတ်မှတ်ခြင်း အပါအဝင်)":"Admin – can do everything (including deleting orders and setting roles)","Sale – အော်ဒါ ထည့်၊ ပြင်၊ ငွေချေ၊ Print (ဖျက်မရ)":"Sale – add, edit, take payments, print (cannot delete)","Production · Baking / Decoration – ကြည့်ခြင်းနှင့် Print သာ":"Production · Baking / Decoration – view and print only","Viewer – ကြည့်ခြင်းနှင့် Print သာ":"Viewer – view and print only","🛒 Purchaser – Purchase Requisition မှာ Purchased ခြစ်ခွင့် ရှိသူ (ခြစ်ထားသူများသာ)":"🛒 Purchaser – only the people ticked here can mark items as Purchased",
   "ပြသမည့်အမည် (optional)":"Display name (optional)","ပြသမည့်အမည်":"Display name","(အမည် မသိ)":"(name unknown)","အသုံးပြုသူ မရှိသေးပါ။":"No users yet.","သိမ်းပြီး":"Saved","သိမ်းမရပါ — Share မှာ Editor ပေးထားသော Admin သာ ပြင်နိုင်သည်":"Couldn't save — only Admins who are Editors in Share can change roles",
