@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793696881"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793697060"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1241,6 +1241,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 @media (max-width:520px){.pd-r3{grid-template-columns:1fr 1fr}}
 .pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .dc-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 16px}.dc-row .dc-new{margin:0 0 10px}
+.dc-who{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px;margin-top:4px}.dc-who[hidden]{display:none}.dc-who label.f{margin:0}
 .cup-qrow{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px}.cup-qrow label.f{margin:0}
 .cup-qrow[hidden],#cupNew[hidden]{display:none}
 .cup-lines{display:grid;gap:8px}
@@ -1532,6 +1533,10 @@ span.star-ic{cursor:default}
             <label class="check dc-new"><input type="checkbox" id="fDesignNew"> Design အသစ်</label>
             <!-- the design has been given (to the decorator) -->
             <label class="check dc-new"><input type="checkbox" id="fDesignGiven"> Design ပေးထား</label></div>
+          <!-- a new design: who the cake is for (male / female and about how old), shown once "Design အသစ်" is ticked -->
+          <div class="dc-who" id="dcWho" hidden>
+            <label class="f"><span>Male / Female</span><select id="fDsnSex"><option value="">ရွေးပါ</option><option value="male">Male</option><option value="female">Female</option></select></label>
+            <label class="f"><span>အသက် (ခန့်မှန်း)</span><select id="fDsnAge"><option value="">ရွေးပါ</option><option>1–5</option><option>6–12</option><option>13–19</option><option>20s</option><option>30s</option><option>40s</option><option>50s</option><option>60+</option></select></label></div>
           <label class="f" style="margin-top:12px"><span>ကိတ် Design မှတ်ချက်</span><textarea id="fDesignNote" rows="2" placeholder="ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…"></textarea></label>
           <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted);margin-top:12px">
             <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(၄ ပုံအထိ · ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)</small></span>
@@ -2563,7 +2568,10 @@ const fondantOk=k=>{const fl=FLAVORS.find(x=>x.k===k);return fl&&fl.fondant!=nul
 function fondantOn(){return document.querySelector('input[name="fDeco"]:checked')?.value==="fondant"}
 /* after the cake's name: Fondant design, and "× 10" for several of the same cake */
 /* the design code with "Design အသစ်" after it for a design made for the first time (or that alone) */
-const dcLabel=o=>[o.design,o.designNew?"Design အသစ်":"",o.designGiven?"Design ပေးထား":""].filter(Boolean).join(" · ");
+const DSN_SEX={male:"Male",female:"Female"};
+const dsnWho=o=>o.designNew?[DSN_SEX[o.designSex]||"",o.designAge||""].filter(Boolean).join(" "):"";
+const dcLabel=o=>[o.design,o.designNew?"Design အသစ်"+(dsnWho(o)?` (${dsnWho(o)})`:""):"",o.designGiven?"Design ပေးထား":""].filter(Boolean).join(" · ");
+function syncDcWho(){$("dcWho").hidden=!$("fDesignNew").checked}
 const fondTag=o=>(o.decoType==="fondant"||o.miniDeco==="fondant"?" · Fondant design":o.decoType==="mixed"||o.miniDeco==="mixed"?" · Cream and fondant mixed":"")+(o.count>1?` × ${o.count}`:"");
 /* Mini cake (4" or 5") and Cupcake (pieces): no flavor is picked and the price is typed */
 const SMALL={mini:{n:"Mini cake",sizes:[{k:"m4",n:'4"'},{k:"m5",n:'5"'}]},cupcake:{n:"Cupcake"}};
@@ -2894,7 +2902,7 @@ function readForm(){
     cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty,...(qF?{cupCream:qC,cupFondant:qF}:{}),...(cupL?{cupItems:cups}:{})}:{}),...(count>1?{count}:{}),
     shape:sk==="cupcake"?"":document.querySelector('input[name="fShape"]:checked')?.value||"",
     shapeCustom:sk!=="cupcake"&&document.querySelector('input[name="fShape"]:checked')?.value==="custom"?$("fShapeCustom").value.trim():"",cakeType:$("fTiers").value,custom:$("fTiers").value!=="std"?$("fCustom").value.trim():"",...readTiers(),
-    msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),...($("fDesignNew").checked?{designNew:true}:{}),...($("fDesignGiven").checked?{designGiven:true}:{}),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
+    msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),...($("fDesignNew").checked?{designNew:true,...($("fDsnSex").value?{designSex:$("fDsnSex").value}:{}),...($("fDsnAge").value?{designAge:$("fDsnAge").value}:{})}:{}),...($("fDesignGiven").checked?{designGiven:true}:{}),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
     designNote:$("fDesignNote").value.trim(),orderNote:$("fOrderNote").value.trim(),delivNote:delivery==="delivery"?$("fDelivNote").value.trim():"",
     charges,discount:num("fDiscount"),delivAmt:delivery==="delivery"?num("fDelivAmt"):0,
     date:$("fDate").value,time:getTime(),
@@ -3684,8 +3692,9 @@ function resetForm(keepFresh){
   $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value=nextNo();$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
-  setKind("cake");setCups([]);
+  setKind("cake");setCups([]);syncDcWho();
 }
+$("fDesignNew").addEventListener("change",syncDcWho);
 function fillForm(o){
   discardFreshPhotos();editingId=o.id;
   $("fName").value=o.name;$("fPhone").value=o.phone;
@@ -3696,7 +3705,7 @@ function fillForm(o){
   $("fMiniDeco").value=o.miniDeco==="fondant"||o.miniDeco==="mixed"?o.miniDeco:"cream";
   tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{}),...tierXtra(t)}));renderTierList();
   setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||"";$("fDiscount").value=o.discount||"";
-  $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";$("fDesignNew").checked=!!o.designNew;$("fDesignGiven").checked=!!o.designGiven;
+  $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";$("fDesignNew").checked=!!o.designNew;$("fDesignGiven").checked=!!o.designGiven;$("fDsnSex").value=o.designSex||"";$("fDsnAge").value=o.designAge||"";syncDcWho();
   /* older orders kept cream colour and one general note — fold them into the design note */
   $("fDesignNote").value=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("\n");
   $("fDelivNote").value=o.delivNote||"";$("fOrderNote").value=o.orderNote||"";
@@ -5343,7 +5352,7 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>l.name||"").join("\n"):"",26],   /* names only; quantities and prices are in their own columns */
   /* cake-only details stay blank on a Bakery products order */
   ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design","")+(o.decoType==="mini"&&o.miniDeco==="fondant"?" · Fondant":o.decoType==="mini"&&o.miniDeco==="mixed"?" · Cream and fondant mixed":""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],["Product name",o=>isBak(o)?bakItemsOf(o).map(l=>(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.name:"")||l.name||"").join("\n"):((typeof pds!=="undefined"&&o.cakeCode?pds.find(p=>p.code===o.cakeCode)?.name:"")||[o.flavorName,o.sizeName].filter(Boolean).join(" ")),22],   /* next to Product code, one name per code */   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
-  ["Design code",o=>o.design,10],["New design",o=>o.designNew?"Yes":"",8],["Design given",o=>o.designGiven?"Yes":"",8],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],["Cupcakes",o=>cupText(o),26],
+  ["Design code",o=>o.design,10],["New design",o=>o.designNew?"Yes":"",8],["New design for",o=>dsnWho(o),14],["Design given",o=>o.designGiven?"Yes":"",8],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],["Cupcakes",o=>cupText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
   /* Quantity × Price = Amount (e.g. Tiramisu 10 × 5,000 = 50,000); a bakery order of several different items has no single price, so its
    Price stays blank (the Items column lists each one) and Quantity is the number of pieces */
