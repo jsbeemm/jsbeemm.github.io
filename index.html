@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687583"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687728"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2898,7 +2898,10 @@ const defaultTiers=kind=>kind==="wedding"?[newTier("4",true),newTier("2"),newTie
    shape is typed. Height is optional. csz keeps the size as text (7"×9"), for the slip and the lists */
 const tierXtra=t=>{const o={};if(t.size==="custom"){o.csz=String(t.csz||"").trim();for(const k of["cl","cw","cd","ch"])if(Number(t[k])>0)o[k]=Number(t[k])}
   if(t.shape)o.shape=t.shape;if(t.shape==="custom")o.cshp=String(t.cshp||"").trim();return o};
-const tierSk=t=>shapeKey(t.shape||document.querySelector('input[name="fShape"]:checked')?.value||"circle");
+/* each tier picks its own shape only when the cake's shape is Customized; otherwise every tier is the cake's shape */
+const cakeShp=()=>document.querySelector('input[name="fShape"]:checked')?.value||"circle";
+const tierShpOn=()=>cakeShp()==="custom";
+const tierSk=t=>shapeKey(tierShpOn()&&t.shape?t.shape:cakeShp());
 function tierCszOf(t){const k=tierSk(t),n=v=>Number(v)>0?`${+v}"`:"";
   if(k==="rect"&&(t.cl||t.cw))return n(t.cl)&&n(t.cw)?`${n(t.cl)}×${n(t.cw)}`:"";
   if((k==="circle"||k==="square")&&t.cd)return n(t.cd);
@@ -2940,7 +2943,7 @@ function renderTierList(){
   const sizeOpts=v=>SIZES.filter(s=>szShow(s,v)).sort(szSort).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
   const fon=fondantOn();
   /* each tier's shape: empty = the cake's shape (picked above) */
-  const shpOpts=v=>`<option value="">${en?"Shape: as cake":"Shape: ကိတ်အတိုင်း"}</option>`+SHAPES.map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${SHAPE_SIGN[s.k]||""} ${s.n}</option>`).join("");
+  const shpOpts=v=>`<option value="">${en?"— Shape —":"— Shape ရွေးပါ —"}</option>`+SHAPES.map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${SHAPE_SIGN[s.k]||""} ${s.n}</option>`).join("");
   /* a Customized size has no list price: every flavor can be picked, the cake's price is typed */
   const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other"&&(!fon||fondantOk(x.k)||x.k===v)).map(x=>{const cs=sz==="custom",p=cs?0:layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);
     if(cs)return`<option value="${x.k}" ${x.k===v?"selected":""} ${noF&&x.k!==v?"disabled":""}>${esc(x.n)}${noF?` · ${en?"no Fondant":"Fondant မရ"}`:""}</option>`;   /* Fondant: only flavors that can be Fondant are listed */
@@ -2952,8 +2955,8 @@ function renderTierList(){
       <button type="button" class="rm" data-trm aria-label="Remove tier" ${n<=1?"disabled":""}>×</button></div>
     <!-- size and shape side by side; a Customized one has its typed box right under it -->
     <div class="tier-opts"><select class="tier-size" aria-label="Tier ${i+1} size">${sizeOpts(t.size)}<option value="custom" ${t.size==="custom"?"selected":""}>Customized</option></select>
-      <select class="tier-shp" aria-label="Tier ${i+1} shape">${shpOpts(t.shape||"")}</select>
-      ${t.shape==="custom"?`<span></span><input class="tier-cshp" value="${esc(t.cshp||"")}" placeholder="${en?"e.g. number 5":"ဥပမာ ဂဏန်း 5"}" aria-label="Tier ${i+1} customized shape">`:""}</div>
+      ${tierShpOn()?`<select class="tier-shp" aria-label="Tier ${i+1} shape">${shpOpts(t.shape||"")}</select>`:""}
+      ${tierShpOn()&&t.shape==="custom"?`<span></span><input class="tier-cshp" value="${esc(t.cshp||"")}" placeholder="${en?"e.g. number 5":"ဥပမာ ဂဏန်း 5"}" aria-label="Tier ${i+1} customized shape">`:""}</div>
     ${t.size==="custom"?tierDims(t,i,en):""}
     ${t.dummy?`<p class="tier-dnote">${en?"Dummy cake (display dummy) – no flavor":"Dummy cake (ပြသရန် အတု) – ကိတ်သား မလို"}</p>
       <div class="tier-layer tier-dl"><span>${en?"Height":"အမြင့်"}</span><span class="cnt"><button type="button" class="cnt-b" data-dh="-0.5" aria-label="${en?"Lower by ½ inch":"½ လက်မ နိမ့်ရန်"}" ${dumH(t)<=1?"disabled":""}>−</button><b>${dumH(t)}"</b><button type="button" class="cnt-b" data-dh="0.5" aria-label="${en?"Higher by ½ inch":"½ လက်မ မြင့်ရန်"}" ${dumH(t)>=12?"disabled":""}>+</button></span></div>`
@@ -3067,7 +3070,8 @@ $("tierList").addEventListener("input",e=>{if(!e.target.matches(".tier-csz,.tier
   if(e.target.matches(".tier-dimv")){t[e.target.dataset.k]=e.target.value;t.csz=tierCszOf(t)}
   else if(e.target.matches(".tier-csz"))t.csz=e.target.value;else t.cshp=e.target.value;drawTiers();updateReceipt()});
 /* the cake's shape changes the boxes of tiers that follow it */
-$("optShape").addEventListener("change",()=>{if(!hasTiers(tierKind()))return;tierDraft.forEach(t=>{if(t.size==="custom"&&!t.shape)t.csz=tierCszOf(t)});renderTierList()});
+$("optShape").addEventListener("change",()=>{if(!hasTiers(tierKind()))return;
+  tierDraft.forEach(t=>{if(!tierShpOn()){delete t.shape;delete t.cshp}if(t.size==="custom")t.csz=tierCszOf(t)});renderTierList()});
 $("tierList").addEventListener("click",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const i=Number(c.dataset.ti),t=tierDraft[i];if(!t)return;
   if(e.target.closest("[data-trm]")){tierDraft.splice(i,1);renderTierList();syncTierBox();updateReceipt();return}
   const dh=e.target.closest("[data-dh]");if(dh){t.dh=Math.min(12,Math.max(1,dumH(t)+Number(dh.dataset.dh)));delete t.dl;renderTierList();updateReceipt();return}   /* Dummy cake: 1"–12" high, ½" a tap */
@@ -3113,7 +3117,7 @@ function updateReceipt(){syncShapeAvail();setTimeout(syncSaveBtn);setTimeout(syn
   $("chOtherWrap").hidden=f.channel!=="Others";
   $("customWrap").hidden=f.cakeType==="std";syncTierBox();
   {const req=$("customWrap").querySelector("span b");if(req)req.hidden=f.cakeType!=="custom"}   /* details are required for "Customized", optional for a tiered cake */
-  $("shapeWrap").hidden=f.shape!=="custom";
+  $("shapeWrap").hidden=f.shape!=="custom"||hasTiers(f.cakeType);   /* a tiered cake names each tier's shape instead */
   renderSku(f);placeCust(f);
 }
 /* Customer sits at the top of the form. While it is still not filled in and the rest of the order is being filled (date, size or
@@ -3824,7 +3828,8 @@ function formMissing(f){
     need(ts.some(t=>t.shape==="custom"&&!t.cshp),"အဆင့်ရဲ့ Customized shape","tierList");
     need(ts.some(t=>!t.dummy&&t.size!=="custom"&&t.layers.some(k=>k&&!layerPrice(k,t.size))),"ဒီ Size မှာ ရနိုင်သော ကိတ်သား","tierList");
     need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice");need(f.cakeType!=="wedding"&&(f.decoType==="mixed"||ts.some(t=>t.size==="custom"))&&!f.basePrice,"ကိတ်ဈေးနှုန်း","fPrice")}
-  need(f.shape==="custom"&&!f.shapeCustom,"Customized ပုံသဏ္ဌာန်","fShapeCustom");
+  need(f.shape==="custom"&&!hasTiers(f.cakeType)&&!f.shapeCustom,"Customized ပုံသဏ္ဌာန်","fShapeCustom");
+  need(f.shape==="custom"&&hasTiers(f.cakeType)&&(f.tiers||[]).some(t=>!t.shape),"အဆင့်တိုင်းရဲ့ Shape","tierList");
   need(f.flavor==="other"&&!f.flavorName,"ကိတ်သားအမည်","fOtherName");
   need(f.decoType==="fondant"&&!!f.flavor&&!fondantOk(f.flavor),"Fondant design ရနိုင်သော ကိတ်သား","optFlavor");
   need(f.size==="custom"&&!f.sizeName,"Customized အရွယ်အစား","fSizeCustom");
