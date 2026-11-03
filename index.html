@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687148"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793687254"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -872,6 +872,8 @@ body.has-bot:not(.bot-away) .to-top{bottom:calc(env(safe-area-inset-bottom,0px) 
 .bi-ic{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* Settings is a round gear icon (no words) in the top-right corner of Home */
 #settingsBtn{display:grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%}#settingsBtn .bi-ic{width:24px;height:24px}
+/* 🔔 on Home's header (the same round button as Settings); on other pages it is in the bottom bar beside Home */
+#notiHBtn{display:grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%}#notiHBtn[hidden]{display:none}#notiHBtn .bi-ic{width:24px;height:24px}
 /* Home keeps the title and the icons on one line, so the gear stays top right on a phone too */
 body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-width:0}body:not(.off-home) .head-right{flex:none;flex-wrap:nowrap;margin-left:auto}
 /* on a phone the icons sit in the corner and the shared-data status goes under them, leaving room for the title */
@@ -1350,7 +1352,7 @@ span.star-ic{cursor:default}
     <div class="head-right" id="headRight">
       <div class="sync"><i class="dot" id="syncDot"></i><span id="syncText">ချိတ်ဆက်နေသည်…</span></div>
       <div class="settings">
-        <div class="set-row"><span class="home-who" id="homeWho" hidden></span><button type="button" class="set-btn out-btn" id="homeOut" hidden aria-label="Log out" title="Log out"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button><button type="button" class="set-btn" id="settingsBtn" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 8.9 4.6 1.7 1.7 0 0 0 10 3.04V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 8.9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.07z"/></svg></button></div>
+        <div class="set-row"><span class="home-who" id="homeWho" hidden></span><button type="button" class="set-btn out-btn" id="homeOut" hidden aria-label="Log out" title="Log out"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></button><button type="button" class="set-btn" id="notiHBtn" hidden aria-label="Notifications" title="Notifications"><span class="noti-ic"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg><i class="noti-dot" id="notiHDot" hidden></i></span></button><button type="button" class="set-btn" id="settingsBtn" aria-expanded="false" aria-controls="settingsPanel" aria-label="Settings" title="Settings"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 8.9 4.6 1.7 1.7 0 0 0 10 3.04V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 8.9a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.07z"/></svg></button></div>
         <div class="set-panel" id="settingsPanel" hidden>
           <div class="lang-row"><p class="set-title">ဘာသာစကား ရွေးရန်</p>
             <div class="lang-pick">
@@ -5560,7 +5562,7 @@ function go(v){
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
-  $("pageTitle").innerHTML=PAGES[v][0];$("pageSub").textContent=v==="so"?BRAND_N[saleBrand]:PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("backBtn").hidden=v==="home";
+  $("pageTitle").innerHTML=PAGES[v][0];$("pageSub").textContent=v==="so"?BRAND_N[saleBrand]:PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("notiHBtn").hidden=v!=="home";$("notiPop").hidden=true;$("backBtn").hidden=v==="home";
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
@@ -5614,8 +5616,7 @@ function renderHome(){
 }
 /* Home and the signed-in name live in a bottom bar on every page but Home; it slides away while scrolling down and comes back on scrolling up */
 function placeHome(){const b=$("homeBtn"),w=$("whoTag"),bar=$("botBar");
-  /* on Home itself the bar shows only when a new app version is waiting (its 🔔) */
-  bar.hidden=b.hidden&&!window.__appNew;document.body.classList.toggle("has-bot",!bar.hidden);
+  bar.hidden=b.hidden;document.body.classList.toggle("has-bot",!bar.hidden);
   w.hidden=!db||!myAcct();
   if(!w.hidden){const a=myAcct();w.innerHTML=`<span class="who-name"></span>`;w.firstChild.textContent=a.name}
   if(bar.hidden)botShow(true)}
@@ -5629,15 +5630,20 @@ addEventListener("resize",placeHome);document.fonts?.ready.then(placeHome);
 $("homeBtn").addEventListener("click",()=>go("home"));
 /* 🔔 a new version of the app (found by the update check in the Firebase build) shows as a dot here instead of a pop-up,
    so it is not tapped by mistake while writing an order. Refresh keeps a half-written order as a draft first. */
-function notiSync(){$("notiDot").hidden=!window.__appNew;placeHome();if(!$("notiPop").hidden)notiRender()}
+function notiSync(){$("notiDot").hidden=$("notiHDot").hidden=!window.__appNew;if(!$("notiPop").hidden)notiRender()}
 function notiRender(){$("notiBody").innerHTML=window.__appNew
   ?`<div class="noti-item"><b>🔄 App အသစ် ရပါပြီ</b><span>အဆင်ပြေတဲ့အချိန် Refresh နှိပ်ပါ။ ရေးလက်စ Order ရှိရင် Draft အဖြစ် သိမ်းပြီးမှ Refresh လုပ်ပါမယ်။</span><button type="button" class="btn" id="notiReload">🔄 Refresh</button></div>`
   :`<div class="noti-item"><span class="side-help">Notification မရှိပါ</span><button type="button" class="btn ghost" id="notiReload">🔄 App refresh</button></div>`}
-$("notiBtn").addEventListener("click",e=>{e.stopPropagation();const p=$("notiPop");if(!p.hidden){p.hidden=true;return}notiRender();p.hidden=false;
-  const r=$("notiBtn").getBoundingClientRect();p.style.left=Math.max(16,Math.min(r.left,innerWidth-p.offsetWidth-16))+"px"});
+/* the list opens above the bottom bar's 🔔, or under the header's one (lined up with its right edge) */
+function notiOpen(btn,e){e.stopPropagation();const p=$("notiPop");if(!p.hidden&&p.dataset.from===btn.id){p.hidden=true;return}notiRender();p.hidden=false;p.dataset.from=btn.id;
+  const r=btn.getBoundingClientRect(),top=btn.id==="notiHBtn";
+  p.style.top=top?Math.round(r.bottom+8)+"px":"";p.style.bottom=top?"auto":"";
+  p.style.left=Math.max(16,Math.min(top?r.right-p.offsetWidth:r.left,innerWidth-p.offsetWidth-16))+"px"}
+$("notiBtn").addEventListener("click",e=>notiOpen($("notiBtn"),e));
+$("notiHBtn").addEventListener("click",e=>notiOpen($("notiHBtn"),e));
 $("notiPop").addEventListener("click",async e=>{if(!e.target.closest("#notiReload"))return;e.target.closest("#notiReload").disabled=true;
   try{await Promise.race([autoDraft(),new Promise(r=>setTimeout(r,3000))])}catch(x){}location.reload()});
-document.addEventListener("click",e=>{if(!$("notiPop").hidden&&!e.target.closest("#notiPop,#notiBtn"))$("notiPop").hidden=true});
+document.addEventListener("click",e=>{if(!$("notiPop").hidden&&!e.target.closest("#notiPop,#notiBtn,#notiHBtn"))$("notiPop").hidden=true});
 document.addEventListener("app-new",notiSync);
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
 const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale",so:"sale"};
