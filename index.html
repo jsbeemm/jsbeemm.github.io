@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793720794"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793721064"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1868,6 +1868,8 @@ span.star-ic{cursor:default}
     <div class="ed-foot">
       <!-- the order's change history, at the left of the preview's footer -->
       <button type="button" class="btn ghost pv-hist" id="pvHist" hidden>🕘 History</button>
+      <!-- a customer who wants a voucher: the same order as a Mr.Bee voucher picture -->
+      <button type="button" class="btn ghost pv-hist" id="pvVoucher" hidden>🧾 Voucher</button>
       <!-- a saved order: edit it in the form, or delete it (who may do which follows the same permissions as before) -->
       <button type="button" class="btn ghost pv-ic" id="pvEdit" hidden aria-label="Edit order" title="Edit order"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
       <button type="button" class="btn ghost pv-del" id="pvDel" hidden aria-label="Delete order" title="Delete order"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg></button>
@@ -4288,6 +4290,7 @@ async function openPreview(o,fromForm=false){
   /* offline: the number on this picture may still change once the phone is back online */
   if(db&&typeof db.runTransaction==="function"&&((fromForm&&navigator.onLine===false)||o.noPending))$("pvNote").textContent="📴 Offline — Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်";
   syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();
+  $("pvVoucher").hidden=fromForm||isDecorator()||!orders.some(x=>x.id===o.id);
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
 function syncPvEdit(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);
@@ -8894,7 +8897,7 @@ $("soPrintBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===so
   try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)});
 /* the voucher as a picture: an A5 / A4 page (portrait or landscape), or a receipt strip as long as it needs (no staff marks) */
 let soImgBusy=Promise.resolve();
-function soMakeImage(v,type="image/jpeg"){const job=soImgBusy.then(async()=>{const paper=$("soPaper").value,rc=paper==="RC";
+function soMakeImage(v,type="image/jpeg",paperAs=""){const job=soImgBusy.then(async()=>{const paper=paperAs||$("soPaper").value,rc=paper==="RC";
     await loadLib("lib/html2canvas-1.4.1.min.js");
     const land=!rc&&soLand(),box=$("soShot");box.style.width=(rc?300:land?1080:760)+"px";box.style.padding=rc?"10px":"0";box.innerHTML=rc?soRcHtml(v):await soHtml(v);
     await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
@@ -8908,6 +8911,24 @@ function soMakeImage(v,type="image/jpeg"){const job=soImgBusy.then(async()=>{con
       return{blob,name:`${v.no} ${v.customer||""}`.trim()+(rc?" receipt":"")+(type==="image/png"?".png":".jpg")}}
     finally{box.innerHTML="";box.style.padding="0"}});
   soImgBusy=job.catch(()=>{});return job}
+/* a cake order shown as a Mr.Bee voucher (not saved as one): the cake (with its photo), charges, delivery, discount, payments */
+function orderVoucher(o){const lines=[],ln=(name,qty,price,extra={})=>lines.push({name,qty,price,...extra});
+  const pic=o.deco?.endAt&&o.deco.photo?o.deco.photo:(o.photos||[])[0]||"";
+  if(isBak(o))bakItemsOf(o).forEach(l=>ln(l.name,l.qty,l.price,l.pid?{pid:l.pid}:{}));
+  else if(o.cupItems?.length)o.cupItems.forEach((l,i)=>ln(cupLbl(l),l.qty,l.price,!i&&pic?{photo:pic}:{}));
+  else{const n=o.count>1?o.count:1;ln(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o),n,(o.basePrice||0)/n,{...(pic?{photo:pic}:{}),...(dcLabel(o)?{note:dcLabel(o)}:{})})}
+  orderCharges(o).forEach(c=>ln(c.note||"Additional",c.qty>1?c.qty:1,c.qty>1?c.unit:c.amt,c.photo?{photo:c.photo}:{}));
+  if(o.delivery==="delivery"&&o.delivAmt)ln("Delivery charge",1,o.delivAmt);
+  if(o.discount)ln("Discount",1,-o.discount);
+  const recv=o.recvName&&!o.recvSame?`${o.recvName} ${o.recvPhone||""}`.trim():"";
+  return{id:"ov-"+o.id,no:o.no,brand:"mb",customer:o.name||"",phone:o.phone||"",channel:o.channel?chLabel(o):"",date:localDay(o.createdAt)||todayISO(),
+    deliv:o.delivery==="delivery"?[recv,o.addr].filter(Boolean).join("\n"):null,lines,net:o.total||0,payments:orderPayments(o).map(p=>({amt:p.amt})),note:null}}
+$("pvVoucher").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;const b=$("pvVoucher");b.disabled=true;
+  toast("Voucher ပုံ ပြင်ဆင်နေသည်…",8000);
+  try{const{blob,name}=await soMakeImage(orderVoucher(o),"image/jpeg","A5");
+    if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}
+    await saveFile(blob,name,"JPEG")}
+  catch(x){if(x?.code!=="declined")toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}finally{b.disabled=false}});
 $("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
   toast("ပုံ ပြင်ဆင်နေသည်…",8000);
   try{const{blob,name}=await soMakeImage(v);
