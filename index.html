@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793720655"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793720794"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8332,7 +8332,8 @@ const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-
    straight away. "🚚 Delivered" records what is given (all of it, or part); money goes in with "+ Payment". Once either has
    happened it is Unfinished; given in full and paid in full, it is Finished. Vouchers from before this (no "pre" mark)
    and vouchers made from an order count as given. ---- */
-function soGivenArr(v){const ls=v.lines||[];if(!v.pre)return ls.map(l=>Number(l.qty||0));
+/* Mr.Bee vouchers (distribution sales, customers' order vouchers) are handed over with the goods: nothing is left to give, only money */
+function soGivenArr(v){const ls=v.lines||[];if(!v.pre||vBrand(v)==="mb")return ls.map(l=>Number(l.qty||0));
   const g=ls.map(()=>0);for(const d of v.deliveries||[])for(const[i,q]of Object.entries(d.lines||{}))if(g[i]!=null)g[i]+=Number(q||0);
   return g.map((x,i)=>Math.min(x,Number(ls[i].qty||0)))}
 const soLeftArr=v=>{const g=soGivenArr(v);return(v.lines||[]).map((l,i)=>Math.max(0,Number(l.qty||0)-g[i]))};
@@ -8347,6 +8348,7 @@ function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Nu
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
+  if(vBrand(v)==="mb")return`<p class="po-chips so-stage">${st==="fin"?`<span class="conf-chip ok"><b>✓ Paid</b></span>`:soChips(v)}</p>`;
   return`<p class="po-chips so-stage"><span class="conf-chip${st==="fin"?" ok":""}"><b>${lbl}</b></span>${st==="fin"?"":soChips(v)}</p>`
     +(ds.length?`<p class="ac-h">🚚 Delivered</p><table class="ex-tbl"><tbody>${ds.map((d,i)=>`<tr><td>${esc(soDate(d.date))}</td><td>${Object.entries(d.lines||{}).map(([k,q])=>`${(v.lines||[])[k]?.name||"?"} × ${poNum(q)}`).map(esc).join(", ")}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${i}" aria-label="Remove delivery" title="Remove delivery">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"")}
 /* 🚚 Delivered: how many of each item are given now (everything left, unless lowered) */
@@ -8369,17 +8371,20 @@ const poStage=p=>{const s=poState(p);return s==="done"?"fin":s==="todo"&&!poMade
 function renderSo(){if($("viewSo").hidden)return;
   const q=pdNorm(soQ),hit=x=>!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q));
   /* this shop's vouchers; the earlier Order screen and "to buy" are JS's only */
-  const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];if(!js&&soTab==="buy")soTab="pre";
+  const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];
+  /* Mr.Bee: only "money still to get" and All; JS keeps Preorder / Unfinished / Finished / to buy */
+  if(js&&soTab==="owe")soTab="pre";if(!js&&soTab!=="all")soTab="owe";
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>n[soStage(v)]++);ps.forEach(p=>n[poStage(p)]++);
-  $("soTabs").innerHTML=[["pre","📋 Preorder",n.pre],["unf","⏳ Unfinished",n.unf],["fin","✓ Finished",n.fin],...(js?[["buy","🛒 မှာရန်",poBuyRows().length]]:[]),["all","📄 All",vs.length]]
+  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unf","⏳ Unfinished",n.unf],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
+      :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
     .map(([k,t,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${t} <small>${c}</small></button>`).join("");
   if(soTab==="buy")renderBuyList(q);
   else{const all=soTab==="all";
-    const list=[...vs.filter(v=>(all||soStage(v)===soTab)&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
+    const list=[...vs.filter(v=>(all||(soTab==="owe"?soBal(v)>0:soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
       ...(all?[]:ps.filter(p=>poStage(p)===soTab&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
       .sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
-      :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":"မရှိပါ"}</div>`;
+      :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
     $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
   renderSoDrafts()}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
@@ -8593,7 +8598,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
     deliv:(soDlOn()?$("soDeliv").value.trim():"")||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
   delete v.dName;delete v.dPhone;delete v.dAddr;
   if(!v0&&soFromPo){v.poId=soFromPo.id;v.poNo=pos.find(x=>x.id===soFromPo.id)?.no||""}
-  if(!v0&&!soFromPo)v.pre=true;
+  if(!v0&&!soFromPo&&vBrand(v)!=="mb")v.pre=true;
   if(paid)v.payments=[{amt:paid,method:$("soPay").value||"Cash",date,at:now,by:me.id||null}];
   Object.keys(v).forEach(k=>{if(v[k]==null)delete v[k]});
   $("soSave").disabled=true;
