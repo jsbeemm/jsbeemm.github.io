@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793698908"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793699007"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2863,7 +2863,7 @@ function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,n
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
 const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
 /* ---------- cupcakes: one row each — Cupcake · design (Cream / Fondant / Cream and fondant) · qty × price (typed, for one) ---------- */
-const CUP_DECO={cream:"Cream",fondant:"Fondant",mixed:"Cream and fondant"};
+const CUP_DECO={cream:"Cream",fondant:"Fondant",mixed:"Cream and fondant",mixdeco:"Mixed Decoration"};
 var cupLegacy=false;   /* an older cupcake order (Cream / Fondant pieces, one typed total) keeps its old fields */
 const cupOn=()=>!cupLegacy;
 const cupLbl=l=>l.deco?`Cupcake (${CUP_DECO[l.deco]||l.deco})`:(l.name||"Cupcake");
