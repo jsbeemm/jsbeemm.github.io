@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793722156"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793722913"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3758,6 +3758,24 @@ function resetForm(keepFresh){
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
   setKind("cake");setCups([]);syncDcWho();
 }
+const custNm=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ");
+async function renameSameCust(prev,o){
+  if(!custNm(prev.name))return;
+  const list=orders.filter(x=>x.id!==o.id&&custNm(x.name)===custNm(prev.name)&&custPh(x.phone)===custPh(prev.phone)&&canEditOrder(x))
+    .sort((a,b)=>String(a.no).localeCompare(String(b.no)));
+  if(!list.length)return;
+  const was=[prev.name,prev.phone].filter(Boolean).join(" · "),now=[o.name,o.phone].filter(Boolean).join(" · ");
+  const nos=list.slice(0,8).map(x=>x.no).join(", ")+(list.length>8?" …":"");
+  const no0=$("cfmNo").textContent;$("cfmNo").textContent="ဒီ Order ပဲ";$("cfmYes").classList.remove("danger");
+  const yes=await askConfirm(`နာမည် / ဖုန်း တူတဲ့ Order ${list.length} ခုကိုလည်း ပြောင်းမလား?`,`${was}\n→ ${now}\n\n${nos}`,"ပြောင်းမည်");
+  $("cfmNo").textContent=no0;$("cfmYes").classList.add("danger");if(!yes)return;
+  const at=new Date().toISOString();let n=0;
+  for(const x of list){const p={updatedAt:at,updatedBy:me.id||null},ch=[];
+    if(prev.name!==o.name){p.name=o.name;ch.push(`Customer: ${x.name} → ${o.name}`)}
+    if(prev.phone!==o.phone){p.phone=o.phone;ch.push(`Phone: ${x.phone||"-"} → ${o.phone||"-"}`)}
+    p.history=addHist(x,"edit",ch);
+    try{await patchOrder(x.id,p);n++}catch(e){}}
+  toast(`Order ${n} ခုရဲ့ နာမည် / ဖုန်း ပြောင်းပြီး`,4000)}
 /* "Design အသစ်" and "Design ပေးထား": only one of the two (ticking one unticks the other; both may be left empty) */
 $("fDesignNew").addEventListener("change",()=>{if($("fDesignNew").checked)$("fDesignGiven").checked=false;syncDcWho()});
 $("fDesignGiven").addEventListener("change",()=>{if($("fDesignGiven").checked){$("fDesignNew").checked=false;syncDcWho()}});
@@ -4001,6 +4019,8 @@ $("form").addEventListener("submit",async e=>{
       else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;
         err.hidden=false;if(c==="taken"&&!noTouched){$("fNo").value=nextNo();checkNo()}goToField([$("fNo")]);return}}
     await saveOrder(o);
+    /* the customer's name or phone changed: offer to change the other orders with the same old name and phone too */
+    if(prev&&(prev.name!==o.name||prev.phone!==o.phone))await renameSameCust(prev,o);
     /* the old number is free again once an order moves to a new one */
     if(prev&&prev.no!==no)releaseNo(prev.no,id);
     /* photos removed while editing are no longer referenced by any order */
