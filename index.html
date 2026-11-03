@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793700958"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793701358"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2778,20 +2778,52 @@ async function patchOrder(id,patch){
    (the store has no transactions), then writes the claim only if nobody else holds it — so two admins
    saving the same number at the same moment cannot both succeed. */
 const tabId="t"+Math.random().toString(36).slice(2,10);
+/* who already holds a number: another order that exists, or a claim made moments ago (its order may not have reached this screen yet);
+   an old claim whose order was deleted no longer counts */
+const noHeld=(c,orderId)=>!!c?.order&&c.order!==orderId&&(orders.some(o=>o.id===c.order)||Date.now()-Date.parse(c.at||0)<5*60e3);
 async function claimNo(no,orderId){
   if(!db)return"ok";
   const ref=db.doc("nos/"+no);
+  /* Firebase: a real transaction, so two phones saving the same number can never both get it.
+     Without internet it cannot be checked: "offline" — the order is saved and its number confirmed when the phone is back online */
+  if(typeof db.runTransaction==="function"){
+    if(navigator.onLine===false)return"offline";
+    try{return await Promise.race([
+      db.runTransaction(async tx=>{const s=await tx.get(ref),c=s.exists?s.data():null;if(noHeld(c,orderId))return"taken";
+        tx.set(ref,{order:orderId,at:new Date().toISOString(),by:me.id||null});return"ok"}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),10000))])}
+    catch(e){return e?.code==="permission-denied"?(orders.some(o=>o.no===no&&o.id!==orderId)?"taken":"ok"):"offline"}
+  }
   try{
     const l=await ref.acquire({holder:tabId,ttlMs:5000});
     if(!l.acquired)return"busy";
     const s=await ref.get(),c=s.exists?s.data():null;
     /* taken by another order that exists, or claimed moments ago (its order may not have reached this screen yet);
        an old claim whose order was deleted no longer counts */
-    if(c?.order&&c.order!==orderId&&(orders.some(o=>o.id===c.order)||Date.now()-Date.parse(c.at||0)<5*60e3))return"taken";
+    if(noHeld(c,orderId))return"taken";
     await ref.set({order:orderId,at:new Date().toISOString(),by:me.id||null});
     return"ok";
   }catch(e){return orders.some(o=>o.no===no&&o.id!==orderId)?"taken":"ok"}
 }
+/* back online: numbers given while offline are confirmed. If another phone took the same number meanwhile,
+   this order moves to the next free number, its history says so, and a message tells staff to fix the written number */
+var noFixing=false;
+async function confirmPendingNos(){
+  if(noFixing||!db||typeof db.runTransaction!=="function"||navigator.onLine===false)return;
+  const mine=orders.filter(o=>o.noPending&&o.status!=="cancel"&&(o.createdBy??null)===(me.id||null));if(!mine.length)return;
+  noFixing=true;
+  try{for(const o of mine){
+    let c=await claimNo(o.no,o.id);if(c==="offline")break;
+    if(c==="ok"){await patchOrder(o.id,{noPending:false});continue}
+    let n=nextNo(),tries=0;while(tries++<30){if(n!==o.no){c=await claimNo(n,o.id);if(c==="ok"||c==="offline")break}n=incNo(n)}
+    if(c!=="ok")break;
+    await patchOrder(o.id,{no:n,noPending:false,updatedAt:new Date().toISOString(),updatedBy:me.id||null,
+      history:addHist(o,"edit",[`Order No ${o.no} → ${n} (offline ဖြစ်နေတုန်း ${o.no} ကို အခြား Order က ယူထားလို့)`])});
+    await saveLastNo(n);
+    toast(`⚠️ ${o.name||""} ရဲ့ Order နံပါတ် ${o.no} ကို အခြား Order က အရင်ယူထားလို့ ${n} လို့ ပြောင်းလိုက်ပါတယ် — ရေးထား / Print ထားတဲ့ နံပါတ်ကို ပြင်ပေးပါ`,12000)}}
+  catch(e){}finally{noFixing=false}
+}
+addEventListener("online",()=>setTimeout(confirmPendingNos,3000));
 function releaseNo(no,orderId){
   if(!db||!no)return;const ref=db.doc("nos/"+no);
   ref.get().then(s=>{if(s.exists&&s.data().order===orderId)return ref.delete()}).catch(()=>{});
@@ -3955,7 +3987,9 @@ $("form").addEventListener("submit",async e=>{
   try{
     /* two people saving the same number at the same moment: only the first claim wins */
     if(!prev||prev.no!==no){const c=await claimNo(no,id);claimed=c==="ok";
-      if(c!=="ok"){err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;
+      /* no internet: saved now, its number is confirmed (and changed if another phone took it) once back online */
+      if(c==="offline")o.noPending=true;else if(c==="ok")delete o.noPending;
+      else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;
         err.hidden=false;if(c==="taken"&&!noTouched){$("fNo").value=nextNo();checkNo()}goToField([$("fNo")]);return}}
     await saveOrder(o);
     /* the old number is free again once an order moves to a new one */
@@ -3964,7 +3998,7 @@ $("form").addEventListener("submit",async e=>{
     if(prev)(prev.photos||[]).filter(id=>!o.photos.includes(id)).forEach(deletePhoto);
     if(!prev||prev.no!==no)await saveLastNo(no);
     if(draftId)dropDraft(draftId).catch(()=>{});   /* a finished draft becomes the order */
-    toast(prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no} သိမ်းပြီး`);resetForm(true);showTab("list");
+    toast(o.noPending?`📴 ${o.no} သိမ်းပြီး — Offline ဖြစ်နေလို့ Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်`:prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no} သိမ်းပြီး`,o.noPending?6000:undefined);resetForm(true);showTab("list");
     if(afterSave&&Date.now()-afterSave.at<60000){const c=afterSave.cont;afterSave=null;c()}afterSave=null}
   catch(x){if(claimed)releaseNo(no,id);err.textContent=x?.code==="quota_exceeded"?"သိမ်းဆည်းနေရာ ပြည့်နေပါသည်။ ပြီးဆုံးသော အော်ဒါအဟောင်းများကို ဖျက်ပါ။":"သိမ်းမရပါ။ ပြန်ကြိုးစားကြည့်ပါ။";err.hidden=false}
   finally{setFormSaving(false)}
@@ -4245,6 +4279,8 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
+  /* offline: the number on this picture may still change once the phone is back online */
+  if(db&&typeof db.runTransaction==="function"&&((fromForm&&navigator.onLine===false)||o.noPending))$("pvNote").textContent="📴 Offline — Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်";
   syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
@@ -4707,7 +4743,7 @@ function render(){
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
-        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto||grp.length>1?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
+        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto||grp.length>1||o.noPending?`<div class="o-modes">${o.noPending?`<span class="mode call" title="Offline ဖြစ်နေတုန်း သိမ်းထားလို့ Internet ပြန်ရမှ အတည်ပြုပါမယ်">📴 No. အတည်မပြုရသေး</span>`:""}${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
         ${isBak(o)?bakCard(o):""}<p class="o-cake"${isBak(o)?" hidden":""}><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[dcLabel(o)?`<span class="dc">${esc(dcLabel(o))}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
@@ -8936,7 +8972,7 @@ resetForm();render();go("home");
   prCol=db.collection("pr");
   prCol.onSnapshot(s=>{prs=s.docs.map(d=>({...d.data(),id:d.id}));renderPR();if(view==="home"||view==="todo")renderHome()},()=>{prCol=null;prs=prLocalLoad();renderPR()});
   /* orders saved as "Preparing" (no longer used) show as Pending Order */
-  col.onSnapshot(snap=>{orders=snap.docs.map(d=>{const o={...d.data(),id:d.id};if(o.status==="baking")o.status="new";return o});if(mode!=="db")setSync("db");render();refreshNo()},
+  col.onSnapshot(snap=>{orders=snap.docs.map(d=>{const o={...d.data(),id:d.id};if(o.status==="baking")o.status="new";return o});if(mode!=="db")setSync("db");render();refreshNo();setTimeout(confirmPendingNos,1500)},
     ()=>{col=null;orders=localLoad();setSync("local");render()});
   db.doc("meta/payMethods").onSnapshot(s=>{payMethods=s.exists?s.data().list||null:null;render()},()=>{});
   db.doc("meta/units").onSnapshot(s=>{unitDoc=s.exists?s.data().list||null:null;if(!$("unitDlg").hidden)renderUnits()},()=>{});
