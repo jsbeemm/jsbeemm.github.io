@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793691181"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793696239"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3694,6 +3694,14 @@ function fillForm(o){
   setKind(o.kind,o.items,o.custId);
   $("formErr").hidden=true;updateReceipt();checkNo();
 }
+/* the same customer orders again: a new order with only the customer, channel and delivery details copied (the cake is picked fresh) */
+function orderAgain(o){
+  if(editingId||draftId)resetForm();else if(!formEmpty(readForm())){toast("ရေးလက်စ Order ကို အရင် သိမ်း (သို့) Draft လုပ်ပါ");showTab("new");return}else resetForm();
+  $("fName").value=o.name||"";$("fPhone").value=o.phone||"";
+  {const cs=$("fChannel");if(o.channel&&![...cs.options].some(x=>x.value===o.channel))cs.add(new Option(o.channel,o.channel));cs.value=o.channel||""}$("fChOther").value=o.chOther||"";
+  document.querySelectorAll('input[name="fDeliv"]').forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fAddr").value=o.addr||"";
+  $("fRecvSame").checked=o.recvSame??!o.recvName;$("fRecvName").value=o.recvName||"";$("fRecvPhone").value=o.recvPhone||"";syncRecv();
+  updateReceipt();showTab("new");toast(`${o.name||"Customer"} အတွက် Order အသစ်`,2500)}
 /* ---------- drafts: a new order can be put aside half-filled (e.g. a walk-in customer arrives) and finished later.
    Kept in their own "drafts" collection, so they take no order number and stay out of the order list, counts and Excel;
    a list of them sits on top of Cake Orders (and on Home) until each is finished or deleted. ---------- */
@@ -4644,7 +4652,7 @@ function render(){
           ?`<span class="confirm cancel-ask">ဒီအော်ဒါကို ပယ်ဖျက်မှာ သေချာပါသလား? <input class="cancel-why" data-cancel-why placeholder="Cancel ရတဲ့ အကြောင်းရင်း *" aria-label="Cancel reason" autocomplete="off" value="${esc(cancelDraft)}"><button class="link danger" data-cancel-yes="${o.id}">ပယ်ဖျက်မည်</button><button class="link" data-cancel-no>မလုပ်တော့ပါ</button></span>`
           :pendingDelete===o.id
           ?`<span class="confirm">ဖျက်မှာ သေချာပါသလား? <button class="link danger" data-del-yes="${o.id}">ဖျက်မည်</button><button class="link" data-del-no>မဖျက်ပါ</button></span>`
-          :`${bal&&can("orders.pay")?`<button class="link" data-paid="${o.id}">ငွေချေရန်</button>`:""}`}</div>
+          :`${canWriteOrders()?`<button type="button" class="link" data-again="${o.id}" title="Same customer, new order">+ ထပ်မှာရန်</button>`:""}${bal&&can("orders.pay")?`<button class="link" data-paid="${o.id}">ငွေချေရန်</button>`:""}`}</div>
       </div>
     </article>`}).join("");
   /* names are filled in as text (never stored); the ids on screen are resolved again every render */
@@ -4924,6 +4932,7 @@ $("orders").addEventListener("click",async e=>{
   if(t.dataset.pv){openPreview(orders.find(o=>o.id===t.dataset.pv));return}
   if(t.dataset.print){printOrder(orders.find(o=>o.id===t.dataset.print));return}
   if(t.dataset.hist){openHistory(orders.find(o=>o.id===t.dataset.hist));return}
+  if(t.dataset.again){const o=orders.find(x=>x.id===t.dataset.again);if(o&&canWriteOrders())orderAgain(o);return}
   if(t.dataset.edit){const o=orders.find(o=>o.id===t.dataset.edit);if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}fillForm(o);showTab("new");return}
   if(t.dataset.del){const o=orders.find(x=>x.id===t.dataset.del);if(!o)return;
     if(!await askConfirm(`Delete order ${o.no}?`,`${o.name||""}${o.phone?" · "+o.phone:""}\nThis order and its photos will be removed for good.`))return;
@@ -5004,7 +5013,7 @@ const EN={
   "Channel အလိုက် စစ်ရန်":"Filter by channel","Channel အားလုံး":"All channels","အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်":"Search name, phone, order number",
   "မပြီးသေး":"Open","ဒီနေ့":"Today","အသစ်":"New","ပြုလုပ်နေ":"In progress","အဆင်သင့်":"Ready","ပေးပြီး":"Handed over","ပယ်ဖျက်":"Cancelled","အားလုံး":"All",
   "ဒေတာ ဖတ်နေသည်…":"Loading…","ဤအမျိုးအစားတွင် အော်ဒါမရှိပါ။":"No orders in this view.","အော်ဒါ မရှိသေးပါ။ “+ အော်ဒါအသစ်” ကိုနှိပ်၍ စတင်ပါ။":"No orders yet. Tap “+ New order” to start.",
-  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
+  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
   "— ရွေးပါ —":"— Choose —","Delivery ရွေးပါ":"Choose who delivers",
   "Cancel ရတဲ့ အကြောင်းရင်း *":"Reason for cancelling *","Cancel ရတဲ့ အကြောင်းရင်း ထည့်ပါ":"Please enter the reason for cancelling",
   "Design မှတ်ချက် –":"Design note –","Delivery မှတ်ချက် –":"Delivery note –",
