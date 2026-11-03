@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793697198"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793697464"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1245,10 +1245,15 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .cup-qrow{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px}.cup-qrow label.f{margin:0}
 .cup-qrow[hidden],#cupNew[hidden]{display:none}
 .cup-lines{display:grid;gap:8px}
-.cup-line{display:grid;grid-template-columns:minmax(0,1fr) 72px 40px;gap:8px;align-items:stretch}
-.cup-line select,.cup-line input{box-sizing:border-box;margin:0}.cup-line .cup-q{text-align:center;padding-inline:4px}
-.cup-line .rm{width:40px;height:auto;min-height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--muted);font-size:18px;cursor:pointer;padding:0}
-.cup-line .rm:hover{color:var(--accent);border-color:var(--accent)}
+/* one row: cupcake | qty × price (price can be changed) | close icon; on phones the qty × price sits under the cupcake */
+.cup-line{display:grid;grid-template-columns:minmax(0,1fr) 190px 24px;grid-template-areas:"p a x";gap:8px;align-items:center}
+.cup-line .cup-p{grid-area:p}.cup-line .cup-qa{grid-area:a;display:flex;align-items:center;gap:6px;min-width:0}.cup-line .rm{grid-area:x}
+.cup-line select,.cup-line input{box-sizing:border-box;margin:0;height:46px}.cup-line select{padding-block:0}
+.cup-qa .cup-q{width:58px;flex:none;text-align:center;padding-inline:4px}.cup-qa .cup-a{flex:1 1 auto;min-width:0}.cup-qa .cx{color:var(--muted);font-weight:600}
+.cup-line .rm{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border:0;background:none;color:var(--muted);cursor:pointer;padding:0}
+.cup-line .rm svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.cup-line .rm:hover{color:var(--accent)}
+@media (max-width:520px){.cup-line{grid-template-columns:minmax(0,1fr) 24px;grid-template-areas:"p x" "a .";row-gap:6px}.cup-lines{gap:16px}}
 .pd-addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pd-addrow select{width:auto;max-width:100%;flex:1 1 220px}
 .pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px;white-space:nowrap}
 .pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
@@ -2861,19 +2866,25 @@ const cupOn=()=>!cupLegacy&&(cupProds().length>0||!!document.querySelector("#cup
 const cupText=o=>(o.cupItems||[]).map(l=>`${l.name} × ${l.qty}`).join("၊ ");
 function cupRow(l={}){const ps=cupProds(),keep=l.pid&&!ps.some(p=>p.id===l.pid);
   const r=document.createElement("div");r.className="cup-line";
-  r.innerHTML=`<select class="cup-p" aria-label="Cupcake"><option value="">Cupcake ရွေးပါ</option>${keep?`<option value="${esc(l.pid)}" data-keep data-name="${esc(l.name||"")}" data-code="${esc(l.code||"")}" data-price="${Number(l.price)||0}">${esc(l.name||"")} · ${(Number(l.price)||0).toLocaleString("en-US")}</option>`:""}${ps.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · ${Number(p.retail).toLocaleString("en-US")}</option>`).join("")}</select><input class="cup-q" type="text" inputmode="numeric" autocomplete="off" placeholder="Qty" aria-label="Quantity"><button type="button" class="rm" aria-label="ဖယ်ရှားရန်">×</button>`;
-  r.querySelector(".cup-p").value=l.pid||"";r.querySelector(".cup-q").value=l.qty||"";$("cupLines").append(r);return r}
-function readCups(raw){return[...document.querySelectorAll("#cupLines .cup-line")].map(r=>{const s=r.querySelector(".cup-p"),o=s.selectedOptions[0],qty=Math.max(0,parseInt(String(r.querySelector(".cup-q").value).replace(/\D/g,""))||0);
-    if(!s.value)return raw?{pid:"",qty}:null;const p=(typeof pds!=="undefined"&&pds||[]).find(x=>x.id===s.value);
-    return p?{pid:p.id,code:p.code||"",name:p.name||"",price:Number(p.retail)||0,qty}:{pid:s.value,code:o?.dataset.code||"",name:o?.dataset.name||"",price:Number(o?.dataset.price)||0,qty}})
+  r.innerHTML=`<select class="cup-p" aria-label="Cupcake"><option value="">Cupcake ရွေးပါ</option>${keep?`<option value="${esc(l.pid)}" data-keep data-name="${esc(l.name||"")}" data-code="${esc(l.code||"")}" data-price="${Number(l.price)||0}">${esc(l.name||"")} · ${(Number(l.price)||0).toLocaleString("en-US")}</option>`:""}${ps.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · ${Number(p.retail).toLocaleString("en-US")}</option>`).join("")}</select><span class="cup-qa"><input class="cup-q" type="text" inputmode="numeric" autocomplete="off" placeholder="Qty" aria-label="Quantity" title="Qty"><span class="cx" aria-hidden="true">×</span><input class="cup-a" type="number" min="0" step="100" placeholder="Ks" aria-label="Price (one)" title="Price (one)"></span><button type="button" class="rm" aria-label="ဖယ်ရှားရန်" title="ဖယ်ရှားရန်"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+  r.querySelector(".cup-p").value=l.pid||"";r.querySelector(".cup-q").value=l.qty||"";r.querySelector(".cup-a").value=l.price??cupRetail(l.pid)??"";$("cupLines").append(r);return r}
+/* the list price of a cupcake (its row's price starts here and can be changed) */
+const cupRetail=pid=>{const p=pid&&(typeof pds!=="undefined"&&pds||[]).find(x=>x.id===pid);return p?Number(p.retail)||0:null};
+function readCups(raw){return[...document.querySelectorAll("#cupLines .cup-line")].map(r=>{const s=r.querySelector(".cup-p"),o=s.selectedOptions[0],qty=Math.max(0,parseInt(String(r.querySelector(".cup-q").value).replace(/\D/g,""))||0),
+      a=r.querySelector(".cup-a").value,typed=a===""?null:Math.max(0,Number(a)||0);
+    if(!s.value)return raw?{pid:"",qty,...(typed!=null?{price:typed}:{})}:null;const p=(typeof pds!=="undefined"&&pds||[]).find(x=>x.id===s.value);
+    const l=p?{pid:p.id,code:p.code||"",name:p.name||"",price:Number(p.retail)||0,qty}:{pid:s.value,code:o?.dataset.code||"",name:o?.dataset.name||"",price:Number(o?.dataset.price)||0,qty};
+    if(typed!=null)l.price=typed;return l})
   .filter(l=>l&&(raw||l.qty))}
+/* picking a cupcake puts its list price in the row */
+$("cupLines").addEventListener("change",e=>{const s=e.target.closest(".cup-p");if(!s)return;const a=s.closest(".cup-line").querySelector(".cup-a"),pr=cupRetail(s.value);a.value=pr??(s.selectedOptions[0]?.dataset.price||"")});
 function setCups(items,legacy){cupLegacy=!!legacy;$("cupLines").innerHTML="";(items?.length?items:[{}]).forEach(cupRow);syncCupUi()}
 function syncCupUi(){const on=cupOn();$("cupNew").hidden=!on;$("cupOld").hidden=on}
 /* Bakery Products may load after the form was drawn: rebuild the rows (keeping what was picked) when cupcakes are shown */
 function cupFresh(){if(cupLegacy)return;const keep=readCups(true);$("cupLines").innerHTML="";(keep.length?keep:[{}]).forEach(cupRow);syncCupUi()}
 $("cupAdd").addEventListener("click",()=>{cupRow().querySelector(".cup-p").focus();updateReceipt()});
 $("cupLines").addEventListener("click",e=>{const b=e.target.closest(".rm");if(!b)return;const r=b.closest(".cup-line");
-  if($("cupLines").children.length>1)r.remove();else{r.querySelector(".cup-p").value="";r.querySelector(".cup-q").value=""}updateReceipt()});
+  if($("cupLines").children.length>1)r.remove();else{r.querySelector(".cup-p").value="";r.querySelector(".cup-q").value="";r.querySelector(".cup-a").value=""}updateReceipt()});
 function readForm(){
   /* flavor and size start unpicked on a new order ("") and must be chosen before saving */
   const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qn=id=>Math.max(0,parseInt(String($(id).value).replace(/\D/g,""))||0),
