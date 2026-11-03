@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793699705"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793700443"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -303,6 +303,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .qp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:center;background:var(--sunk);border-radius:10px;padding:8px;min-width:min(100%,420px)}
 .qp input,.qp select{padding:6px 8px;font-size:13px}
 .qp-btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:6px}
+.qp-all{grid-column:1/-1;display:flex;align-items:flex-start;gap:6px;font-size:12.5px;font-weight:600;line-height:1.4;cursor:pointer}.qp-all input{margin:2px 0 0;flex:none;width:auto;padding:0}.qp-all span{flex:1;min-width:0}
+.qp .qp-a[readonly]{background:var(--sunk);color:var(--muted)}
+.mode.grp{background:var(--sunk);color:var(--ink,inherit);border:1px dashed var(--line)}
+.pr-grp{text-align:right;font-weight:700;font-size:calc(12px*min(var(--tz,1),1.25));margin-top:4px}
 .qp-btns .link:first-child{background:var(--accent);color:var(--accent-ink);padding:4px 14px;font-weight:700}
 @media (max-width:600px){.o-actions:has(.qp){width:100%}.qp{grid-template-columns:1fr 1fr;width:100%}.qp .qp-m{grid-column:1/-1;grid-row:1}}
 .link{border:0;background:none;color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer;padding:2px 4px;border-radius:6px}
@@ -3365,6 +3369,16 @@ $("chargeList").addEventListener("change",async e=>{if(!e.target.matches("[data-
   delete r.dataset.busy;drawChargePhoto(r)});
 /* several phone numbers typed with a comma or slash between them show one per line (a space stays inside a number) */
 const phList=s=>String(s||"").split(/[,\/]+/).map(x=>x.trim()).filter(Boolean);
+/* ---------- the same customer's orders for the same pickup / delivery (same day, time, and place):
+   shown together on the cards, the slip and the order picture, and they can be paid together ---------- */
+const custPh=s=>String(phList(s)[0]||"").replace(/\D/g,"").replace(/^(?:95|0)+/,"");
+const addrKey=s=>String(s||"").toLowerCase().replace(/[\s,.၊။\-]+/g,"");
+const balOf=o=>Math.max(0,(o.total||0)-(o.deposit||0));
+function custGrp(o){if(!o?.date||!o.time||o.time==="tbc"||!custPh(o.phone)||o.status==="cancel")return[];
+  const dv=o.delivery||"pickup",same=x=>x.status!=="cancel"&&x.date===o.date&&x.time===o.time&&custPh(x.phone)===custPh(o.phone)&&(x.delivery||"pickup")===dv&&(dv!=="delivery"||addrKey(x.addr)===addrKey(o.addr));
+  const list=orders.filter(x=>x.id!==o.id&&x.no!==o.no&&same(x));if(!list.length)return[];
+  return[...list,o].sort((a,b)=>String(a.no||"").localeCompare(String(b.no||"")))}
+const grpText=g=>`📦 အော်ဒါ ${g.length} ခု – ${g.map(x=>x.no||"(new)").join(" + ")}`;
 const phHtml=s=>phList(s).map(esc).join("<br>");
 const orderCharges=o=>o.charges||(o.addAmt?[{note:o.addNote||"",amt:o.addAmt}]:[]);
 /* "5,000 × 3" for a charge with a quantity, shown beside its name */
@@ -4061,6 +4075,8 @@ async function buildPreviewCanvas(o){
      if(o.channel){const lbl=chLabel(o),pw=width(`☎ ${phs[phs.length-1]}`,24)+14;
        if(pw+width(lbl,18,500)+24<=cw)pill(lbl,P+pw,ly,18,C.ink,C.photoBg,{weight:500,padX:12});else{ly+=36;pill(lbl,P,ly,18,C.ink,C.photoBg,{weight:500,padX:12})}}}
     y=Math.max(ly+12,ry+12,y0+noH+(deli?52:4));
+    /* the same customer's other orders for this pickup / delivery, on a line of its own under the header */
+    {const g=custGrp(o);if(g.length>1){y+=30;text(grpText(g),P+LW,y,22,{align:"right",weight:700})}}
 
     /* ── cake ── */
     rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
@@ -4082,6 +4098,7 @@ async function buildPreviewCanvas(o){
         text(dcl,x+14,y-2,24,{weight:500,color:C.accent,fam:MONO});x+=w+14}
       if(sub)text(sub,x,y,26,{color:C.muted})}
     /* (no tier-by-tier text line: the drawing beside the photos shows the tiers) */
+    if(cupText(o)){y+=4;para(cupText(o),24,400,C.muted,1.55)}
     if(o.custom){y+=4;para(o.custom,24,400,C.muted,1.55)}
     const dn=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("၊ ");
     if(dn){y+=6;para(tr("Design မှတ်ချက် –")+" "+dn,24,400,C.muted,1.55)}
@@ -4462,6 +4479,7 @@ function slipHTML(o,live=false){
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${o.time==="tbc"?"":fmtTimeShort(o.time)}</div>
       ${(!deli&&o.callEarly)||o.sendPhoto||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
+    ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
     ${dcLabel(o)||sub?`<div>${dcLabel(o)?`<span class="pr-dc">${esc(dcLabel(o))}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
@@ -4674,6 +4692,7 @@ function render(){
     const fl=(o.flavorName||FLAVORS.find(x=>x.k===o.flavor)?.n||o.flavor)+fondTag(o),sz=o.sizeName||SIZES.find(x=>x.k===o.size)?.n||o.size;
     const st=STATUS.find(s=>s.k===o.status)||STATUS[0];
     const bal=Math.max(0,(o.total||0)-(o.deposit||0));
+    const grp=custGrp(o),gOwe=grp.filter(x=>balOf(x)>0),gBal=gOwe.reduce((a,x)=>a+balOf(x),0);
     const ex=(o.extras||[]).map(k=>EXTRAS.find(e=>e.k===k)?.n).filter(Boolean);
     const when=dd===0?"ဒီနေ့":dd===1?"မနက်ဖြန်":dd>1?`နောက် ${dd} ရက်`:`${-dd} ရက် ကျော်လွန်`;
     /* decorators and Admins see each cake coloured by its decorating stage; only decorators lose the status box */
@@ -4687,7 +4706,7 @@ function render(){
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
-        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}</div>`:""}
+        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto||grp.length>1?`<div class="o-modes">${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
         ${isBak(o)?bakCard(o):""}<p class="o-cake"${isBak(o)?" hidden":""}><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[dcLabel(o)?`<span class="dc">${esc(dcLabel(o))}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
@@ -4711,7 +4730,7 @@ function render(){
         <!-- ticked by hand once the slip has really been printed -->
         ${o.status!=="cancel"&&printShown(o)?`<label class="prt-chk${o.printed?" on":""}" title="${o.printed?.at?esc(fmtDate(localDay(o.printed.at))+" "+new Date(o.printed.at).toTimeString().slice(0,5)):""}"><input type="checkbox" data-printed="${o.id}" ${o.printed?"checked":""} ${can("orders.printed")?"":"disabled"}><span>${o.printed?"🖨 Print ပြီး":"🖨 Print မထုတ်ရသေး"}</span></label>`:""}
         <div class="o-actions">${pendingPay===o.id
-          ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ"><span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
+          ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ">${gOwe.length>1&&gOwe.some(x=>x.id===o.id)?`<label class="qp-all"><input type="checkbox" class="qp-g" data-total="${gBal}"><span>${esc(`အော်ဒါ ${gOwe.length} ခုလုံး ပေါင်းရှင်းမည် (${gOwe.map(x=>x.no).join(" + ")}) — ${gBal.toLocaleString("en-US")} Ks`)}</span></label>`:""}<span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
           :pendingCancel===o.id
           ?`<span class="confirm cancel-ask">ဒီအော်ဒါကို ပယ်ဖျက်မှာ သေချာပါသလား? <input class="cancel-why" data-cancel-why placeholder="Cancel ရတဲ့ အကြောင်းရင်း *" aria-label="Cancel reason" autocomplete="off" value="${esc(cancelDraft)}"><button class="link danger" data-cancel-yes="${o.id}">ပယ်ဖျက်မည်</button><button class="link" data-cancel-no>မလုပ်တော့ပါ</button></span>`
           :pendingDelete===o.id
@@ -5017,6 +5036,13 @@ $("orders").addEventListener("click",async e=>{
     const add={at:new Date().toISOString(),date:readDate(box.querySelector(".qp-d"))||todayISO(),method:box.querySelector(".qp-m").value,amt:Math.max(0,Number(box.querySelector(".qp-a").value)||0)};
     if(!add.method){toast("ငွေပေးချေနည်း ရွေးပါ");box.querySelector(".qp-m").focus();return}
     if(!add.amt){toast("ပမာဏ ရိုက်ထည့်ပါ");box.querySelector(".qp-a").focus();return}
+    /* the same customer's orders together: each order's balance is recorded on that order (same date and method) */
+    if(box.querySelector(".qp-g")?.checked){const list=custGrp(o).filter(x=>balOf(x)>0);pendingPay=null;
+      try{for(const x of list){const a={...add,amt:balOf(x)},ps=[...orderPayments(x),a],paid=ps.reduce((s,p)=>s+p.amt,0);
+          await patchOrder(x.id,{payments:ps,deposit:paid,pay:a.method,updatedAt:new Date().toISOString(),updatedBy:me.id||null,
+            history:addHist(x,"pay",[`${a.method} ${a.amt.toLocaleString("en-US")} Ks · ${fmtDate(a.date)} · ${list.map(y=>y.no).join(" + ")} together`])})}
+        toast(`အော်ဒါ ${list.length} ခု ငွေပေးချေမှု မှတ်ပြီး`)}catch(x){toast("မှတ်မရပါ");render()}
+      return}
     const ps=[...orderPayments(o),add],paid=ps.reduce((a,p)=>a+p.amt,0);
     pendingPay=null;
     try{await patchOrder(o.id,{payments:ps,deposit:paid,pay:add.method,updatedAt:new Date().toISOString(),updatedBy:me.id||null,
@@ -5024,6 +5050,8 @@ $("orders").addEventListener("click",async e=>{
     return}
 });
 
+/* "pay all together": the amount becomes the group's balance (fixed); unticking clears it */
+$("orders").addEventListener("change",e=>{const g=e.target.closest(".qp-g");if(!g)return;const a=g.closest(".qp").querySelector(".qp-a");a.value=g.checked?g.dataset.total:"";a.readOnly=g.checked});
 /* ---------- tabs / toast ---------- */
 /* ---------- leaving an order being edited with unsaved changes asks first: save / don't save / keep editing ---------- */
 var editSnap=null,afterSave=null;
