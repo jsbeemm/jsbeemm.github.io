@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793724039"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793724610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8336,7 +8336,7 @@ var soB="js";
 const vBrand=v=>v?.brand==="mb"?"mb":"js";
 const soMine=v=>vBrand(v)===saleBrand;
 const SO_SHOP={js:{name:"JS Myanmar Packaging &amp; Supplies",rc:"JS Myanmar<br>Packaging &amp; Supplies",ph:"09 402 222 446",img:"img/brand-js.jpg",ct:"js",lbl:"JS"},
-  mb:{name:"Mr.Bee Bakery",rc:"Mr.Bee Bakery",ph:"09 521 4166",img:"img/brand-mrbee.jpg",ct:"customer",lbl:"Mr.Bee"}};
+  mb:{name:"Mr.Bee Bakery",rc:"Mr.Bee Bakery",ph:"09 521 4166",img:"img/brand-mrbee.jpg",head:"img/brand-mrbee-head.jpg",ct:"customer",lbl:"Mr.Bee"}};
 /* every Bakery Product is a voucher item (one without a price is priced on the voucher), with its Retail, Wholesale (Distribution) and Food Panda prices */
 const mbItems=()=>pds.map(p=>({id:p.id,code:p.code||"",name:p.name,cat:p.cat||"Other",price:Number(p.retail)||0,
   whPrice:has(p.dist)?Number(p.dist):0,fpPrice:has(p.panda)?Number(p.panda):pandaOf(p.retail),mb:true,...(p.photo?{photo:p.photo}:{})}));
@@ -8806,6 +8806,7 @@ async function poSync(oldV,newV){const id=newV?.poId||oldV?.poId;if(!id)return;c
 const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#3b2a20;background:#fff;font-size:13px;line-height:1.35}
 /* the shop logo sits right at the left of the shop name; the two together are centred */
 .vo-top{display:flex;align-items:center;justify-content:center;gap:14px}.vo-top img{width:78px;height:78px;object-fit:contain}
+.vo-hbox{display:inline-block}.vo-top img.vo-head{width:auto;height:80px;display:block}.vo-hbox p{margin:2px 0 0 21.2%;font:18px Georgia,serif;color:#7B3410;letter-spacing:.5px}
 .vo-shop{flex:none;text-align:left}.vo-shop h1{margin:0;font:600 30px/1.1 Georgia,"Times New Roman",serif;color:var(--vc)}.vo-shop p{margin:4px 0 0;font:18px Georgia,serif;color:var(--vc);letter-spacing:.5px}
 .vo-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 18px;margin-top:10px;align-items:start}
 .vo-meta h3{margin:0 0 2px;font:15px Georgia,serif;color:var(--vc)}.vo-cust b{font-size:14px;display:block}.vo-dl{text-align:center}
@@ -8830,7 +8831,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
   const oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vo">
-    <div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>
+    ${sh.head?`<div class="vo-top"><div class="vo-hbox"><img class="vo-head" src="${sh.head}" alt="${esc(sh.name)}"><p>${sh.ph}</p></div></div>`:`<div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>`}
     <div class="vo-meta">
       <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
       <div class="vo-dl">${soDelivOf(v)?`<h3>Delivery Info</h3><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div>`:""}</div>
