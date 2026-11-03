@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793700443"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793700958"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4054,18 +4054,19 @@ async function buildPreviewCanvas(o){
     const para=(s,size=28,weight=400,color=C.ink,lh=1.6,x=P,w=LW)=>{font(size,weight);wrapLines(ctx,s,w).forEach(l=>{y+=size*lh;text(l,x,y,size,{weight,color})})};
 
     /* ── header, one row like the printed slip: customer · order number · date + time ── */
-    const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the order number, so the time column stays narrow */
+    const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the time, on the right */
     const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":""].filter(Boolean);
     /* right: date, the time pill under it (delivery marked "Deli"), then the shop notes */
     const rW=Math.max(width(dateS,40,700),width(timeS,22,700)+32);
     text(dateS,P+LW,y0+40,40,{align:"right",weight:700});
     pill(timeS,P+LW,y0+84,22,C.ink,C.photoBg,{align:"right"});
-    let ry=y0+84;notes.forEach(t=>{ry+=34;text(t,P+LW,ry,22,{align:"right",weight:700,color:C.accent})});
+    /* Delivery: its pill right under the time, on the right */
+    let ry=y0+84;if(deli){ry+=44;pill("🚚 Deli",P+LW,ry,22,C.sky,C.skySoft,{align:"right"})}
+    notes.forEach(t=>{ry+=34;text(t,P+LW,ry,22,{align:"right",weight:700,color:C.accent})});
     /* middle: the order-number badge */
     font(48,500,MONO);const noW=Math.max(150,ctx.measureText(o.no||"").width+44),noH=80,noX=P+LW-rW-24-noW;
     if(paint){ctx.fillStyle=C.accent;rr(ctx,noX,y0+4,noW,noH,16);ctx.fill()}
     text(o.no||"",noX+noW/2,y0+60,48,{align:"center",weight:500,color:"#fff",fam:MONO});
-    const dlS="🚚 Deli",dlW=deli?width(dlS,22,700)+32:0;if(deli)pill(dlS,noX+(noW-dlW)/2,y0+noH+38,22,C.sky,C.skySoft);
     /* left: customer name (up to 2 lines), phone(s), channel */
     /* a long name gets a little smaller (down to 22px) so it stays on one line; longer still, it wraps */
     const cw=noX-20-P;let ly=y0+30,ns=30;while(ns>22&&width(o.name||"",ns,700)>cw)ns--;font(ns,700);
@@ -4074,7 +4075,7 @@ async function buildPreviewCanvas(o){
      phs.forEach((n,i)=>{ly+=i?34:40;text(`☎ ${n}`,P,ly,24,{color:C.muted})});
      if(o.channel){const lbl=chLabel(o),pw=width(`☎ ${phs[phs.length-1]}`,24)+14;
        if(pw+width(lbl,18,500)+24<=cw)pill(lbl,P+pw,ly,18,C.ink,C.photoBg,{weight:500,padX:12});else{ly+=36;pill(lbl,P,ly,18,C.ink,C.photoBg,{weight:500,padX:12})}}}
-    y=Math.max(ly+12,ry+12,y0+noH+(deli?52:4));
+    y=Math.max(ly+12,ry+12,y0+noH+4);
     /* the same customer's other orders for this pickup / delivery, on a line of its own under the header */
     {const g=custGrp(o);if(g.length>1){y+=30;text(grpText(g),P+LW,y,22,{align:"right",weight:700})}}
 
