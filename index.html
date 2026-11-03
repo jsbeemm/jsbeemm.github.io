@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793643155"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793678316"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5516,11 +5516,11 @@ function go(v){
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
-  $("pageTitle").innerHTML=PAGES[v][0];$("pageSub").textContent=PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("backBtn").hidden=v==="home";
+  $("pageTitle").innerHTML=PAGES[v][0];$("pageSub").textContent=v==="so"?BRAND_N[saleBrand]:PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("backBtn").hidden=v==="home";
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||(v==="sale"&&saleBrand==="js")||(v==="pos"&&saleBrand==="js"))initSo();if(v==="so")renderSo();
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -7173,8 +7173,8 @@ function syncSaleBrand(){document.querySelectorAll("#saleBrands [data-brand]").f
   /* the Sale page is titled with the shop it was opened for from Home */
   if(view==="sale")$("pageTitle").innerHTML=saleBrand==="js"?"JS <span>Bakery Supply</span>":"Mr.Bee <span>Bakery</span>";
   /* cake orders are Mr.Bee's only */
-  $("goOrders").hidden=saleBrand==="js";$("goSo").hidden=saleBrand!=="js";
-  {const t=todayISO(),td=vos.filter(v=>v.date===t),owed=vos.filter(v=>soBal(v)>0).length;$("homeSoN").textContent=soLoaded?`Today ${td.length} · ${owed} unpaid`:""}
+  $("goOrders").hidden=saleBrand==="js";$("goSo").hidden=false;
+  {const t=todayISO(),mine=vos.filter(soMine),td=mine.filter(v=>v.date===t),owed=mine.filter(v=>soBal(v)>0).length;$("homeSoN").textContent=soLoaded?`Today ${td.length} · ${owed} unpaid`:""}
   const n=items.filter(i=>i.price>0).length;$("homeItemsN").textContent=itLoaded?`${items.length} items · ${n} for JS sale`:"";}
 $("saleBrands").addEventListener("click",e=>{const b=e.target.closest("[data-brand]");if(b)setSaleBrand(b.dataset.brand)});
 /* the products a POS sells: Bakery Products at Mr.Bee, the JS sale items at JS (as products with one Retail price) */
@@ -7484,7 +7484,7 @@ function renderPosRep(){
     .sort((a,b)=>String(a.o.no||"").localeCompare(String(b.o.no||"")));
   const cakeSum=cake.reduce((s,x)=>s+Number(x.p.amt),0);cake.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   /* JS: money received on vouchers in the period (each payment by its own date) */
-  const vop=saleBrand==="js"?vos.flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no))):[];
+  const vop=vos.filter(soMine).flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no)));
   const voSum=vop.reduce((s,x)=>s+Number(x.p.amt),0);vop.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   const cakeTbl=(list,total)=>`<table class="ex-tbl"><tbody>${list.map(x=>`<tr class="cake-pay" data-cake-o="${esc(x.o.id)}" tabindex="0" role="button" title="Order detail"><td><b>${esc(x.o.no||"")}</b> <span data-t="${esc(x.o.name||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${x.i?"Paid":"Deposit"} · ${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}
       <tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(total)}</b></td></tr></tbody></table>`;
@@ -7535,8 +7535,8 @@ function renderPosRep(){
   $("posRepBody").innerHTML=`<div class="ex-rep">
     ${confCardHtml()}
     <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum+voSum)}</b>
-      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?` · Vouchers ${fmt(voSum)} (${vop.length} payment${vop.length===1?"":"s"})`:` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`}</small></div>
-    ${saleBrand==="js"?`<div class="ex-card"><p class="ac-h">📄 Voucher payments</p>${vop.length?`<table class="ex-tbl"><tbody>${vop.map(x=>`<tr class="cake-pay" data-so-open="${esc(x.v.id)}" tabindex="0" role="button"><td><b>${esc(x.v.no)}</b> <span data-t="${esc(x.v.customer||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(voSum)}</b></td></tr></tbody></table>`:`<p class="side-help">No voucher payments in this period.</p>`}</div>`:""}
+      <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?"":` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`} · Vouchers ${fmt(voSum)} (${vop.length} payment${vop.length===1?"":"s"})</small></div>
+    ${true?`<div class="ex-card"><p class="ac-h">📄 Voucher payments</p>${vop.length?`<table class="ex-tbl"><tbody>${vop.map(x=>`<tr class="cake-pay" data-so-open="${esc(x.v.id)}" tabindex="0" role="button"><td><b>${esc(x.v.no)}</b> <span data-t="${esc(x.v.customer||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(voSum)}</b></td></tr></tbody></table>`:`<p class="side-help">No voucher payments in this period.</p>`}</div>`:""}
     <div class="ex-card"><p class="ac-h">By payment method</p>${Object.keys(byPay).length?`<table class="ex-tbl"><tbody>${Object.entries(byPay).map(([p,a])=>`<tr class="cake-pay" data-rep-pay="${esc(p)}" tabindex="0" role="button" title="Detail"><td>${esc(pmLabel(p))}</td><td class="ex-r">${fmt(a)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
     ${saleBrand==="js"?"":`<div class="ex-card"><p class="ac-h">🎂 Cake order payments</p>${cake.length?cakeTbl(cake,cakeSum):`<p class="side-help">No cake order payments in this period.</p>`}</div>`}
     <div class="ex-card"><p class="ac-h">POS · by product</p>${prods.length?`<table class="ex-tbl"><tbody>${prods.map(p=>`<tr class="cake-pay" data-rep-prod="${esc(p.k)}" tabindex="0" role="button" title="Detail"><td class="pd-n" data-t="${esc(p.name)}"></td><td class="ex-c">× ${p.qty}</td><td class="ex-r">${fmt(p.amt)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
@@ -8037,6 +8037,21 @@ const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV",
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
 function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
 const soCanEdit=v=>can("admin")||(!!v&&!!me.id&&sameId(v.by,me.id));
+/* each shop has its own vouchers: Mr.Bee (MB…, Bakery Products, Mr.Bee customers) and JS (JS…, Raw Material items, JS customers).
+   The list shows the shop the Sale page is open for; vouchers made before Mr.Bee had them are JS's. */
+var soB="js";
+const vBrand=v=>v?.brand==="mb"?"mb":"js";
+const soMine=v=>vBrand(v)===saleBrand;
+const SO_SHOP={js:{name:"JS Myanmar Packaging &amp; Supplies",rc:"JS Myanmar<br>Packaging &amp; Supplies",ph:"09 402 222 446",img:"img/brand-js.jpg",ct:"js",lbl:"JS"},
+  mb:{name:"Mr.Bee Bakery",rc:"Mr.Bee Bakery",ph:"09 521 4166",img:"img/brand-mrbee.jpg",ct:"customer",lbl:"Mr.Bee"}};
+/* Bakery Products as voucher items, with their Retail, Wholesale (Distribution) and Food Panda prices */
+const mbItems=()=>pds.filter(p=>Number(p.retail)>0).map(p=>({id:p.id,code:p.code||"",name:p.name,cat:p.cat||"Other",price:Number(p.retail),
+  whPrice:has(p.dist)?Number(p.dist):0,fpPrice:has(p.panda)?Number(p.panda):pandaOf(p.retail),mb:true,...(p.photo?{photo:p.photo}:{})}));
+const soItems=()=>soB==="mb"?mbItems():items;
+const soItem=id=>id?soItems().find(x=>x.id===id):null;
+/* a Mr.Bee customer buys at Wholesale (Food Panda at its own price); no customer = Retail. JS has no default tier. */
+function soCustTier(){if(soB!=="mb")return"";const c=pts.find(p=>p.id===$("soCust").value);return!c?"":isPanda(c)?"f":"w"}
+const soTierPrice=(pp,t)=>t==="w"&&pp.w>0?pp.w:t==="f"&&pp.f>0?pp.f:pp.r;
 function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
@@ -8048,7 +8063,7 @@ async function saveSo(v){if(db){const d={...v};delete d.id;await db.collection("
   const i=vos.findIndex(x=>x.id===v.id);if(i>=0)vos[i]=v;else vos.push(v);vos=vos.slice();try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
 async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete();return}vos=vos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
 /* JS26NOV01002 = JS + year + month + day + the day's running number */
-function soNo(d){const pre="JS"+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
+function soNo(d,b="js"){const pre=(b==="mb"?"MB":"JS")+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
 const soDate=d=>{const[y,m,dd]=String(d||"").split("-");return y?`${Number(dd)}-${MONTHS[Number(m)-1]}-${y}`:""};
 /* ---- a voucher's stage. A new voucher starts as a Preorder (nothing given, nothing paid) and can be printed or saved
@@ -8091,13 +8106,15 @@ $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-s
 const poStage=p=>{const s=poState(p);return s==="done"?"fin":s==="todo"&&!poMade(p).length?"pre":"unf"};
 function renderSo(){if($("viewSo").hidden)return;
   const q=pdNorm(soQ),hit=x=>!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q));
-  const n={pre:0,unf:0,fin:0};vos.forEach(v=>n[soStage(v)]++);pos.forEach(p=>n[poStage(p)]++);
-  $("soTabs").innerHTML=[["pre","📋 Preorder",n.pre],["unf","⏳ Unfinished",n.unf],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vos.length]]
+  /* this shop's vouchers; the earlier Order screen and "to buy" are JS's only */
+  const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];if(!js&&soTab==="buy")soTab="pre";
+  const n={pre:0,unf:0,fin:0};vs.forEach(v=>n[soStage(v)]++);ps.forEach(p=>n[poStage(p)]++);
+  $("soTabs").innerHTML=[["pre","📋 Preorder",n.pre],["unf","⏳ Unfinished",n.unf],["fin","✓ Finished",n.fin],...(js?[["buy","🛒 မှာရန်",poBuyRows().length]]:[]),["all","📄 All",vs.length]]
     .map(([k,t,c])=>`<button type="button" class="chip" data-sotab="${k}" aria-pressed="${soTab===k}">${t} <small>${c}</small></button>`).join("");
   if(soTab==="buy")renderBuyList(q);
   else{const all=soTab==="all";
-    const list=[...vos.filter(v=>(all||soStage(v)===soTab)&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
-      ...(all?[]:pos.filter(p=>poStage(p)===soTab&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
+    const list=[...vs.filter(v=>(all||soStage(v)===soTab)&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
+      ...(all?[]:ps.filter(p=>poStage(p)===soTab&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
       .sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":"မရှိပါ"}</div>`;
@@ -8114,11 +8131,11 @@ const soCustLbl=p=>p?`${p.name}${p.short?` (${p.short})`:""}`:"";
 function soFillCust(cur){$("soCust").value=cur||"";$("soCustQ").value=pts.find(p=>p.id===cur)?.name||"";$("soCustHits").hidden=true;requestAnimationFrame(soGrow)}
 function soCustHits(){const q=pdNorm($("soCustQ").value);
   /* every matching customer (the list scrolls): a short list cut off the Myanmar names, which sort after the English ones */
-  const cs=pts.filter(p=>p.type==="js"&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const cs=pts.filter(p=>p.type===SO_SHOP[soB].ct&&(!q||[p.name,p.short,p.otherName,...ptPhonesOf(p)].some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   $("soCustHits").innerHTML=cs.length?cs.map(p=>`<button type="button" class="so-hit so-chit" data-so-cust="${esc(p.id)}"><span data-t="${esc(soCustLbl(p))}"></span><small>${esc(ptPhonesOf(p)[0]||"")}</small></button>`).join("")
     :`<p class="side-help so-noc">Customer စာရင်းထဲ မရှိပါ</p>`;
   /* a customer not on the list is registered first (from here, without leaving the voucher) */
-  if(q&&!cs.some(p=>pdNorm(p.name)===q))$("soCustHits").insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-so-reg><span>➕ Register “<span data-t="${esc($("soCustQ").value.trim())}"></span>” as a new JS customer</span></button>`);
+  if(q&&!cs.some(p=>pdNorm(p.name)===q))$("soCustHits").insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-so-reg><span>➕ Register “<span data-t="${esc($("soCustQ").value.trim())}"></span>” as a new ${SO_SHOP[soB].lbl} customer</span></button>`);
   $("soCustHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soCustHits").hidden=false}
 /* clearing the customer (or typing over a picked one) clears that customer's phone, channel and delivery info too */
 $("soCustQ").addEventListener("input",()=>{const had=$("soCust").value;$("soCust").value="";
@@ -8131,12 +8148,12 @@ $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 var ptAfterSave=null;
 function soRegister(){if(!canAddCust()){toast("Customer အသစ် Register လုပ်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
-  const nm=$("soCustQ").value.trim(),ph=$("soPhone").value.trim();ptType="js";openPtForm(null);
-  $("ptTypeSel").value="js";ptSyncType();$("ptName").value=nm;const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&ph)pi.value=ph;
+  const nm=$("soCustQ").value.trim(),ph=$("soPhone").value.trim(),ct=SO_SHOP[soB].ct;ptType=ct;openPtForm(null);
+  $("ptTypeSel").value=ct;ptSyncType();$("ptName").value=nm;const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&ph)pi.value=ph;
   const ai=$("ptAddrs").querySelector("textarea");if(ai&&$("soDeliv").value.trim())ai.value=$("soDeliv").value.trim();
   $("soCustHits").hidden=true;
   /* once saved, the new customer is picked on the voucher */
-  ptAfterSave=p=>{if(p.type!=="js")return;$("soCust").value=p.id;$("soCustQ").value=p.name;$("soCust").dispatchEvent(new Event("change"))}}
+  ptAfterSave=p=>{if(p.type!==ct)return;$("soCust").value=p.id;$("soCustQ").value=p.name;$("soCust").dispatchEvent(new Event("change"))}}
 $("soCustHits").addEventListener("click",e=>{if(e.target.closest("[data-so-reg]")){soRegister();return}});
 $("soCustHits").addEventListener("click",e=>{const b=e.target.closest("[data-so-cust]");if(!b)return;$("soCust").value=b.dataset.soCust;
   $("soCustQ").value=pts.find(p=>p.id===b.dataset.soCust)?.name||"";$("soCustHits").hidden=true;$("soCust").dispatchEvent(new Event("change"))});
@@ -8169,7 +8186,7 @@ $("soAddrMenu").addEventListener("click",e=>{const b=e.target.closest("[data-so-
   if(p)$("soDeliv").value=soDelivFor(p,Number(b.dataset.soAddr),!!b.dataset.own);$("soAddrMenu").hidden=true;soGrow()});
 $("soDeliv").addEventListener("input",soGrow);
 /* the same form makes a preorder (mode "po"): no money on it */
-function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soMode=mode;soFromPo=null;$("soDlg").classList.toggle("po",mode==="po");soEditing=v||null;
+function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soB=v?vBrand(v):mode==="po"?"js":saleBrand;soMode=mode;soFromPo=null;$("soDlg").classList.toggle("po",mode==="po");soEditing=v||null;
   $("soDlgT").textContent=v?`Edit ${v.no}`:mode==="po"?"New order":"New voucher";$("soNoK").textContent=mode==="po"?"Order No#":"SO No#";$("soNoTxt").textContent=v?.no||"(new)";soFillCust(v?.custId||"");
   $("soCustQ").value=v?.customer||$("soCustQ").value;
   for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";$("soChannel").textContent=v?.channel||"";
@@ -8183,7 +8200,11 @@ function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soMode=mode;soFromPo
 /* a new voucher starts as a Preorder (see soStage) */
 $("soNewBtn").addEventListener("click",()=>{initItems();openSoForm(null,"so")});
 $("soCust").addEventListener("change",()=>{const p=pts.find(x=>x.id===$("soCust").value);if(!p)return;
-  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow()});
+  $("soPhone").value=ptPhonesOf(p)[0]||"";$("soChannel").textContent=p.channel||"";soFillAddrs(p);$("soDeliv").value=soDelivFor(p,ptDefOf(p));soGrow();
+  /* Mr.Bee: lines still at their tier's price move to this customer's tier (a typed price stays) */
+  if(soB==="mb"&&soLines.length){const t=soCustTier();let ch=0;
+    soLines.forEach(l=>{const it=soItem(l.pid);if(!it)return;const pp=soPP(it,l);if(Number(l.price)!==soTierPrice(pp,l.tier))return;
+      if(t&&(t==="w"?pp.w:pp.f)>0)l.tier=t;else delete l.tier;l.price=soTierPrice(pp,l.tier);ch=1});if(ch)renderSoLines()}});
 
 const soNetOf=ls=>ls.reduce((s,l)=>s+Math.round(Number(l.qty||0)*Number(l.price||0)),0);
 function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing):Math.max(0,Number($("soPaid").value)||0);
@@ -8191,16 +8212,16 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l)))),fm=soFamMap();
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
-      <td><div class="so-ldw">${l.pid?(()=>{const it=items.find(x=>x.id===l.pid),fam=it&&fm.get(soFamKey(it)),many=fam&&fam.length>1;
+      <td><div class="so-ldw">${l.pid?(()=>{const it=soItem(l.pid),fam=it&&fm.get(soFamKey(it)),many=fam&&fam.length>1;
         /* the name and its pencil stay on one line; the size / unit list opens under them */
         return`<span class="so-ldn"><span class="so-ldt">${esc(l.name||"")}</span>${many?`<button type="button" class="so-lue" aria-label="Change size / unit" title="Size / unit ပြောင်းရန်"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>`:""}</span>`
           +(many?`<select class="so-lu" hidden aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${soOptOn(o,l)?"selected":""}>${esc(o.label)} · ${fmt(o.price)}</option>`).join("")}</select>`:"")})():`<input class="so-ld" value="${esc(l.name||"")}" aria-label="Description">`}</div></td>
       <td class="r"><span class="so-lqw"><input class="so-lq" type="number" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"><span class="so-lqu">${esc(soLineUnit(l))}</span></span></td>
-      <td class="r">${(()=>{const it=l.pid&&items.find(x=>x.id===l.pid),pp=it&&soPP(it,l),dd=pp&&pp.w>0;
-        /* Retail / Wholesale: a small arrow inside the price box (only when the item has a wholesale price) */
-        return`<span class="so-pw${dd?" dd":""}"><input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price">${dd?`<span class="so-pdd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select class="so-lt" aria-label="Price type" title="Retail / Wholesale"><option value="r">Retail · ${fmt(pp.r)}</option><option value="w" ${l.tier==="w"?"selected":""}>Wholesale · ${fmt(pp.w)}</option></select></span>`:""}</span>`})()}</td>
+      <td class="r">${(()=>{const it=soItem(l.pid),pp=it&&soPP(it,l),dd=pp&&(pp.w>0||pp.f>0);
+        /* Retail / Wholesale (/ Food Panda at Mr.Bee): a small arrow inside the price box (only when the item has another price) */
+        return`<span class="so-pw${dd?" dd":""}"><input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price">${dd?`<span class="so-pdd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select class="so-lt" aria-label="Price type" title="${pp.f>0?"Retail / Wholesale / Food Panda":"Retail / Wholesale"}"><option value="r">Retail · ${fmt(pp.r)}</option>${pp.w>0?`<option value="w" ${l.tier==="w"?"selected":""}>Wholesale · ${fmt(pp.w)}</option>`:""}${pp.f>0?`<option value="f" ${l.tier==="f"?"selected":""}>Food Panda · ${fmt(pp.f)}</option>`:""}</select></span>`:""}</span>`})()}</td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
-      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw"><label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label><button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
+      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw">${soB==="mb"?"":`<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label>`}<button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
     :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
   soSyncTot()}
 $("soLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=soLines[Number(r.dataset.i)];
@@ -8211,12 +8232,12 @@ $("soPaid").addEventListener("input",soSyncTot);
 /* Retail / Wholesale beside a line's price: picks that price of the item (the price can still be typed over) */
 /* another size of the same product: the line becomes that item, at its price */
 $("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lu"))return;const l=soLines[Number(e.target.closest("[data-i]").dataset.i)];
-  const[id,ks]=e.target.value.split("|"),it=items.find(x=>x.id===id),o=it&&soOptsOf(it).find(x=>x.k===Number(ks));if(!l||!o)return;
+  const[id,ks]=e.target.value.split("|"),it=soItem(id),o=it&&soOptsOf(it).find(x=>x.k===Number(ks));if(!l||!o)return;
   Object.assign(l,{pid:it.id,code:it.code||"",name:soOptName(o)});if(o.k>=0)l.u=o.k;else delete l.u;
-  const pp=soPP(it,l);if(!(pp.w>0))delete l.tier;l.price=l.tier==="w"?pp.w:pp.r;
+  const pp=soPP(it,l);if(soTierPrice(pp,l.tier)===pp.r)delete l.tier;l.price=soTierPrice(pp,l.tier);
   if(it.photo)l.photo=it.photo;else delete l.photo;renderSoLines()});
-$("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=items.find(x=>x.id===l.pid);if(!it)return;
-  const pp=soPP(it,l);l.tier=e.target.value;l.price=l.tier==="w"&&pp.w>0?pp.w:pp.r;if(l.tier!=="w")delete l.tier;
+$("soLines").addEventListener("change",e=>{if(!e.target.matches(".so-lt"))return;const r=e.target.closest("[data-i]"),l=soLines[Number(r.dataset.i)],it=soItem(l.pid);if(!it)return;
+  const pp=soPP(it,l);l.tier=e.target.value;l.price=soTierPrice(pp,l.tier);if(l.tier==="r")delete l.tier;
   r.querySelector(".so-lp").value=l.price;r.querySelector(".so-la").textContent=Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US");soSyncTot()});
 /* ✎ beside a line's name: shows its sizes / units to pick from (hidden again if nothing is picked) */
 $("soLines").addEventListener("click",e=>{const b=e.target.closest(".so-lue");if(!b)return;const s=b.closest(".so-ldw").querySelector(".so-lu");if(!s)return;
@@ -8239,15 +8260,15 @@ function soOptsOf(i){const o=[];if(i.price>0&&!(i.units||[]).some(u=>u.p>0))o.pu
 /* a unit row's label: what one of it is — "1pk=1kg", "1ct=12pk"; a row with no quantity (the Base Unit) is just "1pc" */
 function soULabel(u){const n=u.u||u.n||"";if(!n)return"";return Number(u.c)>0&&u.of?`1${n}=${Number(u.c).toLocaleString("en-US")}${u.of}`:`1${n}`}
 /* a line's retail and wholesale prices: its unit's, or the item's own */
-function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||0,w:Number(u.w)||0}:{r:Number(it.price)||0,w:Number(it.whPrice)||0}}
-function soFamMap(){const m=new Map();for(const i of items){const o=soOptsOf(i);if(!o.length)continue;const k=soFamKey(i);if(!m.has(k))m.set(k,[]);m.get(k).push(...o)}
+function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||0,w:Number(u.w)||0,f:0}:{r:Number(it.price)||0,w:Number(it.whPrice)||0,f:Number(it.fpPrice)||0}}
+function soFamMap(){const m=new Map();for(const i of soItems()){const o=soOptsOf(i);if(!o.length)continue;const k=soFamKey(i);if(!m.has(k))m.set(k,[]);m.get(k).push(...o)}
   /* one item's sizes keep the order of its unit rows (sorted by hand in the item form); items of a family go dearest first */
   for(const[k,a]of m){const top=new Map();a.forEach(o=>top.set(o.it,Math.max(top.get(o.it)||0,o.price)));const its=[...top.keys()].sort((x,y)=>top.get(y)-top.get(x));
     m.set(k,its.flatMap(it=>a.filter(o=>o.it===it).sort((x,y)=>(x.k<0?1e9:x.k)-(y.k<0?1e9:y.k))))}return m}
 /* a voucher line's description: the item's name, then what one of its unit is (Sugar 1pk=1kg) */
 const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${soULabel(u)}`.trim()};
 /* the unit a line's Qty counts in: the chosen unit row's 1 Unit (ct), else the item's Stock Count Unit */
-function soLineUnit(l){const it=l.pid&&items.find(x=>x.id===l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
+function soLineUnit(l){const it=soItem(l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
 const soOptOn=(o,l)=>l.pid===o.it.id&&(l.u??-1)===o.k;
 /* the size: from the name ("… 5kg"), else from Purchase Conversion in the base unit (25000 g → 25kg), else the count unit (pk) */
 function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].replace(/\s+/g,"");
@@ -8256,7 +8277,7 @@ function soUnitOf(i){const m=String(i.name||"").match(SO_SIZE);if(m)return m[1].
   if(c>0&&(u==="g"||u==="gm"))return c>=1000?`${+(c/1000).toFixed(2)}kg`:`${c}g`;if(c>0&&u==="ml")return c>=1000?`${+(c/1000).toFixed(2)}L`:`${c}ml`;
   if(c>0&&u)return`${c}${u}`;return i.stockUnit||i.uom||i.purUnit||i.code||""}
 function soFamName(k,fam){return soBaseName(fam[0].it||fam[0])}
-function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
+function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=soItems().filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.filter(i=>soOptsOf(i).length).map(i=>i.cat||"Other"))].sort();if(soPickCat&&!cats.includes(soPickCat))soPickCat="";
   $("soPickCats").innerHTML=`<button type="button" class="chip" data-sopc="" aria-pressed="${!soPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-sopc="${esc(c)}" aria-pressed="${soPickCat===c}">${esc(c)}</button>`).join("");
   const m=inQ.filter(i=>soOptsOf(i).length&&(!soPickCat||(i.cat||"Other")===soPickCat)).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,80);
@@ -8275,14 +8296,17 @@ function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=items.filter(i=>!
 $("soAddItem").addEventListener("click",()=>{initItems();soPickCat="";$("soPickQ").value="";renderSoPick();$("soPickDlg").hidden=false;$("soPickQ").focus()});
 $("soPickQ").addEventListener("input",renderSoPick);
 $("soPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-sopc]");if(b){soPickCat=b.dataset.sopc;renderSoPick()}});
-$("soHits").addEventListener("click",async e=>{const b=e.target.closest("[data-so-add]");if(!b)return;const i=items.find(x=>x.id===b.dataset.soAdd);if(!i)return;
+$("soHits").addEventListener("click",async e=>{const b=e.target.closest("[data-so-add]");if(!b)return;const i=soItem(b.dataset.soAdd);if(!i)return;
   const u=Number(b.dataset.soU??-1),o=soOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,price:Number(i.price)||0};
-  let k=soLines.findIndex(l=>soOptOn(o,l));if(k<0){soLines.push({pid:i.id,code:i.code||"",name:soOptName(o),qty:"",price:o.price,...(o.k>=0?{u:o.k}:{}),...(i.photo?{photo:i.photo}:{})});k=soLines.length-1}
+  let k=soLines.findIndex(l=>soOptOn(o,l));if(k<0){const l={pid:i.id,code:i.code||"",name:soOptName(o),qty:"",price:o.price,...(o.k>=0?{u:o.k}:{}),...(i.photo?{photo:i.photo}:{})};
+    /* Mr.Bee: the customer's price (Wholesale / Food Panda) when the product has it */
+    const t=soCustTier(),pp=soPP(i,l);if(t&&soTierPrice(pp,t)!==pp.r){l.tier=t;l.price=soTierPrice(pp,t)}
+    soLines.push(l);k=soLines.length-1}
   $("soPickDlg").hidden=true;await renderSoLines();const qi=$("soLines").querySelector(`tr[data-i="${k}"] .so-lq`);if(qi){qi.focus();qi.select()}});
 $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEditing;
   let name=$("soCustQ").value.trim();if(!name){toast("Customer name ထည့်ပါ");$("soCustQ").focus();return}
   /* a typed name that is exactly a JS customer's name links to that customer; anyone else is registered first */
-  if(!$("soCust").value){const p=pts.find(x=>x.type==="js"&&pdNorm(x.name)===pdNorm(name));if(p){$("soCust").value=p.id;name=p.name}}
+  if(!$("soCust").value){const p=pts.find(x=>x.type===SO_SHOP[soB].ct&&pdNorm(x.name)===pdNorm(name));if(p){$("soCust").value=p.id;name=p.name}}
   if(!$("soCust").value){if(await askConfirm(`“${name}” ကို Customer စာရင်းထဲ မတွေ့ပါ`,"ဘောက်ချာ မသိမ်းခင် Customer အဖြစ် Register လုပ်ပါ။","Register"))soRegister();return}
   const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
   lines.forEach(l=>{if(!l.note)delete l.note});
@@ -8298,7 +8322,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
     return}
   const date=readDate($("soDate").querySelector(".dp"))||todayISO(),now=new Date().toISOString(),net=soNetOf(lines);
   const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
-  const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date),at:now,by:me.id||null,byName:me.name||"",payments:[]}),
+  const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date,soB),at:now,by:me.id||null,byName:me.name||"",payments:[],...(soB==="mb"?{brand:"mb"}:{})}),
     date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
     deliv:$("soDeliv").value.trim()||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
   delete v.dName;delete v.dPhone;delete v.dAddr;
@@ -8321,7 +8345,7 @@ async function putSoDraft(d){if(db){const x={...d};delete x.id;await db.collecti
   const i=soDrafts.findIndex(x=>x.id===d.id);if(i>=0)soDrafts[i]=d;else soDrafts.push(d);soDraftLocal();renderSoDrafts()}
 async function dropSoDraft(id){if(db){await db.collection("jsDrafts").doc(id).delete();return}soDrafts=soDrafts.filter(x=>x.id!==id);soDraftLocal();renderSoDrafts()}
 function renderSoDrafts(){const el=$("soDraftBar");if(!el||$("viewSo").hidden)return;
-  const list=[...soDrafts].sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+  const list=soDrafts.filter(d=>(d.form?.brand==="mb"?"mb":"js")===saleBrand).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
   el.hidden=!list.length;if(!list.length){el.innerHTML="";return}
   el.innerHTML=`<p class="dr-h">📝 မပြီးသေးသော Voucher Draft ${list.length} ခု — ဆက်ရေးဖို့ မမေ့ပါနဲ့</p>`+list.map(d=>{const f=d.form||{},n=(f.lines||[]).length;
     return`<div class="dr-row"><div class="dr-who"><b data-t="${esc((f.mode==="po"?"📋 Order · ":"")+(f.customer||"(Customer မထည့်ရသေး)"))}"></b><small>${[n?`${n} line${n===1?"":"s"} · ${fmt(soNetOf(f.lines||[]))}`:"",fmtStamp(d.updatedAt),d.byName?"by "+d.byName:""].filter(Boolean).map(esc).join(" · ")}</small></div>
@@ -8340,7 +8364,7 @@ function openSoDraft(d){initItems();const f=d.form||{};openSoForm(null,f.mode===
   soDraftId=d.id;soSnap=soState()}
 async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.find(x=>x.id===soDraftId);
   const form=JSON.parse(JSON.stringify({cust:$("soCust").value||"",customer:$("soCustQ").value.trim(),phone:$("soPhone").value.trim(),channel:$("soChannel").textContent||"",
-    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines,mode:soMode,fromPo:soFromPo?.id||""}));
+    deliv:$("soDeliv").value.trim(),note:$("soNote").value.trim(),paid:$("soPaid").value||"",pay:$("soPay").value||"",date:readDate($("soDate").querySelector(".dp"))||todayISO(),lines:soLines,mode:soMode,fromPo:soFromPo?.id||"",brand:soB}));
   const d={...(old||{id:soDraftId||"sod"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),at:now}),form,updatedAt:now,by:me.id||null,byName:me.name||""};
   Object.keys(d).forEach(k=>{if(d[k]==null)delete d[k]});
   await putSoDraft(d)}
@@ -8494,14 +8518,14 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
-const soLinePhoto=l=>(l.pid&&items.find(i=>i.id===l.pid)?.photo)||l.photo||"";
+const soLinePhoto=l=>(l.pid&&(items.find(i=>i.id===l.pid)||pds.find(p=>p.id===l.pid))?.photo)||l.photo||"";
 async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
 async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
-  const oweSum=owe.reduce((s,x)=>s+soBal(x),0);
+  const oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vo">
-    <div class="vo-top"><img src="img/brand-js.jpg" alt=""><div class="vo-shop"><h1>JS Myanmar Packaging &amp; Supplies</h1><p>09 402 222 446</p></div></div>
+    <div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>
     <div class="vo-meta">
       <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
       <div class="vo-dl">${soDelivOf(v)?`<h3>Delivery Info</h3><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div>`:""}</div>
@@ -8575,9 +8599,9 @@ const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",sys
 document.head.insertAdjacentHTML("beforeend",`<style id="soRcCss">${SO_RC_CSS}</style>`);
 /* the receipt: shop, voucher number / channel / date, customer and delivery, then the lines (qty · item @ price · amount) and the money */
 function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
-  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0);
+  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vr">
-    <div class="c sh">JS Myanmar<br>Packaging &amp; Supplies</div><div class="c sm">09 402 222 446</div>
+    <div class="c sh">${sh.rc}</div><div class="c sm">${sh.ph}</div>
     <div class="sm meta"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span></div>
     <div class="two sm"><div>${esc(v.customer||"")}${v.phone?`<br>${esc(v.phone)}`:""}</div><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div></div>
     <table><thead><tr><th class="q">Qty</th><th>Description</th><th class="a">AMOUNT</th></tr></thead><tbody>
