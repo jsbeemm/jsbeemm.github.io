@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793686547"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793686883"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -380,7 +380,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .tier-card.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}.tier-layer.hl select{border-color:var(--accent)}   /* the picked layer: outline only, no fill */
 #tierPic .tp-hit{cursor:pointer}#tierPic .tp-hit:hover{fill:rgba(200,40,95,.08)}
 .tier-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}.tier-head b{font-size:13.5px;margin-right:auto}
-.tier-head .tier-size{width:auto;padding:5px 8px}
+.tier-opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;padding-right:38px}.tier-opts select,.tier-opts input{width:100%;min-width:0;height:40px;padding:5px 8px;font-size:12.5px}
 .tier-kind{display:flex;gap:4px}.tier-kind .opt > span{padding:3px 10px;font-size:12.5px}
 .tier-layer{display:grid;grid-template-columns:62px minmax(0,1fr) 32px;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
 .tier-layer select{padding:5px 8px}
@@ -2830,7 +2830,7 @@ function readForm(){
   /* how many of this same cake (cupcakes keep their own piece count): the cake price below is for one, times this */
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
-  const basePrice=count*(tk?($("fTiers").value==="wedding"||decoVal()==="mixed"?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
+  const basePrice=count*(tk?(tierManual()?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value==="fondant"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
   const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?(qF?[qC&&`${qC} Cream`,`${qF} Fondant`].filter(Boolean).join(" + ")+" pcs":`${qty} pcs`):""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
@@ -2877,7 +2877,15 @@ const tierKind=()=>$("fTiers").value;
 const dumH=t=>Number(t.dh)||(t.dl?t.dl*3:4);
 const newTier=(size,dummy)=>({dummy:!!dummy,size,layers:dummy?[]:[""],...(dummy?{dh:4}:{})});
 const defaultTiers=kind=>kind==="wedding"?[newTier("4",true),newTier("2"),newTier("1")]:[newTier("2"),newTier("1")];
-function readTiers(){if(!hasTiers(tierKind()))return{};return{tiers:tierDraft.map(t=>({dummy:!!t.dummy,size:t.size,layers:t.dummy?[]:t.layers.slice(),...(t.dummy?{dh:dumH(t)}:{})}))}}
+/* a tier's own size and shape: a Customized size is typed (csz, e.g. 7"); a shape left empty follows the cake's shape,
+   a Customized shape is typed (cshp) */
+const tierXtra=t=>({...(t.size==="custom"?{csz:String(t.csz||"").trim()}:{}),...(t.shape?{shape:t.shape}:{}),...(t.shape==="custom"?{cshp:String(t.cshp||"").trim()}:{})});
+function readTiers(){if(!hasTiers(tierKind()))return{};return{tiers:tierDraft.map(t=>({dummy:!!t.dummy,size:t.size,layers:t.dummy?[]:t.layers.slice(),...(t.dummy?{dh:dumH(t)}:{}),...tierXtra(t)}))}}
+/* the whole cake's price is typed: a Wedding Cake, Cream and fondant mixed, or a tier in a Customized size */
+const tierManual=()=>tierKind()==="wedding"||decoVal()==="mixed"||tierDraft.some(t=>t.size==="custom");
+const tierSz=t=>t.size==="custom"?(String(t.csz||"").trim()||"Customized"):szShort(t.size);
+const tierInch=t=>t.size==="custom"?(parseFloat(t.csz)||6):szInch(t.size);
+const tierShpN=t=>!t.shape?"":t.shape==="custom"?(String(t.cshp||"").trim()||"Customized"):(SHAPES.find(x=>x.k===t.shape)?.n||"");
 const flvName=k=>FLAVORS.find(x=>x.k===k)?.n||"";
 const szShort=k=>(SIZES.find(s=>s.k===k)?.n||"").replace(/\s*\(.*\)/,"");   /* '8"', or "1 1/2 lb" for a half size */
 /* each layer of a tiered / wedding cake is priced at its flavor's normal cake price for that size */
@@ -2890,9 +2898,9 @@ const tierPrice=(t,m=1)=>t.dummy?0:t.layers.reduce((a,k)=>a+layerPrice(k,t.size,
 function tiersOf(o){if(o.tiers)return o.tiers;if(!o.tierN)return[];
   const fl=[o.flavor,...(o.tierSame===false?(o.tierFlavors||[]):Array(o.tierN-1).fill(o.flavor))];
   return fl.slice(0,o.tierN).map(k=>({dummy:false,size:o.size||"",layers:[k||""]}))}
-function tierLine(t){if(t.dummy)return`${szShort(t.size)} Dummy cake (${dumH(t)}" ${LANG==="en"?"high":"မြင့်"})`;
+function tierLine(t){const sh=tierShpN(t)?` (${tierShpN(t)})`:"";if(t.dummy)return`${tierSz(t)}${sh} Dummy cake (${dumH(t)}" ${LANG==="en"?"high":"မြင့်"})`;
   const ls=t.layers.map(k=>flvName(k).replace(/ Cake$/,"")||"—"),same=ls.every(x=>x===ls[0]);
-  return`${szShort(t.size)} ${same&&ls.length>1?`${ls[0]} ×${ls.length}`:ls.join(" + ")}`}
+  return`${tierSz(t)}${sh} ${same&&ls.length>1?`${ls[0]} ×${ls.length}`:ls.join(" + ")}`}
 function tierText(o){const ts=tiersOf(o);if(!hasTiers(ctOf(o))||!ts.length)return"";
   return`${ts.length} ဆင့် · `+ts.map((t,i)=>`${i+1}: ${tierLine(t)}`).join(" / ")}
 /* the builder: shown top tier first, the way the cake stands */
@@ -2901,14 +2909,22 @@ function renderTierList(){
   const tl=i=>(en?`Tier ${i+1}`:`အဆင့် ${i+1}`)+(i===0?(en?" (bottom)":" (အောက်ဆုံး)"):i===n-1?(en?" (top)":" (အပေါ်ဆုံး)"):"");
   const sizeOpts=v=>SIZES.filter(s=>szShow(s,v)).sort(szSort).map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${s.n}</option>`).join("");
   const fon=fondantOn();
-  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other"&&(!fon||fondantOk(x.k)||x.k===v)).map(x=>{const p=layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);   /* Fondant: only flavors that can be Fondant are listed */
+  /* each tier's shape: empty = the cake's shape (picked above) */
+  const shpOpts=v=>`<option value="">${en?"Shape: as cake":"Shape: ကိတ်အတိုင်း"}</option>`+SHAPES.map(s=>`<option value="${s.k}" ${s.k===v?"selected":""}>${SHAPE_SIGN[s.k]||""} ${s.n}</option>`).join("");
+  /* a Customized size has no list price: every flavor can be picked, the cake's price is typed */
+  const flvOpts=(v,sz,st)=>`<option value="">${tr("— ကိတ်သား ရွေးပါ —")}</option>`+FLAVORS.filter(x=>x.k!=="other"&&(!fon||fondantOk(x.k)||x.k===v)).map(x=>{const cs=sz==="custom",p=cs?0:layerPrice(x.k,sz,st)*m,noF=fon&&!fondantOk(x.k);
+    if(cs)return`<option value="${x.k}" ${x.k===v?"selected":""} ${noF&&x.k!==v?"disabled":""}>${esc(x.n)}${noF?` · ${en?"no Fondant":"Fondant မရ"}`:""}</option>`;   /* Fondant: only flavors that can be Fondant are listed */
     /* no flavor number here: "1." / "2." next to the sizes read like pounds */
     return`<option value="${x.k}" ${x.k===v?"selected":""} ${(p&&!noF)||x.k===v?"":"disabled"}>${esc(x.n)}${noF?` · ${en?"no Fondant":"Fondant မရ"}`:p?(wed?"":` · ${p.toLocaleString("en-US")}`):` · ${en?"n/a":"မရပါ"}`}</option>`}).join("");   /* a Wedding Cake is priced as a whole, so its layers show no price */
   $("tierList").innerHTML=tierDraft.map((t,i)=>({t,i})).reverse().map(({t,i})=>`<div class="tier-card ${t.dummy?"dum":""}" data-ti="${i}">
     <div class="tier-head"><b>${tl(i)}</b>
       ${wed?`<span class="tier-kind"><label class="opt"><input type="radio" name="tk${i}" value="cake" ${t.dummy?"":"checked"} data-tkind><span>Cake</span></label><label class="opt"><input type="radio" name="tk${i}" value="dummy" ${t.dummy?"checked":""} data-tkind><span>Dummy cake</span></label></span>`:""}
-      <select class="tier-size" aria-label="Tier ${i+1} size">${sizeOpts(t.size)}</select>
       <button type="button" class="rm" data-trm aria-label="Remove tier" ${n<=1?"disabled":""}>×</button></div>
+    <!-- size and shape side by side; a Customized one has its typed box right under it -->
+    <div class="tier-opts"><select class="tier-size" aria-label="Tier ${i+1} size">${sizeOpts(t.size)}<option value="custom" ${t.size==="custom"?"selected":""}>Customized</option></select>
+      <select class="tier-shp" aria-label="Tier ${i+1} shape">${shpOpts(t.shape||"")}</select>
+      ${t.size==="custom"||t.shape==="custom"?(t.size==="custom"?`<input class="tier-csz" value="${esc(t.csz||"")}" placeholder="${en?'e.g. 7"':'ဥပမာ 7"'}" aria-label="Tier ${i+1} customized size">`:"<span></span>")
+        +(t.shape==="custom"?`<input class="tier-cshp" value="${esc(t.cshp||"")}" placeholder="${en?"e.g. number 5":"ဥပမာ ဂဏန်း 5"}" aria-label="Tier ${i+1} customized shape">`:""):""}</div>
     ${t.dummy?`<p class="tier-dnote">${en?"Dummy cake (display dummy) – no flavor":"Dummy cake (ပြသရန် အတု) – ကိတ်သား မလို"}</p>
       <div class="tier-layer tier-dl"><span>${en?"Height":"အမြင့်"}</span><span class="cnt"><button type="button" class="cnt-b" data-dh="-0.5" aria-label="${en?"Lower by ½ inch":"½ လက်မ နိမ့်ရန်"}" ${dumH(t)<=1?"disabled":""}>−</button><b>${dumH(t)}"</b><button type="button" class="cnt-b" data-dh="0.5" aria-label="${en?"Higher by ½ inch":"½ လက်မ မြင့်ရန်"}" ${dumH(t)>=12?"disabled":""}>+</button></span></div>`
       :t.layers.map((k,j)=>`<div class="tier-layer" data-li="${j}"><span>${en?"Layer":"အလွှာ"} ${j+1}</span><select class="tier-flv" aria-label="Tier ${i+1} layer ${j+1} flavor">${flvOpts(k,t.size,tierStacked(t))}</select><button type="button" class="rm" data-lrm aria-label="Remove layer" ${t.layers.length<2?"disabled":""}>×</button></div>`).join("")
@@ -2926,13 +2942,16 @@ const mouldH=(inch,sk)=>sk==="circle"&&(inch===6||inch===8)?2.5:3;
 function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t,_i:i}).filter(t=>t&&t.size);if(!ts.length)return"";
   /* a Dummy cake tier is one plain dashed block, as high as set in inches */
   const sk=shapeKey(shape||"circle"),kind=sk==="square"||sk==="rect"?"box":sk==="circle"?"cyl":"flat";
+  /* a tier can have its own shape */
+  const skOf=t=>shapeKey(t.shape||shape||"circle"),kindOf=k=>k==="square"||k==="rect"?"box":k==="circle"?"cyl":"flat";
   const INK=ink||"#2B1B23",MUT=ink||"#7A6570",ACC=ink||"#C8285F",BODY="#FFFFFF",SIDE=ink?"#FFFFFF":"#EEE7EA",DUM=ink?"#FFFFFF":"#EEE7EA";
   const PX=20,parts=[];let y0=0,minY=0,maxX=0,botExt=0,totIn=0,topY=0;const dims=[];   /* 20 px per inch, across and up */
   /* label sizes grow with the cake: a tall cake is scaled down a lot on the slip, so its text starts bigger */
-  const tierH=t=>{const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,sk)*PX*hm};
+  const tierH=t=>{const inch=tierInch(t),base=t.size!=="custom"&&SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;return t.dummy?dumH(t)*PX:Math.max(1,(t.layers||[]).length)*mouldH(inch,skOf(t))*PX*hm};
   const FS=Math.max(15,Math.round(ts.reduce((s,t)=>s+tierH(t),0)*.055)),FT=Math.round(FS*1.15);
   ts.forEach((t,i)=>{/* width follows the diameter (6", 8" …); a half size like 1 1/2 lb is as wide as 6" but taller — 1.5 × the height of 1 lb */
-    const inch=szInch(t.size),base=SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;
+    const sk=skOf(t),kind=kindOf(sk);
+    const inch=tierInch(t),base=t.size!=="custom"&&SIZES.find(s=>!s.half&&szInch(s.k)===inch),hm=base&&szLbOf(t.size)?szLbOf(t.size)/(szLb(base)||1):1;
     const W=(sk==="rect"?150:120)+(inch-6)*20,L=t.dummy?1:Math.max(1,(t.layers||[]).length),h=t.dummy?dumH(t)*PX:L*mouldH(inch,sk)*PX*hm,lh=h/L;   /* each layer is one mould high, drawn to scale with the width; a Dump cake is as high as set */
     const ry=kind==="cyl"?W*.075:0,dx=kind==="box"?W*.16:0,dy=kind==="box"?W*.09:0,x=-W/2-dx/2,top=y0-h;
     const st=t.dummy?`fill="${DUM}" stroke="${MUT}" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"`:`fill="${BODY}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`;
@@ -2947,8 +2966,8 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
     else{s+=`<rect ${st} x="${x}" y="${top}" width="${W}" height="${h}" rx="10"/>`;for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-k*lh;s+=`<path ${ln} d="M${x},${yb} H${x+W}"/>`}}
     const labels=t.dummy?["Dummy cake"]:(t.layers||[]).map(k=>flvName(k).replace(/ Cake$/,"")||"?");
     /* one "Dump cake" label across the middle of a dummy tier; a real tier labels each layer */
-    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(k+.5)*lh)+(kind==="cyl"?ry*.8:0)+FS*.35,txt=`${szShort(t.size)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
-      s+=`<text x="${x+W/2}" y="${yc}" text-anchor="middle" font-size="${FS}" font-family="Noto Sans Myanmar, sans-serif" fill="${t.dummy?MUT:INK}"${fit}><tspan font-weight="700" fill="${ACC}">${esc(szShort(t.size))}</tspan> ${esc(lb)}</text>`});
+    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(k+.5)*lh)+(kind==="cyl"?ry*.8:0)+FS*.35,txt=`${tierSz(t)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
+      s+=`<text x="${x+W/2}" y="${yc}" text-anchor="middle" font-size="${FS}" font-family="Noto Sans Myanmar, sans-serif" fill="${t.dummy?MUT:INK}"${fit}><tspan font-weight="700" fill="${ACC}">${esc(tierSz(t))}</tspan> ${esc(lb)}</text>`});
     /* in the form, each layer band is a tap target that jumps to that tier's size and flavor on the left */
     if(pick)for(let k=0;k<L;k++)s+=`<rect class="tp-hit" data-ti="${t._i}" data-li="${t.dummy?-1:k}" x="${x}" y="${y0-(k+1)*lh}" width="${W+dx}" height="${lh}" fill="transparent"/>`;
     parts.push(s+"</g>");
@@ -2983,6 +3002,7 @@ function syncTierBox(){const on=hasTiers(tierKind());$("tierBox").hidden=!on;
   /* …except a Wedding Cake, whose price is typed for the whole cake */
   if(on&&tierKind()==="wedding"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Wedding Cake ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
   else if(on&&decoVal()==="mixed"){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Cream and fondant mixed ဈေးနှုန်း (တစ်ခုလုံး) ကို ရိုက်ထည့်ပါ။")}
+  else if(on&&tierManual()){$("priceWrap").hidden=false;$("priceHint").textContent=tr("Customized size ပါလို့ ကိတ်တစ်ခုလုံးရဲ့ ဈေးနှုန်းကို ရိုက်ထည့်ပါ။")}
   /* Mini cake and Cupcake are picked under Cake type now (they still travel as the Design value): the Design choice is only
      Cream / Fondant, and it is not asked for a Mini cake or Cupcake */
   document.querySelectorAll('#optDeco input[value="mini"],#optDeco input[value="cupcake"]').forEach(i=>i.closest("label").hidden=true);
@@ -3008,11 +3028,15 @@ $("optTiers").addEventListener("change",e=>{const r=e.target.closest('input[name
   if(small!==wasSmall)$("optDeco").dispatchEvent(new Event("change",{bubbles:true}));
   syncTierBox()});
 $("tierList").addEventListener("change",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const t=tierDraft[Number(c.dataset.ti)];if(!t)return;
-  if(e.target.matches(".tier-size")){t.size=e.target.value;renderTierList()}
+  if(e.target.matches(".tier-size")){t.size=e.target.value;renderTierList();syncTierBox();updateReceipt()}
+  else if(e.target.matches(".tier-shp")){t.shape=e.target.value;if(!t.shape)delete t.shape;renderTierList();updateReceipt()}
   else if(e.target.matches(".tier-flv")){t.layers[Number(e.target.closest("[data-li]").dataset.li)]=e.target.value;drawTiers()}
   else if(e.target.matches("[data-tkind]")){t.dummy=e.target.value==="dummy";t.layers=t.dummy?[]:t.layers.length?t.layers:[""];if(t.dummy)t.dh=dumH(t);renderTierList()}});
+/* typing a tier's Customized size / shape: kept as typed, the drawing follows (the list is not redrawn, so typing goes on) */
+$("tierList").addEventListener("input",e=>{if(!e.target.matches(".tier-csz,.tier-cshp"))return;const t=tierDraft[Number(e.target.closest("[data-ti]").dataset.ti)];if(!t)return;
+  if(e.target.matches(".tier-csz"))t.csz=e.target.value;else t.cshp=e.target.value;drawTiers();updateReceipt()});
 $("tierList").addEventListener("click",e=>{const c=e.target.closest("[data-ti]");if(!c)return;const i=Number(c.dataset.ti),t=tierDraft[i];if(!t)return;
-  if(e.target.closest("[data-trm]")){tierDraft.splice(i,1);renderTierList();updateReceipt();return}
+  if(e.target.closest("[data-trm]")){tierDraft.splice(i,1);renderTierList();syncTierBox();updateReceipt();return}
   const dh=e.target.closest("[data-dh]");if(dh){t.dh=Math.min(12,Math.max(1,dumH(t)+Number(dh.dataset.dh)));delete t.dl;renderTierList();updateReceipt();return}   /* Dummy cake: 1"–12" high, ½" a tap */
   if(e.target.closest("[data-lrm]")){t.layers.splice(Number(e.target.closest("[data-li]").dataset.li),1);renderTierList();updateReceipt();return}
   if(e.target.closest("[data-ladd]")){t.layers.push(t.layers[t.layers.length-1]||"");renderTierList();updateReceipt()}});
@@ -3599,7 +3623,7 @@ function fillForm(o){
   $("fTiers").value=ctOf(o);$("fCustom").value=o.custom||"";
   {const sm=SMALL[o.decoType]?o.decoType:"";document.querySelectorAll('input[name="fTiersR"]').forEach(i=>i.checked=i.value===(sm||$("fTiers").value))}
   $("fMiniDeco").value=o.miniDeco==="fondant"?"fondant":"cream";
-  tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{})}));renderTierList();
+  tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{}),...tierXtra(t)}));renderTierList();
   setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||"";$("fDiscount").value=o.discount||"";
   $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";$("fDesignNew").checked=!!o.designNew;
   /* older orders kept cream colour and one general note — fold them into the design note */
@@ -3763,8 +3787,10 @@ function formMissing(f){
     need(ts.length<1,"အဆင့် (အနည်းဆုံး ၁ ဆင့်)","tierList");
     need(ts.some(t=>!t.dummy&&t.layers.some(k=>!k)),"အလွှာတိုင်းရဲ့ ကိတ်သား","tierList");
     need(f.decoType==="fondant"&&ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!fondantOk(k))),"Fondant design ရနိုင်သော ကိတ်သား","tierList");
-    need(ts.some(t=>!t.dummy&&t.layers.some(k=>k&&!layerPrice(k,t.size))),"ဒီ Size မှာ ရနိုင်သော ကိတ်သား","tierList");
-    need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice");need(f.cakeType!=="wedding"&&f.decoType==="mixed"&&!f.basePrice,"ကိတ်ဈေးနှုန်း","fPrice")}
+    need(ts.some(t=>t.size==="custom"&&!t.csz),"အဆင့်ရဲ့ Customized size","tierList");
+    need(ts.some(t=>t.shape==="custom"&&!t.cshp),"အဆင့်ရဲ့ Customized shape","tierList");
+    need(ts.some(t=>!t.dummy&&t.size!=="custom"&&t.layers.some(k=>k&&!layerPrice(k,t.size))),"ဒီ Size မှာ ရနိုင်သော ကိတ်သား","tierList");
+    need(f.cakeType==="wedding"&&!f.basePrice,"Wedding Cake ဈေးနှုန်း","fPrice");need(f.cakeType!=="wedding"&&(f.decoType==="mixed"||ts.some(t=>t.size==="custom"))&&!f.basePrice,"ကိတ်ဈေးနှုန်း","fPrice")}
   need(f.shape==="custom"&&!f.shapeCustom,"Customized ပုံသဏ္ဌာန်","fShapeCustom");
   need(f.flavor==="other"&&!f.flavorName,"ကိတ်သားအမည်","fOtherName");
   need(f.decoType==="fondant"&&!!f.flavor&&!fondantOk(f.flavor),"Fondant design ရနိုင်သော ကိတ်သား","optFlavor");
