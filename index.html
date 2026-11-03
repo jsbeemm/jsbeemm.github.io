@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793696239"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793696712"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1242,6 +1242,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pd-fphoto{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 .dc-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 16px}.dc-row .dc-new{margin:0 0 10px}
 .cup-qrow{display:grid;grid-template-columns:repeat(2,minmax(0,160px));gap:10px}.cup-qrow label.f{margin:0}
+.cup-qrow[hidden],#cupNew[hidden]{display:none}
+.cup-lines{display:grid;gap:8px}
+.cup-line{display:grid;grid-template-columns:minmax(0,1fr) 72px 40px;gap:8px;align-items:stretch}
+.cup-line select,.cup-line input{box-sizing:border-box;margin:0}.cup-line .cup-q{text-align:center;padding-inline:4px}
+.cup-line .rm{width:40px;height:auto;min-height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--muted);font-size:18px;cursor:pointer;padding:0}
+.cup-line .rm:hover{color:var(--accent);border-color:var(--accent)}
 .pd-addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.pd-addrow select{width:auto;max-width:100%;flex:1 1 220px}
 .pd-tierck span{display:flex;align-items:center;gap:6px;min-height:38px;font-size:13px;white-space:nowrap}
 .pd-shp>small{display:block;margin-bottom:4px}.pd-shps{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
@@ -1495,7 +1501,10 @@ span.star-ic{cursor:default}
           <div class="opts" id="optSize"></div>
           <!-- cupcakes: how many in Cream design and how many in Fondant design (either can be 0) -->
           <div id="qtyWrap" class="cup-qty" style="margin-top:8px" hidden><p class="grp" style="margin:0 0 4px">Cupcake အရေအတွက် <b style="color:var(--accent);font-weight:500">*</b></p>
-            <div class="cup-qrow"><label class="f"><span>Cream design</span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+            <!-- picked from the Bakery Products cupcakes: one row each (cupcake + quantity), priced from the list -->
+            <div id="cupNew"><div class="cup-lines" id="cupLines"></div><button type="button" class="add-charge" id="cupAdd">+ Cupcake ထပ်ထည့်ရန်</button></div>
+            <!-- older orders (and when no cupcake is in Bakery Products): pieces in Cream / Fondant design, price typed -->
+            <div class="cup-qrow" id="cupOld"><label class="f"><span>Cream design</span><input id="fQty" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
             <label class="f"><span>Fondant design</span><input id="fQtyF" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label></div></div>
           <label class="f" id="sizeWrap" style="margin-top:8px" hidden><span>Customized အရွယ်အစား <b>*</b></span><input id="fSizeCustom" placeholder="ဥပမာ – 18&quot; / 20 x 30 cm"></label>
           <div id="optFlavor">
@@ -2836,10 +2845,32 @@ function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,n
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
 const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
+/* ---------- cupcakes picked from Bakery Products (any product whose name or category says Cupcake, with a retail price) ---------- */
+const cupProds=()=>(typeof pds!=="undefined"&&pds||[]).filter(p=>/cup\s*-?\s*cake/i.test(`${p.name||""} ${p.cat||""}`)&&p.retail!=null&&p.retail!=="")
+  .sort((a,b)=>String(a.name||"").localeCompare(String(b.name||"")));
+var cupLegacy=false;   /* an older cupcake order (Cream / Fondant pieces, typed price) keeps its old fields */
+const cupOn=()=>!cupLegacy&&(cupProds().length>0||!!document.querySelector("#cupLines .cup-p option[data-keep]"));
+const cupText=o=>(o.cupItems||[]).map(l=>`${l.name} × ${l.qty}`).join("၊ ");
+function cupRow(l={}){const ps=cupProds(),keep=l.pid&&!ps.some(p=>p.id===l.pid);
+  const r=document.createElement("div");r.className="cup-line";
+  r.innerHTML=`<select class="cup-p" aria-label="Cupcake"><option value="">Cupcake ရွေးပါ</option>${keep?`<option value="${esc(l.pid)}" data-keep data-name="${esc(l.name||"")}" data-code="${esc(l.code||"")}" data-price="${Number(l.price)||0}">${esc(l.name||"")} · ${(Number(l.price)||0).toLocaleString("en-US")}</option>`:""}${ps.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} · ${Number(p.retail).toLocaleString("en-US")}</option>`).join("")}</select><input class="cup-q" type="text" inputmode="numeric" autocomplete="off" placeholder="Qty" aria-label="Quantity"><button type="button" class="rm" aria-label="ဖယ်ရှားရန်">×</button>`;
+  r.querySelector(".cup-p").value=l.pid||"";r.querySelector(".cup-q").value=l.qty||"";$("cupLines").append(r);return r}
+function readCups(raw){return[...document.querySelectorAll("#cupLines .cup-line")].map(r=>{const s=r.querySelector(".cup-p"),o=s.selectedOptions[0],qty=Math.max(0,parseInt(String(r.querySelector(".cup-q").value).replace(/\D/g,""))||0);
+    if(!s.value)return raw?{pid:"",qty}:null;const p=(typeof pds!=="undefined"&&pds||[]).find(x=>x.id===s.value);
+    return p?{pid:p.id,code:p.code||"",name:p.name||"",price:Number(p.retail)||0,qty}:{pid:s.value,code:o?.dataset.code||"",name:o?.dataset.name||"",price:Number(o?.dataset.price)||0,qty}})
+  .filter(l=>l&&(raw||l.qty))}
+function setCups(items,legacy){cupLegacy=!!legacy;$("cupLines").innerHTML="";(items?.length?items:[{}]).forEach(cupRow);syncCupUi()}
+function syncCupUi(){const on=cupOn();$("cupNew").hidden=!on;$("cupOld").hidden=on}
+/* Bakery Products may load after the form was drawn: rebuild the rows (keeping what was picked) when cupcakes are shown */
+function cupFresh(){if(cupLegacy)return;const keep=readCups(true);$("cupLines").innerHTML="";(keep.length?keep:[{}]).forEach(cupRow);syncCupUi()}
+$("cupAdd").addEventListener("click",()=>{cupRow().querySelector(".cup-p").focus();updateReceipt()});
+$("cupLines").addEventListener("click",e=>{const b=e.target.closest(".rm");if(!b)return;const r=b.closest(".cup-line");
+  if($("cupLines").children.length>1)r.remove();else{r.querySelector(".cup-p").value="";r.querySelector(".cup-q").value=""}updateReceipt()});
 function readForm(){
   /* flavor and size start unpicked on a new order ("") and must be chosen before saving */
   const tk=hasTiers($("fTiers").value),sk=tk?"":smallKind(),qn=id=>Math.max(0,parseInt(String($(id).value).replace(/\D/g,""))||0),
-    qC=sk==="cupcake"?qn("fQty"):0,qF=sk==="cupcake"?qn("fQtyF"):0,qty=qC+qF;
+    cupL=sk==="cupcake"&&cupOn(),cups=cupL?readCups():[],
+    qC=sk==="cupcake"&&!cupL?qn("fQty"):0,qF=sk==="cupcake"&&!cupL?qn("fQtyF"):0,qty=cupL?cups.reduce((a,l)=>a+l.qty,0):qC+qF;
   const flavor=sk||tk?"":document.querySelector('input[name="fFlavor"]:checked')?.value||"";
   const size=tk?"":sk==="cupcake"?"cup":document.querySelector('input[name="fSize"]:checked')?.value||"";
   const fl=FLAVORS.find(x=>x.k===flavor),isOther=flavor==="other";
@@ -2848,7 +2879,7 @@ function readForm(){
   /* how many of this same cake (cupcakes keep their own piece count): the cake price below is for one, times this */
   const count=sk==="cupcake"?1:Math.max(1,parseInt(String($("fCount").value).replace(/\D/g,""))||1);
   /* a Wedding Cake takes a typed price (for the whole cake); a tiered cake adds up its layers */
-  const basePrice=count*(tk?(tierManual()?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value!=="cream"?num("fPrice"):miniPrice(size)):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
+  const basePrice=count*(tk?(tierManual()?num("fPrice"):tierDraft.reduce((a,t)=>a+tierPrice(t,fondantOn()?2:1),0)):sk==="mini"?($("fMiniDeco").value!=="cream"?num("fPrice"):miniPrice(size)):cupL?cups.reduce((a,l)=>a+l.price*l.qty,0):sk?(size?num("fPrice"):0):!flavor||!size?0:manualPrice(flavor,size)?num("fPrice"):priceAt(fl,sizeIdx(size),document.querySelector('input[name="fShape"]:checked')?.value||"")*(fondantOn()?2:1));
   const sizeName=tk?(LANG==="en"?`${tierDraft.length} tiers`:`${tierDraft.length} ဆင့်`):sk==="cupcake"?(qty?(qF?[qC&&`${qC} Cream`,`${qF} Fondant`].filter(Boolean).join(" + ")+" pcs":`${qty} pcs`):""):size==="custom"?$("fSizeCustom").value.trim():((SIZES.find(s=>s.k===size)||SMALL.mini.sizes.find(s=>s.k===size))?.n||"");
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
@@ -2860,7 +2891,7 @@ function readForm(){
     channel:$("fChannel").value,
     chOther:$("fChannel").value==="Others"?$("fChOther").value.trim():"",flavor,flavorName,size,sizeName,basePrice,
     /* the Bakery Products short code of this flavor × size (used for costing); a wedding cake takes the "Wedding Cake" product's code */
-    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty,...(qF?{cupCream:qC,cupFondant:qF}:{})}:{}),...(count>1?{count}:{}),
+    cakeCode:$("fTiers").value==="wedding"?weddingCode():flavor&&size?(cakeProd(flavor,size,document.querySelector('input[name="fShape"]:checked')?.value||"")?.code||""):"",decoType:DECO_N[decoVal()]?decoVal():"cream",...(decoVal()==="mini"?{miniDeco:$("fMiniDeco").value||"cream"}:{}),...(sk==="cupcake"?{qty,...(qF?{cupCream:qC,cupFondant:qF}:{}),...(cupL?{cupItems:cups}:{})}:{}),...(count>1?{count}:{}),
     shape:sk==="cupcake"?"":document.querySelector('input[name="fShape"]:checked')?.value||"",
     shapeCustom:sk!=="cupcake"&&document.querySelector('input[name="fShape"]:checked')?.value==="custom"?$("fShapeCustom").value.trim():"",cakeType:$("fTiers").value,custom:$("fTiers").value!=="std"?$("fCustom").value.trim():"",...readTiers(),
     msg:$("fMsg").value.trim(),design:$("fDesign").value.trim().toUpperCase(),...($("fDesignNew").checked?{designNew:true}:{}),...($("fDesignGiven").checked?{designGiven:true}:{}),photos:formPhotos.filter(p=>p.id).map(p=>p.id),
@@ -3188,7 +3219,7 @@ function renderSizes(want){
   /* Mini cake: 4" / 5" only; Cupcake: a number of pieces instead of a size; neither picks a flavor or (cupcake) a shape */
   const sk=smallKind();
   $("optFlavor").hidden=!!sk;$("optSize").hidden=$("sizeGrp").hidden=sk==="cupcake";$("qtyWrap").hidden=sk!=="cupcake";$("cntWrap").hidden=sk==="cupcake";
-  $("shapeGrp").hidden=$("optShape").hidden=sk==="cupcake";if(sk==="cupcake")$("shapeWrap").hidden=true;
+  $("shapeGrp").hidden=$("optShape").hidden=sk==="cupcake";if(sk==="cupcake"){$("shapeWrap").hidden=true;cupFresh()}
   if(sk){$("otherWrap").hidden=true;
     $("optSize").innerHTML=sk==="mini"?SMALL.mini.sizes.map(s=>`<label class="opt sku sz"><input type="radio" name="fSize" value="${s.k}" ${s.k===want?"checked":""}><span><span class="sku-t">${s.n}</span><small class="sku-p">${miniPrice(s.k).toLocaleString("en-US")} Ks</small></span></label>`).join(""):"";return}
   const szBtn=(s,i)=>{const p=fl?priceAt(fl,i):1,off=!other&&!p;
@@ -3207,7 +3238,7 @@ function syncPrice(prefill){
   const k=document.querySelector('input[name="fFlavor"]:checked')?.value||"";
   const s=document.querySelector('input[name="fSize"]:checked')?.value||"";
   /* Mini cake is priced from the list (a Fondant Mini cake is typed for now); Cupcake is typed */
-  const sk=smallKind(),miniF=sk==="mini"&&$("fMiniDeco").value!=="cream",on=sk?sk==="cupcake"||miniF:manualPrice(k,s);
+  const sk=smallKind(),miniF=sk==="mini"&&$("fMiniDeco").value!=="cream",on=sk?(sk==="cupcake"&&!cupOn())||miniF:manualPrice(k,s);
   $("priceWrap").hidden=!on;$("sizeWrap").hidden=!!sk||s!=="custom";
   const fl=FLAVORS.find(x=>x.k===k);
   if(prefill)$("fPrice").value="";
@@ -3653,7 +3684,7 @@ function resetForm(keepFresh){
   $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value=nextNo();$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
-  setKind("cake");
+  setKind("cake");setCups([]);
 }
 function fillForm(o){
   discardFreshPhotos();editingId=o.id;
@@ -3680,6 +3711,7 @@ function fillForm(o){
   document.querySelectorAll('input[name="fFlavor"]').forEach(i=>i.checked=i.value===fk);
   $("fOtherName").value=fk==="other"?(o.flavorName||""):"";
   document.querySelector(`input[name="fDeco"][value="${DECO_N[o.decoType]?o.decoType:"cream"}"]`).checked=true;
+  setCups(o.cupItems||[],o.decoType==="cupcake"&&!o.cupItems?.length&&!!o.qty);
   $("fQty").value=o.decoType==="cupcake"?(o.cupFondant?(o.cupCream||""):(o.qty||"")):"";$("fQtyF").value=o.decoType==="cupcake"?(o.cupFondant||""):"";$("fCount").value=o.count>1?o.count:1;
   const sz=small?(o.size||""):SIZES.some(s=>s.k===o.size)||o.size==="custom"?o.size:"1";
   renderSizes(sz);syncPrice(false);
@@ -3825,7 +3857,8 @@ function formMissing(f){
   if(isBak(f)){need(!bakItemsOf(f).length,"Bakery products","bakSet");need(!!f.date&&f.date<minDate,"ယနေ့ သို့မဟုတ် နောက်ရက် နေ့စွဲ","fDatePick");return{miss,at}}
   const sk=SMALL[f.decoType]?f.decoType:"";
   /* cupcakes: at least 6 pieces, more is fine */
-  if(sk==="cupcake")need(f.qty<1,"Cupcake အရေအတွက်","fQty");   /* no minimum: any number from 1 */else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
+  if(sk==="cupcake"&&cupOn()){const raw=readCups(true);need(raw.some(l=>l.qty&&!l.pid),"Cupcake ရွေးရန်","qtyWrap");need(f.qty<1,"Cupcake နှင့် အရေအတွက်","qtyWrap")}
+  else if(sk==="cupcake")need(f.qty<1,"Cupcake အရေအတွက်","fQty");   /* no minimum: any number from 1 */else if(!hasTiers(f.cakeType))need(!f.size,"Cake size","optSize");
   if(!sk&&!hasTiers(f.cakeType))need(!f.flavor,"ကိတ်သား","optFlavor");if(sk!=="cupcake")need(!f.shape,"ပုံသဏ္ဌာန်","optShape");
   /* every cake carries a message (cupcakes and Wedding Cakes excepted); write "-" when the customer wants none */
   if(msgNeeded(f))need(!String(f.msg||"").trim(),"ကိတ်ပေါ်ရေးမည့်စာ","fMsg");
@@ -4403,6 +4436,7 @@ function slipHTML(o,live=false){
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
     ${dcLabel(o)||sub?`<div>${dcLabel(o)?`<span class="pr-dc">${esc(dcLabel(o))}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
+    ${(o.cupItems||[]).map(l=>`<div class="pl">${esc(l.name)} × ${l.qty}</div>`).join("")}
     ${o.custom?`<div class="pl">${esc(o.custom)}</div>`:""}
     ${dn?`<div class="pl">${esc(tr("Design မှတ်ချက် –"))} ${esc(dn)}</div>`:""}
     ${o.msg?`<div class="pr-msg">${esc(o.msg)}</div>`:""}</div>
@@ -4629,7 +4663,7 @@ function render(){
         ${(()=>{/* everything about the cake's design sits right under the design code */
           const dn=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("၊ ");
           const adds=[...orderCharges(o).map(c=>`${esc(c.note||"Additional")} ${fmt(c.amt)}`),...ex.map(esc)];
-          return o.custom||dn||adds.length||tierText(o)?`<div class="o-notes o-design">${tierText(o)?`<span><b>အဆင့်ကိတ် –</b> ${esc(tierText(o))}</span>`:""}${o.custom?`<span><b>Customized –</b> ${esc(o.custom)}</span>`:""}${dn?`<span><b>Design မှတ်ချက် –</b> ${esc(dn)}</span>`:""}${adds.length?`<span class="o-addrow"><b>Additional –</b><span class="o-adds">${adds.join("\n")}</span></span>`:""}</div>`:""})()}
+          return o.custom||dn||adds.length||tierText(o)||cupText(o)?`<div class="o-notes o-design">${cupText(o)?`<span><b>Cupcake –</b> ${esc(cupText(o))}</span>`:""}${tierText(o)?`<span><b>အဆင့်ကိတ် –</b> ${esc(tierText(o))}</span>`:""}${o.custom?`<span><b>Customized –</b> ${esc(o.custom)}</span>`:""}${dn?`<span><b>Design မှတ်ချက် –</b> ${esc(dn)}</span>`:""}${adds.length?`<span class="o-addrow"><b>Additional –</b><span class="o-adds">${adds.join("\n")}</span></span>`:""}</div>`:""})()}
         ${o.msg?`<p class="o-msg">${esc(o.msg)}</p>`:""}
         ${(o.photos||[]).length||orderCharges(o).some(c=>c.photo)?`<div class="o-thumbs">${[...(o.photos||[]),...orderCharges(o).map(c=>c.photo).filter(Boolean)].map(id=>`<button type="button" data-zoom="${esc(photoUrl(id))}" aria-label="ပုံကြီးကြည့်ရန်"><img src="${esc(photoUrl(id))}" alt="" loading="lazy"></button>`).join("")}</div>`:""}
         <p class="o-meta">${o.delivery==="delivery"?"<span>ပို့ရန် – "+(o.recvName&&!o.recvSame?`${esc(o.recvName)} (${esc(o.recvPhone)})၊ `:"")+esc(o.addr)+"</span>":""}${o.delivAmt?`<span>Delivery ${fmt(o.delivAmt)}</span>`:""}</p>
@@ -5270,7 +5304,7 @@ const stamp=()=>({at:new Date().toISOString(),by:me.id||null});
 /* what an edit changed, field by field, in words the shop uses */
 const HIST_FIELDS=[["Order no",o=>o.no],["အမည်",o=>o.name],["ဖုန်း",o=>o.phone],["Channel",o=>chLabel(o)],["ယူမည့်နေ့",o=>o.date?fmtDate(o.date):""],["အချိန်",o=>o.time?fmtTime(o.time):""],
   ["Pickup/Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup"],["စောရလျှင် ဖုန်းဆက်",o=>o.delivery!=="delivery"&&o.callEarly?"✓":""],["ဓာတ်ပုံပို့ပေးရန်",o=>o.sendPhoto?"✓":""],["Size",o=>o.sizeName],["ကိတ်သား",o=>o.flavorName],["Design",o=>DECO_N[o.decoType]||"Cream design"],["ပုံသဏ္ဌာန်",o=>shapeName(o)],["ကိတ်အမျိုးအစား",o=>ctLbl(o)||"ပုံမှန်"],
-  ["Design Code",o=>o.design],["ကိတ်ပေါ်ရေးမည့်စာ",o=>o.msg],["Design မှတ်ချက်",o=>o.designNote],["Customized",o=>o.custom],["အဆင့်ကိတ်",o=>tierText(o)],["ဓာတ်ပုံ",o=>(o.photos||[]).length+" ပုံ"],
+  ["Design Code",o=>o.design],["ကိတ်ပေါ်ရေးမည့်စာ",o=>o.msg],["Design မှတ်ချက်",o=>o.designNote],["Customized",o=>o.custom],["အဆင့်ကိတ်",o=>tierText(o)],["Cupcake",o=>cupText(o)],["ဓာတ်ပုံ",o=>(o.photos||[]).length+" ပုံ"],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join(", ")],
   ["လက်ခံမည့်သူ",o=>o.delivery==="delivery"?[o.recvName,o.recvPhone].filter(Boolean).join(" "):""],["လိပ်စာ",o=>o.delivery==="delivery"?o.addr:""],["Delivery charge",o=>o.delivery==="delivery"&&o.delivAmt?fmt(o.delivAmt):""],["Delivery မှတ်ချက်",o=>o.delivNote],["Order မှတ်ချက်",o=>o.orderNote],
   ["Payment",o=>orderPayments(o).map(p=>`${p.method} ${Number(p.amt||0).toLocaleString("en-US")}`).join(", ")],["Total",o=>fmt(o.total)]];
@@ -5307,7 +5341,7 @@ const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>l.name||"").join("\n"):"",26],   /* names only; quantities and prices are in their own columns */
   /* cake-only details stay blank on a Bakery products order */
   ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design","")+(o.decoType==="mini"&&o.miniDeco==="fondant"?" · Fondant":o.decoType==="mini"&&o.miniDeco==="mixed"?" · Cream and fondant mixed":""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],["Product name",o=>isBak(o)?bakItemsOf(o).map(l=>(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.name:"")||l.name||"").join("\n"):((typeof pds!=="undefined"&&o.cakeCode?pds.find(p=>p.code===o.cakeCode)?.name:"")||[o.flavorName,o.sizeName].filter(Boolean).join(" ")),22],   /* next to Product code, one name per code */   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
-  ["Design code",o=>o.design,10],["New design",o=>o.designNew?"Yes":"",8],["Design given",o=>o.designGiven?"Yes":"",8],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],
+  ["Design code",o=>o.design,10],["New design",o=>o.designNew?"Yes":"",8],["Design given",o=>o.designGiven?"Yes":"",8],["Message on cake",o=>o.msg,22],["Design note",o=>o.designNote,24],["Customized",o=>o.custom,20],["Tiers",o=>tierText(o),26],["Cupcakes",o=>cupText(o),26],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join("\n"),28],
   /* Quantity × Price = Amount (e.g. Tiramisu 10 × 5,000 = 50,000); a bakery order of several different items has no single price, so its
    Price stays blank (the Items column lists each one) and Quantity is the number of pieces */
