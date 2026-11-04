@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793775818"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793776266"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1303,6 +1303,8 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .cfm-box h3{margin:0;font-size:18px}.cfm-box p{margin:0;color:var(--muted);font-size:14.5px;white-space:pre-line}
 .ov-box{width:min(100%,420px)}.ov-list{display:grid;gap:6px;max-height:50vh;overflow:auto}.ov-row{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}.ov-row input{margin:3px 0 0;width:auto;flex:none}.ov-row small{display:block;color:var(--muted);font-size:12.5px}
 #resetBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px}#resetBtn .rs-ic{width:18px;height:18px}
+#slipNoBtn{display:inline-flex;align-items:center;gap:6px}#slipNoBtn[hidden],.slip-no[hidden]{display:none}
+.slip-no{display:inline-flex;align-items:center;gap:6px}.slip-no input{width:86px;height:48px;box-sizing:border-box;padding-block:0;text-align:center;font-family:var(--mono);font-size:18px;text-transform:uppercase;margin:0}.slip-no .btn{width:auto;margin:0;min-width:0;padding-inline:14px}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .prq-assign{font-size:12.5px;font-weight:600;color:var(--sky);background:var(--sky-soft);border-radius:999px;padding:1px 10px;display:inline-block}
@@ -1912,6 +1914,9 @@ span.star-ic{cursor:default}
     <div class="ed-sub slip-bar" id="slipOpBar"><span class="slip-which" id="slipWhich"></span><label>ပုံ အကြည်/အဖျော့ <input type="range" id="slipOp" min="5" max="100" step="5" value="35" aria-label="ပုံ အကြည်/အဖျော့"><output id="slipOpVal">35%</output></label></div>
     <div class="ed-stage slip-stage"><div class="slip-paper" id="slipPaper"></div></div>
     <div class="ed-foot">
+      <!-- change the order number given at print: a small field opens in its place -->
+      <button type="button" class="btn ghost" id="slipNoBtn" hidden><svg class="pen-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg><span>Change order no.</span></button>
+      <span class="slip-no" id="slipNoBox" hidden><input id="slipNoIn" maxlength="4" autocapitalize="characters" spellcheck="false" aria-label="Order number" placeholder="A000"><button type="button" class="btn" id="slipNoOk">OK</button><button type="button" class="btn ghost" id="slipNoX" aria-label="Cancel">✕</button></span>
       <span class="ed-count" id="slipNote"></span>
 
       <button type="button" class="btn ghost" id="slipPrint"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg><span>Print</span></button>
@@ -4533,7 +4538,7 @@ async function printOrder(o){
   await layoutSlip(o);
   slipOrder=o;slipPick=-1;setSlipOp(slipOp);pickSlipPic(-1);
   $("slipOpBar").hidden=!$("printArea").querySelector(".pr-pic");
-  $("slipNote").textContent="";
+  $("slipNote").textContent="";$("slipNoBox").hidden=true;$("slipNoBtn").hidden=!(o.id&&o.no&&canEditOrder(orders.find(x=>x.id===o.id)||o));
   $("slipPaper").append($("printArea"));$("slipDlg").hidden=false;
   fitSlip();
 }
@@ -4545,6 +4550,24 @@ function closeSlip(){slipPics().forEach(p=>p.classList.remove("sel"));document.b
 $("slipOp").addEventListener("input",()=>setSlipOp(Number($("slipOp").value)));
 $("slipClose").addEventListener("click",closeSlip);   /* the ✕ on the Print setup title row closes it (no Cancel button) */
 $("slipGo").addEventListener("click",()=>{const o=slipOrder;closeSlip();exportSlip(o)});
+/* Change order no.: a number not used by another order; it is claimed (so no other phone takes it), the old one is freed,
+   the change goes into the order's history and the slip is redrawn with it */
+$("slipNoBtn").addEventListener("click",()=>{$("slipNoBtn").hidden=true;$("slipNoBox").hidden=false;$("slipNoIn").value=slipOrder?.no||"";$("slipNoIn").select();$("slipNoIn").focus()});
+$("slipNoX").addEventListener("click",()=>{$("slipNoBox").hidden=true;$("slipNoBtn").hidden=false});
+$("slipNoIn").addEventListener("input",()=>{const v=$("slipNoIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(v!==$("slipNoIn").value)$("slipNoIn").value=v});
+$("slipNoIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("slipNoOk").click()}});
+$("slipNoOk").addEventListener("click",async()=>{const o=slipOrder&&(orders.find(x=>x.id===slipOrder.id)||slipOrder);if(!o)return;
+  const n=$("slipNoIn").value.trim().toUpperCase();if(n===o.no){$("slipNoX").click();return}
+  if(!NO_RE.test(n)){toast("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။",4000);$("slipNoIn").focus();return}
+  if(orders.some(x=>x.no===n&&x.id!==o.id)){toast(`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`,4000);$("slipNoIn").focus();return}
+  const b=$("slipNoOk");b.disabled=true;
+  try{const c=await claimNo(n,o.id);
+    if(c==="taken"||c==="busy"){toast(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`,4000);return}
+    const p={no:n,...(c==="offline"?{noPending:true}:{noPending:false}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"edit",[`Order No ${o.no||"—"} → ${n}`])};
+    await patchOrder(o.id,p);if(o.no)releaseNo(o.no,o.id);await saveLastNo(n);
+    const nw={...o,...p};await layoutSlip(nw);slipOrder=nw;fitSlip();$("slipNoBox").hidden=true;$("slipNoBtn").hidden=false;toast(`Order နံပါတ် ${n}`,3000);
+    if(!$("preview").hidden&&pvOrder?.id===nw.id&&!pvFormMode)openPreview(nw)}
+  catch(x){toast("သိမ်းမရပါ")}finally{b.disabled=false}});
 /* Print: straight to the printer, with the slip as set here (photo transparency included). Some viewers (e.g. inside an
    app) do not let a page open the print dialog: if none opens, say so and point to Save JPEG */
 $("slipPrint").addEventListener("click",()=>{let opened=false;const mark=()=>{opened=true};addEventListener("beforeprint",mark,{once:true});
