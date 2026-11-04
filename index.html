@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793776266"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793776476"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1304,6 +1304,9 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .ov-box{width:min(100%,420px)}.ov-list{display:grid;gap:6px;max-height:50vh;overflow:auto}.ov-row{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px}.ov-row input{margin:3px 0 0;width:auto;flex:none}.ov-row small{display:block;color:var(--muted);font-size:12.5px}
 #resetBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px}#resetBtn .rs-ic{width:18px;height:18px}
 #slipNoBtn{display:inline-flex;align-items:center;gap:6px}#slipNoBtn[hidden],.slip-no[hidden]{display:none}
+.pv-noctl{margin-left:auto;margin-right:10px;display:inline-flex;align-items:center}.pv-head:has(.x-close.x-hid) .pv-noctl{margin-right:0}
+#pvNoBtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;font-size:13px;width:auto;margin:0}#pvNoBtn[hidden]{display:none}
+.pv-noctl .slip-no .btn{height:36px;padding-block:0;font-size:13px}.pv-noctl .slip-no input{height:36px;width:72px;font-size:16px}
 .slip-no{display:inline-flex;align-items:center;gap:6px}.slip-no input{width:86px;height:48px;box-sizing:border-box;padding-block:0;text-align:center;font-family:var(--mono);font-size:18px;text-transform:uppercase;margin:0}.slip-no .btn{width:auto;margin:0;min-width:0;padding-inline:14px}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
@@ -1872,7 +1875,11 @@ span.star-ic{cursor:default}
       </div>
 <div class="editor" id="preview" hidden role="dialog" aria-modal="true" aria-label="Order preview">
   <div class="ed-panel pv-panel">
-    <div class="ed-tools pv-head"><b>Order preview</b><button type="button" class="x-close" id="pvClose" aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="ed-tools pv-head"><b>Order preview</b>
+      <!-- change (or set) the order number; a small field opens in its place -->
+      <span class="pv-noctl"><button type="button" class="btn ghost" id="pvNoBtn" hidden><svg class="pen-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg><span id="pvNoT">Change order no.</span></button>
+        <span class="slip-no" id="pvNoBox" hidden><input id="pvNoIn" maxlength="4" autocapitalize="characters" spellcheck="false" aria-label="Order number" placeholder="A000"><button type="button" class="btn" id="pvNoOk">OK</button><button type="button" class="btn ghost" id="pvNoX" aria-label="Cancel">✕</button></span></span>
+      <button type="button" class="x-close" id="pvClose" aria-label="ပိတ်ရန်">✕</button></div>
     <div class="ed-stage pv-stage"><img id="pvImg" alt="Order preview"></div>
     <div class="ed-foot">
       <!-- the order's change history, at the left of the preview's footer -->
@@ -4333,7 +4340,7 @@ async function openPreview(o,fromForm=false){
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
   /* offline: the number on this picture may still change once the phone is back online */
   if(db&&typeof db.runTransaction==="function"&&((fromForm&&navigator.onLine===false)||o.noPending))$("pvNote").textContent="📴 Offline — Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်";
-  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();syncPvPrinted();
+  syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();syncPvPrinted();syncPvNo();
   $("pvVoucher").hidden=fromForm||isDecorator()||!orders.some(x=>x.id===o.id);
   {const live=orders.find(x=>x.id===o.id),n=live?.history?.length||0;$("pvHist").hidden=fromForm||!n;$("pvHist").textContent=`🕘 History (${n})`}
 }
@@ -4556,18 +4563,35 @@ $("slipNoBtn").addEventListener("click",()=>{$("slipNoBtn").hidden=true;$("slipN
 $("slipNoX").addEventListener("click",()=>{$("slipNoBox").hidden=true;$("slipNoBtn").hidden=false});
 $("slipNoIn").addEventListener("input",()=>{const v=$("slipNoIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(v!==$("slipNoIn").value)$("slipNoIn").value=v});
 $("slipNoIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("slipNoOk").click()}});
-$("slipNoOk").addEventListener("click",async()=>{const o=slipOrder&&(orders.find(x=>x.id===slipOrder.id)||slipOrder);if(!o)return;
-  const n=$("slipNoIn").value.trim().toUpperCase();if(n===o.no){$("slipNoX").click();return}
-  if(!NO_RE.test(n)){toast("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။",4000);$("slipNoIn").focus();return}
-  if(orders.some(x=>x.no===n&&x.id!==o.id)){toast(`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`,4000);$("slipNoIn").focus();return}
-  const b=$("slipNoOk");b.disabled=true;
+/* give an order a new number (from Print setup or the order preview): not used by another order, claimed so no other phone
+   takes it, the old one freed, the change written into the order's history. Returns the updated order, or null. */
+async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o.no)return o;
+  const bad=m=>{toast(m,4000);inp?.focus();return null};
+  if(!NO_RE.test(n))return bad("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။");
+  if(orders.some(x=>x.no===n&&x.id!==o.id))return bad(`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
   try{const c=await claimNo(n,o.id);
-    if(c==="taken"||c==="busy"){toast(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`,4000);return}
+    if(c==="taken"||c==="busy")return bad(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
     const p={no:n,...(c==="offline"?{noPending:true}:{noPending:false}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"edit",[`Order No ${o.no||"—"} → ${n}`])};
-    await patchOrder(o.id,p);if(o.no)releaseNo(o.no,o.id);await saveLastNo(n);
-    const nw={...o,...p};await layoutSlip(nw);slipOrder=nw;fitSlip();$("slipNoBox").hidden=true;$("slipNoBtn").hidden=false;toast(`Order နံပါတ် ${n}`,3000);
+    await patchOrder(o.id,p);if(o.no)releaseNo(o.no,o.id);await saveLastNo(n);toast(`Order နံပါတ် ${n}`,3000);return{...o,...p}}
+  catch(x){toast("သိမ်းမရပါ");return null}}
+$("slipNoOk").addEventListener("click",async()=>{const o=slipOrder&&(orders.find(x=>x.id===slipOrder.id)||slipOrder);if(!o)return;
+  const b=$("slipNoOk");b.disabled=true;
+  try{const nw=await setOrderNo(o,$("slipNoIn").value,$("slipNoIn"));if(!nw)return;
+    await layoutSlip(nw);slipOrder=nw;fitSlip();$("slipNoBox").hidden=true;$("slipNoBtn").hidden=false;
     if(!$("preview").hidden&&pvOrder?.id===nw.id&&!pvFormMode)openPreview(nw)}
-  catch(x){toast("သိမ်းမရပါ")}finally{b.disabled=false}});
+  finally{b.disabled=false}});
+/* the same in the order preview's title row */
+/* while the number is being typed, the title row's own ✕ steps aside (only the field's ✕ shows) */
+function pvNoOpen(on){$("pvNoBox").hidden=!on;$("pvNoBtn").hidden=on;$("pvClose").classList.toggle("x-hid",on)}
+function syncPvNo(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrder.id);pvNoOpen(false);
+  $("pvNoBtn").hidden=!(o&&canEditOrder(o)&&o.status!=="cancel");$("pvNoT").textContent=o?.no?"Change order no.":"Set order no."}
+$("pvNoBtn").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);pvNoOpen(true);$("pvNoIn").value=o?.no||"";$("pvNoIn").select();$("pvNoIn").focus()});
+$("pvNoX").addEventListener("click",()=>pvNoOpen(false));
+$("pvNoIn").addEventListener("input",()=>{const v=$("pvNoIn").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(v!==$("pvNoIn").value)$("pvNoIn").value=v});
+$("pvNoIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("pvNoOk").click()}});
+$("pvNoOk").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;
+  const b=$("pvNoOk");b.disabled=true;
+  try{const nw=await setOrderNo(o,$("pvNoIn").value,$("pvNoIn"));if(nw)openPreview(nw)}finally{b.disabled=false}});
 /* Print: straight to the printer, with the slip as set here (photo transparency included). Some viewers (e.g. inside an
    app) do not let a page open the print dialog: if none opens, say so and point to Save JPEG */
 $("slipPrint").addEventListener("click",()=>{let opened=false;const mark=()=>{opened=true};addEventListener("beforeprint",mark,{once:true});
