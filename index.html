@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793775641"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793775818"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,6 +197,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* order number (large, boxed) first, customer info beside it, both top-aligned */
 .o-head{display:flex;align-items:flex-start;gap:12px}
 .o-head .o-no{flex:none;min-width:4.4em;text-align:center;box-sizing:border-box}   /* same width for short and long numbers */
+.o-no.o-nono{color:var(--muted);border-color:var(--line);border-style:dashed}   /* no number yet: it comes with the first print */
 .o-head .o-who{flex:1 1 auto}
 .o-head .o-name{font-size:16px;font-weight:700;color:var(--ink)}
 .o-head .o-when{flex:none;width:84px}
@@ -1616,7 +1617,8 @@ span.star-ic{cursor:default}
 
         <!-- the order number comes last, under Payment -->
         <fieldset>
-          <label class="f no-field no-low"><span>Order နံပါတ်</span>
+          <!-- a new order takes its number only when it is printed; an order that already has one can still change it here -->
+          <label class="f no-field no-low" id="noField" hidden><span>Order နံပါတ်</span>
             <input id="fNo" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="A000"></label>
           <!-- a general note about the order (not the design, not the delivery) -->
           <label class="f" style="margin-top:12px"><span>Order မှတ်ချက်</span><textarea id="fOrderNote" rows="2" placeholder="ဥပမာ – ဝယ်သူ ကိုယ်တိုင် ထပ်ဆက်သွယ်မည်၊ လက်ဆောင်ထုပ်ပေးရန်…"></textarea></label>
@@ -3423,9 +3425,9 @@ const addrKey=s=>String(s||"").toLowerCase().replace(/[\s,.၊။\-]+/g,"");
 const balOf=o=>Math.max(0,(o.total||0)-(o.deposit||0));
 function custGrp(o){if(!o?.date||!o.time||o.time==="tbc"||!custPh(o.phone)||o.status==="cancel")return[];
   const dv=o.delivery||"pickup",same=x=>x.status!=="cancel"&&x.date===o.date&&x.time===o.time&&custPh(x.phone)===custPh(o.phone)&&(x.delivery||"pickup")===dv&&(dv!=="delivery"||addrKey(x.addr)===addrKey(o.addr));
-  const list=orders.filter(x=>x.id!==o.id&&x.no!==o.no&&same(x));if(!list.length)return[];
+  const list=orders.filter(x=>x.id!==o.id&&(!o.no||x.no!==o.no)&&same(x));if(!list.length)return[];
   return[...list,o].sort((a,b)=>String(a.no||"").localeCompare(String(b.no||"")))}
-const grpText=g=>`📦 အော်ဒါ ${g.length} ခု – ${g.map(x=>x.no||"(new)").join(" + ")}`;
+const grpText=g=>`📦 အော်ဒါ ${g.length} ခု${g.every(x=>x.no)?" – "+g.map(x=>x.no).join(" + "):""}`;
 const phHtml=s=>phList(s).map(esc).join("<br>");
 const orderCharges=o=>o.charges||(o.addAmt?[{note:o.addNote||"",amt:o.addAmt}]:[]);
 /* "5,000 × 3" for a charge with a quantity, shown beside its name */
@@ -3759,7 +3761,7 @@ function resetForm(keepFresh){
   editingId=null;draftId=null;$("draftBtn").hidden=false;$("form").reset();buildOpts();setCharges([]);setPayments([]);syncRecv();
   minDate=todayISO();
   setDate("");setTime("");             /* date and time start empty: staff pick them for every order */
-  $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value=nextNo();$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
+  $("rTitle").textContent="အော်ဒါအသစ်";noTouched=false;$("fNo").value="";$("noField").hidden=true;$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
   setKind("cake");setCups([]);syncDcWho();syncResetBtn();
@@ -3819,7 +3821,7 @@ function fillForm(o){
   $("fPrice").value=o.cakeType==="wedding"||o.decoType==="mixed"||manualPrice(fk,sz)||(o.decoType==="mini"&&(o.miniDeco==="fondant"||o.miniDeco==="mixed"))?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
   syncTierBox();
   document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;
-  $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
+  $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("noField").hidden=!o.no;$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
   $("draftBtn").hidden=true;   /* drafts are for new orders only */
   editSnap=null;setTimeout(()=>{if(editingId===o.id)editSnap=formSig()},60);
   setKind(o.kind,o.items,o.custId);
@@ -3867,7 +3869,7 @@ function fillDraft(d){
   if(!(o.payments||[]).length)setPayments([]);
   minDate=todayISO();
   /* an order number typed into the draft comes back with it, unless another order has taken it meanwhile */
-  {const n=d.no&&!orders.some(o=>o.no===d.no)?d.no:"";$("rTitle").textContent="Draft ဆက်ဖြည့်ရန်";noTouched=!!n;$("fNo").value=n||nextNo()}$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
+  {const n=d.no&&!orders.some(o=>o.no===d.no)?d.no:"";$("rTitle").textContent="Draft ဆက်ဖြည့်ရန်";noTouched=!!n;$("fNo").value=n;$("noField").hidden=!n}$("saveBtn").textContent="အော်ဒါ သိမ်းမည်";
   $("formErr").hidden=true;updateReceipt();checkNo();
 }
 /* a draft needs at least the customer's name or phone; without them nothing is kept as a draft */
@@ -3928,7 +3930,8 @@ async function saveLastNo(no){
   else{try{localStorage.setItem("cakeLastNo",no)}catch(e){}}
 }
 /* the auto number follows the latest orders; the live summary is refreshed with it */
-function refreshNo(){if(!editingId&&!noTouched){const n=nextNo();if($("fNo").value!==n){$("fNo").value=n;updateReceipt()}}checkNo()}
+/* new orders take no number until they are printed: nothing is filled in ahead */
+function refreshNo(){checkNo()}
 /* a number already used by another order is flagged at once (and saving is refused) */
 const noTaken=no=>orders.some(o=>o.no===no&&o.id!==editingId);
 function checkNo(){const no=$("fNo").value.trim().toUpperCase(),dup=!!no&&noTaken(no);
@@ -4010,8 +4013,9 @@ $("form").addEventListener("submit",async e=>{
   $("fTime").classList.toggle("bad",!f.time&&$("fTime").value!=="special");$("fTimeSpecial").classList.toggle("bad",!f.time&&$("fTime").value==="special");
   if(miss.length){err.textContent=miss.join("၊ ")+" ဖြည့်ရန် လိုအပ်ပါသည်။";err.hidden=false;goToField(at);return}
   const no=$("fNo").value.trim().toUpperCase();
-  if(!NO_RE.test(no)){err.textContent="Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။";err.hidden=false;goToField([$("fNo")]);return}
-  if(orders.some(o=>o.no===no&&o.id!==editingId)){err.textContent=`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;err.hidden=false;goToField([$("fNo")]);return}
+  const hadNo=!!(editingId&&orders.find(x=>x.id===editingId)?.no);
+  if((no||hadNo)&&!NO_RE.test(no)){err.textContent="Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။";err.hidden=false;goToField([$("fNo")]);return}
+  if(no&&orders.some(o=>o.no===no&&o.id!==editingId)){err.textContent=`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;err.hidden=false;goToField([$("fNo")]);return}
   const {total}=price(f);
   const prev=editingId?orders.find(o=>o.id===editingId):null;
   if(prev&&!canEditOrder(prev)){err.textContent="ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်။";return}
@@ -4025,7 +4029,7 @@ $("form").addEventListener("submit",async e=>{
   let claimed=false;
   try{
     /* two people saving the same number at the same moment: only the first claim wins */
-    if(!prev||prev.no!==no){const c=await claimNo(no,id);claimed=c==="ok";
+    if(no&&(!prev||prev.no!==no)){const c=await claimNo(no,id);claimed=c==="ok";
       /* no internet: saved now, its number is confirmed (and changed if another phone took it) once back online */
       if(c==="offline")o.noPending=true;else if(c==="ok")delete o.noPending;
       else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;
@@ -4037,9 +4041,10 @@ $("form").addEventListener("submit",async e=>{
     if(prev&&prev.no!==no)releaseNo(prev.no,id);
     /* photos removed while editing are no longer referenced by any order */
     if(prev)(prev.photos||[]).filter(id=>!o.photos.includes(id)).forEach(deletePhoto);
-    if(!prev||prev.no!==no)await saveLastNo(no);
+    if(no&&(!prev||prev.no!==no))await saveLastNo(no);
+    lastSavedId=id;
     if(draftId)dropDraft(draftId).catch(()=>{});   /* a finished draft becomes the order */
-    toast(o.noPending?`📴 ${o.no} သိမ်းပြီး — Offline ဖြစ်နေလို့ Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်`:prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no} သိမ်းပြီး`,o.noPending?6000:undefined);resetForm(true);showTab("list");
+    toast(o.noPending?`📴 ${o.no} သိမ်းပြီး — Offline ဖြစ်နေလို့ Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်`:prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no||o.name||"Order"} သိမ်းပြီး`,o.noPending?6000:undefined);resetForm(true);showTab("list");
     if(afterSave&&Date.now()-afterSave.at<60000){const c=afterSave.cont;afterSave=null;c()}afterSave=null}
   catch(x){if(claimed)releaseNo(no,id);err.textContent=x?.code==="quota_exceeded"?"သိမ်းဆည်းနေရာ ပြည့်နေပါသည်။ ပြီးဆုံးသော အော်ဒါအဟောင်းများကို ဖျက်ပါ။":"သိမ်းမရပါ။ ပြန်ကြိုးစားကြည့်ပါ။";err.hidden=false}
   finally{setFormSaving(false)}
@@ -4140,8 +4145,9 @@ async function buildPreviewCanvas(o){
     notes.forEach(t=>{ry+=34;text(t,P+LW,ry,22,{align:"right",weight:700,color:C.accent})});
     /* middle: the order-number badge */
     font(48,500,MONO);const noW=Math.max(150,ctx.measureText(o.no||"").width+44),noH=80,noX=P+LW-rW-24-noW;
-    if(paint){ctx.fillStyle=C.accent;rr(ctx,noX,y0+4,noW,noH,16);ctx.fill()}
-    text(o.no||"",noX+noW/2,y0+60,48,{align:"center",weight:500,color:"#fff",fam:MONO});
+    /* no number yet (it comes with the first print): no badge */
+    if(paint&&o.no){ctx.fillStyle=C.accent;rr(ctx,noX,y0+4,noW,noH,16);ctx.fill()}
+    if(o.no)text(o.no,noX+noW/2,y0+60,48,{align:"center",weight:500,color:"#fff",fam:MONO});
     /* left: customer name (up to 2 lines), phone(s), channel */
     /* a long name gets a little smaller (down to 22px) so it stays on one line; longer still, it wraps */
     const cw=noX-20-P;let ly=y0+30,ns=30;while(ns>22&&width(o.name||"",ns,700)>cw)ns--;font(ns,700);
@@ -4463,8 +4469,9 @@ $("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
    then the order is saved exactly as the form's Save button does, and the preview closes */
 $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;if(formSaving){toast(SAVING_MSG);return}const b=$("pvSaveAll");b.disabled=true;
   try{await saveFile(pvBlob,pvName,"ပုံ")}catch(e){}
-  const o=pvOrder;$("preview").hidden=true;b.disabled=false;$("form").requestSubmit();
-  if(o&&can("orders.print"))printOrder(o)});   /* then Print setup, as with Save image */
+  /* then Print setup for the order just saved (that is when it takes its number) */
+  $("preview").hidden=true;b.disabled=false;if(can("orders.print"))afterSave={at:Date.now(),cont:()=>printOrder(orders.find(x=>x.id===lastSavedId)||null)};
+  $("form").requestSubmit()});
 /* decorators get the order preview and photo viewer for 10 seconds only, with a live countdown, then they close by themselves */
 const PEEK_SECS=10,peek={};var lbOrder=null;   /* the order whose photo the full-screen viewer shows, if any */
 const peekBadge=document.createElement("div");peekBadge.className="peek-badge";peekBadge.hidden=true;peekBadge.setAttribute("aria-live","polite");document.body.append(peekBadge);
@@ -4522,6 +4529,7 @@ $("slipWhich").addEventListener("click",e=>{if(e.target.id==="slipAll")pickSlipP
 /* Print first shows the slip live; the transparency is set there, then the slip is saved as a JPEG */
 async function printOrder(o){
   if(!o)return;
+  o=await ensureNo(o);if(!o)return;
   await layoutSlip(o);
   slipOrder=o;slipPick=-1;setSlipOp(slipOp);pickSlipPic(-1);
   $("slipOpBar").hidden=!$("printArea").querySelector(".pr-pic");
@@ -4790,7 +4798,7 @@ function render(){
         <!-- no per-card warning: the bar at the top already lists orders needing attention -->
         <!-- as on the order preview: customer, then the order number, then the date and time -->
         <div class="o-head"><div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div>
-        <span class="o-no">${esc(o.no)}</span>
+        <span class="o-no${o.no?"":" o-nono"}" title="${o.no?"":"Print လုပ်ရင် Order နံပါတ် ရပါမယ်"}">${esc(o.no||"—")}</span>
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
@@ -5152,7 +5160,18 @@ $("orders").addEventListener("click",async e=>{
 $("orders").addEventListener("change",e=>{const g=e.target.closest(".qp-g");if(!g)return;const a=g.closest(".qp").querySelector(".qp-a");a.value=g.checked?g.dataset.total:"";a.readOnly=g.checked});
 /* ---------- tabs / toast ---------- */
 /* ---------- leaving an order being edited with unsaved changes asks first: save / don't save / keep editing ---------- */
-var editSnap=null,afterSave=null;
+var editSnap=null,afterSave=null,lastSavedId=null;
+/* an order is given its number when it is first printed: the next free number, claimed so no two phones get the same one
+   (offline: given now and confirmed once back online, like any number given offline) */
+async function ensureNo(o){if(!o?.id)return o;const live=orders.find(x=>x.id===o.id)||o;if(live.no)return live;
+  let n=nextNo(),c="",tries=0;
+  while(tries++<40){c=await claimNo(n,live.id);if(c==="ok"||c==="offline")break;n=incNo(n)}
+  if(c!=="ok"&&c!=="offline"){toast("Order နံပါတ် မပေးနိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000);return null}
+  const p={no:n,...(c==="offline"?{noPending:true}:{}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(live,"edit",[`Order No → ${n} (Print)`])};
+  try{await patchOrder(live.id,p);await saveLastNo(n)}catch(e){toast("Order နံပါတ် သိမ်းမရပါ");return null}
+  toast(`Order နံပါတ် ${n}`,3000);
+  const nw={...live,...p};if(!$("preview").hidden&&pvOrder?.id===nw.id&&!pvFormMode)openPreview(nw);
+  return nw}
 function formSig(){const f=readForm();return JSON.stringify({...f,payments:(f.payments||[]).map(({at,...p})=>p),no:$("fNo").value.trim().toUpperCase()})}
 function guardLeave(cont){
   if($("viewNew").hidden||!editingId||editSnap===null||formSig()===editSnap)return false;
@@ -8972,7 +8991,7 @@ function orderVoucher(list){const many=list.length>1,lines=[],photos=[];
     if(o.discount)ln(o,"Discount",1,-o.discount);
     if((o.photos||[]).length)photos.push({no:o.no,ids:o.photos.slice()})}   /* the cake design photos, order by order */
   const o0=list[0],dl=[...new Set(list.filter(o=>o.delivery==="delivery").map(o=>[o.recvName&&!o.recvSame?`${o.recvName} ${o.recvPhone||""}`.trim():"",o.addr].filter(Boolean).join("\n")))];
-  return{id:"ov-"+list.map(o=>o.id).join("-"),no:list.map(o=>o.no).join(" + "),brand:"mb",customer:o0.name||"",phone:o0.phone||"",channel:o0.channel?chLabel(o0):"",
+  return{id:"ov-"+list.map(o=>o.id).join("-"),no:list.map(o=>o.no||"—").join(" + "),brand:"mb",customer:o0.name||"",phone:o0.phone||"",channel:o0.channel?chLabel(o0):"",
     date:many?todayISO():(localDay(o0.createdAt)||todayISO()),deliv:dl.length?dl.join("\n"):null,lines,
     net:list.reduce((s,o)=>s+(o.total||0),0),payments:list.flatMap(o=>orderPayments(o).map(p=>({amt:p.amt}))),note:null,orderPhotos:photos.map(g=>({...g,no:many?g.no:""}))}}
 /* the same customer's other open orders: tick which go on the voucher (all ticked to start) */
