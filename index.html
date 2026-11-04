@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793724610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793773332"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -708,7 +708,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-row.pr-item{font-size:calc(12px*var(--tz,1));line-height:1.35}
 .pr-tot{font-weight:700;border-top:.5px solid #d6d6d6;margin-top:2px;padding-top:2px}
 .pr-bal{font-weight:700;font-size:calc(16px*var(--tz,1));line-height:1.4}
-.pr-blank{flex:0 0 55%;align-self:flex-end;border-bottom:1px solid #000;margin-bottom:3px;min-height:1.2em}
+.pr-blank{flex:0 0 55%;align-self:flex-end;border-bottom:1px solid #bdbdbd;margin-bottom:3px;min-height:1.2em}   /* the same grey as the order number's frame */
 .pr-pics{display:flex;gap:4px;margin-top:6px}
 .pr-pic{flex:1 1 0;min-width:0}
 .pr-tierpic{flex:1 1 0;min-width:0;display:flex;flex-direction:column-reverse;align-items:center}   /* the tier drawing in the photo row; note comes after svg in DOM so column-reverse puts it on top */
@@ -4553,7 +4553,7 @@ function slipHTML(o,live=false){
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${o.time==="tbc"?"":fmtTimeShort(o.time)}</div>
       ${(!deli&&o.callEarly)||o.sendPhoto||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
-    ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g))}</div>`:""})()}
+    ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
     ${dcLabel(o)||sub?`<div>${dcLabel(o)?`<span class="pr-dc">${esc(dcLabel(o))}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
