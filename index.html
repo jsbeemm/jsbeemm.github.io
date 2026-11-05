@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793866561"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793872014"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8991,7 +8991,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
     <div class="vo-meta">
       <div class="vo-cust"><h3>Customer</h3><b>${esc(v.customer||"")}</b>${v.phone?`<div>${esc(v.phone)}</div>`:""}</div>
       <div class="vo-dl">${soDelivOf(v)?`<h3>Delivery Info</h3><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div>`:""}</div>
-      <div class="vo-no"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span></div>
+      <div class="vo-no"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span>${v.orderFor?`<span class="k">Order for</span><span>${esc(v.orderFor)}</span>`:""}${v.mode?`<span class="k">Pickup / Delivery</span><span>${esc(v.mode)}</span>`:""}</div>
     </div>
     <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
       ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
@@ -9065,7 +9065,7 @@ function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=s
   const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vr">
     <div class="c sh">${sh.rc}</div><div class="c sm">${sh.ph}</div>
-    <div class="sm meta"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span></div>
+    <div class="sm meta"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span>${v.orderFor?`<span class="k">Order for</span><span>${esc(v.orderFor)}</span>`:""}${v.mode?`<span class="k">Pickup / Delivery</span><span>${esc(v.mode)}</span>`:""}</div>
     <div class="two sm"><div>${esc(v.customer||"")}${v.phone?`<br>${esc(v.phone)}`:""}</div><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div></div>
     <table><thead><tr><th class="q">Qty</th><th>Description</th><th class="a">AMOUNT</th></tr></thead><tbody>
       ${(v.lines||[]).map(l=>`<tr><td class="q">${m(l.qty)}</td><td>${esc(l.name)}<div class="at">@${m(l.price)}${l.note?` · ${esc(l.note)}`:""}</div></td><td class="a">${m(Math.round(l.qty*l.price))}</td></tr>`).join("")}
@@ -9115,6 +9115,9 @@ function orderVoucher(list){const many=list.length>1,lines=[],photos=[];
   const o0=list[0],dl=[...new Set(list.filter(o=>o.delivery==="delivery").map(o=>[o.recvName&&!o.recvSame?`${o.recvName} ${o.recvPhone||""}`.trim():"",o.addr].filter(Boolean).join("\n")))];
   return{id:"ov-"+list.map(o=>o.id).join("-"),no:list.map(o=>o.no||"—").join(" + "),brand:"mb",customer:o0.name||"",phone:o0.phone||"",channel:o0.channel?chLabel(o0):"",
     date:many?todayISO():(localDay(o0.createdAt)||todayISO()),deliv:dl.length?dl.join("\n"):null,lines,
+    /* when the order is for (pickup / delivery day and time), and how it goes out */
+    orderFor:[...new Set(list.map(o=>[o.date?soDate(o.date):"",o.time?fmtTime(o.time):""].filter(Boolean).join(" · ")).filter(Boolean))].join(", "),
+    mode:[...new Set(list.map(o=>o.delivery==="delivery"?"Delivery":"Pickup"))].join(" / "),
     net:list.reduce((s,o)=>s+(o.total||0),0),payments:list.flatMap(o=>orderPayments(o).map(p=>({amt:p.amt}))),note:null,orderPhotos:photos.map(g=>({...g,no:many?g.no:""}))}}
 /* the same customer's other open orders: tick which go on the voucher (all ticked to start) */
 function pickVoucherOrders(o){const same=orders.filter(x=>x.id===o.id||(x.status!=="cancel"&&isOpen(x)&&custPh(x.phone)&&custPh(x.phone)===custPh(o.phone)))
