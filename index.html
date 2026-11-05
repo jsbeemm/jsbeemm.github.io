@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865947"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793866561"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1324,6 +1324,9 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .cmt-form{display:grid;gap:6px}.cmt-in{width:100%;box-sizing:border-box;resize:vertical;font:inherit;font-size:14px}
 .cmt-btns{display:flex;justify-content:flex-end;align-items:center;gap:10px}.cmt-btns .btn{width:auto;margin:0;padding:6px 16px}
 .prq-assign{font-size:12.5px;font-weight:600;color:var(--sky);background:var(--sky-soft);border-radius:999px;padding:1px 10px;display:inline-block}
+.home-tile.ht-today,.home-tile.glow.ht-today{border-color:#E8A317;box-shadow:0 0 0 3px rgba(232,163,23,.35),var(--shadow);background:#FFF8E6}
+.home-tile.ht-late,.home-tile.glow.ht-late{border-color:#D64545;box-shadow:0 0 0 3px rgba(214,69,69,.3),var(--shadow);background:#FFF2F2}
+.home-tile .ht-due{font-size:12.5px;font-weight:700;color:#8A5A00;background:#FFE7A8;border-radius:999px;padding:2px 10px}.home-tile .ht-due.late{color:#fff;background:#D64545}
 .home-tile.glow{border-color:#E8A317;box-shadow:0 0 0 3px rgba(232,163,23,.35),var(--shadow);background:#FFF8E6}
 .home-tile .ht-badge{font-size:12.5px;font-weight:700;color:#8A5A00;background:#FFE7A8;border-radius:999px;padding:2px 10px}
 .pm-row{display:grid;gap:8px;padding:10px 0;border-top:1px solid var(--line)}.pm-row:first-child{border-top:0}
@@ -5894,6 +5897,11 @@ function renderHome(){
   const tdN=tds.filter(t=>!t.done&&((!!t.assignTo&&!!tdMe()&&sameId(t.assignTo,tdMe()))||(t.owner===ADMIN_TD&&can("admin")))).length;
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
+  /* To Buy items / tasks due today or overdue (not done yet): the tiles turn amber / red with a count */
+  {const pl=prs.filter(r=>dueCls(r.due,r.done)==="due-late").length,pt=prs.filter(r=>dueCls(r.due,r.done)==="due-today").length,
+     tl=tds.filter(t=>dueCls(t.due,t.done)==="due-late").length,tt=tds.filter(t=>dueCls(t.due,t.done)==="due-today").length;
+   [["goPR",pl,pt],["goTodo",pl+tl,pt+tt],["goMyTodo",tl,tt]].forEach(([id,l,d])=>{const t=$(id);t.classList.toggle("ht-late",l>0);t.classList.toggle("ht-today",!l&&d>0);t.querySelector(".ht-due")?.remove();
+     if(l||d)t.insertAdjacentHTML("beforeend",`<span class="ht-due${l?" late":""}">${[l?`${l} overdue`:"",d?`${d} due today`:""].filter(Boolean).join(" · ")}</span>`)})}
   {const t=todayISO(),ts=sales.filter(x=>x.date===t),amt=ts.reduce((a,x)=>a+Number(x.total||0),0);
    /* the POS / Sales report tiles count the shop picked on the Sale page */
    const bs=ts.filter(x=>brandOf(x)===saleBrand),bamt=bs.reduce((a,x)=>a+Number(x.total||0),0);
