@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793864883"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865058"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,7 +197,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 /* order number (large, boxed) first, customer info beside it, both top-aligned */
 .o-head{display:flex;align-items:flex-start;gap:12px}
 .o-head .o-no{flex:none;min-width:4.4em;text-align:center;box-sizing:border-box}   /* same width for short and long numbers */
-.o-no.o-nono{color:var(--muted);border-color:var(--line);border-style:dashed}   /* no number yet: it comes with the first print */
+/* no number yet (it comes with the first print): the box says "not printed yet", same size as a numbered box */
+.o-no.o-nono{color:#D64545;border-color:#D64545;border-style:dashed;padding-inline:3px;white-space:nowrap}
+.o-nono span{font:700 11px var(--mm,inherit);letter-spacing:0;vertical-align:middle}
 .o-head .o-who{flex:1 1 auto}
 .o-head .o-name{font-size:16px;font-weight:700;color:var(--ink)}
 .o-head .o-when{flex:none;width:84px}
@@ -4851,7 +4853,7 @@ function render(){
         <!-- no per-card warning: the bar at the top already lists orders needing attention -->
         <!-- as on the order preview: customer, then the order number, then the date and time -->
         <div class="o-head"><div class="o-who"><span class="o-name">${esc(o.name)}${o.channel?`<span class="ch">${esc(chLabel(o))}</span>`:""}</span><span class="o-ph">☎ ${phHtml(o.phone)}</span></div>
-        <span class="o-no${o.no?"":" o-nono"}" title="${o.no?"":"Print လုပ်ရင် Order နံပါတ် ရပါမယ်"}">${esc(o.no||"—")}</span>
+        <span class="o-no${o.no?"":" o-nono"}" title="${o.no?"":"Print လုပ်ရင် Order နံပါတ် ရပါမယ်"}">${o.no?esc(o.no):`<span>Print မထုတ်ရသေး</span>`}</span>
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
@@ -4878,7 +4880,7 @@ function render(){
         <div class="money-box"><div class="tot">စုစုပေါင်း ${fmt(o.total)}</div><div class="bal ${bal?"owe":"paid"}">${bal?`<small>ကျန်ငွေ</small>${fmt(bal)}`:"✓ ငွေချေပြီး"}</div></div>
         <!-- ticked by hand once the slip has really been printed -->
         <!-- not printed yet, shown as a status (like Pending); it goes away once ticked in the order preview -->
-        ${o.status!=="cancel"&&printShown(o)&&!o.printed?`<span class="prt-st">🖨 Print မထုတ်ရသေး</span>`:""}
+        ${o.status!=="cancel"&&printShown(o)&&!o.printed&&o.no?`<span class="prt-st">🖨 Print မထုတ်ရသေး</span>`:""}
         <div class="o-actions">${pendingPay===o.id
           ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ">${gOwe.length>1&&gOwe.some(x=>x.id===o.id)?`<label class="qp-all"><input type="checkbox" class="qp-g" data-total="${gBal}"><span>${esc(`အော်ဒါ ${gOwe.length} ခုလုံး ပေါင်းရှင်းမည် (${gOwe.map(x=>x.no).join(" + ")}) — ${gBal.toLocaleString("en-US")} Ks`)}</span></label>`:""}<span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
           :pendingCancel===o.id
