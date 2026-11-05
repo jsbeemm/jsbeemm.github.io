@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865600"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865947"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1311,6 +1311,10 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 #pvNoBtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;font-size:13px;width:auto;margin:0}#pvNoBtn[hidden]{display:none}
 .pv-noctl .slip-no .btn{height:36px;padding-block:0;font-size:13px}.pv-noctl .slip-no input{height:36px;width:72px;font-size:16px}
 .slip-no{display:inline-flex;align-items:center;gap:6px}.slip-no input{width:86px;height:48px;box-sizing:border-box;padding-block:0;text-align:center;font-family:var(--mono);font-size:18px;text-transform:uppercase;margin:0}.slip-no .btn{width:auto;margin:0;min-width:0;padding-inline:14px}
+.del-why{display:grid;gap:4px;font-size:13.5px;font-weight:600}.del-why textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;font-weight:400;resize:vertical}.del-why .req{color:var(--accent)}
+.del-box{width:min(100%,520px)}.del-list{display:grid;gap:8px;max-height:60vh;overflow:auto}
+.del-row{border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:grid;gap:3px;font-size:13.5px}.del-row small{color:var(--muted);font-size:12px}
+.del-top{display:flex;gap:6px;align-items:baseline}.del-top span{margin-left:auto;font-weight:700;white-space:nowrap}.del-why-t{white-space:pre-wrap}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .cmt{margin-top:8px;display:grid;gap:6px}
@@ -1361,6 +1365,8 @@ span.star-ic{cursor:default}
 .prq-urgent input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .prq-urgent input:focus-visible+.star-ic{outline:2px solid var(--accent)}
 .prq-item.done{opacity:.72}
+.prq-item.due-today,.td-item.due-today{border-color:#E8A317;background:#FFF8E8;box-shadow:inset 4px 0 0 #E8A317}
+.prq-item.due-late,.td-item.due-late{border-color:#D64545;background:#FFF2F2;box-shadow:inset 4px 0 0 #D64545}
 .prq-item.done .prq-name{text-decoration:line-through}
 /* right side: Purchased · edit · delete on top, the date and who asked underneath */
 .prq-side{display:grid;justify-items:end;gap:2px;text-align:right}
@@ -1454,6 +1460,8 @@ span.star-ic{cursor:default}
       <select id="sortSel" aria-label="Sort" style="width:auto"><option value="date">Sort: Pickup date</option><option value="acc-new">Sort: Accepted (newest)</option><option value="acc-old">Sort: Accepted (oldest)</option></select>
       <input class="search" id="q" type="search" placeholder="အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်">
       <button type="button" class="chip ord-rep-btn" id="ordRepBtn">📊 Report</button>
+      <!-- Admin: orders that were deleted, with the reason given -->
+      <button type="button" class="chip ord-rep-btn" id="ordDelBtn" hidden>🗑 Deleted</button>
       <!-- Excel of exactly the orders the filters above show (date, status, channel, search), to check by hand -->
       <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>
     </div>
@@ -1828,6 +1836,8 @@ span.star-ic{cursor:default}
           <small class="prq-phnote" id="prPhNote" hidden></small>
         </div>
         <label class="prf"><span>Note</span><textarea id="prNote" rows="2"></textarea></label>
+        <!-- optional: the day it is needed by; today or overdue, the item is highlighted in the list -->
+        <div class="prf"><span>Due date</span><span class="td-due-w"><span id="prDue"></span><button type="button" class="td-due-x" id="prDueX" aria-label="Clear date" hidden>×</button></span></div>
         <label class="prf"><span>Assign to <small>(this person can tick it as purchased)</small></span><select id="prAssign"></select></label>
         <!-- "Requested by" is the signed-in person, shown as text beside the buttons -->
         <div class="prq-actions"><span class="prq-by">Requested by <b id="prByText"></b><input type="hidden" id="prBy"></span><button type="button" class="btn ghost" id="prCancel">Cancel</button><button type="submit" class="btn" id="prSave">Save</button></div>
@@ -2866,8 +2876,9 @@ function releaseNo(no,orderId){
   if(!db||!no)return;const ref=db.doc("nos/"+no);
   ref.get().then(s=>{if(s.exists&&s.data().order===orderId)return ref.delete()}).catch(()=>{});
 }
-async function removeOrder(id){
+async function removeOrder(id,why){
   const photos=orders.find(x=>x.id===id)?.photos||[];
+  if(why)await logDeleted(orders.find(x=>x.id===id),why);
   releaseNo(orders.find(x=>x.id===id)?.no,id);
   if(col){await col.doc(id).delete()}
   else{orders=orders.filter(x=>x.id!==id);localSave();render()}
@@ -4368,8 +4379,8 @@ $("pvEdit").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id==
   if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}
   $("preview").hidden=true;fillForm(o);showTab("new")});
 $("pvDel").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!canDelete())return;
-  if(!await askConfirm(`Delete order ${o.no}?`,`${o.name||""}${o.phone?" · "+o.phone:""}\nThis order and its photos will be removed for good.`))return;
-  try{await removeOrder(o.id);$("preview").hidden=true;toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}});
+  const why=await askDelReason(o);if(why==null)return;
+  try{await removeOrder(o.id,why);$("preview").hidden=true;toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}});
 $("pvHist").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o)openHistory(o)});
 /* Start / Resume decorating / Redecorate, in the order preview of a cake that is not being decorated right now */
 function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.decorate")||!isOpen(o))return"";
@@ -5178,8 +5189,8 @@ $("orders").addEventListener("click",async e=>{
   if(t.dataset.again){const o=orders.find(x=>x.id===t.dataset.again);if(o&&canWriteOrders())orderAgain(o);return}
   if(t.dataset.edit){const o=orders.find(o=>o.id===t.dataset.edit);if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}fillForm(o);showTab("new");return}
   if(t.dataset.del){const o=orders.find(x=>x.id===t.dataset.del);if(!o)return;
-    if(!await askConfirm(`Delete order ${o.no}?`,`${o.name||""}${o.phone?" · "+o.phone:""}\nThis order and its photos will be removed for good.`))return;
-    try{await removeOrder(o.id);toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}return}
+    const why=await askDelReason(o);if(why==null)return;
+    try{await removeOrder(o.id,why);toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}return}
   if(t.hasAttribute("data-del-no")){pendingDelete=null;render();return}
   if(t.hasAttribute("data-cancel-no")){pendingCancel=null;cancelDraft="";render();return}
   /* a cancelled order always records why */
@@ -5662,7 +5673,7 @@ function renderMe(){
   $("unitBtn").hidden=!can("admin");
   $("bkBox").hidden=!can("admin");
   $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=true;   /* Excel is exported from Orders (the 📥 Excel button), not Settings */
-  $("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");   /* Production (Baking / Decoration) does not see the order report */
+  $("ordDelBtn").hidden=!can("admin");$("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");   /* Production (Baking / Decoration) does not see the order report */
   document.body.classList.toggle("no-print",!can("orders.print"));
   syncNewBtns();
   if(!canWriteOrders()&&!$("viewNew").hidden)showTab("list");
@@ -6419,7 +6430,7 @@ function renderPR(){
   const list=prs.filter(F.find(x=>x.k===prF).f).sort((a,b)=>(!!a.done-!!b.done)||(!!b.urgent-!!a.urgent)||(b.date||"").localeCompare(a.date||"")||(b.createdAt||"").localeCompare(a.createdAt||""));
   resolveNames(list.flatMap(r=>[r.createdBy,r.doneBy]));
   $("prHint").hidden=!canBuy()&&!prs.some(isMyPR);$("prNewBtn").hidden=!can("pr.request");   /* the tick box and its hint show only to people chosen as 🛒 Purchaser */
-  $("prList").innerHTML=list.map(r=>`<article class="prq-item ${r.done?"done":""} ${r.urgent?"urgent":""}">
+  $("prList").innerHTML=list.map(r=>`<article class="prq-item ${r.done?"done":""} ${r.urgent?"urgent":""} ${dueCls(r.due,r.done)}">
       <div class="prq-body">
         <div class="prq-name">${canStarPR(r)?`<button type="button" class="star-ic ${r.urgent?"on":""}" data-prstar="${esc(r.id)}" aria-pressed="${!!r.urgent}" aria-label="Urgent" title="Urgent">${STAR}</button>`:r.urgent?`<span class="star-ic on" title="Urgent">${STAR}</span>`:""}${esc(r.item)}</div>
         ${r.assignTo?`<div><span class="prq-assign">👤 ${esc(nameOf(r.assignTo))}</span></div>`:""}
@@ -6434,6 +6445,7 @@ function renderPR(){
           ${canEditPR(r)?`<button type="button" class="o-ic" data-predit="${esc(r.id)}" aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-prdel="${esc(r.id)}" aria-label="Delete" title="Delete"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg></button>`:`<span class="o-ic prq-ph" aria-hidden="true"></span><span class="o-ic prq-ph" aria-hidden="true"></span>`}
         </div>
         ${prPendingDel===r.id?`<span class="confirm">Delete this item? <button type="button" class="link danger" data-prdel-yes="${esc(r.id)}">Delete</button><button type="button" class="link" data-prdel-no>Cancel</button></span>`:""}
+        ${r.due?`<div class="prq-meta"><small class="td-due ${dueCls(r.due,r.done)==="due-late"?"late":dueCls(r.due,r.done)==="due-today"?"today":""}">📅 Due ${r.due===todayISO()?"Today":fmtDate(r.due)}</small></div>`:""}
         <div class="prq-meta"><span class="prq-date">${fmtDate(r.date)}</span> · Request by ${esc(String(r.createdBy).startsWith("acct:")?nameOf(r.createdBy):r.requestBy||nameOf(r.createdBy))}</div>
         ${r.done?`<div class="prq-meta">Purchased ${fmtStamp(r.doneAt)}${r.doneBy?` by ${esc(nameOf(r.doneBy))}`:""}</div>`:""}
       </div>
@@ -6469,6 +6481,7 @@ function openPRForm(r=null){
   $("prFormTitle").textContent=r?"Edit request":"New request";
   /* the date is fixed: today for a new request, the original day when editing */
   $("prDateBox").textContent=fmtDate(r?.date||todayISO());
+  if(r?.due){$("prDue").innerHTML=dateSelect("",r.due,"Due date",r.due<todayISO()?r.due:todayISO(),true);$("prDueX").hidden=false}else prDueReset();
   $("prAssign").innerHTML=prAssignOpts(r?.assignTo||"");$("prItem").value=r?.item||"";$("prUrgent").checked=!!r?.urgent;$("prNote").value=r?.note||"";$("prStock").value=r?.stock||"";
   /* signed in: "Request by" is the account itself, not typed */
   $("prBy").value=r?(String(r.createdBy).startsWith("acct:")?nameOf(r.createdBy):r.requestBy||""):(db?me.name||"":"");$("prByText").textContent=$("prBy").value||(db?"—":"ဒီစက်");
@@ -6517,7 +6530,7 @@ $("prForm").addEventListener("submit",async e=>{
   if(!by&&db){toast("Login ဝင်ထားသူ မရှိပါ");return}
   const old=prs.find(x=>x.id===prEditing),now=new Date().toISOString();
   const r={...(old||{id:"pr"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),createdAt:now,createdBy:me.id||null,done:false}),
-    date:old?.date||todayISO(),item,urgent:$("prUrgent").checked,note:$("prNote").value.trim(),stock:$("prStock").value.trim(),assignTo:$("prAssign").value||null,requestBy:by,
+    date:old?.date||todayISO(),item,due:readDate($("prDue").querySelector(".dp"))||null,urgent:$("prUrgent").checked,note:$("prNote").value.trim(),stock:$("prStock").value.trim(),assignTo:$("prAssign").value||null,requestBy:by,
     photos:prPhotos.filter(p=>p.id).map(p=>p.id),updatedAt:now,updatedBy:me.id||null};
   $("prSave").disabled=true;
   try{await savePR(r);
@@ -7144,7 +7157,7 @@ function renderTd(){
   if(!$("viewMyTodo")||$("viewMyTodo").hidden)return;
   const t0=todayISO(),open=tds.filter(t=>!t.done).sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")||(a.at||"").localeCompare(b.at||"")),
     done=tds.filter(t=>t.done).sort((a,b)=>(b.doneAt||"").localeCompare(a.doneAt||""));
-  const row=t=>`<div class="td-item ${t.done?"done":""}" data-td="${esc(t.id)}">
+  const row=t=>`<div class="td-item ${t.done?"done":""} ${dueCls(t.due,t.done)}" data-td="${esc(t.id)}">
       <label class="td-chk"><input type="checkbox" ${t.done?"checked":""} aria-label="Done"></label>
       <div class="td-main"><span class="td-text" data-t="${esc(t.text)}"></span>
         <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}${t.owner===ADMIN_TD?`<small class="td-due">👥 Admin</small>`:""}</span>${t.assignTo?cmtBlock("td",t):""}</div>
@@ -7218,6 +7231,11 @@ $("tdList").addEventListener("click",async e=>{
   if(e.target.matches(".td-chk input")){const d=e.target.checked,n={...t,done:d};if(d)n.doneAt=new Date().toISOString();else delete n.doneAt;
     try{await saveTd(n)}catch(x){toast("သိမ်းမရပါ");renderTd()}}});
 /* due date is optional: starts empty, × clears it */
+/* due today or overdue (and not done yet): the To Buy item / task is highlighted */
+const dueCls=(d,done)=>!d||done?"":d<todayISO()?"due-late":d===todayISO()?"due-today":"";
+function prDueReset(){$("prDue").innerHTML=dateSelect("",null,"Due date",todayISO(),true);$("prDueX").hidden=true}
+$("prDue").addEventListener("change",()=>{$("prDueX").hidden=!readDate($("prDue").querySelector(".dp"))});
+$("prDueX").addEventListener("click",prDueReset);
 function tdDueReset(){$("tdDue").innerHTML=dateSelect("",null,"Due date",todayISO(),true);$("tdDueX").hidden=true}
 tdDueReset();
 $("tdDue").addEventListener("change",()=>{$("tdDueX").hidden=!readDate($("tdDue").querySelector(".dp"))});
@@ -7974,6 +7992,30 @@ function renderOrdRep(){
     <div class="ex-card"><p class="ac-h">Money received in ${esc(label)}</p>${pays.length?`<table class="ex-tbl"><tbody>${Object.entries(byM).map(([m,a])=>`<tr><td>${esc(pmLabel(m))}</td><td class="ex-r">${fmt(a)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(recv)}</b></td></tr></tbody></table>`:`<p class="side-help">No payments.</p>`}</div>
   </div>`;
 }
+/* ---------- deleting an order asks why; the order's main details and the reason are kept in a log Admins can read ---------- */
+function askDelReason(o){return new Promise(res=>{const d=document.createElement("div");d.className="editor";d.style.zIndex="50";d.setAttribute("role","alertdialog");d.setAttribute("aria-modal","true");
+  d.innerHTML=`<div class="cfm-box"><h3>${esc(`Delete order ${o.no||""}?`.replace("  "," "))}</h3><p>${esc(`${o.name||""}${o.phone?" · "+o.phone:""}`)}\nThis order and its photos will be removed for good.</p>
+    <label class="del-why"><span>ဖျက်ရတဲ့ အကြောင်းရင်း <b class="req">*</b></span><textarea rows="2" placeholder="ဥပမာ – Customer က Cancel လုပ်သွားလို့၊ ၂ ခါ သိမ်းမိလို့"></textarea></label>
+    <div class="cfm-btns"><button type="button" class="btn ghost" data-dw="no">Cancel</button><button type="button" class="btn danger" data-dw="yes">Delete</button></div></div>`;
+  document.body.append(d);const ta=d.querySelector("textarea");setTimeout(()=>ta.focus(),30);
+  const done=v=>{d.remove();res(v)};
+  d.addEventListener("click",e=>{if(e.target===d)return done(null);const b=e.target.closest("[data-dw]");if(!b)return;if(b.dataset.dw==="no")return done(null);
+    const why=ta.value.trim();if(!why){toast("ဖျက်ရတဲ့ အကြောင်းရင်း ရေးပါ");ta.focus();return}done(why)})})}
+const delLocal=()=>{try{return JSON.parse(localStorage.getItem("cakeDelLog")||"[]")}catch(e){return[]}};
+async function logDeleted(o,why){if(!o)return;
+  const e={id:o.id,no:o.no||"",name:o.name||"",phone:o.phone||"",date:o.date||"",time:o.time||"",total:o.total||0,cake:isBak(o)?"Bakery products":`${o.sizeName||""} ${o.flavorName||""}`.trim(),
+    reason:why,at:new Date().toISOString(),by:me.id||null};
+  if(db){try{await db.collection("delLog").doc(o.id).set(e)}catch(x){}}else{const l=delLocal();l.push(e);try{localStorage.setItem("cakeDelLog",JSON.stringify(l))}catch(x){}}}
+async function openDelLog(){let list=[];
+  if(db){try{const s=await db.collection("delLog").get();list=s.docs.map(x=>x.data())}catch(x){toast("ဖတ်မရပါ");return}}else list=delLocal();
+  list.sort((a,b)=>(b.at||"").localeCompare(a.at||""));resolveNames(list.map(x=>x.by));
+  const d=document.createElement("div");d.className="editor";d.style.zIndex="50";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");
+  d.innerHTML=`<div class="cfm-box del-box"><h3>🗑 Deleted orders <small>(${list.length})</small></h3><div class="del-list">${list.length?list.map(x=>`<div class="del-row"><div class="del-top"><b>${esc(x.no||"—")}</b> · ${esc(x.name)}${x.phone?` · ${esc(x.phone)}`:""}<span>${esc(fmt(x.total||0))}</span></div>
+      <small>${esc([x.cake,x.date?fmtDate(x.date):""].filter(Boolean).join(" · "))}</small>
+      <div class="del-why-t"><b>Reason –</b> ${esc(x.reason)}</div><small>Deleted ${esc(fmtStamp(x.at))}${x.by?` by ${esc(nameOf(x.by))}`:""}</small></div>`).join(""):`<p>ဖျက်ထားတဲ့ Order မရှိပါ။</p>`}</div>
+    <div class="cfm-btns"><button type="button" class="btn ghost" data-dl="x">Close</button></div></div>`;
+  document.body.append(d);d.addEventListener("click",e=>{if(e.target===d||e.target.closest("[data-dl]"))d.remove()})}
+$("ordDelBtn").addEventListener("click",()=>{if(can("admin"))openDelLog()});
 $("ordRepBtn").addEventListener("click",()=>{renderOrdRep();$("ordRepDlg").hidden=false});
 $("orFModes").addEventListener("click",e=>{const b=e.target.closest("[data-orf]");if(!b)return;orF.mode=b.dataset.orf;renderOrdRep()});
 $("orFMonth").addEventListener("change",e=>{orF.month=e.target.value||todayISO().slice(0,7);renderOrdRep()});
