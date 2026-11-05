@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865416"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793865600"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1313,6 +1313,12 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .slip-no{display:inline-flex;align-items:center;gap:6px}.slip-no input{width:86px;height:48px;box-sizing:border-box;padding-block:0;text-align:center;font-family:var(--mono);font-size:18px;text-transform:uppercase;margin:0}.slip-no .btn{width:auto;margin:0;min-width:0;padding-inline:14px}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
+.cmt{margin-top:8px;display:grid;gap:6px}
+.cmt-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;background:var(--sunk);border-radius:10px;padding:6px 10px;font-size:13px}
+.cmt-row small{color:var(--muted);font-size:11.5px}.cmt-t{flex-basis:100%;white-space:pre-wrap;line-height:1.45}
+.cmt-add{justify-self:start;color:var(--accent);font-weight:600;padding:2px 0}
+.cmt-form{display:grid;gap:6px}.cmt-in{width:100%;box-sizing:border-box;resize:vertical;font:inherit;font-size:14px}
+.cmt-btns{display:flex;justify-content:flex-end;align-items:center;gap:10px}.cmt-btns .btn{width:auto;margin:0;padding:6px 16px}
 .prq-assign{font-size:12.5px;font-weight:600;color:var(--sky);background:var(--sky-soft);border-radius:999px;padding:1px 10px;display:inline-block}
 .home-tile.glow{border-color:#E8A317;box-shadow:0 0 0 3px rgba(232,163,23,.35),var(--shadow);background:#FFF8E6}
 .home-tile .ht-badge{font-size:12.5px;font-weight:700;color:#8A5A00;background:#FFE7A8;border-radius:999px;padding:2px 10px}
@@ -6420,6 +6426,7 @@ function renderPR(){
         ${r.stock?`<div class="prq-line"><b>Stock left –</b> ${esc(r.stock)}</div>`:""}
         ${r.note?`<div class="prq-line"><b>Note –</b> ${esc(r.note)}</div>`:""}
         ${(r.photos||[]).length?`<div class="prq-thumbs">${r.photos.map(id=>photoUrl(id)).filter(Boolean).map(u=>`<img src="${esc(u)}" data-zoom="${esc(u)}" alt="${esc(r.item)}">`).join("")}</div>`:""}
+        ${r.assignTo?cmtBlock("pr",r):""}
       </div>
       <div class="prq-side">
         <div class="prq-acts">
@@ -7113,6 +7120,23 @@ $("tdNag").addEventListener("click",e=>{if(e.target.closest("[data-tdnag]"))go("
 /* the signed-in person: an app account ("acct:<name>") or the page owner signed in through Claude */
 const tdMe=()=>!db?"local":(myAcct()&&me.id?me.id:null);
 function tdLocalSave(){try{localStorage.setItem("cakeTodos",JSON.stringify(tds))}catch(e){}}
+/* ---------- comments on an assigned To Buy item or task: the person it is assigned to (and the others) can write under it.
+   A comment being written is kept while the list redraws (someone else's change arrives). ---------- */
+const cmtOpen={},cmtDraft={};
+function cmtBlock(kind,x){const k=kind+":"+x.id,list=x.comments||[],ok=!db||!!myAcct();
+  return`<div class="cmt" data-cmt="${esc(k)}">${list.map(c=>`<div class="cmt-row"><b>${esc(nameOf(c.by))}</b><small>${esc(fmtStamp(c.at))}</small><span class="cmt-t">${esc(c.text)}</span></div>`).join("")}
+    ${!ok?"":cmtOpen[k]?`<div class="cmt-form"><textarea class="cmt-in" rows="2" placeholder="Comment ရေးပါ…" aria-label="Comment">${esc(cmtDraft[k]||"")}</textarea><span class="cmt-btns"><button type="button" class="link cmt-x">Cancel</button><button type="button" class="btn cmt-send">Send</button></span></div>`
+      :`<button type="button" class="link cmt-add">💬 Comment</button>`}</div>`}
+function cmtRedraw(kind){if(kind==="pr")renderPR();else renderTd()}
+document.addEventListener("input",e=>{const i=e.target.closest(".cmt-in");if(i)cmtDraft[i.closest("[data-cmt]").dataset.cmt]=i.value});
+document.addEventListener("click",async e=>{const box=e.target.closest("[data-cmt]");if(!box)return;const k=box.dataset.cmt,[kind,id]=k.split(":");
+  if(e.target.closest(".cmt-add")){cmtOpen[k]=true;cmtRedraw(kind);document.querySelector(`[data-cmt="${CSS.escape(k)}"] .cmt-in`)?.focus();return}
+  if(e.target.closest(".cmt-x")){delete cmtOpen[k];delete cmtDraft[k];cmtRedraw(kind);return}
+  const s=e.target.closest(".cmt-send");if(!s)return;
+  const text=(box.querySelector(".cmt-in")?.value||"").trim();if(!text){box.querySelector(".cmt-in")?.focus();return}
+  const x=kind==="pr"?prs.find(r=>r.id===id):tds.find(t=>t.id===id);if(!x)return;s.disabled=true;
+  const n={...x,comments:[...(x.comments||[]),{by:me.id||null,at:new Date().toISOString(),text}]};
+  try{if(kind==="pr")await savePR(n);else await saveTd(n);delete cmtOpen[k];delete cmtDraft[k];cmtRedraw(kind)}catch(err){s.disabled=false;toast("သိမ်းမရပါ")}});
 async function saveTd(t){if(tdCol){await tdCol.doc(t.id).set(t);return}
   const i=tds.findIndex(x=>x.id===t.id);if(i>=0)tds[i]=t;else tds.push(t);tdLocalSave();renderTd();renderHome()}
 async function removeTd(id){if(tdCol){await tdCol.doc(id).delete();return}tds=tds.filter(x=>x.id!==id);tdLocalSave();renderTd();renderHome()}
@@ -7123,7 +7147,7 @@ function renderTd(){
   const row=t=>`<div class="td-item ${t.done?"done":""}" data-td="${esc(t.id)}">
       <label class="td-chk"><input type="checkbox" ${t.done?"checked":""} aria-label="Done"></label>
       <div class="td-main"><span class="td-text" data-t="${esc(t.text)}"></span>
-        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}${t.owner===ADMIN_TD?`<small class="td-due">👥 Admin</small>`:""}</span></div>
+        <span class="td-dates">${t.at?`<small class="td-due">Added ${localDay(t.at)===t0?"Today":fmtDate(localDay(t.at))}</small>`:""}${t.due?`<small class="td-due ${!t.done&&t.due<t0?"late":!t.done&&t.due===t0?"today":""}">📅 Due ${t.due===t0?"Today":fmtDate(t.due)}</small>`:""}${t.assignTo&&tdIsOwner(t)?`<small class="td-due">👤 ${esc(nameOf(t.assignTo))}</small>`:""}${tdMine(t)?`<small class="td-due">📨 From ${esc(nameOf(t.owner))}</small>`:""}${t.owner===ADMIN_TD?`<small class="td-due">👥 Admin</small>`:""}</span>${t.assignTo?cmtBlock("td",t):""}</div>
       ${tdIsOwner(t)?`<span class="ex-btns"><button type="button" class="o-ic" data-tdedit aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-tddel aria-label="Delete" title="Delete">${TRASH_IC}</button></span>`:""}</div>`;
   $("tdList").innerHTML=(open.length?open.map(row).join(""):`<div class="prq-empty">Nothing to do. Tap “+ New task”.</div>`)
     +(done.length?`<button type="button" class="td-dtog" id="tdDoneTog">${tdShowDone?"▾":"▸"} Done (${done.length})</button>${tdShowDone?done.map(row).join(""):""}`:"");
