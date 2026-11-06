@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793945979"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946114"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2846,7 +2846,9 @@ async function patchOrder(id,patch){
 const tabId="t"+Math.random().toString(36).slice(2,10);
 /* who already holds a number: another order that exists, or a claim made moments ago (its order may not have reached this screen yet);
    an old claim whose order was deleted no longer counts */
-const noHeld=(c,orderId)=>!!c?.order&&c.order!==orderId&&(orders.some(o=>o.id===c.order)||Date.now()-Date.parse(c.at||0)<5*60e3);
+/* a claim counts only while its order still has that number (an order moved to another number leaves an old claim behind),
+   or when it was made moments ago and that order may not have reached this screen yet */
+const noHeld=(c,orderId,no)=>!!c?.order&&c.order!==orderId&&(orders.some(o=>o.id===c.order&&(!no||o.no===no))||(!orders.some(o=>o.id===c.order)&&Date.now()-Date.parse(c.at||0)<5*60e3));
 async function claimNo(no,orderId){
   if(!db)return"ok";
   const ref=db.doc("nos/"+no);
@@ -2855,7 +2857,7 @@ async function claimNo(no,orderId){
   if(typeof db.runTransaction==="function"){
     if(navigator.onLine===false)return"offline";
     try{return await Promise.race([
-      db.runTransaction(async tx=>{const s=await tx.get(ref),c=s.exists?s.data():null;if(noHeld(c,orderId))return"taken";
+      db.runTransaction(async tx=>{const s=await tx.get(ref),c=s.exists?s.data():null;if(noHeld(c,orderId,no))return"taken";
         tx.set(ref,{order:orderId,at:new Date().toISOString(),by:me.id||null});return"ok"}),
       new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),10000))])}
     catch(e){return e?.code==="permission-denied"?(orders.some(o=>o.no===no&&o.id!==orderId)?"taken":"ok"):"offline"}
@@ -2866,7 +2868,7 @@ async function claimNo(no,orderId){
     const s=await ref.get(),c=s.exists?s.data():null;
     /* taken by another order that exists, or claimed moments ago (its order may not have reached this screen yet);
        an old claim whose order was deleted no longer counts */
-    if(noHeld(c,orderId))return"taken";
+    if(noHeld(c,orderId,no))return"taken";
     await ref.set({order:orderId,at:new Date().toISOString(),by:me.id||null});
     return"ok";
   }catch(e){return orders.some(o=>o.no===no&&o.id!==orderId)?"taken":"ok"}
@@ -4620,7 +4622,8 @@ $("slipNoIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefaul
 async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o.no)return o;
   const bad=m=>{toast(m,4000);inp?.focus();return null};
   if(!NO_RE.test(n))return bad("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။");
-  if(orders.some(x=>x.no===n&&x.id!==o.id))return bad(`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
+  /* say which order has it (it may be cancelled, finished, or outside the list's filters) */
+  {const u=orders.find(x=>x.no===n&&x.id!==o.id);if(u)return bad(`${n} ကို ${u.name||"အခြား"} ရဲ့ Order (${u.date?fmtDate(u.date):""}${u.status?" · "+statusName(u.status):""}) က သုံးထားပါတယ်။`)}
   try{const c=await claimNo(n,o.id);
     if(c==="taken"||c==="busy")return bad(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
     const p={no:n,...(c==="offline"?{noPending:true}:{noPending:false}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"edit",[`Order No ${o.no||"—"} → ${n}`])};
