@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959963"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793960079"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1148,7 +1148,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pds-sw{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:12px}
 #exReport .ex-big{position:relative}#exReport .ex-xl{position:absolute;top:10px;right:10px}
 #exReport .ex-tbl td.ex-v{width:104px}@media (max-width:560px){#exReport .ex-tbl td.ex-v{width:72px;padding-left:6px}#exReport .ex-c{width:58px;padding-right:6px;white-space:nowrap}#exReport .ex-r{width:88px}#exReport .ex-vd{padding:4px 8px}#exReport .ex-tbl td:first-child{overflow-wrap:normal;word-break:normal}}
-.ord-rep-btn{white-space:nowrap;padding:7px 14px;font-weight:600}
+.ord-rep-btn{white-space:nowrap;padding:7px 14px;font-weight:600;height:38px;box-sizing:border-box;display:inline-flex;align-items:center;gap:4px}
+.ord-rep-btn[hidden]{display:none}
+/* icon-only buttons (Deleted, Share pictures): a round button as high as the others */
+.ord-rep-btn.ord-ic{width:38px;padding:0;justify-content:center}.ord-ic .bi{width:18px;height:18px}
 #orFModes{margin-bottom:10px}.or-pick{margin-bottom:10px}.or-pick input[type=month]{width:auto}
 .sale-row{cursor:pointer}.cake-pay td small{text-align:left}.sale-row:hover{border-color:var(--accent)}
 .cake-pay{cursor:pointer}.cake-pay:hover td{background:var(--sunk)}   /* a cake order payment opens that order's preview */
@@ -1474,11 +1477,11 @@ span.star-ic{cursor:default}
       <input class="search" id="q" type="search" placeholder="အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်">
       <button type="button" class="chip ord-rep-btn" id="ordRepBtn">📊 Report</button>
       <!-- Admin: orders that were deleted, with the reason given -->
-      <button type="button" class="chip ord-rep-btn" id="ordDelBtn" hidden>🗑 Deleted</button>
+      <button type="button" class="chip ord-rep-btn ord-ic" id="ordDelBtn" hidden aria-label="Deleted orders" title="Deleted orders"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg></button>
       <!-- Excel of exactly the orders the filters above show (date, status, channel, search), to check by hand -->
       <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>
       <!-- the order preview pictures of exactly the orders shown (date, status, channel, search), shared together to Viber etc. -->
-      <button type="button" class="chip ord-rep-btn" id="ordShareBtn" title="ပြနေတဲ့ order တွေရဲ့ Preview ပုံများကို တစ်ခါတည်း Share ရန်">📲 Share ပုံများ</button>
+      <button type="button" class="chip ord-rep-btn ord-ic" id="ordShareBtn" aria-label="Share pictures" title="ပြနေတဲ့ order တွေရဲ့ Preview ပုံများကို တစ်ခါတည်း Share ရန်"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg></button>
     </div>
     <div class="orders" id="orders"></div>
   </section>
