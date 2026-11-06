@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793941735"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793943691"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -383,7 +383,7 @@ label.f > span b{color:var(--accent);font-weight:500}
 /* tier builder (left) and its drawing (right; above on phones) */
 .tier-box{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,42%);gap:14px;margin-top:12px;align-items:start}
 @media (max-width:640px){.tier-box{grid-template-columns:minmax(0,1fr)}.tier-pic{order:-1}}
-#tierAdd{display:block;margin:0 0 0 auto}
+#tierAdd{display:block;margin:0 0 0 auto}#tierAddB{display:block;margin:8px 0 0 auto}
 .tier-list{display:grid;gap:8px;margin-top:8px}
 .tier-card{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);display:grid;gap:6px}
 .tier-card.dum{background:var(--sunk)}
@@ -1537,6 +1537,8 @@ span.star-ic{cursor:default}
             <div class="tier-build">
               <button type="button" class="add-charge" id="tierAdd">+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)</button>
               <div id="tierList" class="tier-list"></div>
+              <!-- the list shows the top tier first, so a new bottom tier is added from under it -->
+              <button type="button" class="add-charge" id="tierAddB">+ အဆင့် ထပ်ထည့်ရန် (အောက်)</button>
               <p class="hint" id="tierHint" hidden></p>
             </div>
             <div class="tier-pic" id="tierPic" aria-label="Cake drawing"></div>
@@ -3226,6 +3228,9 @@ $("tierList").addEventListener("click",e=>{const c=e.target.closest("[data-ti]")
   if(e.target.closest("[data-lrm]")){const j=Number(e.target.closest("[data-li]").dataset.li);t.lp=t.layers.map((_,k)=>lpOf(t,k));t.layers.splice(j,1);t.lp.splice(j,1);renderTierList();updateReceipt();return}
   if(e.target.closest("[data-ladd]")){t.lp=t.layers.map((_,k)=>lpOf(t,k));t.layers.push(t.layers[t.layers.length-1]||"");t.lp.push(1);renderTierList();updateReceipt()}});
 /* a new tier goes on top, one size smaller than the tier below it */
+/* a tier under the cake: one size bigger than the bottom tier */
+$("tierAddB").addEventListener("click",()=>{const b=tierDraft[0],n=b&&b.size!=="custom"?Number(b.size)||1:1;
+  tierDraft.unshift(newTier(String(Math.min(6,n+1))));renderTierList();updateReceipt()});
 $("tierAdd").addEventListener("click",()=>{const top=tierDraft[tierDraft.length-1];tierDraft.push(newTier(top?String(Math.max(1,Number(top.size||2)-1)):"2"));renderTierList();updateReceipt()});
 /* custom size and unlisted flavors take a typed price */
 /* Cream and fondant mixed: the price is always typed */
@@ -5316,7 +5321,7 @@ const EN={
   "Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"Enter the price for the customized size.","စာရင်းမပါသော ကိတ်သားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"Enter the price for this flavor.",
   "ပုံသဏ္ဌာန်":"Shape","Customized ပုံသဏ္ဌာန်":"Customized shape","ဥပမာ – ဂဏန်း 5 ပုံ၊ ကာတွန်းပုံ":"e.g. number 5, cartoon",
   "ကိတ်အမျိုးအစား":"Cake type","ပုံမှန်":"Standard","အဆင့် အရေအတွက်":"Number of tiers","အဆင့်ကိတ်":"Tiered cake","အဆင့်တိုင်း တူတူ":"Same for all tiers","အဆင့်အလိုက် မတူ":"Different per tier",
-  "1 ဆင့်":"1 tier","+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)":"+ Add a tier (on top)","2 ဆင့်":"2 tiers","3 ဆင့်":"3 tiers","4 ဆင့်":"4 tiers","5 ဆင့်":"5 tiers","— ကိတ်သား ရွေးပါ —":"— Choose flavor —","ကိတ် အပိုင်းမှာ ကိတ်သား ရွေးပါ":"Pick the flavor in the Cake section","Customized (အဆင့်ကိတ်)":"Customized (tiered)","Customized အသေးစိတ်":"Customized details",
+  "1 ဆင့်":"1 tier","+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)":"+ Add a tier (on top)","+ အဆင့် ထပ်ထည့်ရန် (အောက်)":"+ Add a tier (at the bottom)","2 ဆင့်":"2 tiers","3 ဆင့်":"3 tiers","4 ဆင့်":"4 tiers","5 ဆင့်":"5 tiers","— ကိတ်သား ရွေးပါ —":"— Choose flavor —","ကိတ် အပိုင်းမှာ ကိတ်သား ရွေးပါ":"Pick the flavor in the Cake section","Customized (အဆင့်ကိတ်)":"Customized (tiered)","Customized အသေးစိတ်":"Customized details",
   "ကိတ်ပေါ်ရေးမည့်စာ":"Message on cake","Happy Birthday ...\n(စာကြောင်း များများ ရေးနိုင်သည်)":"Happy Birthday ...\n(several lines allowed)",
   "ဥပမာ – D-012":"e.g. D-012","ကိတ် Design မှတ်ချက်":"Design note","ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…":"e.g. cream colour, decoration, allergies…",
   "ဒီဇိုင်း ဓာတ်ပုံ":"Design photos","(၄ ပုံအထိ · ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)":"(up to 4 · tap a photo to edit)","ပုံထည့်ရန်":"Add photo","ဖယ်ရှားရန်":"Remove","ပုံပြင်ရန်":"Edit photo","တင်နေသည်…":"Uploading…",
