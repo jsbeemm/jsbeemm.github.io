@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946348"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946537"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -612,7 +612,9 @@ label.f > span b{color:var(--accent);font-weight:500}
 .btn.ghost{background:var(--sunk);color:var(--ink);font-weight:500;margin-top:8px}
 .err{color:var(--accent);font-size:13px;margin:8px 0 0}
 #fNo.bad,#fTime.bad,#fTimeSpecial.bad{border-color:var(--accent);outline:2px solid var(--accent-soft)}
-#noDup{margin:-6px 0 10px}
+#noDup{margin:0}
+.no-inrow{display:flex;align-items:center;gap:10px;min-width:0}.no-inrow input{flex:none}
+.no-low .no-dup{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:600;line-height:1.4}.no-low .no-dup[hidden]{display:none}
 /* the field the page scrolled to after a failed save pulses pink */
 @keyframes needPulse{0%,60%{box-shadow:0 0 0 4px var(--accent-soft),0 0 0 6px var(--accent)}100%{box-shadow:none}}
 .need{animation:needPulse 2.4s ease-out;border-radius:9px}
@@ -1652,14 +1654,13 @@ span.star-ic{cursor:default}
         <fieldset>
           <!-- a new order takes its number only when it is printed; an order that already has one can still change it here -->
           <label class="f no-field no-low" id="noField" hidden><span>Order နံပါတ်</span>
-            <input id="fNo" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="A000"></label>
+            <span class="no-inrow"><input id="fNo" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="A000"><span class="err no-dup" id="noDup" hidden></span></span></label>
           <!-- a general note about the order (not the design, not the delivery) -->
           <label class="f" style="margin-top:12px"><span>Order မှတ်ချက်</span><textarea id="fOrderNote" rows="2" placeholder="ဥပမာ – ဝယ်သူ ကိုယ်တိုင် ထပ်ဆက်သွယ်မည်၊ လက်ဆောင်ထုပ်ပေးရန်…"></textarea></label>
         </fieldset>
       </div>
 
       <aside class="receipt" aria-live="polite">
-        <p class="err" id="noDup" hidden></p>
         <!-- live summary laid out like the print slip, in full colour -->
         <div class="live-slip" id="liveSlip"></div>
         <p class="err" id="formErr" hidden></p>
