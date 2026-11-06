@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793956874"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959307"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1323,6 +1323,8 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .del-row{border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:grid;gap:3px;font-size:13.5px}.del-row small{color:var(--muted);font-size:12px}
 .del-top{display:flex;gap:6px;align-items:baseline}.del-top span{margin-left:auto;font-weight:700;white-space:nowrap}.del-why-t{white-space:pre-wrap}
 .ex-thumbs{display:flex;gap:6px;margin-top:6px}.ex-thumbs img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
+.bs-thumbs{display:flex;flex-wrap:wrap;gap:6px;max-height:40vh;overflow:auto}.bs-thumbs:empty{display:none}
+.bs-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .cmt{margin-top:8px;display:grid;gap:6px}
@@ -1475,6 +1477,8 @@ span.star-ic{cursor:default}
       <button type="button" class="chip ord-rep-btn" id="ordDelBtn" hidden>🗑 Deleted</button>
       <!-- Excel of exactly the orders the filters above show (date, status, channel, search), to check by hand -->
       <button type="button" class="chip ord-rep-btn" id="ordXlBtn" title="ပြနေတဲ့ order တွေကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>
+      <!-- the order preview pictures of exactly the orders shown (date, status, channel, search), shared together to Viber etc. -->
+      <button type="button" class="chip ord-rep-btn" id="ordShareBtn" title="ပြနေတဲ့ order တွေရဲ့ Preview ပုံများကို တစ်ခါတည်း Share ရန်">📲 Share ပုံများ</button>
     </div>
     <div class="orders" id="orders"></div>
   </section>
@@ -2437,6 +2441,7 @@ span.star-ic{cursor:default}
   </div>
       </div>
 <div class="editor" id="leaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="leaveT" style="z-index:50"><div class="cfm-box"><h3 id="leaveT">ပြင်ဆင်ချက်တွေ သိမ်းမလား?</h3><p>ပြင်ထားတာတွေ မသိမ်းရသေးပါ။</p><div class="cfm-btns leave-btns"><button type="button" class="btn ghost" id="leaveStay">ဆက်ပြင်မည်</button><button type="button" class="btn ghost danger-t" id="leaveDrop">မသိမ်းပါ</button><button type="button" class="btn" id="leaveSave">သိမ်းမည်</button></div></div></div>
+<div class="editor" id="bsDlg" hidden role="dialog" aria-modal="true" aria-labelledby="bsT" style="z-index:50"><div class="cfm-box"><h3 id="bsT">Preview ပုံများ Share</h3><p id="bsMsg"></p><div class="bs-thumbs" id="bsThumbs"></div><div class="cfm-btns"><button type="button" class="btn ghost" id="bsNo">Cancel</button><button type="button" class="btn" id="bsGo" disabled>Share</button></div></div></div>
 <div class="editor" id="cfmDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" style="z-index:50"><div class="cfm-box"><h3 id="cfmTitle"></h3><p id="cfmMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="cfmNo">Cancel</button><button type="button" class="btn danger" id="cfmYes">Delete</button></div></div></div>
 <div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">ဆက်ရေးမည်</button><button type="button" class="btn ghost" id="soLvDrop">မသိမ်းဘဲ ထွက်မည်</button><button type="button" class="btn" id="soLvSave">Draft သိမ်းမည်</button></div></div></div>
 <div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><button type="button" class="lb-save" id="lbSave" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>Save image</span></button><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
@@ -5336,6 +5341,7 @@ const EN={
   "ဖျက်မှာ သေချာပါသလား?":"Delete this order?","ဖျက်မည်":"Delete","မဖျက်ပါ":"Keep",
   /* form */
   "မှာယူသည့် Channel":"Order channel","ဘယ်သူ့ Account ကနေ လာသလဲ":"Which account did it come from?","ဥပမာ – Ma Hla ၏ Personal Messenger":"e.g. Ma Hla's personal Messenger","အမည်":"Name","ဖုန်းနံပါတ်":"Phone number",
+  "📲 Share ပုံများ":"📲 Share pictures","Preview ပုံများ Share":"Share preview pictures","Share စရာ အော်ဒါ မရှိပါ":"No orders to share","ပုံ မလုပ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the pictures — try again","ပုံများ ပြင်ဆင်ဖို့ အချိန်ကြာနိုင်ပါတယ်။ ဆက်လုပ်မလား?":"Making the pictures may take a while. Continue?","ဆက်လုပ်မည်":"Continue",
   "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ အချိန်ပြန်ပြောမည်":"⏳ Customer will confirm time",
   "Pickup – ဆိုင်တွင် လာယူမည်":"Pickup – at the shop","📞 စောရလျှင် ဖုန်းဆက်ပေးပါ":"📞 Call if it's ready early","📞 စောရလျှင် ဖုန်းဆက်":"📞 Call if early","📷 ဓာတ်ပုံပို့ပေးရန်":"📷 Send a photo of the cake","📷 ဓာတ်ပုံပို့ရန်":"📷 Send photo","Delivery – အိမ်အရောက်ပို့":"Delivery – to the door",
   "ကိတ်":"Cake","ပုံမှန်ကိတ်သား":"Regular flavors","အခြားကိတ်သား":"Other flavor","စာရင်းမပါသော ကိတ်သား":"Flavor not on the list","See less ▴":"See less ▴",
@@ -5410,6 +5416,10 @@ const EN_RULES=[
   [/^ဒီဇိုင်း ဓာတ်ပုံ (\d+)$/,"Design photo $1"],
   [/^အရောင် (\d+)$/,"Color $1"],
   [/^ပို့ရန် – /,"Deliver to – "],
+  [/^ပုံ ပြင်ဆင်နေသည်… (\d+) \/ (\d+)$/,"Making pictures… $1 / $2"],
+  [/^Order (\d+) ခု ရှိပါတယ်$/,"There are $1 orders"],
+  [/^ပုံ (\d+) ပုံ အဆင်သင့်ဖြစ်ပါပြီ(?: \((\d+) ပုံ မရပါ\))? — Share နှိပ်ပြီး Viber ကို ရွေးပါ$/,"$1 pictures ready — tap Share and pick Viber"],
+  [/^ပုံ (\d+) ပုံ အဆင်သင့်ဖြစ်ပါပြီ(?: \((\d+) ပုံ မရပါ\))? — Save all နှိပ်ပြီး Viber ထဲက ပုံရွေး၍ ပို့ပါ$/,"$1 pictures ready — tap Save all, then send them from Viber"],
   [/^([A-Z]\d{3}) ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။$/,"$1 is already used by another order. Enter a new number."],
   [/^([A-Z]\d{3}) ကို (.+) ရဲ့ Order \((.*)\) က သုံးထားပါတယ်။$/,"$1 is used by $2's order ($3)."],
   [/^([A-Z]\d{3}) ကို အခြားဖုန်းတစ်လုံးက အခုလေးတင် ယူသွားပါတယ်။ နံပါတ်အသစ် ရေးပါ။$/,"$1 was just taken on another phone. Enter a new number."],
@@ -5664,6 +5674,33 @@ async function exportExcel(){
 }
 $("xlExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;exportExcel()});
 $("ordXlBtn").addEventListener("click",()=>{if(can("excel"))exportExcel()});
+/* Share the preview pictures of the orders shown: they are made one by one first (that takes a while), then a second tap
+   opens the share sheet, because phones only allow it straight after a tap */
+let bsFiles=[],bsUrls=[],bsRun=0;
+function bsClose(){bsRun++;bsUrls.forEach(u=>URL.revokeObjectURL(u));bsUrls=[];bsFiles=[];$("bsThumbs").innerHTML="";$("bsDlg").hidden=true}
+$("ordShareBtn").addEventListener("click",async()=>{
+  const list=shownList.slice();
+  if(!list.length){toast("Share စရာ အော်ဒါ မရှိပါ",3000);return}
+  if(list.length>20&&!await askConfirm(`Order ${list.length} ခု ရှိပါတယ်`,"ပုံများ ပြင်ဆင်ဖို့ အချိန်ကြာနိုင်ပါတယ်။ ဆက်လုပ်မလား?","ဆက်လုပ်မည်"))return;
+  bsClose();const run=bsRun;let fail=0;
+  $("bsGo").disabled=true;$("bsGo").textContent="Share";$("bsDlg").hidden=false;
+  for(const [i,o] of list.entries()){
+    $("bsMsg").textContent=`ပုံ ပြင်ဆင်နေသည်… ${i} / ${list.length}`;
+    try{const b=await buildPreview(o);if(run!==bsRun)return;
+      const name=`${o.no||"order"} ${o.name||""}`.trim().replace(/[\\/:*?"<>|]+/g," ")+".png";
+      bsFiles.push(new File([b],name,{type:"image/png"}));const u=URL.createObjectURL(b);bsUrls.push(u);
+      $("bsThumbs").insertAdjacentHTML("beforeend",`<img src="${u}" alt="${esc(name)}">`)}
+    catch(x){if(run!==bsRun)return;fail++}}
+  if(run!==bsRun)return;
+  if(!bsFiles.length){$("bsMsg").textContent="ပုံ မလုပ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ";return}
+  const share=!!navigator.canShare?.({files:bsFiles});
+  $("bsMsg").textContent=`ပုံ ${bsFiles.length} ပုံ အဆင်သင့်ဖြစ်ပါပြီ`+(fail?` (${fail} ပုံ မရပါ)`:"")+(share?" — Share နှိပ်ပြီး Viber ကို ရွေးပါ":" — Save all နှိပ်ပြီး Viber ထဲက ပုံရွေး၍ ပို့ပါ");
+  $("bsGo").textContent=share?"Share":"Save all";$("bsGo").disabled=false});
+$("bsGo").addEventListener("click",async()=>{if(!bsFiles.length)return;const fs=bsFiles.slice();
+  if(navigator.canShare?.({files:fs})){try{await navigator.share({files:fs});bsClose()}catch(x){if(x?.name!=="AbortError")toast("Share မရပါ — ပြန်စမ်းကြည့်ပါ",4000)}return}
+  /* no share sheet here (a computer): each picture is saved as a file */
+  for(const f of fs)await saveFile(f,f.name,"ပုံ");bsClose()});
+$("bsNo").addEventListener("click",bsClose);
 $("bkFile").addEventListener("change",async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
   let data=null;try{data=JSON.parse(await f.text())}catch(x){}
@@ -5716,7 +5753,7 @@ function renderMe(){
   $("unitBtn").hidden=!can("admin");
   $("bkBox").hidden=!can("admin");
   $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=true;   /* Excel is exported from Orders (the 📥 Excel button), not Settings */
-  $("ordDelBtn").hidden=!can("admin");$("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");   /* Production (Baking / Decoration) does not see the order report */
+  $("ordDelBtn").hidden=!can("admin");$("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");$("ordShareBtn").hidden=isDecorator();   /* Production (Baking / Decoration) does not see the order report */
   document.body.classList.toggle("no-print",!can("orders.print"));
   syncNewBtns();
   if(!canWriteOrders()&&!$("viewNew").hidden)showTab("list");
