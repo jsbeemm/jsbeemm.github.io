@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959307"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959739"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3499,7 +3499,7 @@ const addrKey=s=>String(s||"").toLowerCase().replace(/[\s,.၊။\-]+/g,"");
 const balOf=o=>Math.max(0,(o.total||0)-(o.deposit||0));
 function custGrp(o){if(!o?.date||!o.time||o.time==="tbc"||!custPh(o.phone)||o.status==="cancel")return[];
   const dv=o.delivery||"pickup",same=x=>x.status!=="cancel"&&x.date===o.date&&x.time===o.time&&custPh(x.phone)===custPh(o.phone)&&(x.delivery||"pickup")===dv&&(dv!=="delivery"||addrKey(x.addr)===addrKey(o.addr));
-  const list=orders.filter(x=>x.id!==o.id&&(!o.no||x.no!==o.no)&&same(x));if(!list.length)return[];
+  const list=orders.filter(x=>x.id!==o.id&&x.id!==o.selfId&&(!o.no||x.no!==o.no)&&same(x));if(!list.length)return[];
   return[...list,o].sort((a,b)=>String(a.no||"").localeCompare(String(b.no||"")))}
 const grpText=g=>`📦 အော်ဒါ ${g.length} ခု${g.every(x=>x.no)?" – "+g.map(x=>x.no).join(" + "):""}`;
 const phHtml=s=>phList(s).map(esc).join("<br>");
@@ -4845,7 +4845,8 @@ $("previewBtn").addEventListener("click",()=>{
   const {miss,at}=formMissing(f);
   if(miss.length){const err=$("formErr");err.textContent=miss.join("၊ ")+" ဖြည့်ရန် လိုအပ်ပါသည်။";err.hidden=false;goToField(at);return}
   /* an unsaved photo still shows in the preview from its local copy */
-  openPreview({...f,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
+  /* an order being edited names its saved copy (selfId), so with a changed number that copy is not counted as another order of the customer */
+  openPreview({...f,selfId:editingId||null,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
 });
 
 /* ---------- list ---------- */
