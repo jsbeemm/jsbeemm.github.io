@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793949966"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793950690"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8887,7 +8887,7 @@ function soAskLeave(){return new Promise(res=>{const ed=!!soEditing;
   $("soLvSave").onclick=()=>done("save");$("soLvDrop").onclick=()=>done("drop");$("soLvStay").onclick=()=>done("stay");
   $("soLeaveDlg").onclick=e=>{if(e.target===$("soLeaveDlg"))done("stay")}})}
 function soClose(){$("soDlg").hidden=true;soEditing=null;soDraftId=null;
-  if(history.state?.soDlg){soSkipPop=true;history.back()}}
+  if(history.state?.soDlg){soSkipPop=true;gSkip=true;history.back()}}
 async function soTryClose(){if(!$("soLeaveDlg").hidden)return;
   if(soState()===soSnap){soClose();return}
   const r=await soAskLeave();if(r==="stay")return;
@@ -8917,9 +8917,17 @@ function backStep(){
     top.hidden=true;return true}
   if(!$("backBtn").hidden){$("backBtn").click();return true}
   return false}
-try{if(!history.state?.guard&&!history.state?.soDlg){history.replaceState({app:1},"");history.pushState({guard:1},"")}}catch(e){}
-addEventListener("popstate",e=>{if(e.state?.guard||e.state?.soDlg||!$("soDlg").hidden)return;
-  if(backStep())history.pushState({guard:1},"");else history.back()});   /* Home with nothing open: leave the app */
+/* Android Chrome skips history steps that were added without a tap, so the steps are added on a tap: whenever the
+   screen is touched, up to 6 spare "back" steps are kept on top. Each Back uses one and does one step in the app;
+   on Home with nothing open, Back walks past the spare steps and leaves the app. */
+var gSkip=false,gExit=false;
+function gFill(){gExit=false;try{if(history.state?.soDlg||!$("soDlg").hidden)return;const d=history.state?.guard||0;if(d>=6)return;
+  for(let i=d+1;i<=6;i++)history.pushState({guard:i},"")}catch(e){}}
+addEventListener("pointerdown",gFill,true);addEventListener("keydown",gFill,true);
+addEventListener("popstate",e=>{if(soSkipPop)return;if(gSkip){gSkip=false;return}   /* the voucher form handled this Back / is closing its own step */
+  if(e.state?.soDlg||!$("soDlg").hidden)return;
+  if(gExit){history.back();return}
+  if(!backStep()){gExit=true;history.back()}});
 /* ---- Orders (collection "jsPreorders"): every sale starts as an order — items, quantities and prices, no money.
    "🚚 Delivered" gives everything left and makes the voucher; "တစ်စိတ်ပေး" opens a voucher with what is left so the
    quantities can be lowered to what is given now. Money is taken on those vouchers. An order is finished (✓ ပြီးပြီ) only
