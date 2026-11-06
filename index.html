@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959739"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793959963"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5754,7 +5754,7 @@ function renderMe(){
   $("unitBtn").hidden=!can("admin");
   $("bkBox").hidden=!can("admin");
   $("xlExport").hidden=$("xlHint").hidden=$("xlTitle").hidden=true;   /* Excel is exported from Orders (the 📥 Excel button), not Settings */
-  $("ordDelBtn").hidden=!can("admin");$("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");$("ordShareBtn").hidden=isDecorator();   /* Production (Baking / Decoration) does not see the order report */
+  $("ordDelBtn").hidden=!can("admin");$("ordRepBtn").hidden=!can("orders.report");$("ordXlBtn").hidden=!can("excel");$("ordShareBtn").hidden=false;   /* Share pictures: every role */   /* Production (Baking / Decoration) does not see the order report */
   document.body.classList.toggle("no-print",!can("orders.print"));
   syncNewBtns();
   if(!canWriteOrders()&&!$("viewNew").hidden)showTab("list");
