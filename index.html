@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946114"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946348"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4001,7 +4001,10 @@ function refreshNo(){checkNo()}
 /* a number already used by another order is flagged at once (and saving is refused) */
 const noTaken=no=>orders.some(o=>o.no===no&&o.id!==editingId);
 function checkNo(){const no=$("fNo").value.trim().toUpperCase(),dup=!!no&&noTaken(no);
-  $("fNo").classList.toggle("bad",dup);$("noDup").hidden=!dup;if(dup)$("noDup").textContent=`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`}
+  $("fNo").classList.toggle("bad",dup);$("noDup").hidden=!dup;if(dup)$("noDup").textContent=noUsedMsg(no,editingId)}
+/* which order has a number (it may be cancelled, finished, or outside the list's filters) */
+function noUsedMsg(no,exceptId){const u=orders.find(x=>x.no===no&&x.id!==exceptId);
+  return u?`${no} ကို ${u.name||"အခြား"} ရဲ့ Order (${[u.date?fmtDate(u.date):"",u.status?statusName(u.status):""].filter(Boolean).join(" · ")}) က သုံးထားပါတယ်။`:`${no} ကို အခြားဖုန်းတစ်လုံးက အခုလေးတင် ယူသွားပါတယ်။ နံပါတ်အသစ် ရေးပါ။`}
 $("fNo").addEventListener("input",()=>{noTouched=true;const v=$("fNo").value.toUpperCase().replace(/[^A-Z0-9]/g,"");if(v!==$("fNo").value)$("fNo").value=v;checkNo()});
 /* typing: the summary is redrawn a moment after the last key, and never while a phone keyboard is still composing a word
    (redrawing mid-word made Backspace in the middle of the text misbehave on phones) */
@@ -4081,7 +4084,7 @@ $("form").addEventListener("submit",async e=>{
   const no=$("fNo").value.trim().toUpperCase();
   const hadNo=!!(editingId&&orders.find(x=>x.id===editingId)?.no);
   if((no||hadNo)&&!NO_RE.test(no)){err.textContent="Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။";err.hidden=false;goToField([$("fNo")]);return}
-  if(no&&orders.some(o=>o.no===no&&o.id!==editingId)){err.textContent=`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;err.hidden=false;goToField([$("fNo")]);return}
+  if(no&&orders.some(o=>o.no===no&&o.id!==editingId)){err.textContent=noUsedMsg(no,editingId);err.hidden=false;goToField([$("fNo")]);return}
   const {total}=price(f);
   const prev=editingId?orders.find(o=>o.id===editingId):null;
   if(prev&&!canEditOrder(prev)){err.textContent="ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်။";return}
@@ -4098,7 +4101,7 @@ $("form").addEventListener("submit",async e=>{
     if(no&&(!prev||prev.no!==no)){const c=await claimNo(no,id);claimed=c==="ok";
       /* no internet: saved now, its number is confirmed (and changed if another phone took it) once back online */
       if(c==="offline")o.noPending=true;else if(c==="ok")delete o.noPending;
-      else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:`${no} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။`;
+      else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:noUsedMsg(no,id);
         err.hidden=false;if(c==="taken"&&!noTouched){$("fNo").value=nextNo();checkNo()}goToField([$("fNo")]);return}}
     await saveOrder(o);
     /* the customer's name or phone changed: offer to change the other orders with the same old name and phone too */
@@ -4623,7 +4626,7 @@ async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o
   const bad=m=>{toast(m,4000);inp?.focus();return null};
   if(!NO_RE.test(n))return bad("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။");
   /* say which order has it (it may be cancelled, finished, or outside the list's filters) */
-  {const u=orders.find(x=>x.no===n&&x.id!==o.id);if(u)return bad(`${n} ကို ${u.name||"အခြား"} ရဲ့ Order (${u.date?fmtDate(u.date):""}${u.status?" · "+statusName(u.status):""}) က သုံးထားပါတယ်။`)}
+  if(orders.some(x=>x.no===n&&x.id!==o.id))return bad(noUsedMsg(n,o.id));
   try{const c=await claimNo(n,o.id);
     if(c==="taken"||c==="busy")return bad(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
     const p={no:n,...(c==="offline"?{noPending:true}:{noPending:false}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"edit",[`Order No ${o.no||"—"} → ${n}`])};
@@ -5405,6 +5408,8 @@ const EN_RULES=[
   [/^အရောင် (\d+)$/,"Color $1"],
   [/^ပို့ရန် – /,"Deliver to – "],
   [/^([A-Z]\d{3}) ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။ နံပါတ်အသစ် ရေးပါ။$/,"$1 is already used by another order. Enter a new number."],
+  [/^([A-Z]\d{3}) ကို (.+) ရဲ့ Order \((.*)\) က သုံးထားပါတယ်။$/,"$1 is used by $2's order ($3)."],
+  [/^([A-Z]\d{3}) ကို အခြားဖုန်းတစ်လုံးက အခုလေးတင် ယူသွားပါတယ်။ နံပါတ်အသစ် ရေးပါ။$/,"$1 was just taken on another phone. Enter a new number."],
   [/^Download ထဲတွင် မတွေ့ပါက /,"If it's not in Downloads: "],
   /* "A၊ B ဖြည့်ရန် လိုအပ်ပါသည်။" → "Please fill in: A, B" */
   [/^(.+) ဖြည့်ရန် လိုအပ်ပါသည်။$/,(m,list)=>"Please fill in: "+list.split("၊ ").map(s=>EN[s]||s).join(", ")],
