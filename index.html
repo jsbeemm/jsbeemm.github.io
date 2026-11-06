@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793943777"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793943910"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1315,6 +1315,7 @@ input.ro{background:var(--sunk);font-family:var(--mono)}
 .del-box{width:min(100%,520px)}.del-list{display:grid;gap:8px;max-height:60vh;overflow:auto}
 .del-row{border:1px solid var(--line);border-radius:10px;padding:8px 12px;display:grid;gap:3px;font-size:13.5px}.del-row small{color:var(--muted);font-size:12px}
 .del-top{display:flex;gap:6px;align-items:baseline}.del-top span{margin-left:auto;font-weight:700;white-space:nowrap}.del-why-t{white-space:pre-wrap}
+.ex-thumbs{display:flex;gap:6px;margin-top:6px}.ex-thumbs img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
 .cfm-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}.cfm-btns .btn{width:auto;margin:0;min-width:96px}
 .cfm-btns .btn.danger{background:#B3261E;color:#fff}
 .cmt{margin-top:8px;display:grid;gap:6px}
@@ -2032,6 +2033,13 @@ span.star-ic{cursor:default}
       <div class="ex-row2">
         <label class="prf"><span>Payment method <b>*</b></span><select id="exPay"></select></label>
         <label class="prf"><span>Amount (<span id="exCurTxt">Ks</span>) <b>*</b></span><input id="exAmt" type="number" inputmode="numeric" min="0" step="1"></label>
+      </div>
+      <!-- optional pictures (a receipt, the item) -->
+      <div class="prf prq-pics"><span>Picture</span>
+        <div class="prq-phs" id="exPhs"></div>
+        <div class="prq-ph-btns" id="exPhBtns">
+          <label class="chip"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5.5-5.5L5 20"/></svg><span>Add picture</span><input type="file" id="exPick" accept="image/*" multiple hidden></label>
+        </div>
       </div>
       <div class="prf" id="exPeopleW"><span>Shared with</span><div class="ex-people" id="exPeople"></div></div>
       <div id="exSplitW" hidden><div class="ex-split-head"><span class="ex-split-lbl">Per person</span><button type="button" class="chip" id="exSplitClear">Clear desired amounts</button></div><div id="exSplitRows" class="ex-split-rows"></div></div>
@@ -6157,7 +6165,7 @@ function exSyncFilter(){
   if(!exF.mode||exF.mode==="range"){$("exFFrom").innerHTML=dateSelect("",exF.from,"From","",false,todayISO());$("exFTo").innerHTML=dateSelect("",exF.to,"To","",false,todayISO())}
 }
 const exItemHtml=(r,opts={})=>`<div class="ex-item">
-    <div class="ex-main"><b class="ex-desc" data-desc="${esc(r.desc||"")}"></b><small>${fmtDate(r.date)} · ${esc(r.pay||"")}${!exBiz()&&(r.shared||[]).length?` · 👥 ${r.shared.map(id=>esc(exPName(id))).join(", ")}`:""}</small></div>
+    <div class="ex-main"><b class="ex-desc" data-desc="${esc(r.desc||"")}"></b><small>${fmtDate(r.date)} · ${esc(r.pay||"")}${!exBiz()&&(r.shared||[]).length?` · 👥 ${r.shared.map(id=>esc(exPName(id))).join(", ")}`:""}</small>${(r.photos||[]).length?`<span class="ex-thumbs">${r.photos.map(id=>photoUrl(id)).filter(Boolean).map(u=>`<img src="${esc(u)}" data-exzoom="${esc(u)}" alt="">`).join("")}</span>`:""}</div>
     <div class="ex-side"><span><b class="ex-amt">${fmtAmt(r.amount,exCur(r))}</b>${opts.share?`<span class="ex-share">share ${fmtAmt(exShareOf(r,opts.share),exCur(r))}</span>`:""}</span>
       ${opts.edit?`<span class="ex-btns"><button type="button" class="o-ic" data-exedit="${esc(r.id)}" aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-exdel="${esc(r.id)}" aria-label="Delete" title="Delete">${TRASH_IC}</button></span>`:""}</div>
   </div>`;
@@ -6249,6 +6257,7 @@ function openExForm(r){
   /* today or an earlier day — never a future date */
   $("exDateBox").innerHTML=dateSelect("ex-date",r?.date||todayISO(),"Date","",false,todayISO());
   $("exDesc").value=r?.desc||"";$("exAmt").value=r?.amount??"";
+  exPhotos=(r?.photos||[]).map(id=>({id,url:photoUrl(id),fresh:false}));renderExPhotos();
   /* the methods ticked "Expense" in Settings → Payment methods */
   const em=pmFor("expense"),pays=em.concat(r?.pay&&!em.includes(r.pay)?[r.pay]:[]);
   $("exPay").innerHTML=`<option value="">— ရွေးပါ —</option>`+pays.map(p=>`<option value="${esc(p)}" ${p===(r?.pay||(em.includes(EX_DEFAULT_PAY)?EX_DEFAULT_PAY:""))?"selected":""}>${esc(pmLabel(p))}</option>`).join("");
@@ -6368,6 +6377,8 @@ $("exForm").addEventListener("submit",async e=>{
     const sum=ins.reduce((a,i)=>a+Math.round(Number(i.value)||0),0);if(sum!==amount){toast("Total shared amount က Total amount နဲ့ မတူသေးပါ");return}}
   const r={...(exEditing||{}),id:exEditing?.id||("ex"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date,desc,pay,cur:pmCur(pay),amount,
     ...(exBiz()?{}:{shared}),...(exEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
+  if(exPhotos.some(p=>!p.id)){toast("ပုံတင်နေဆဲပါ");return}
+  if(exPhotos.length)r.photos=exPhotos.map(p=>p.id);else delete r.photos;exPhotos.forEach(p=>p.fresh=false);
   if(split)r.split=split;else delete r.split;
   try{await saveEx(r);$("exDlg").hidden=true;exEditing=null;
     /* make sure the saved expense shows under the current filter */
@@ -6531,6 +6542,17 @@ async function shrinkImage(file,max=1600){
   c.getContext("2d").drawImage(img,0,0,c.width,c.height);
   return await new Promise(r=>c.toBlob(r,"image/jpeg",.85));
 }
+/* expense pictures: up to 3, the same way as a To Buy request's */
+let exPhotos=[];
+function renderExPhotos(){$("exPhs").innerHTML=exPhotos.map((p,i)=>`<div class="ph ${p.id?"":"busy"}"><img src="${esc(p.url)}" alt="Picture ${i+1}"><button type="button" class="x" data-exrm="${i}" aria-label="Remove">×</button></div>`).join("");
+  $("exPhBtns").hidden=!canStore()||exPhotos.length>=3;$("exSave").disabled=exPhotos.some(p=>!p.id)}
+$("exPick").addEventListener("change",async e=>{const fs=[...(e.target.files||[])];e.target.value="";
+  for(const f of fs.slice(0,3-exPhotos.length)){const p={id:null,url:"",fresh:true};exPhotos.push(p);
+    try{const b=await shrinkImage(f);p.url=await blobToData(b);renderExPhotos();const s=await storePhoto(b);p.id=s.id;p.url=s.url}
+    catch(x){exPhotos.splice(exPhotos.indexOf(p),1);toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}renderExPhotos()}});
+$("exPhs").addEventListener("click",e=>{const b=e.target.closest("[data-exrm]");if(!b)return;const [p]=exPhotos.splice(Number(b.dataset.exrm),1);if(p?.fresh&&p.id)deletePhoto(p.id);renderExPhotos()});
+/* a picture in the expense list opens large, with Save image */
+document.addEventListener("click",e=>{const z=e.target.closest("[data-exzoom]");if(z){e.stopPropagation();openPhotoSave(z.dataset.exzoom,"expense.jpg")}},true);
 async function addPRFiles(files){
   for(const f of [...files].slice(0,MAX_PR_PHOTOS-prPhotos.length)){
     const p={id:null,url:"",fresh:true};prPhotos.push(p);
