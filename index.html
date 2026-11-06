@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793943910"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793944992"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3081,7 +3081,7 @@ function tiersOf(o){if(o.tiers)return o.tiers;if(!o.tierN)return[];
   const fl=[o.flavor,...(o.tierSame===false?(o.tierFlavors||[]):Array(o.tierN-1).fill(o.flavor))];
   return fl.slice(0,o.tierN).map(k=>({dummy:false,size:o.size||"",layers:[k||""]}))}
 function tierLine(t){const sh=tierShpN(t)?` (${tierShpN(t)})`:"";if(t.dummy)return`${tierSz(t)}${sh} Dummy cake (${dumH(t)}" ${LANG==="en"?"high":"မြင့်"})`;
-  const ls=t.layers.map((k,j)=>(flvName(k).replace(/ Cake$/,"")||"—")+(lpOf(t,j)!==1?` (${lpTxt(lpOf(t,j))})`:"")),same=ls.every(x=>x===ls[0]);
+  const ls=t.layers.map((k,j)=>(lpOf(t,j)!==1?`(${lpTxt(lpOf(t,j))}) `:"")+(flvName(k).replace(/ Cake$/,"")||"—")),same=ls.every(x=>x===ls[0]);
   return`${tierSz(t)}${sh}${tierHt(t)?` · ${tierHt(t)}" ${LANG==="en"?"high":"မြင့်"}`:""} ${same&&ls.length>1?`${ls[0]} ×${ls.length}`:ls.join(" + ")}`}
 function tierText(o){const ts=tiersOf(o);if(!hasTiers(ctOf(o))||!ts.length)return"";
   return`${ts.length} ဆင့် · `+ts.map((t,i)=>`${i+1}: ${tierLine(t)}`).join(" / ")}
@@ -3155,10 +3155,11 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
       for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-cum[k];s+=`<path ${ln} d="M${x},${yb} H${x+W} L${x+W+dx},${yb-dy}"/>`}}
     else{s+=`<rect ${st} x="${x}" y="${top}" width="${W}" height="${h}" rx="10"/>`;for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-cum[k];s+=`<path ${ln} d="M${x},${yb} H${x+W}"/>`}}
     /* layers are listed top first in the form (Layer 1 = top), so they are drawn in that order from the top down */
-    const labels=t.dummy?["Dummy cake"]:ord.map(j=>(flvName((t.layers||[])[j]).replace(/ Cake$/,"")||"?")+(lpOf(t,j)!==1?` ${lpTxt(lpOf(t,j))}`:""));
+    const labels=t.dummy?["Dummy cake"]:ord.map(j=>flvName((t.layers||[])[j]).replace(/ Cake$/,"")||"?"),
+      fracs=t.dummy?[""]:ord.map(j=>lpOf(t,j)!==1?`(${lpTxt(lpOf(t,j))}) `:"");   /* a part cake reads "(1/2) 10" Chiffon" */
     /* one "Dump cake" label across the middle of a dummy tier; a real tier labels each layer */
-    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(cum[k]+hs[k]/2))+(kind==="cyl"?ry*.8:0)+FS*.35,txt=`${tierSz(t)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
-      s+=`<text x="${x+W/2}" y="${yc}" text-anchor="middle" font-size="${FS}" font-family="Noto Sans Myanmar, sans-serif" fill="${t.dummy?MUT:INK}"${fit}><tspan font-weight="700" fill="${ACC}" font-size="${Math.round(FS*1.3)}">${esc(tierSz(t))}</tspan> ${esc(lb)}</text>`});
+    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(cum[k]+hs[k]/2))+(kind==="cyl"?ry*.8:0)+FS*.35,txt=`${fracs[k]}${tierSz(t)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
+      s+=`<text x="${x+W/2}" y="${yc}" text-anchor="middle" font-size="${FS}" font-family="Noto Sans Myanmar, sans-serif" fill="${t.dummy?MUT:INK}"${fit}>${fracs[k]?`<tspan font-weight="700" fill="${ACC}" font-size="${Math.round(FS*1.3)}">${esc(fracs[k])}</tspan>`:""}<tspan font-weight="700" fill="${ACC}" font-size="${Math.round(FS*1.3)}">${esc(tierSz(t))}</tspan> ${esc(lb)}</text>`});
     /* in the form, each layer band is a tap target that jumps to that tier's size and flavor on the left */
     if(pick)for(let k=0;k<L;k++)s+=`<rect class="tp-hit" data-ti="${t._i}" data-li="${t.dummy?-1:ord[k]}" x="${x}" y="${y0-cum[k+1]}" width="${W+dx}" height="${hs[k]}" fill="transparent"/>`;
     parts.push(s+"</g>");
