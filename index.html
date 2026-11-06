@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793946537"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793949966"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8902,6 +8902,24 @@ addEventListener("popstate",()=>{if(soSkipPop){soSkipPop=false;return}if($("soDl
   if(!$("soLeaveDlg").hidden){$("soLvStay").click();return}
   if(!$("soPickDlg").hidden){$("soPickDlg").hidden=true;return}
   soTryClose()});
+/* ---- the phone's Back button, everywhere: one step back each time — the open picker / dialog / picture closes first,
+   then the page goes back the way its ‹ button does; only on Home does Back leave the app.
+   A "guard" step sits on top of the page's history; Back lands under it, does one step, and puts the guard back.
+   (The voucher form keeps its own step above the guard and handles Back itself.) ---- */
+const BACK_CLOSE=['#cfmNo','[data-ov="no"]','[data-dw="no"]','[data-dl]','#soLvStay','#pvNoX','#slipNoX','#lbClose','#slipClose','.x-close:not(.x-hid)','[data-close-dlg]'];
+function backStep(){
+  if(!dpPop.hidden){dpClose();return true}
+  const vis=e=>!e.hidden&&getComputedStyle(e).display!=="none";
+  const ovs=[...document.querySelectorAll(".editor,.lightbox,#notiPop")].filter(e=>e.id!=="soDlg"&&vis(e));
+  if(ovs.length){const z=e=>Number(getComputedStyle(e).zIndex)||0;
+    const top=ovs.reduce((a,b)=>z(b)>=z(a)?b:a);   /* the highest one; on a tie the later one in the page (opened last) */
+    for(const s of BACK_CLOSE){const b=[...top.querySelectorAll(s)].find(x=>x.offsetParent!==null&&!x.disabled);if(b){b.click();return true}}
+    top.hidden=true;return true}
+  if(!$("backBtn").hidden){$("backBtn").click();return true}
+  return false}
+try{if(!history.state?.guard&&!history.state?.soDlg){history.replaceState({app:1},"");history.pushState({guard:1},"")}}catch(e){}
+addEventListener("popstate",e=>{if(e.state?.guard||e.state?.soDlg||!$("soDlg").hidden)return;
+  if(backStep())history.pushState({guard:1},"");else history.back()});   /* Home with nothing open: leave the app */
 /* ---- Orders (collection "jsPreorders"): every sale starts as an order — items, quantities and prices, no money.
    "🚚 Delivered" gives everything left and makes the voucher; "တစ်စိတ်ပေး" opens a voucher with what is left so the
    quantities can be lowered to what is given now. Money is taken on those vouchers. An order is finished (✓ ပြီးပြီ) only
