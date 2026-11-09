@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794222619"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794231629"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3156,9 +3156,9 @@ const mouldH=(inch,sk)=>sk==="circle"&&(inch===6||inch===8)?2.5:3;
 /* ink: on the printed slip the drawing uses only the slip's colour (the order-number colour): no black, no grey fills */
 function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t,_i:i}).filter(t=>t&&t.size);if(!ts.length)return"";
   /* a Dummy cake tier is one plain dashed block, as high as set in inches */
-  const sk=shapeKey(shape||"circle"),kind=sk==="square"||sk==="rect"?"box":sk==="circle"?"cyl":"flat";
+  const sk=shapeKey(shape||"circle"),kind=sk==="square"||sk==="rect"?"box":sk==="circle"?"cyl":sk==="heart"?"heart":"flat";
   /* a tier can have its own shape */
-  const skOf=t=>shapeKey(t.shape||shape||"circle"),kindOf=k=>k==="square"||k==="rect"?"box":k==="circle"?"cyl":"flat";
+  const skOf=t=>shapeKey(t.shape||shape||"circle"),kindOf=k=>k==="square"||k==="rect"?"box":k==="circle"?"cyl":k==="heart"?"heart":"flat";
   const INK=ink||"#2B1B23",MUT=ink||"#7A6570",ACC=ink||"#C8285F",BODY="#FFFFFF",SIDE=ink?"#FFFFFF":"#EEE7EA",DUM=ink?"#FFFFFF":"#EEE7EA";
   const PX=20,parts=[];let y0=0,minY=0,maxX=0,botExt=0,totIn=0,topY=0;const dims=[];   /* 20 px per inch, across and up */
   /* label sizes grow with the cake: a tall cake is scaled down a lot on the slip, so its text starts bigger */
@@ -3170,7 +3170,8 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
     const W=(sk==="rect"?150:120)+(inch-6)*20,L=t.dummy?1:Math.max(1,(t.layers||[]).length),ord=Array.from({length:L},(_,k)=>L-1-k),fs=t.dummy?[1]:ord.map(j=>lpOf(t,j)),fsum=fs.reduce((a,v)=>a+v,0),
       h=t.dummy?dumH(t)*PX:tierHt(t)?tierHt(t)*PX:fsum*mouldH(inch,sk)*PX*hm;   /* each layer is one mould high (a 1/2 or 1/3 layer that part of it), drawn to scale with the width; a Dump cake is as high as set */
     const hs=fs.map(v=>h*v/fsum),cum=hs.reduce((a,v)=>(a.push(a[a.length-1]+v),a),[0]);   /* each layer's height, and where each one starts from the bottom */
-    const ry=kind==="cyl"?W*.075:0,dx=kind==="box"?W*.16:0,dy=kind==="box"?W*.09:0,x=-W/2-dx/2,top=y0-h;
+    /* a heart is drawn like the round cake: a heart-shaped top seen from the front, its point towards us */
+    const ry=kind==="cyl"?W*.075:kind==="heart"?14.5*W/32*.28:0,dx=kind==="box"?W*.16:0,dy=kind==="box"?W*.09:0,x=-W/2-dx/2,top=y0-h;
     const st=t.dummy?`fill="${DUM}" stroke="${MUT}" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"`:`fill="${BODY}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`;
     const sideSt=t.dummy?st:`fill="${SIDE}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"`,ln=`fill="none" stroke="${t.dummy?MUT:INK}" stroke-width="1.5"`;
     if(i===0)botExt=ry+4;
@@ -3178,6 +3179,12 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
     if(kind==="cyl"){s+=`<path ${st} d="M${x},${top} L${x},${y0} A${W/2},${ry} 0 0 0 ${x+W},${y0} L${x+W},${top} Z"/>`;
       for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-cum[k];s+=`<path ${ln} d="M${x},${yb} A${W/2},${ry} 0 0 0 ${x+W},${yb}"/>`}
       s+=`<ellipse ${st} cx="${x+W/2}" cy="${top}" rx="${W/2}" ry="${ry}"/>`}
+    else if(kind==="heart"){const sx=W/32,sy=sx*.28,cx=x+W/2,PI=Math.PI,
+        P=(a,Y)=>{const n=Math.sin(a);return(cx+16*n*n*n*sx).toFixed(1)+","+(Y-(13*Math.cos(a)-5*Math.cos(2*a)-2*Math.cos(3*a)-Math.cos(4*a)+2.5)*sy).toFixed(1)},
+        arc=(Y,a0,a1,N=48)=>Array.from({length:N+1},(_,k)=>P(a0+(a1-a0)*k/N,Y)).join(" L");   /* front half: right lobe → point → left lobe */
+      s+=`<path ${st} d="M${arc(y0,PI/2,PI*1.5)} L${arc(top,PI*1.5,PI/2)} Z"/>`;
+      for(let k=1;k<(t.dummy?1:L);k++)s+=`<path ${ln} d="M${arc(y0-cum[k],PI/2,PI*1.5)}"/>`;
+      s+=`<path ${st} d="M${arc(top,0,PI*2,96)} Z"/>`}
     else if(kind==="box"){s+=`<path ${st} d="M${x},${top} L${x+dx},${top-dy} L${x+W+dx},${top-dy} L${x+W},${top} Z"/><path ${sideSt} d="M${x+W},${top} L${x+W+dx},${top-dy} L${x+W+dx},${y0-dy} L${x+W},${y0} Z"/><rect ${st} x="${x}" y="${top}" width="${W}" height="${h}"/>`;
       for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-cum[k];s+=`<path ${ln} d="M${x},${yb} H${x+W} L${x+W+dx},${yb-dy}"/>`}}
     else{s+=`<rect ${st} x="${x}" y="${top}" width="${W}" height="${h}" rx="10"/>`;for(let k=1;k<(t.dummy?1:L);k++){const yb=y0-cum[k];s+=`<path ${ln} d="M${x},${yb} H${x+W}"/>`}}
@@ -3185,7 +3192,7 @@ function tiersSvg(tiers,shape,pick,ink){const ts=(tiers||[]).map((t,i)=>t&&{...t
     const labels=t.dummy?["Dummy cake"]:ord.map(j=>flvName((t.layers||[])[j]).replace(/ Cake$/,"")||"?"),
       fracs=t.dummy?[""]:ord.map(j=>lpOf(t,j)!==1?`(${lpTxt(lpOf(t,j))}) `:"");   /* a part cake reads "(1/2) 10" Chiffon" */
     /* one "Dump cake" label across the middle of a dummy tier; a real tier labels each layer */
-    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(cum[k]+hs[k]/2))+(kind==="cyl"?ry*.8:0)+FS*.35,txt=`${fracs[k]}${tierSz(t)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
+    labels.forEach((lb,k)=>{const yc=(t.dummy?y0-h/2:y0-(cum[k]+hs[k]/2))+(kind==="cyl"||kind==="heart"?ry*.8:0)+FS*.35,txt=`${fracs[k]}${tierSz(t)} ${lb}`,fit=txt.length*FS*.53>W-14?` textLength="${W-14}" lengthAdjust="spacingAndGlyphs"`:"";
       s+=`<text x="${x+W/2}" y="${yc}" text-anchor="middle" font-size="${FS}" font-family="Noto Sans Myanmar, sans-serif" fill="${t.dummy?MUT:INK}"${fit}>${fracs[k]?`<tspan font-weight="700" fill="${ACC}" font-size="${Math.round(FS*1.3)}">${esc(fracs[k])}</tspan>`:""}<tspan font-weight="700" fill="${ACC}" font-size="${Math.round(FS*1.3)}">${esc(tierSz(t))}</tspan> ${esc(lb)}</text>`});
     /* in the form, each layer band is a tap target that jumps to that tier's size and flavor on the left */
     if(pick)for(let k=0;k<L;k++)s+=`<rect class="tp-hit" data-ti="${t._i}" data-li="${t.dummy?-1:ord[k]}" x="${x}" y="${y0-cum[k+1]}" width="${W+dx}" height="${hs[k]}" fill="transparent"/>`;
