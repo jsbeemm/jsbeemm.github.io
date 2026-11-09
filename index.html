@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794198156"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794199647"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -666,6 +666,10 @@ label.f > span b{color:var(--accent);font-weight:500}
   body > *:not(#printArea){display:none!important}
   html,body{background:#fff!important;margin:0!important;padding:0!important}
   #printArea{display:flex!important}
+  /* exactly one sheet: nothing may run past the first page (a sliver past it printed a second, empty sheet) */
+  html,body{height:auto!important;min-height:0!important}
+  body{max-height:100vh;overflow:hidden!important}
+  #printArea{break-inside:avoid;break-after:avoid;page-break-after:avoid}
 }
 /* slip text sizes are multiplied by --tz: layoutSlip raises it (up to 1.7×) when the paper has room to spare */
 #printArea{position:fixed;left:-9999px;top:0;width:3.5in;box-sizing:border-box;flex-direction:column;font-family:var(--mm);font-size:calc(11px*var(--tz,1));line-height:1.45;color:var(--pc);background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -4772,7 +4776,7 @@ async function layoutSlip(o){
     if(measure()<=room){while(hi-lo>2){const mid=(lo+hi)>>1;el.style.setProperty("--ph",mid+"px");if(measure()<=room)lo=mid;else hi=mid}el.style.setProperty("--ph",lo+"px")}}
   const h=measure(),z=h>room?Math.floor(room/h*1000)/1000:1;
   if(z<1)el.style.zoom=String(z);
-  el.style.minHeight=Math.floor(room/z)+"px";                       /* footer sits in the bottom-right corner */
+  el.style.minHeight=(Math.floor(room/z)-3)+"px";                       /* footer sits in the bottom-right corner */
 }
 async function exportSlip(o){
   if(!o)return;
