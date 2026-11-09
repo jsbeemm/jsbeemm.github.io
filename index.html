@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1793960079"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794195822"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1511,6 +1511,8 @@ span.star-ic{cursor:default}
           <label class="check call-early" id="fCallEarlyW" hidden><input type="checkbox" id="fCallEarly"> 📞 စောရလျှင် ဖုန်းဆက်ပေးပါ</label>
           <!-- for Pickup and Delivery alike: send the customer a photo of the finished cake -->
           <label class="check call-early" id="fSendPhotoW" hidden><input type="checkbox" id="fSendPhoto"> 📷 ဓာတ်ပုံပို့ပေးရန်</label>
+          <!-- a printed voucher goes along with the cake -->
+          <label class="check call-early" id="fWithVoucherW" hidden><input type="checkbox" id="fWithVoucher"> 🧾 ဘောက်ချာထည့်ပေးရန်</label>
           </div>
         </fieldset>
 
@@ -3030,7 +3032,7 @@ function readForm(){
     charges,discount:num("fDiscount"),delivAmt:delivery==="delivery"?num("fDelivAmt"):0,
     date:$("fDate").value,time:getTime(),
     delivery:(document.querySelector('input[name="fDeliv"]:checked')?.value||""),
-    callEarly:delivery==="pickup"&&$("fCallEarly").checked,sendPhoto:!!delivery&&$("fSendPhoto").checked,
+    callEarly:delivery==="pickup"&&$("fCallEarly").checked,sendPhoto:!!delivery&&$("fSendPhoto").checked,withVoucher:!!delivery&&$("fWithVoucher").checked,
     recvSame:$("fRecvSame").checked,recvName:$("fRecvName").value.trim(),recvPhone:$("fRecvPhone").value.trim(),
     addr:$("fAddr").value.trim(),
     /* deposit = everything paid so far; pay = the latest method (older views read these) */
@@ -3294,7 +3296,7 @@ function updateReceipt(){syncShapeAvail();setTimeout(syncSaveBtn);setTimeout(syn
   const f=readForm(),{lines,total}=price(f);
   const live=slipHTML({...f,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
   if($("liveSlip").__html!==live){$("liveSlip").innerHTML=live;$("liveSlip").__html=live}   /* rebuilt only when it changes, so photos don't flicker */
-  $("addrWrap").hidden=$("delivSet").hidden=f.delivery!=="delivery";$("fCallEarlyW").hidden=f.delivery!=="pickup";$("fSendPhotoW").hidden=!f.delivery;
+  $("addrWrap").hidden=$("delivSet").hidden=f.delivery!=="delivery";$("fCallEarlyW").hidden=f.delivery!=="pickup";$("fSendPhotoW").hidden=$("fWithVoucherW").hidden=!f.delivery;
   $("chOtherWrap").hidden=f.channel!=="Others";
   $("customWrap").hidden=f.cakeType==="std";syncTierBox();
   {const req=$("customWrap").querySelector("span b");if(req)req.hidden=f.cakeType!=="custom"}   /* details are required for "Customized", optional for a tiered cake */
@@ -3897,7 +3899,7 @@ function fillForm(o){
   /* a typed price (unlisted flavor, customized size, Wedding Cake) is per cake: an order of several holds price × count */
   $("fPrice").value=o.cakeType==="wedding"||o.decoType==="mixed"||manualPrice(fk,sz)||(o.decoType==="mini"&&(o.miniDeco==="fondant"||o.miniDeco==="mixed"))?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
   syncTierBox();
-  document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;
+  document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;$("fWithVoucher").checked=!!o.withVoucher;
   $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("noField").hidden=!o.no;$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
   $("draftBtn").hidden=true;   /* drafts are for new orders only */
   editSnap=null;setTimeout(()=>{if(editingId===o.id)editSnap=formSig()},60);
@@ -4122,7 +4124,7 @@ $("form").addEventListener("submit",async e=>{
     /* photos removed while editing are no longer referenced by any order */
     if(prev)(prev.photos||[]).filter(id=>!o.photos.includes(id)).forEach(deletePhoto);
     if(no&&(!prev||prev.no!==no))await saveLastNo(no);
-    lastSavedId=id;
+    lastSavedId=id;lastSavedOrder=o;
     if(draftId)dropDraft(draftId).catch(()=>{});   /* a finished draft becomes the order */
     toast(o.noPending?`📴 ${o.no} သိမ်းပြီး — Offline ဖြစ်နေလို့ Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်`:prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no||o.name||"Order"} သိမ်းပြီး`,o.noPending?6000:undefined);resetForm(true);showTab("list");
     if(afterSave&&Date.now()-afterSave.at<60000){const c=afterSave.cont;afterSave=null;c()}afterSave=null}
@@ -4215,7 +4217,7 @@ async function buildPreviewCanvas(o){
 
     /* ── header, one row like the printed slip: customer · order number · date + time ── */
     const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the time, on the right */
-    const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":""].filter(Boolean);
+    const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":"",o.withVoucher?"🧾 ဘောက်ချာထည့်ပေးရန်":""].filter(Boolean);
     /* right: date, the time pill under it (delivery marked "Deli"), then the shop notes */
     const rW=Math.max(width(dateS,40,700),width(timeS,22,700)+32);
     text(dateS,P+LW,y0+40,40,{align:"right",weight:700});
@@ -4406,6 +4408,8 @@ async function openPreview(o,fromForm=false){
   /* decorators only look at the order here: no Print / Share / Save image */
   if(isDecorator()){["pvPrint","pvShare","pvSave"].forEach(id=>$(id).hidden=true);$("pvNote").textContent=""}
   else{$("pvPrint").hidden=$("pvShare").hidden=false}
+  /* an order not saved yet has no number: Print stays dimmed until "Save order & image" */
+  $("pvPrint").disabled=fromForm;$("pvPrint").title=fromForm?"Save order & image နှိပ်ပြီးမှ Print လုပ်လို့ရပါမယ်":"Print";
   /* offline: the number on this picture may still change once the phone is back online */
   if(db&&typeof db.runTransaction==="function"&&((fromForm&&navigator.onLine===false)||o.noPending))$("pvNote").textContent="📴 Offline — Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်";
   syncPvFinish();pvFormMode=fromForm;syncPvStart();syncPvEdit();syncPvHelp();syncPvAddPhoto();syncPvPrinted();syncPvNo();
@@ -4549,9 +4553,14 @@ $("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
    then the order is saved exactly as the form's Save button does, and the preview closes */
 $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;if(formSaving){toast(SAVING_MSG);return}const b=$("pvSaveAll");b.disabled=true;
   try{await saveFile(pvBlob,pvName,"ပုံ")}catch(e){}
-  /* Print setup opens only from the Print button (that is when the order takes its number) */
-  $("preview").hidden=true;b.disabled=false;
-  $("form").requestSubmit()});
+  /* the preview stays open: once saved it shows the saved order, so Print (which gives the order its number) can be pressed */
+  const before=lastSavedOrder;
+  afterSave={at:Date.now(),cont:()=>{const o=orders.find(x=>x.id===lastSavedId)||lastSavedOrder;if(o)openPreview(o)}};
+  $("form").requestSubmit();
+  await new Promise(r=>setTimeout(r,60));while(formSaving)await new Promise(r=>setTimeout(r,120));
+  b.disabled=false;
+  /* not saved (something missing or a number problem): close the preview so the message in the form can be seen */
+  if(lastSavedOrder===before){afterSave=null;$("preview").hidden=true}});
 /* decorators get the order preview and photo viewer for 10 seconds only, with a live countdown, then they close by themselves */
 const PEEK_SECS=10,peek={};var lbOrder=null;   /* the order whose photo the full-screen viewer shows, if any */
 const peekBadge=document.createElement("div");peekBadge.className="peek-badge";peekBadge.hidden=true;peekBadge.setAttribute("aria-live","polite");document.body.append(peekBadge);
@@ -4691,7 +4700,7 @@ function slipHTML(o,live=false){
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${o.time==="tbc"?"":fmtTimeShort(o.time)}</div>
-      ${(!deli&&o.callEarly)||o.sendPhoto||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
@@ -4920,7 +4929,7 @@ function render(){
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
-        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto||grp.length>1||o.noPending?`<div class="o-modes">${o.noPending?`<span class="mode call" title="Offline ဖြစ်နေတုန်း သိမ်းထားလို့ Internet ပြန်ရမှ အတည်ပြုပါမယ်">📴 No. အတည်မပြုရသေး</span>`:""}${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
+        ${o.delivery==="delivery"||o.callEarly||o.sendPhoto||o.withVoucher||grp.length>1||o.noPending?`<div class="o-modes">${o.noPending?`<span class="mode call" title="Offline ဖြစ်နေတုန်း သိမ်းထားလို့ Internet ပြန်ရမှ အတည်ပြုပါမယ်">📴 No. အတည်မပြုရသေး</span>`:""}${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.withVoucher?`<span class="mode call" title="ဘောက်ချာထည့်ပေးရန်">🧾 ဘောက်ချာထည့်ရန်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
         ${isBak(o)?bakCard(o):""}<p class="o-cake"${isBak(o)?" hidden":""}><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[dcLabel(o)?`<span class="dc">${esc(dcLabel(o))}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
@@ -5275,7 +5284,7 @@ $("orders").addEventListener("click",async e=>{
 $("orders").addEventListener("change",e=>{const g=e.target.closest(".qp-g");if(!g)return;const a=g.closest(".qp").querySelector(".qp-a");a.value=g.checked?g.dataset.total:"";a.readOnly=g.checked});
 /* ---------- tabs / toast ---------- */
 /* ---------- leaving an order being edited with unsaved changes asks first: save / don't save / keep editing ---------- */
-var editSnap=null,afterSave=null,lastSavedId=null;
+var editSnap=null,afterSave=null,lastSavedId=null,lastSavedOrder=null;
 /* an order is given its number when it is first printed: the next free number, claimed so no two phones get the same one
    (offline: given now and confirmed once back online, like any number given offline) */
 async function ensureNo(o){if(!o?.id)return o;const live=orders.find(x=>x.id===o.id)||o;if(live.no)return live;
@@ -5347,7 +5356,7 @@ const EN={
   "မှာယူသည့် Channel":"Order channel","ဘယ်သူ့ Account ကနေ လာသလဲ":"Which account did it come from?","ဥပမာ – Ma Hla ၏ Personal Messenger":"e.g. Ma Hla's personal Messenger","အမည်":"Name","ဖုန်းနံပါတ်":"Phone number",
   "📲 Share ပုံများ":"📲 Share pictures","Preview ပုံများ Share":"Share preview pictures","Share စရာ အော်ဒါ မရှိပါ":"No orders to share","ပုံ မလုပ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the pictures — try again","ပုံများ ပြင်ဆင်ဖို့ အချိန်ကြာနိုင်ပါတယ်။ ဆက်လုပ်မလား?":"Making the pictures may take a while. Continue?","ဆက်လုပ်မည်":"Continue",
   "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ အချိန်ပြန်ပြောမည်":"⏳ Customer will confirm time",
-  "Pickup – ဆိုင်တွင် လာယူမည်":"Pickup – at the shop","📞 စောရလျှင် ဖုန်းဆက်ပေးပါ":"📞 Call if it's ready early","📞 စောရလျှင် ဖုန်းဆက်":"📞 Call if early","📷 ဓာတ်ပုံပို့ပေးရန်":"📷 Send a photo of the cake","📷 ဓာတ်ပုံပို့ရန်":"📷 Send photo","Delivery – အိမ်အရောက်ပို့":"Delivery – to the door",
+  "Pickup – ဆိုင်တွင် လာယူမည်":"Pickup – at the shop","📞 စောရလျှင် ဖုန်းဆက်ပေးပါ":"📞 Call if it's ready early","📞 စောရလျှင် ဖုန်းဆက်":"📞 Call if early","📷 ဓာတ်ပုံပို့ပေးရန်":"📷 Send a photo of the cake","🧾 ဘောက်ချာထည့်ပေးရန်":"🧾 Put a voucher in","ဘောက်ချာထည့်ပေးရန်":"Put a voucher in","🧾 ဘောက်ချာထည့်ရန်":"🧾 Voucher in","📷 ဓာတ်ပုံပို့ရန်":"📷 Send photo","Delivery – အိမ်အရောက်ပို့":"Delivery – to the door",
   "ကိတ်":"Cake","ပုံမှန်ကိတ်သား":"Regular flavors","အခြားကိတ်သား":"Other flavor","စာရင်းမပါသော ကိတ်သား":"Flavor not on the list","See less ▴":"See less ▴",
   "ရွေးထားသော ကိတ်သား":"Selected flavor","ကိတ်သားအမည်":"Flavor name","ဥပမာ – Mango Mousse":"e.g. Mango Mousse",
   "အရွယ်အစား":"Size","— ပုံသဏ္ဌာန် ရွေးပါ —":"— Choose shape —","ဒီနေရာကနေ Printer ခေါ်လို့ မရပါ — JPEG သိမ်းပြီး Print ထုတ်ပါ":"The printer can't be opened from here — save the JPEG and print that","Order မှတ်ချက်":"Order note","ဥပမာ – ဝယ်သူ ကိုယ်တိုင် ထပ်ဆက်သွယ်မည်၊ လက်ဆောင်ထုပ်ပေးရန်…":"e.g. customer will call again, gift wrap…","အရေအတွက်":"Quantity","(ပုံစံတူ ကိတ်)":"(same cake)","ကိတ် အရေအတွက်":"Cake quantity","တစ်လုံး လျှော့ရန်":"One less","တစ်လုံး တိုးရန်":"One more","မရပါ":"n/a","ဈေး ရိုက်ထည့်ရန်":"enter price","ဒီ Size မှာ မရပါ":"Not available in this size","ဒီ Size မှာ ရနိုင်သော ကိတ်သား":"a flavor available in this size","Customized အရွယ်အစား":"Customized size","ဥပမာ – 7 lb (18\") / 20 x 30 cm":"e.g. 7 lb (18\") / 20 x 30 cm",
@@ -5600,7 +5609,7 @@ const fmtStamp=iso=>{if(!iso)return"";const d=new Date(iso);return`${fmtDate(iso
 const stamp=()=>({at:new Date().toISOString(),by:me.id||null});
 /* what an edit changed, field by field, in words the shop uses */
 const HIST_FIELDS=[["Order no",o=>o.no],["အမည်",o=>o.name],["ဖုန်း",o=>o.phone],["Channel",o=>chLabel(o)],["ယူမည့်နေ့",o=>o.date?fmtDate(o.date):""],["အချိန်",o=>o.time?fmtTime(o.time):""],
-  ["Pickup/Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup"],["စောရလျှင် ဖုန်းဆက်",o=>o.delivery!=="delivery"&&o.callEarly?"✓":""],["ဓာတ်ပုံပို့ပေးရန်",o=>o.sendPhoto?"✓":""],["Size",o=>o.sizeName],["ကိတ်သား",o=>o.flavorName],["Design",o=>DECO_N[o.decoType]||"Cream design"],["ပုံသဏ္ဌာန်",o=>shapeName(o)],["ကိတ်အမျိုးအစား",o=>ctLbl(o)||"ပုံမှန်"],
+  ["Pickup/Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup"],["စောရလျှင် ဖုန်းဆက်",o=>o.delivery!=="delivery"&&o.callEarly?"✓":""],["ဓာတ်ပုံပို့ပေးရန်",o=>o.sendPhoto?"✓":""],["ဘောက်ချာထည့်ပေးရန်",o=>o.withVoucher?"✓":""],["Size",o=>o.sizeName],["ကိတ်သား",o=>o.flavorName],["Design",o=>DECO_N[o.decoType]||"Cream design"],["ပုံသဏ္ဌာန်",o=>shapeName(o)],["ကိတ်အမျိုးအစား",o=>ctLbl(o)||"ပုံမှန်"],
   ["Design Code",o=>o.design],["ကိတ်ပေါ်ရေးမည့်စာ",o=>o.msg],["Design မှတ်ချက်",o=>o.designNote],["Customized",o=>o.custom],["အဆင့်ကိတ်",o=>tierText(o)],["Cupcake",o=>cupText(o)],["ဓာတ်ပုံ",o=>(o.photos||[]).length+" ပုံ"],
   ["Additional",o=>orderCharges(o).map(c=>`${c.note||"Additional"} ${Number(c.amt||0).toLocaleString("en-US")}`).join(", ")],
   ["လက်ခံမည့်သူ",o=>o.delivery==="delivery"?[o.recvName,o.recvPhone].filter(Boolean).join(" "):""],["လိပ်စာ",o=>o.delivery==="delivery"?o.addr:""],["Delivery charge",o=>o.delivery==="delivery"&&o.delivAmt?fmt(o.delivAmt):""],["Delivery မှတ်ချက်",o=>o.delivNote],["Order မှတ်ချက်",o=>o.orderNote],
@@ -5634,7 +5643,7 @@ $("bkExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;expor
 
 /* ---------- Excel: the orders the list shows now, one row each, money as numbers so Excel can add them up ---------- */
 const XL_COLS=[["Order no",o=>o.no,8],["Pickup date",o=>o.date?fmtDate(o.date):"",12],["Time",o=>o.time?fmtTime(o.time):"",9],
-  ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],
+  ["Customer",o=>o.name,16],["Phone",o=>o.phone,13],["Channel",o=>chLabel(o),12],["Pickup / Delivery",o=>o.delivery==="delivery"?"Delivery":"Pickup",10],["Call if early",o=>o.delivery!=="delivery"&&o.callEarly?"Yes":"",9],["Send photo",o=>o.sendPhoto?"Yes":"",9],["Voucher with cake",o=>o.withVoucher?"Yes":"",9],
   ["Type",o=>isBak(o)?"Bakery products":"Cake",10],["Items",o=>isBak(o)?bakItemsOf(o).map(l=>l.name||"").join("\n"):"",26],   /* names only; quantities and prices are in their own columns */
   /* cake-only details stay blank on a Bakery products order */
   ["Size",o=>isBak(o)?"":o.sizeName,12],["Flavor",o=>isBak(o)?"":o.flavorName,16],["Design type",o=>isBak(o)?"":(DECO_N[o.decoType]||"Cream design").replace(" design","")+(o.decoType==="mini"&&o.miniDeco==="fondant"?" · Fondant":o.decoType==="mini"&&o.miniDeco==="mixed"?" · Cream and fondant mixed":""),10],["Product code",o=>isBak(o)?bakItemsOf(o).map(l=>l.code||(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.code:"")||"").join("\n"):o.cakeCode||(ctOf(o)==="wedding"?weddingCode():""),10],["Product name",o=>isBak(o)?bakItemsOf(o).map(l=>(typeof pds!=="undefined"?pds.find(p=>p.id===l.pid)?.name:"")||l.name||"").join("\n"):((typeof pds!=="undefined"&&o.cakeCode?pds.find(p=>p.code===o.cakeCode)?.name:"")||[o.flavorName,o.sizeName].filter(Boolean).join(" ")),22],   /* next to Product code, one name per code */   /* bakery: one code per item, in the Items order; older wedding orders get the Wedding Cake code */["Shape",o=>isBak(o)?"":shapeName(o),10],["Cake type",o=>isBak(o)?"":ctLbl(o)||"Standard",11],
