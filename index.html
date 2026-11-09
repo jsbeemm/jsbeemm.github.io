@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794200040"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794222619"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -380,6 +380,9 @@ label.f > span b{color:var(--accent);font-weight:500}
 .price-box{margin-top:10px;display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:4px 12px;align-items:end}
 @media (max-width:520px){.price-box{grid-template-columns:1fr}}
 .hint{margin:0 0 8px;font-size:12.5px;color:var(--amber)}
+.hint.mix-ref{color:var(--muted);margin-top:-6px}
+/* Cream and fondant mixed: the Cream cake price above each flavor's price, as a rough guide */
+.sku-p .sku-cr{display:block;font-size:.85em;opacity:.7}
 /* tier builder (left) and its drawing (right; above on phones) */
 .tier-box{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,42%);gap:14px;margin-top:12px;align-items:start}
 @media (max-width:640px){.tier-box{grid-template-columns:minmax(0,1fr)}.tier-pic{order:-1}}
@@ -1588,7 +1591,7 @@ span.star-ic{cursor:default}
           <label class="f" id="otherWrap" style="margin-top:10px" hidden><span>ကိတ်သားအမည် <b>*</b></span><input id="fOtherName" placeholder="ဥပမာ – Mango Mousse"></label>
           <div class="price-box" id="priceWrap" hidden>
             <label class="f"><span>ကိတ်ဈေးနှုန်း (Ks) <b>*</b></span><input id="fPrice" type="number" min="0" step="1000" placeholder="0"></label>
-            <p class="hint" id="priceHint"></p>
+            <div><p class="hint" id="priceHint"></p><p class="hint mix-ref" id="mixRef" hidden></p></div>
           </div>
           <!-- several of the same cake in one order (e.g. 10 alike): the cake price is per cake × this number -->
           <div class="f cnt-wrap" id="cntWrap"><span>အရေအတွက် <small>(ပုံစံတူ ကိတ်)</small></span>
@@ -3342,9 +3345,11 @@ function renderSku(f){
     /* Fondant design: only the flavors that can be made in Fondant are shown */
     const off=f.decoType==="fondant"&&!fondantOk(x?.k);l.classList.toggle("fd-off",off);l.querySelector("input").disabled=off;l.hidden=off;
     if(!x||x.k==="other"||!p)return;
-    /* Cream and fondant mixed: no list price, it is typed */
-    if(f.decoType==="mixed"){if(p.textContent)p.textContent="";l.classList.remove("na");return}
-    const m=f.decoType==="fondant"?2:1,any=!f.size||f.size==="custom",v=any?0:priceAt(x,sizeIdx(f.size))*m,txt=any?(fromPrice(x)*m).toLocaleString()+" Ks မှ":v?v.toLocaleString()+" Ks":"မရပါ";
+    /* Cream and fondant mixed: the price is typed; the Cream cake price is shown only as a rough guide */
+    const mix=f.decoType==="mixed",m=f.decoType==="fondant"?2:1,any=!f.size||f.size==="custom",v=any?0:priceAt(x,sizeIdx(f.size))*m;
+    let txt=any?(fromPrice(x)*m).toLocaleString()+" Ks မှ":v?v.toLocaleString()+" Ks":"မရပါ";
+    if(mix){const key=v||any?"Cream"+txt:"";if(p.dataset.mix!==key){p.dataset.mix=key;p.innerHTML=key?`<span class="sku-cr">Cream</span>${esc(txt)}`:""}l.classList.remove("na");return}
+    delete p.dataset.mix;
     if(p.textContent!==txt)p.textContent=txt;
     l.classList.toggle("na",!any&&!v);
   });
@@ -3399,6 +3404,9 @@ function syncPrice(prefill){
   if(prefill)$("fPrice").value="";
   $("priceHint").textContent=sk==="cupcake"?"Cupcake ဈေးနှုန်း (အားလုံးပေါင်း) ကို ရိုက်ထည့်ပါ။":sk==="mini"?($("fMiniDeco").value==="mixed"?"Cream and fondant mixed Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"Fondant Mini cake ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"):decoVal()==="mixed"?"Cream and fondant mixed ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":fondantOn()&&s==="custom"?"Fondant design · Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။"
     :s==="custom"?"Customized အရွယ်အစားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။":"စာရင်းမပါသော ကိတ်သားအတွက် ဈေးနှုန်းကို ရိုက်ထည့်ပါ။";
+  /* Cream and fondant mixed: the Cream cake price of the same flavor and size, as a rough guide */
+  const cv=!sk&&decoVal()==="mixed"&&fl&&s&&s!=="custom"?priceAt(fl,sizeIdx(s)):0;
+  $("mixRef").hidden=!cv;if(cv)$("mixRef").textContent=`Cream cake ဈေး (အကြမ်းဖျင်း) – ${cv.toLocaleString("en-US")} Ks`;
 }
 $("optFlavor").addEventListener("change",()=>{renderSizes();syncPrice(true)});
 $("optSize").addEventListener("change",()=>syncPrice(true));
@@ -5429,6 +5437,7 @@ const EN_RULES=[
   [/^📝 မပြီးသေးသော Draft (\d+) ခု — ဆက်ဖြည့်ဖို့ မမေ့ပါနဲ့$/,(m,n)=>`📝 ${n} unfinished draft${n==="1"?"":"s"} — don't forget to finish ${n==="1"?"it":"them"}`],
   [/^(.+) သိမ်းပြီး$/,"$1 saved"],
   [/^([\d,]+) Ks မှ$/,"from $1 Ks"],
+  [/^Cream cake ဈေး \(အကြမ်းဖျင်း\) – (.+)$/,"Cream cake price (rough guide) – $1"],
   [/^See more – အခြားကိတ်သား (\d+) မျိုး ▾$/,"See more – $1 other flavors ▾"],
   [/^ကျန် ([\d,]+)$/,"Balance $1"],
   [/^စုစုပေါင်း ([\d,]+ Ks)$/,"Total $1"],
