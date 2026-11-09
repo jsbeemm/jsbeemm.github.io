@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794197868"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794198156"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -742,6 +742,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .slip-paper .pr-chimg{cursor:pointer}.slip-paper :is(.pr-pic,.pr-chimg).sel{outline:2px dashed var(--accent);outline-offset:2px}
 .slip-which{font-size:calc(12.5px*var(--tz,1));color:var(--ink);flex-basis:100%}
 .pr-pics.two{flex-wrap:wrap}.pr-pics.two .pr-pic{flex:0 0 calc(50% - 2px)}
+/* more than 4 pictures: rows of up to 4 */
+.pr-pics.many{flex-wrap:wrap}.pr-pics.many>*{flex:0 0 calc((100% - (var(--cols) - 1) * 4px) / var(--cols));min-width:0}
 .pr-foot{margin-top:auto;padding-top:6px;text-align:right;font-size:calc(8px*var(--tz,1));color:#b5b5b5;display:flex;justify-content:space-between;gap:8px}   /* who took the order on the left, print time on the right */
 .pr-foot span:first-child{text-align:left;color:#8c8c8c}
 /* more room between the customer and the cake */
@@ -1604,7 +1606,7 @@ span.star-ic{cursor:default}
             <label class="f"><span>အသက် (ခန့်မှန်း)</span><select id="fDsnAge"><option value="">ရွေးပါ</option><option>1–5</option><option>6–12</option><option>13–19</option><option>20s</option><option>30s</option><option>40s</option><option>50s</option><option>60+</option></select></label></div>
           <label class="f" style="margin-top:12px"><span>ကိတ် Design မှတ်ချက်</span><textarea id="fDesignNote" rows="2" placeholder="ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…"></textarea></label>
           <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted);margin-top:12px">
-            <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည် · ရှေ့ ၄ ပုံကို Preview / Print မှာ ပြမည်)</small></span>
+            <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)</small></span>
             <div class="photos" id="photoList"></div>
             <p class="photo-note" id="photoNote" hidden></p>
           </div>
@@ -3529,7 +3531,7 @@ function renderFlavorPills(){
   if(!moreOpen)$("moreBtn").textContent=`See more – အခြားကိတ်သား ${FLAVORS.filter(x=>!x.img).length} မျိုး ▾`;
 }
 /* ---------- photos ---------- */
-/* design photos: as many as wanted (the preview and print slip show the first 4, in the order they are dragged to) */
+/* design photos: as many as wanted (the preview and print slip show them all, in rows of up to 4) */
 const MAX_PHOTOS=Infinity;
 let formPhotos=[], assets=null, assetsReady=false, localMode=false;
 /* Photos go to Claude's asset storage on the published link. When the file is opened on its own
@@ -4161,7 +4163,7 @@ async function buildSlipPreview(o){
   if(!window.html2canvas)await loadLib("lib/html2canvas-1.4.1.min.js");
   try{await Promise.all([document.fonts.load(`400 16px "Noto Sans Myanmar"`),document.fonts.load(`700 16px "Noto Sans Myanmar"`),document.fonts.load(`500 16px "IBM Plex Mono"`)])}catch(e){}
   const fin=o.deco?.endAt&&o.deco.photo?photoUrl(o.deco.photo):"";
-  const pics=[...(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean).slice(0,fin?3:4),...(fin?[fin]:[])];
+  const pics=[...(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean),...(fin?[fin]:[])];
   const el=document.createElement("div");el.className="live-slip pv-shot";
   el.innerHTML=slipHTML({...o,previewPhotos:pics},true);document.body.append(el);
   try{
@@ -4174,6 +4176,12 @@ async function buildSlipPreview(o){
     return blob;
   }finally{el.remove()}
 }
+/* pictures in rows of up to 4 (5 → 3 + 2, 6 → 3 + 3, 7 → 4 + 3 …); every row the same height, the widest row filling the width */
+const photoRowsOf=ar=>{const n=ar.length,per=n<=4?n:Math.ceil(n/Math.ceil(n/4)),rows=[];for(let i=0;i<n;i+=per)rows.push(ar.slice(i,i+per));return rows};
+function photoRows(ar,x0,y0,width,maxH,G){const rows=photoRowsOf(ar),out=[];
+  const rh=Math.min(maxH,...rows.map(r=>(width-G*(r.length-1))/(r.reduce((a,v)=>a+v,0)||1)));let y=y0;
+  rows.forEach(r=>{let x=x0;r.forEach(a=>{out.push([x,y,a*rh,rh]);x+=a*rh+G});y+=rh+G});
+  return out}
 const PV_PX=8e6;   /* the order preview picture's pixel budget: sharp enough to zoom, small enough for a phone's press-and-hold Save image */
 async function buildPreviewCanvas(o){
   /* the Burmese letters of the font load on their own (the font comes in parts by alphabet), so ask for them by name:
@@ -4324,7 +4332,7 @@ async function buildPreviewCanvas(o){
   const fin=o.deco?.endAt&&o.deco.photo?photoUrl(o.deco.photo):"";
   /* a tiered / wedding cake's drawing joins the photos as one more picture (so up to 3 design photos then) */
   const tierSvg=hasTiers(ctOf(o))&&tiersOf(o).length?tiersSvg(tiersOf(o),o.shape):"";
-  const srcs=[...(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean).slice(0,4-(fin?1:0)-(tierSvg?1:0)),...(fin?[fin]:[])];
+  const srcs=[...(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean),...(fin?[fin]:[])];   /* every photo */
   const imgs=await Promise.all(srcs.map(s=>loadImage(s).catch(()=>null)));
   /* the drawing as a picture: the SVG on white with the note under it that real sizes may differ a little */
   if(tierSvg){try{const sv=await loadImage("data:image/svg+xml;charset=utf-8,"+encodeURIComponent(tierSvg)),cv=document.createElement("canvas"),cx=cv.getContext("2d");
@@ -4349,8 +4357,7 @@ async function buildPreviewCanvas(o){
      wider screens keep the details on the left and the photos filling the right */
   if(imgs.length&&matchMedia("(max-width:600px)").matches){
     /* one row under the details, all the same height, each picture in its own shape, across the full width */
-    const top=textH-P+18,n=imgs.length,sumAr=ar.reduce((s,a)=>s+a,0)||1,rh=Math.min(1000,(LW-G*(n-1))/sumAr);
-    let tx=P;const tcells=ar.map(a=>{const c=[tx,top,a*rh,rh];tx+=a*rh+G;return c});
+    const top=textH-P+18,tcells=photoRows(ar,P,top,LW,1000,G);
     const Ht=Math.max(...tcells.map(([,y,,h])=>y+h))+P,Wt=P+LW+P;
     const S2=Math.min(3,Math.sqrt(PV_PX/(Wt*Ht)));c.width=Wt*S2;c.height=Ht*S2;g.scale(S2,S2);g.imageSmoothingQuality="high";
     g.fillStyle=C.card;g.fillRect(0,0,Wt,Ht);draw(g,Ht);
@@ -4369,12 +4376,13 @@ async function buildPreviewCanvas(o){
   /* a card wider than the window: the row narrows (photos a little smaller) so everything shows larger, but the photos
      keep at least ~58% of the width */
   if(sr&&n&&(base+bw)/H>sr)bw=Math.round(Math.min(bw,Math.max(360,H*sr-base,base*1.38)));
-  const rh=Math.min(bh,(bw-gaps)/sumAr);
-  const cells=()=>{let x=bx;return ar.map(a=>{const c=[x,by,a*rh,rh];x+=a*rh+G;return c})};
-  const boxes=cells();
+  /* more than 4 pictures: rows of up to 4, and the photo area as wide as makes the rows fill the card's height */
+  if(n>4){const rows=photoRowsOf(ar),rh0=(bh-G*(rows.length-1))/rows.length;
+    bw=Math.round(Math.max(360,...rows.map(r=>rh0*r.reduce((a,v)=>a+v,0)+G*(r.length-1))))}
+  const boxes=photoRows(ar,bx,by,bw,bh,G);
   /* photos are top-aligned in their frames: the card ends right under the lowest photo (or the details), no empty band below */
   if(imgs.length){const low=Math.max(...boxes.map(([,y,w,h],i)=>{const im=imgs[i];return y+(im?Math.min(h,im._ar?w/im._ar:w*im.naturalHeight/im.naturalWidth):h)}));
-    H=Math.min(H,Math.ceil(Math.max(textH,low+P)))}
+    const fitH=Math.ceil(Math.max(textH,low+P));H=n>4?fitH:Math.min(H,fitH)}
   const cardW=imgs.length?bx+bw+P:P+LW+P;
   /* drawn at up to 3x so text and photos stay sharp when zoomed or shared (kept under the ~16 MP canvas limit of phones) */
   /* plain white picture: no outer ground, card edge, shadow or coloured top bar.
@@ -4695,7 +4703,7 @@ function slipHTML(o,live=false){
   /* the shape outline, with the size written inside it when it fits (then the title is just the cake's name) */
   const sfit=o.shape?shapeSizeFit(sk,o.sizeName):null;
   const shp=o.shape?`<svg class="${sfit?"pr-shp pr-shp-sz":"pr-shp"}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===sk).svg.replace('class="shp"',`fill="none" stroke="${live?"currentColor":printColor(o.date)}" stroke-width="${sfit?2.6:3.5}" stroke-linejoin="round"`)}${sfit?`<text x="20" y="${sfit.cy}" dy=".36em" text-anchor="middle" font-size="${sfit.fs}" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="currentColor">${esc(sfit.L)}</text>`:""}</svg>`:"";
-  const pics=(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean).slice(0,4);
+  const pics=(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean);   /* every photo: more than 4 go in rows */
   return`
     <div class="pr-head">
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
@@ -4712,7 +4720,8 @@ function slipHTML(o,live=false){
     ${o.msg?`<div class="pr-msg">${esc(o.msg)}</div>`:""}</div>
     ${(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
       const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape,false,live?undefined:printColor(o.date))}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
-      return pics.length||tb?`<div class="pr-pics">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
+      const nAll=pics.length+(tb?1:0),cols=nAll<=4?nAll:Math.ceil(nAll/Math.ceil(nAll/4));
+      return pics.length||tb?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
     ${/* a bakery order has no Cake row, so Total's own top line follows the items; a second rule would double it */
       isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount?"":`<hr class="pr-rule">`}
     ${isBak(o)?"":row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
@@ -4749,7 +4758,7 @@ async function layoutSlip(o){
   const pb=el.querySelector(".pr-pics"),base=Math.round(1.1*96);
   /* spare room goes first to the photos (at most 2" high), then to bigger text (all but the order number, up to 1.7×) */
   if(pb&&measure()<room){
-    if(pics.length>=3&&room-measure()>base+4)pb.classList.add("two");
+    if(pics.length>=3&&pics.length<=4&&!pb.classList.contains("many")&&room-measure()>base+4)pb.classList.add("two");
     if(measure()>room)pb.classList.remove("two");
     let lo=base,hi=Math.round(2*96)+1;
     while(hi-lo>2){const mid=(lo+hi)>>1;el.style.setProperty("--ph",mid+"px");if(measure()<=room)lo=mid;else hi=mid}
@@ -5368,7 +5377,7 @@ const EN={
   "1 ဆင့်":"1 tier","+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)":"+ Add a tier (on top)","+ အဆင့် ထပ်ထည့်ရန် (အောက်)":"+ Add a tier (at the bottom)","2 ဆင့်":"2 tiers","3 ဆင့်":"3 tiers","4 ဆင့်":"4 tiers","5 ဆင့်":"5 tiers","— ကိတ်သား ရွေးပါ —":"— Choose flavor —","ကိတ် အပိုင်းမှာ ကိတ်သား ရွေးပါ":"Pick the flavor in the Cake section","Customized (အဆင့်ကိတ်)":"Customized (tiered)","Customized အသေးစိတ်":"Customized details",
   "ကိတ်ပေါ်ရေးမည့်စာ":"Message on cake","Happy Birthday ...\n(စာကြောင်း များများ ရေးနိုင်သည်)":"Happy Birthday ...\n(several lines allowed)",
   "ဥပမာ – D-012":"e.g. D-012","ကိတ် Design မှတ်ချက်":"Design note","ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…":"e.g. cream colour, decoration, allergies…",
-  "ဒီဇိုင်း ဓာတ်ပုံ":"Design photos","(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည် · ရှေ့ ၄ ပုံကို Preview / Print မှာ ပြမည်)":"(tap a photo to edit · the first 4 show in the preview / print)","ပုံထည့်ရန်":"Add photo","ဖယ်ရှားရန်":"Remove","ပုံပြင်ရန်":"Edit photo","တင်နေသည်…":"Uploading…",
+  "ဒီဇိုင်း ဓာတ်ပုံ":"Design photos","(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)":"(tap a photo to edit)","ပုံထည့်ရန်":"Add photo","ဖယ်ရှားရန်":"Remove","ပုံပြင်ရန်":"Edit photo","တင်နေသည်…":"Uploading…",
   "ဓာတ်ပုံများကို ဤစက်၏ browser ထဲတွင်သာ သိမ်းထားပါသည်။":"Photos are stored in this device's browser only.",
   "ဤစာမျက်နှာတွင် ဓာတ်ပုံတင်ခွင့် မရှိပါ (ပြင်ဆင်ခွင့်ရှိသူသာ တင်နိုင်သည်)။":"You can't upload photos here (only people with edit access can).",
   "+ Charge ထပ်ထည့်ရန်":"+ Add charge","အကြောင်းအရာ (ဥပမာ – Topper)":"Description (e.g. Topper)","Charge အကြောင်းအရာ":"Charge description","Charge ပမာဏ":"Charge amount",
