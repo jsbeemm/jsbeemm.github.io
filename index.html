@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794199647"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794200040"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4757,7 +4757,8 @@ async function layoutSlip(o){
   /* wait for photos; spare room at the bottom goes to bigger photos (3–4 photos move to a 2 × 2 grid),
      then the slip is shrunk if it is still taller than the printable area (3.5" × 5.6") */
   await Promise.all([...el.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r})));
-  const room=Math.floor(5.6*96),measure=()=>{el.classList.add("measure");const h=el.scrollHeight;el.classList.remove("measure");return h};
+  /* a little less than the 5.6" the paper has: printed text runs a touch taller than on screen, and a sliver over made a second, empty sheet */
+  const room=Math.floor(5.6*96)-12,measure=()=>{el.classList.add("measure");const h=el.scrollHeight;el.classList.remove("measure");return h};
   el.style.zoom="";el.style.minHeight="";el.style.removeProperty("--ph");el.style.removeProperty("--tz");
   const pb=el.querySelector(".pr-pics"),base=Math.round(1.1*96);
   /* spare room goes first to the photos (at most 2" high), then to bigger text (all but the order number, up to 1.7×) */
