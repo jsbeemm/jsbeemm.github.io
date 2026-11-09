@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794195822"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794197868"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1604,7 +1604,7 @@ span.star-ic{cursor:default}
             <label class="f"><span>အသက် (ခန့်မှန်း)</span><select id="fDsnAge"><option value="">ရွေးပါ</option><option>1–5</option><option>6–12</option><option>13–19</option><option>20s</option><option>30s</option><option>40s</option><option>50s</option><option>60+</option></select></label></div>
           <label class="f" style="margin-top:12px"><span>ကိတ် Design မှတ်ချက်</span><textarea id="fDesignNote" rows="2" placeholder="ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…"></textarea></label>
           <div class="f" style="display:grid;gap:6px;font-size:13px;color:var(--muted);margin-top:12px">
-            <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(၄ ပုံအထိ · ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)</small></span>
+            <span>ဒီဇိုင်း ဓာတ်ပုံ <small>(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည် · ရှေ့ ၄ ပုံကို Preview / Print မှာ ပြမည်)</small></span>
             <div class="photos" id="photoList"></div>
             <p class="photo-note" id="photoNote" hidden></p>
           </div>
@@ -3529,7 +3529,8 @@ function renderFlavorPills(){
   if(!moreOpen)$("moreBtn").textContent=`See more – အခြားကိတ်သား ${FLAVORS.filter(x=>!x.img).length} မျိုး ▾`;
 }
 /* ---------- photos ---------- */
-const MAX_PHOTOS=4;
+/* design photos: as many as wanted (the preview and print slip show the first 4, in the order they are dragged to) */
+const MAX_PHOTOS=Infinity;
 let formPhotos=[], assets=null, assetsReady=false, localMode=false;
 /* Photos go to Claude's asset storage on the published link. When the file is opened on its own
    (no Claude runtime) they go to this browser's IndexedDB instead, under ids starting "local:". */
@@ -5367,7 +5368,7 @@ const EN={
   "1 ဆင့်":"1 tier","+ အဆင့် ထပ်ထည့်ရန် (အပေါ်)":"+ Add a tier (on top)","+ အဆင့် ထပ်ထည့်ရန် (အောက်)":"+ Add a tier (at the bottom)","2 ဆင့်":"2 tiers","3 ဆင့်":"3 tiers","4 ဆင့်":"4 tiers","5 ဆင့်":"5 tiers","— ကိတ်သား ရွေးပါ —":"— Choose flavor —","ကိတ် အပိုင်းမှာ ကိတ်သား ရွေးပါ":"Pick the flavor in the Cake section","Customized (အဆင့်ကိတ်)":"Customized (tiered)","Customized အသေးစိတ်":"Customized details",
   "ကိတ်ပေါ်ရေးမည့်စာ":"Message on cake","Happy Birthday ...\n(စာကြောင်း များများ ရေးနိုင်သည်)":"Happy Birthday ...\n(several lines allowed)",
   "ဥပမာ – D-012":"e.g. D-012","ကိတ် Design မှတ်ချက်":"Design note","ဥပမာ – ခရင်မ်အရောင်၊ အလှဆင်ပုံ၊ ဓာတ်မတည့်မှု…":"e.g. cream colour, decoration, allergies…",
-  "ဒီဇိုင်း ဓာတ်ပုံ":"Design photos","(၄ ပုံအထိ · ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည်)":"(up to 4 · tap a photo to edit)","ပုံထည့်ရန်":"Add photo","ဖယ်ရှားရန်":"Remove","ပုံပြင်ရန်":"Edit photo","တင်နေသည်…":"Uploading…",
+  "ဒီဇိုင်း ဓာတ်ပုံ":"Design photos","(ပုံကိုနှိပ်ပြီး ပြင်နိုင်သည် · ရှေ့ ၄ ပုံကို Preview / Print မှာ ပြမည်)":"(tap a photo to edit · the first 4 show in the preview / print)","ပုံထည့်ရန်":"Add photo","ဖယ်ရှားရန်":"Remove","ပုံပြင်ရန်":"Edit photo","တင်နေသည်…":"Uploading…",
   "ဓာတ်ပုံများကို ဤစက်၏ browser ထဲတွင်သာ သိမ်းထားပါသည်။":"Photos are stored in this device's browser only.",
   "ဤစာမျက်နှာတွင် ဓာတ်ပုံတင်ခွင့် မရှိပါ (ပြင်ဆင်ခွင့်ရှိသူသာ တင်နိုင်သည်)။":"You can't upload photos here (only people with edit access can).",
   "+ Charge ထပ်ထည့်ရန်":"+ Add charge","အကြောင်းအရာ (ဥပမာ – Topper)":"Description (e.g. Topper)","Charge အကြောင်းအရာ":"Charge description","Charge ပမာဏ":"Charge amount",
