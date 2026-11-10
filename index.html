@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794231629"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794331894"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4467,8 +4467,10 @@ function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.dec
   /* nobody is decorating it (handed to a helper to finish): any decorator can take it back and carry on,
      except the helper it was handed to, who finishes it */
   if(d.startAt&&!d.endAt)return d.handedAt&&!(d.handedTo&&sameId(d.handedTo,me.id))?"Resume decorating":"";
-  if(d.endAt)return o.status==="ready"?"Redecorate":"";
-  return o.status==="ready"?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
+  /* a finished cake can be redecorated while the order is open (Pending, Ready or Requested delivery) */
+  const fin=o.status==="ready"||o.status==="deli_req";
+  if(d.endAt)return"Redecorate";
+  return fin?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
   $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l}
 /* Start / Resume decorating also stops the 10-second countdown: the preview (and its photos) now stay open while decorating */
@@ -5212,13 +5214,14 @@ function tickDeco(){
 }
 setInterval(tickDeco,1000);
 async function decoStart(o){
-  const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready";   /* a Ready cake is redecorated, even if it was set Ready by hand */
+  const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready"||o.status==="deli_req";   /* a Ready cake is redecorated, even if it was set Ready by hand */
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
   const before=o.deco?(o.deco.endAt?decoSecs(o.deco):prevSecsOf(o.deco)):0,what=redo?"Redecorating":"Started decorating";
   const cr=decoCarry(o.deco,me.id,before);
   const patch={deco:{by:me.id||null,startAt:now,prevSecs:cr.prevSecs,prior:cr.prior,prevMins:null,endAt:null,photo:null,pausedAt:null,redo,...(o.deco?.helpers?.length?{helpers:o.deco.helpers}:{}),...(o.deco?.help?{help:o.deco.help}:{})},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",[what])};
   /* a new (or, when redecorating, a ready) order moves to "Preparing" when decorating starts */
   /* there is no "Preparing" any more: a cake being decorated stays Pending Order (a Ready cake redecorated goes back to it) */
+  /* a cake already asked for delivery keeps that status while it is redecorated */
   if(o.status==="ready"){patch.status="new";patch.history=addHist(o,"deco",[what,`${statusName("ready")} → ${statusName("new")}`])}
   try{await patchOrder(o.id,patch);if(!redo&&!before)toast("Decorating started");   /* no "… so far" message when resuming or redecorating */
     /* jump to the Preparing tab and open the order, so the decorator has the full details in front of them */
