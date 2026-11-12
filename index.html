@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794463019"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794463497"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3310,7 +3310,8 @@ RSEL.forEach(([sid,gid,name])=>$(sid).addEventListener("change",e=>{const r=$(gi
   if(r&&!r.checked){r.checked=true;r.dispatchEvent(new Event("change",{bubbles:true}))}}));
 function updateReceipt(){syncShapeAvail();setTimeout(syncSaveBtn);setTimeout(syncRadioSelects);
   const f=readForm(),{lines,total}=price(f);
-  const live=slipHTML({...f,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
+  /* an order being edited names its saved copy (selfId), so with a changed number that copy is not counted as another order */
+  const live=slipHTML({...f,selfId:editingId||null,total,no:$("fNo").value.trim().toUpperCase(),previewPhotos:formPhotos.map(p=>p.url)},true);
   if($("liveSlip").__html!==live){$("liveSlip").innerHTML=live;$("liveSlip").__html=live}   /* rebuilt only when it changes, so photos don't flicker */
   $("addrWrap").hidden=$("delivSet").hidden=f.delivery!=="delivery";$("fCallEarlyW").hidden=f.delivery!=="pickup";$("fSendPhotoW").hidden=$("fWithVoucherW").hidden=!f.delivery;
   $("chOtherWrap").hidden=f.channel!=="Others";
