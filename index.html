@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794485447"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794485637"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9336,13 +9336,13 @@ function orderVoucher(list){const many=list.length>1,lines=[],photos=[];
     orderFor:[...new Set(list.map(o=>[o.date?soDate(o.date):"",o.time?fmtTime(o.time):""].filter(Boolean).join(" · ")).filter(Boolean))].join(", "),
     mode:[...new Set(list.map(o=>o.delivery==="delivery"?"Delivery":"Pickup"))].join(" / "),
     net:list.reduce((s,o)=>s+(o.total||0),0),payments:list.flatMap(o=>orderPayments(o).map(p=>({amt:p.amt}))),note:null,orderPhotos:photos.map(g=>({...g,no:many?g.no:""}))}}
-/* the same customer's other orders (same phone, or same name): open ones, ones not fully paid (any day and time, even Done),
+/* the same customer's other orders (the same name AND the same phone): open ones, ones not fully paid (any day and time, even Done),
    and Done ones picked up / delivered at the same day and time; tick which go on the voucher — the ones at the same day and
    time are ticked to start, the rest can be added (e.g. to collect an unpaid balance together) */
 const nmKey=n=>String(n||"").trim().replace(/\s+/g," ").toLowerCase();
 function pickVoucherOrders(o){const ph=custPh(o.phone),nm=nmKey(o.name);
   const at=x=>x.date===o.date&&(x.time||"")===(o.time||"");
-  const same=orders.filter(x=>x.id===o.id||(x.status!=="cancel"&&(isOpen(x)||at(x)||balOf(x)>0)&&((ph&&custPh(x.phone)===ph)||(nm&&nmKey(x.name)===nm))))
+  const same=orders.filter(x=>x.id===o.id||(x.status!=="cancel"&&(isOpen(x)||at(x)||balOf(x)>0)&&nmKey(x.name)===nm&&custPh(x.phone)===ph))
     .sort((a,b)=>(a.date||"").localeCompare(b.date||"")||String(a.no).localeCompare(String(b.no)));
   if(same.length<2)return Promise.resolve([o]);
   return new Promise(res=>{const d=document.createElement("div");d.className="editor";d.style.zIndex="50";d.setAttribute("role","dialog");d.setAttribute("aria-modal","true");
