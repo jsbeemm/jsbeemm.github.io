@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794463814"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794485447"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -311,6 +311,19 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .qp-btns{grid-column:1/-1;display:flex;justify-content:flex-end;gap:6px}
 .qp-all{grid-column:1/-1;display:flex;align-items:flex-start;gap:6px;font-size:12.5px;font-weight:600;line-height:1.4;cursor:pointer}.qp-all input{margin:2px 0 0;flex:none;width:auto;padding:0}.qp-all span{flex:1;min-width:0}
 .qp .qp-a[readonly]{background:var(--sunk);color:var(--muted)}
+.qp-pays{grid-column:1/-1;display:grid;gap:4px;padding-bottom:6px;margin-bottom:2px;border-bottom:1px solid var(--line)}
+.qp-ph{font-size:12px;color:var(--muted);font-weight:600}
+.qp-p{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:32px;font-size:13px}
+.qp-pt{flex:1 1 auto;min-width:0}.qp-pt b{white-space:nowrap}
+.qp-pb{display:flex;gap:4px;flex:none}
+.qp-ib.o-ic{width:34px;height:32px}
+.qp-ib .bi{width:17px;height:17px}
+.qp-lk{flex:none;color:var(--muted);font-size:12px}
+.qp-p:has(.confirm){flex-wrap:wrap}.qp-p .confirm{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;font-size:12.5px;min-width:0}
+.qp-pe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:center;background:var(--surface);border-radius:8px;padding:6px}
+.qp-pe .qpe-d{grid-column:1/-1}
+.qp-btns .link.qp-close{background:none;color:inherit;font-weight:inherit;padding:inherit}
+@media (max-width:600px){.qp-pe{grid-template-columns:1fr 1fr}.qp-pe .qpe-m{grid-column:1/-1;grid-row:1}}
 .mode.grp{background:var(--sunk);color:var(--ink,inherit);border:1px dashed var(--line)}
 .pr-grp{text-align:right;font-weight:700;font-size:calc(12px*min(var(--tz,1),1.25));margin-top:4px}
 .qp-btns .link:first-child{background:var(--accent);color:var(--accent-ink);padding:4px 14px;font-weight:700}
@@ -3482,6 +3495,20 @@ $("payList").addEventListener("click",e=>{const b=e.target.closest(".rm");if(!b)
   b.closest(".pay").remove();if(!$("payList").children.length)addPayRow();updateReceipt()});
 /* older orders kept one deposit + method: show it as a single payment */
 const orderPayments=o=>o.payments||(o.deposit?[{date:(o.createdAt||"").slice(0,10),method:o.pay||"Cash",amt:o.deposit}]:[]);
+/* the card's payment panel lists the payments already recorded: each can be changed or removed
+   (a payment from an earlier day only by an Admin, like in the order form). payEd = the one being changed / asked to remove */
+var payEd=null;
+const PAY_ED_IC=`<svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg>`,
+  PAY_DEL_IC=`<svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12.5"/><path d="M10 11v6M14 11v6"/></svg>`;
+const payDesc=p=>`${p.method||""} ${Number(p.amt||0).toLocaleString("en-US")} Ks · ${fmtDate(p.date||payDay(p))}`;
+function qpPaysHtml(o){const ps=orderPayments(o);if(!ps.length)return"";
+  return`<div class="qp-pays"><b class="qp-ph">မှတ်ပြီးသား ငွေချေမှု</b>${ps.map((p,i)=>{const ed=payEd?.oid===o.id&&payEd.i===i,lk=payLocked(p),d=p.date||payDay(p);
+    if(ed&&!payEd.del){const sm=pmFor("sale"),ms=sm.includes(p.method)||!p.method?sm:[...sm,p.method];
+      return`<div class="qp-pe">${dateSelect("qpe-d",d,"ပေးသည့်နေ့","",false,todayISO())}<select class="qpe-m" aria-label="ငွေပေးချေနည်း">${ms.map(m=>`<option value="${esc(m)}"${m===p.method?" selected":""}>${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qpe-a" min="0" step="500" value="${Number(p.amt)||""}" aria-label="ပမာဏ"><span class="qp-btns"><button class="link" data-pe-save="${o.id}" data-i="${i}">သိမ်းမည်</button><button class="link" data-pe-no>မပြင်တော့ပါ</button></span></div>`}
+    return`<div class="qp-p"><span class="qp-pt">${esc(fmtDate(d))} · ${esc(pmLabel(p.method||""))} · <b>${esc(fmt(Number(p.amt)||0))}</b></span>${
+      ed?`<span class="confirm"><span>ဒီငွေချေမှုကို ဖျက်မလား?</span> <button class="link danger" data-pd-yes="${o.id}" data-i="${i}">ဖျက်မည်</button><button class="link" data-pe-no>မဖျက်ပါ</button></span>`
+      :lk?`<small class="qp-lk" title="ယခင်နေ့က မှတ်ထားသော ငွေချေမှု — Admin သာ ပြင်နိုင်သည်">🔒 Admin သာ</small>`
+      :`<span class="qp-pb"><button type="button" class="o-ic qp-ib" data-pe="${o.id}" data-i="${i}" aria-label="Edit payment" title="Edit">${PAY_ED_IC}</button><button type="button" class="o-ic qp-ib danger" data-pd="${o.id}" data-i="${i}" aria-label="Delete payment" title="Delete">${PAY_DEL_IC}</button></span>`}</div>`}).join("")}</div>`}
 
 /* ---------- additional charges ---------- */
 /* each charge can carry one photo (e.g. the topper); its id is kept on the row as data-ph */
@@ -4990,12 +5017,12 @@ function render(){
         ${o.deco?.endAt&&o.deco.photo?`<button type="button" class="deco-pic" data-zoom="${esc(photoUrl(o.deco.photo))}" aria-label="Finished cake photo" title="Finished cake"><img src="${esc(photoUrl(o.deco.photo))}" alt="Finished cake" loading="lazy"></button>`:""}
         <div class="money-box"><div class="tot">စုစုပေါင်း ${fmt(o.total)}</div><div class="bal ${bal?"owe":"paid"}">${bal?`<small>ကျန်ငွေ</small>${fmt(bal)}`:"✓ ငွေချေပြီး"}</div></div>
         <div class="o-actions">${pendingPay===o.id
-          ?`<span class="qp">${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ">${gOwe.length>1&&gOwe.some(x=>x.id===o.id)?`<label class="qp-all"><input type="checkbox" class="qp-g" data-total="${gBal}"><span>${esc(`အော်ဒါ ${gOwe.length} ခုလုံး ပေါင်းရှင်းမည် (${gOwe.map(x=>x.no).join(" + ")}) — ${gBal.toLocaleString("en-US")} Ks`)}</span></label>`:""}<span class="qp-btns"><button class="link" data-qp-save="${o.id}">သိမ်းမည်</button><button class="link" data-qp-no>ပိတ်ရန်</button></span></span>`
+          ?`<span class="qp">${qpPaysHtml(o)}${!bal?"":`${dateSelect("qp-d",todayISO(),"ပေးသည့်နေ့","",false,todayISO())}<select class="qp-m" aria-label="ငွေပေးချေနည်း"><option value="">ငွေပေးချေနည်း ရွေးပါ</option>${pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qp-a" min="0" step="500" placeholder="ကျန် ${bal.toLocaleString("en-US")}" aria-label="ပမာဏ">${gOwe.length>1&&gOwe.some(x=>x.id===o.id)?`<label class="qp-all"><input type="checkbox" class="qp-g" data-total="${gBal}"><span>${esc(`အော်ဒါ ${gOwe.length} ခုလုံး ပေါင်းရှင်းမည် (${gOwe.map(x=>x.no).join(" + ")}) — ${gBal.toLocaleString("en-US")} Ks`)}</span></label>`:""}`}<span class="qp-btns">${bal?`<button class="link" data-qp-save="${o.id}">သိမ်းမည်</button>`:""}<button class="link${bal?"":" qp-close"}" data-qp-no>ပိတ်ရန်</button></span></span>`
           :pendingCancel===o.id
           ?`<span class="confirm cancel-ask">ဒီအော်ဒါကို ပယ်ဖျက်မှာ သေချာပါသလား? <input class="cancel-why" data-cancel-why placeholder="Cancel ရတဲ့ အကြောင်းရင်း *" aria-label="Cancel reason" autocomplete="off" value="${esc(cancelDraft)}"><button class="link danger" data-cancel-yes="${o.id}">ပယ်ဖျက်မည်</button><button class="link" data-cancel-no>မလုပ်တော့ပါ</button></span>`
           :pendingDelete===o.id
           ?`<span class="confirm">ဖျက်မှာ သေချာပါသလား? <button class="link danger" data-del-yes="${o.id}">ဖျက်မည်</button><button class="link" data-del-no>မဖျက်ပါ</button></span>`
-          :`${canWriteOrders()?`<button type="button" class="link" data-again="${o.id}" title="Same customer, new order">+ ထပ်မှာရန်</button>`:""}${bal&&can("orders.pay")?`<button class="link" data-paid="${o.id}">ငွေချေရန်</button>`:""}`}</div>
+          :`${canWriteOrders()?`<button type="button" class="link" data-again="${o.id}" title="Same customer, new order">+ ထပ်မှာရန်</button>`:""}${can("orders.pay")&&(bal||orderPayments(o).length)?`<button class="link" data-paid="${o.id}">${bal?"ငွေချေရန်":"ငွေချေမှု"}</button>`:""}`}</div>
       </div>
     </article>`}).join("");
   /* names are filled in as text (never stored); the ids on screen are resolved again every render */
@@ -5298,9 +5325,28 @@ $("orders").addEventListener("click",async e=>{
     pendingCancel=null;cancelDraft="";const o=orders.find(x=>x.id===id),now=new Date().toISOString();try{await patchOrder(id,{status:"cancel",cancelReason:why,cancelAt:now,cancelBy:me.id||null,updatedAt:now,updatedBy:me.id||null,history:addHist(o,"cancel",[`${statusName(o.status)} → ${statusName("cancel")}`,`Reason: ${why}`])});toast("အော်ဒါ ပယ်ဖျက်ပြီး")}catch(x){toast("ပယ်ဖျက်မရပါ");render()}return}
   if(t.dataset.delYes){const id=t.dataset.delYes;pendingDelete=null;try{await removeOrder(id);toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}return}
   /* "ငွေချေရန်" opens a small payment form on the card: date, method and amount are entered by hand */
-  if(t.dataset.paid){pendingPay=t.dataset.paid;pendingDelete=pendingCancel=null;render();
+  if(t.dataset.paid){pendingPay=t.dataset.paid;payEd=null;pendingDelete=pendingCancel=null;render();
     document.querySelector(".qp .qp-m")?.focus();return}
-  if(t.hasAttribute("data-qp-no")){pendingPay=null;render();return}
+  if(t.hasAttribute("data-qp-no")){pendingPay=null;payEd=null;render();return}
+  /* a recorded payment: change it, or remove it (asked first) */
+  if(t.dataset.pe||t.dataset.pd){payEd={oid:t.dataset.pe||t.dataset.pd,i:Number(t.dataset.i),del:!!t.dataset.pd};render();
+    document.querySelector(".qp .qpe-a")?.focus();return}
+  if(t.hasAttribute("data-pe-no")){payEd=null;render();return}
+  if(t.dataset.peSave||t.dataset.pdYes){const o=orders.find(x=>x.id===(t.dataset.peSave||t.dataset.pdYes)),i=Number(t.dataset.i);
+    const ps=o?orderPayments(o).map(p=>({...p})):[],old=ps[i];if(!old){payEd=null;render();return}
+    if(!can("orders.pay")||payLocked(old)){toast("ယခင်နေ့က မှတ်ထားသော ငွေချေမှုကို Admin သာ ပြင်နိုင်ပါတယ်");return}
+    let line;
+    if(t.dataset.peSave){const box=t.closest(".qp-pe");
+      const nw={...old,date:readDate(box.querySelector(".qpe-d"))||old.date||todayISO(),method:box.querySelector(".qpe-m").value,amt:Math.max(0,Number(box.querySelector(".qpe-a").value)||0)};
+      if(!nw.amt){toast("ပမာဏ ရိုက်ထည့်ပါ");box.querySelector(".qpe-a").focus();return}
+      if(nw.date===(old.date||payDay(old))&&nw.method===old.method&&nw.amt===Number(old.amt)){payEd=null;render();return}
+      ps[i]=nw;line=`Payment changed: ${payDesc(old)} → ${payDesc(nw)}`}
+    else{ps.splice(i,1);line=`Payment removed: ${payDesc(old)}`}
+    const paid=ps.reduce((a,p)=>a+(Number(p.amt)||0),0);payEd=null;
+    try{await patchOrder(o.id,{payments:ps,deposit:paid,pay:ps.length?ps[ps.length-1].method:"",updatedAt:new Date().toISOString(),updatedBy:me.id||null,
+        history:addHist(o,"pay",[line])});toast(t.dataset.peSave?"ငွေချေမှု ပြင်ပြီး":"ငွေချေမှု ဖျက်ပြီး")}
+    catch(x){toast("သိမ်းမရပါ");render()}
+    return}
   if(t.dataset.qpSave){
     const box=t.closest(".qp"),o=orders.find(x=>x.id===t.dataset.qpSave);
     const add={at:new Date().toISOString(),date:readDate(box.querySelector(".qp-d"))||todayISO(),method:box.querySelector(".qp-m").value,amt:Math.max(0,Number(box.querySelector(".qp-a").value)||0)};
@@ -5386,7 +5432,7 @@ const EN={
   "Channel အလိုက် စစ်ရန်":"Filter by channel","Channel အားလုံး":"All channels","အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်":"Search name, phone, order number",
   "မပြီးသေး":"Open","ဒီနေ့":"Today","အသစ်":"New","ပြုလုပ်နေ":"In progress","အဆင်သင့်":"Ready","ပေးပြီး":"Handed over","ပယ်ဖျက်":"Cancelled","အားလုံး":"All",
   "ဒေတာ ဖတ်နေသည်…":"Loading…","ဤအမျိုးအစားတွင် အော်ဒါမရှိပါ။":"No orders in this view.","အော်ဒါ မရှိသေးပါ။ “+ အော်ဒါအသစ်” ကိုနှိပ်၍ စတင်ပါ။":"No orders yet. Tap “+ New order” to start.",
-  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
+  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","ငွေချေမှု":"Payments","မှတ်ပြီးသား ငွေချေမှု":"Payments recorded","မပြင်တော့ပါ":"Cancel","🔒 Admin သာ":"🔒 Admin only","ဒီငွေချေမှုကို ဖျက်မလား?":"Delete this payment?","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
   "— ရွေးပါ —":"— Choose —","Delivery ရွေးပါ":"Choose who delivers",
   "Cancel ရတဲ့ အကြောင်းရင်း *":"Reason for cancelling *","Cancel ရတဲ့ အကြောင်းရင်း ထည့်ပါ":"Please enter the reason for cancelling",
   "Design မှတ်ချက် –":"Design note –","Delivery မှတ်ချက် –":"Delivery note –",
