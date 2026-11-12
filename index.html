@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794456383"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794463019"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4423,14 +4423,18 @@ async function buildPreviewCanvas(o){
 }
 const SAVE_HINT="ပုံကို ဖိထား (သို့) right-click နှိပ်ပြီး Save လုပ်ပါ";
 /* fromForm: the preview of an order still being written (from the order form): it also offers "Save order & image" */
-async function openPreview(o,fromForm=false){
+/* each opening is numbered: a slower picture from an earlier opening never replaces the newer one */
+let pvRun=0;
+async function openPreview(o,fromForm=false){const run=++pvRun;
   fbPrefetch(o);
   pvFormMode=fromForm;   /* set first: the decorator's 10-second limit does not apply to an order they are writing */
   $("preview").hidden=false;$("pvImg").removeAttribute("src");$("pvNote").textContent="ပုံ ပြင်ဆင်နေသည်…";$("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=true;
   $("pvSaveAll").hidden=!fromForm||!canWriteOrders();
-  pvOrder=o;pvBlob=await buildPreview(o);pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";
+  pvOrder=o;const blob=await buildPreview(o);if(run!==pvRun)return;
+  pvBlob=blob;pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";
   /* a data: picture (not a blob: link), so pressing and holding it on a phone saves / shares the picture itself */
-  await new Promise(res=>{const fr=new FileReader();fr.onload=()=>{$("pvImg").src=fr.result;res()};fr.readAsDataURL(pvBlob)});
+  const url=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(blob)});if(run!==pvRun)return;
+  $("pvImg").src=url;
   $("pvSave").hidden=!$("pvSaveAll").hidden;   /* "Save order & image" replaces "Save image" while the order is being written */
   $("pvSave").disabled=$("pvShare").disabled=false;$("pvSaveAll").disabled=formSaving;$("pvNote").textContent=matchMedia("(pointer:coarse)").matches?"ပုံကို ဖိထားပြီး Save to Photos / Share ကို ရွေးပါ":"";
   /* decorators only look at the order here: no Print / Share / Save image */
@@ -4585,7 +4589,9 @@ $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;if(formSavin
   try{await saveFile(pvBlob,pvName,"ပုံ")}catch(e){}
   /* the preview stays open: once saved it shows the saved order, so Print (which gives the order its number) can be pressed */
   const before=lastSavedOrder;
-  afterSave={at:Date.now(),cont:()=>{const o=orders.find(x=>x.id===lastSavedId)||lastSavedOrder;if(o)openPreview(o)}};
+  /* the order just saved: the copy in the list may not have the edit yet (slow internet), so the newer of the two is shown */
+  afterSave={at:Date.now(),cont:()=>{const live=orders.find(x=>x.id===lastSavedId),sv=lastSavedOrder?.id===lastSavedId?lastSavedOrder:null;
+    const o=live&&(!sv||String(live.updatedAt||"")>=String(sv.updatedAt||""))?live:sv||live;if(o)openPreview(o)}};
   $("form").requestSubmit();
   await new Promise(r=>setTimeout(r,60));while(formSaving)await new Promise(r=>setTimeout(r,120));
   b.disabled=false;
