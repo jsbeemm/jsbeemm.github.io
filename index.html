@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794485637"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794486922"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4273,7 +4273,7 @@ async function buildPreviewCanvas(o){
 
     /* ── header, one row like the printed slip: customer · order number · date + time ── */
     const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the time, on the right */
-    const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":"",o.withVoucher?"🧾 ဘောက်ချာထည့်ပေးရန်":""].filter(Boolean);
+    const notes=[!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":"",o.withVoucher?"🧾 ဘောက်ချာထည့်ရန်":""].filter(Boolean);
     /* right: date, the time pill under it (delivery marked "Deli"), then the shop notes */
     const rW=Math.max(width(dateS,40,700),width(timeS,22,700)+32);
     text(dateS,P+LW,y0+40,40,{align:"right",weight:700});
@@ -4764,7 +4764,7 @@ function slipHTML(o,live=false){
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${o.time==="tbc"?"":fmtTimeShort(o.time)}</div>
-      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ပေးရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||o.time==="tbc"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
