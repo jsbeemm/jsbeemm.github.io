@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794487026"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794630064"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2469,6 +2469,7 @@ span.star-ic{cursor:default}
       </div>
 <div class="editor" id="leaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="leaveT" style="z-index:50"><div class="cfm-box"><h3 id="leaveT">ပြင်ဆင်ချက်တွေ သိမ်းမလား?</h3><p>ပြင်ထားတာတွေ မသိမ်းရသေးပါ။</p><div class="cfm-btns leave-btns"><button type="button" class="btn ghost" id="leaveStay">ဆက်ပြင်မည်</button><button type="button" class="btn ghost danger-t" id="leaveDrop">မသိမ်းပါ</button><button type="button" class="btn" id="leaveSave">သိမ်းမည်</button></div></div></div>
 <div class="editor" id="bsDlg" hidden role="dialog" aria-modal="true" aria-labelledby="bsT" style="z-index:50"><div class="cfm-box"><h3 id="bsT">Preview ပုံများ Share</h3><p id="bsMsg"></p><div class="bs-thumbs" id="bsThumbs"></div><div class="cfm-btns"><button type="button" class="btn ghost" id="bsNo">Cancel</button><button type="button" class="btn" id="bsGo" disabled>Share</button></div></div></div>
+<div class="editor" id="ereqDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="ereqT" style="z-index:60"><div class="cfm-box"><h3 id="ereqT">Order ပြင်ခွင့် တောင်းနေပါတယ်</h3><p id="ereqMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="ereqNo">ခွင့်မပြုပါ</button><button type="button" class="btn" id="ereqYes">ခွင့်ပြုမည်</button></div></div></div>
 <div class="editor" id="cfmDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" style="z-index:50"><div class="cfm-box"><h3 id="cfmTitle"></h3><p id="cfmMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="cfmNo">Cancel</button><button type="button" class="btn danger" id="cfmYes">Delete</button></div></div></div>
 <div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">ဆက်ရေးမည်</button><button type="button" class="btn ghost" id="soLvDrop">မသိမ်းဘဲ ထွက်မည်</button><button type="button" class="btn" id="soLvSave">Draft သိမ်းမည်</button></div></div></div>
 <div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><button type="button" class="lb-save" id="lbSave" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>Save image</span></button><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
@@ -2851,6 +2852,7 @@ function setSync(m){
   t.textContent=off?"Offline — ဖုန်းထဲမှာ သိမ်းထားပြီး Internet ပြန်ရရင် sync ပါမယ်":m==="db"?"မျှဝေထားသော ဒေတာနှင့် ချိတ်ဆက်ပြီး":m==="local"?"ဒီစက်ပေါ်တွင်သာ သိမ်းထားသည်":"ချိတ်ဆက်နေသည်…";
 }
 addEventListener("online",()=>{if(mode==="db")setSync("db")});addEventListener("offline",()=>{if(mode==="db")setSync("db")});
+const ORDER_KEEP=["deco","printed","noPending","reqDeliAt","deliBy","deliPrev","pickedUpAt","cancelReason","cancelAt","cancelBy"];
 async function saveOrder(o){
   if(col){await col.doc(o.id).set(o)}
   else{const i=orders.findIndex(x=>x.id===o.id);if(i>=0)orders[i]=o;else orders.push(o);localSave();render()}
@@ -4151,9 +4153,12 @@ $("form").addEventListener("submit",async e=>{
   const {total}=price(f);
   const prev=editingId?orders.find(o=>o.id===editingId):null;
   if(prev&&!canEditOrder(prev)){err.textContent="ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်။";return}
+  if(prev&&needsDecoOk(prev)&&!editOkForMe(prev,true)){err.textContent=`${nameOf(prev.deco.by)} က decorate လုပ်နေလို့ သူ ခွင့်ပြုမှ ပြင်လို့ရပါမယ်။ Edit ကို ပြန်နှိပ်ပြီး ခွင့်တောင်းပါ။`;err.hidden=false;return}
   const id=editingId||("o"+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
   const now=new Date().toISOString();
-  const o={...f,id,total,no,status:prev?.status||"new",createdAt:prev?.createdAt||now,createdBy:prev?(prev.createdBy??null):me.id||null,updatedAt:now};
+  /* what the form does not hold (decorating, Print ပြီး, delivery request, pick-up, cancel details) stays as it was */
+  const kept=prev?Object.fromEntries(ORDER_KEEP.filter(k=>prev[k]!==undefined).map(k=>[k,prev[k]])):{};
+  const o={...kept,...f,id,total,no,status:prev?.status||"new",createdAt:prev?.createdAt||now,createdBy:prev?(prev.createdBy??null):me.id||null,updatedAt:now};
   /* who took it, who last changed it, and what each edit changed */
   if(prev){const ch=diffOrder(prev,o);o.history=ch.length?addHist(prev,"edit",ch):(prev.history||[]);o.updatedBy=ch.length?me.id||null:(prev.updatedBy??null)}
   else{o.history=addHist(null,"create");o.updatedBy=null}
@@ -4489,7 +4494,7 @@ function syncPvEdit(){const o=!pvFormMode&&pvOrder&&orders.find(x=>x.id===pvOrde
   $("pvEdit").hidden=!(o&&canEditOrder(o));$("pvDel").hidden=!(o&&canDelete())}
 $("pvEdit").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o)return;
   if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}
-  $("preview").hidden=true;fillForm(o);showTab("new")});
+  startEdit(o).then(y=>{if(y)$("preview").hidden=true})});
 $("pvDel").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!o||!canDelete())return;
   const why=await askDelReason(o);if(why==null)return;
   try{await removeOrder(o.id,why);$("preview").hidden=true;toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}});
@@ -4932,6 +4937,7 @@ const isOpen=o=>o.status!=="done"&&o.status!=="cancel";
 function daysFromToday(iso){return Math.round((new Date(iso+"T00:00")-new Date(todayISO()+"T00:00"))/864e5)}
 var shownList=[];   /* the orders the list shows right now (after the filters) — what the Excel export writes */
 function render(){
+  editReqWatch();
   if(view==="home")renderHome();
   renderDrafts();renderDue();
   const t=todayISO();
@@ -5313,7 +5319,7 @@ $("orders").addEventListener("click",async e=>{
   if(t.dataset.print){printOrder(orders.find(o=>o.id===t.dataset.print));return}
   if(t.dataset.hist){openHistory(orders.find(o=>o.id===t.dataset.hist));return}
   if(t.dataset.again){const o=orders.find(x=>x.id===t.dataset.again);if(o&&canWriteOrders())orderAgain(o);return}
-  if(t.dataset.edit){const o=orders.find(o=>o.id===t.dataset.edit);if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return}fillForm(o);showTab("new");return}
+  if(t.dataset.edit){startEdit(orders.find(o=>o.id===t.dataset.edit));return}
   if(t.dataset.del){const o=orders.find(x=>x.id===t.dataset.del);if(!o)return;
     const why=await askDelReason(o);if(why==null)return;
     try{await removeOrder(o.id,why);toast("ဖျက်ပြီး")}catch(x){toast("ဖျက်မရပါ")}return}
@@ -5415,7 +5421,7 @@ $("toTop").addEventListener("click",()=>scrollTo({top:0,behavior:document.hidden
 /* the mouse wheel over a focused number box would silently change the amount: scroll the page instead */
 document.addEventListener("wheel",e=>{const t=e.target;if(t.matches?.('input[type=number]')&&document.activeElement===t)t.blur()},{passive:true});
 /* ask-first pop-up: resolves true when the person taps the red button */
-function askConfirm(title,msg,yes="Delete"){return new Promise(res=>{$("cfmTitle").textContent=title;$("cfmMsg").textContent=msg||"";$("cfmYes").textContent=yes;$("cfmDlg").hidden=false;$("cfmNo").focus();
+function askConfirm(title,msg,yes="Delete",plain=false){return new Promise(res=>{$("cfmTitle").textContent=title;$("cfmMsg").textContent=msg||"";$("cfmYes").textContent=yes;$("cfmYes").classList.toggle("danger",!plain);$("cfmDlg").hidden=false;$("cfmNo").focus();
   const done=v=>{$("cfmDlg").hidden=true;$("cfmYes").onclick=$("cfmNo").onclick=$("cfmDlg").onclick=null;res(v)};
   $("cfmYes").onclick=()=>done(true);$("cfmNo").onclick=()=>done(false);$("cfmDlg").onclick=e=>{if(e.target===$("cfmDlg"))done(false)}})}
 let tt;function toast(m,ms=2200){const el=$("toast");el.textContent=m;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,ms)}
@@ -5432,7 +5438,7 @@ const EN={
   "Channel အလိုက် စစ်ရန်":"Filter by channel","Channel အားလုံး":"All channels","အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်":"Search name, phone, order number",
   "မပြီးသေး":"Open","ဒီနေ့":"Today","အသစ်":"New","ပြုလုပ်နေ":"In progress","အဆင်သင့်":"Ready","ပေးပြီး":"Handed over","ပယ်ဖျက်":"Cancelled","အားလုံး":"All",
   "ဒေတာ ဖတ်နေသည်…":"Loading…","ဤအမျိုးအစားတွင် အော်ဒါမရှိပါ။":"No orders in this view.","အော်ဒါ မရှိသေးပါ။ “+ အော်ဒါအသစ်” ကိုနှိပ်၍ စတင်ပါ။":"No orders yet. Tap “+ New order” to start.",
-  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","ငွေချေမှု":"Payments","မှတ်ပြီးသား ငွေချေမှု":"Payments recorded","မပြင်တော့ပါ":"Cancel","🔒 Admin သာ":"🔒 Admin only","ဒီငွေချေမှုကို ဖျက်မလား?":"Delete this payment?","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
+  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","Order ပြင်ခွင့် တောင်းနေပါတယ်":"Edit request","ခွင့်မပြုပါ":"Refuse","ခွင့်ပြုမည်":"Allow","ခွင့်တောင်းမည်":"Ask","ပြင်မည်":"Edit now","ပြင်ခွင့် ရပါပြီ":"Edit allowed","Decorator ရဲ့ ခွင့်ပြုချက် လိုပါတယ်":"Decorator's OK needed","ငွေချေမှု":"Payments","မှတ်ပြီးသား ငွေချေမှု":"Payments recorded","မပြင်တော့ပါ":"Cancel","🔒 Admin သာ":"🔒 Admin only","ဒီငွေချေမှုကို ဖျက်မလား?":"Delete this payment?","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
   "— ရွေးပါ —":"— Choose —","Delivery ရွေးပါ":"Choose who delivers",
   "Cancel ရတဲ့ အကြောင်းရင်း *":"Reason for cancelling *","Cancel ရတဲ့ အကြောင်းရင်း ထည့်ပါ":"Please enter the reason for cancelling",
   "Design မှတ်ချက် –":"Design note –","Delivery မှတ်ချက် –":"Delivery note –",
@@ -5680,6 +5686,42 @@ const can=p=>{if(!db)return true;const a=myAcct();if(!a)return false;if(a.role==
   const v=a.perms?.[p];return v===undefined?(ROLE_PERMS[a.role]||[]).includes(p):!!v};
 const canWriteOrders=()=>can("orders.add");
 /* an order is edited by the staff member who accepted it; Admins can edit every order */
+/* ---------- editing an order whose cake is being decorated: whoever is decorating it approves first ----------
+   o.editReq = {by, at, st: "wait" | "ok" | "no", ansAt, ansBy}. An approval opens the order for EDIT_OK_MIN minutes;
+   saving the order uses it up (the saved order no longer carries editReq). */
+const EDIT_OK_MIN=30;
+const decoLive=o=>!!(db&&o?.deco?.startAt&&!o.deco.endAt&&o.deco.by);
+const needsDecoOk=o=>decoLive(o)&&!decoIsMine(o);
+/* atSave: an approval given before the form was opened still counts when saving, however long the editing took */
+const editOkForMe=(o,atSave)=>{const r=o?.editReq;return!!r&&r.st==="ok"&&sameId(r.by,me.id)&&(atSave||Date.now()-Date.parse(r.ansAt||0)<EDIT_OK_MIN*60e3)};
+async function startEdit(o){if(!o)return false;
+  if(!canEditOrder(o)){toast("ဒီ Order ကို လက်ခံထားတဲ့သူ (သို့) Admin သာ ပြင်နိုင်ပါတယ်");return false}
+  if(needsDecoOk(o)&&!editOkForMe(o)){const who=nameOf(o.deco.by),r=o.editReq;
+    if(r?.st==="wait"&&sameId(r.by,me.id)&&Date.now()-Date.parse(r.at||0)<EDIT_OK_MIN*60e3){toast(`${who} ရဲ့ ခွင့်ပြုချက်ကို စောင့်နေပါတယ်`,3000);return false}
+    if(!await askConfirm("Decorator ရဲ့ ခွင့်ပြုချက် လိုပါတယ်",`${o.no||"ဒီ Order"} ကို ${who} က decorate လုပ်နေပါတယ်။ ${who} ခွင့်ပြုမှ ပြင်လို့ရပါမယ်။ ခွင့်တောင်းမလား?`,"ခွင့်တောင်းမည်",true))return false;
+    try{await patchOrder(o.id,{editReq:{by:me.id||null,at:new Date().toISOString(),st:"wait"}});toast(`${who} ဆီ ခွင့်တောင်းထားပါတယ် — ခွင့်ပြုရင် အသိပေးပါမယ်`,4000)}
+    catch(x){toast("ခွင့်တောင်းမရပါ")}
+    return false}
+  fillForm(o);showTab("new");return true}
+/* shown on every update of the orders: the decorator gets the request, the one who asked gets the answer */
+let ereqOpen=null;const ereqSeen=new Set();
+function editReqWatch(){if(!db)return;
+  const ask=orders.find(o=>decoLive(o)&&decoIsMine(o)&&o.editReq?.st==="wait"&&!sameId(o.editReq.by,me.id)&&Date.now()-Date.parse(o.editReq.at||0)<EDIT_OK_MIN*60e3),box=$("ereqDlg");
+  if(!ask){if(ereqOpen){box.hidden=true;ereqOpen=null}}
+  else if(ereqOpen!==ask.id+ask.editReq.at){ereqOpen=ask.id+ask.editReq.at;box.dataset.oid=ask.id;
+    $("ereqMsg").textContent=`${nameOf(ask.editReq.by)} က ${[ask.no,ask.name].filter(Boolean).join(" ")} ကို ပြင်ချင်လို့ ခွင့်တောင်းနေပါတယ်။`;box.hidden=false}
+  for(const o of orders){const r=o.editReq;if(!r||r.st==="wait"||!r.ansAt||!sameId(r.by,me.id))continue;
+    const k=o.id+r.ansAt;if(ereqSeen.has(k))continue;ereqSeen.add(k);
+    if(Date.now()-Date.parse(r.ansAt)>5*60e3)continue;   /* an old answer (e.g. the app was just opened) is not announced again */
+    if(r.st==="ok")askConfirm("ပြင်ခွင့် ရပါပြီ",`${o.no||"Order"} ကို ${nameOf(r.ansBy)} က ပြင်ခွင့်ပေးပါပြီ — မိနစ် ${EDIT_OK_MIN} အတွင်း ပြင်လို့ရပါတယ်။`,"ပြင်မည်",true).then(y=>{if(y){$("preview").hidden=true;startEdit(orders.find(x=>x.id===o.id))}});
+    else toast(`${nameOf(r.ansBy)} က ${o.no||""} ကို ပြင်ခွင့် မပေးပါ`,5000)}}
+async function ereqAnswer(ok){const box=$("ereqDlg"),o=orders.find(x=>x.id===box.dataset.oid);box.hidden=true;if(!o?.editReq)return;
+  const now=new Date().toISOString();
+  try{await patchOrder(o.id,{editReq:{...o.editReq,st:ok?"ok":"no",ansAt:now,ansBy:me.id||null},
+      history:addHist(o,"deco",[`${ok?"Allowed":"Refused"} ${nameOf(o.editReq.by)} to edit the order while decorating`])})}
+  catch(x){toast("သိမ်းမရပါ")}}
+$("ereqYes").addEventListener("click",()=>ereqAnswer(true));
+$("ereqNo").addEventListener("click",()=>ereqAnswer(false));
 const canEditOrder=o=>!db||can("admin")||(canWriteOrders()&&!!o&&sameId(o.createdBy,me.id));
 const canDelete=()=>can("orders.delete");
 /* the owner is marked in team/<id> {owner:true} so every Admin sees the owner as a fixed Admin */
