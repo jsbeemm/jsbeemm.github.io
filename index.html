@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794650805"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794657954"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1198,6 +1198,40 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+/* Purchase */
+.pur-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer}
+.pur-cm{display:grid;gap:3px;min-width:0}.pur-cm b{font-size:15px;overflow-wrap:anywhere}.pur-cm small{font-size:13px;color:var(--muted)}
+.pur-amt{display:grid;justify-items:end;gap:2px;font-weight:700;white-space:nowrap}.pur-amt small{font-weight:500;font-size:12px;color:var(--muted)}
+.pur-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.pur-pill{font-size:12px;font-weight:600;line-height:1.5;border-radius:999px;padding:1px 9px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pur-pill.wait{color:#8A5A00;background:#FFE7A8}.pur-pill.ok{color:#1D6B3A;background:#DDF3E4}.pur-pill.no{color:var(--accent);background:var(--accent-soft)}
+.pur-lines{display:grid;gap:8px;margin-top:2px}
+.pur-ln{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.25fr) minmax(0,1fr) auto;gap:6px 8px;align-items:end;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.pur-lnm{grid-column:1/4;grid-row:1;align-self:center;font-weight:600;overflow-wrap:anywhere}.pur-lnm code{color:var(--muted);font-size:12px;font-weight:400}
+.pur-rm{grid-column:4;grid-row:1}
+.pur-f{display:grid;gap:2px;min-width:0}.pur-f small{font-size:12px;color:var(--muted)}.pur-f input{width:100%;min-width:0}
+.pur-la{grid-column:3/5;text-align:right}.pur-la b{white-space:nowrap;line-height:38px}
+.pur-tot{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px 0;font-size:15px}
+.pur-empty{margin:4px 0;color:var(--muted);font-size:13px}
+.pur-mu{color:var(--muted)}
+.pur-h{margin-bottom:12px}.pur-h h3{margin:0 0 4px;font-size:18px;overflow-wrap:anywhere}.pur-h>p{margin:2px 0 6px;color:var(--muted);font-size:13.5px}
+.pur-dl{display:grid;gap:6px;margin:0 0 6px}
+.pur-dln{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.pur-dln b{overflow-wrap:anywhere}.pur-dln .r{text-align:right;white-space:nowrap}.pur-dln span.r{font-weight:700}.pur-dln small{color:var(--muted);font-size:12.5px}
+.pur-dln .pur-cu{grid-column:1/-1;color:var(--ink)}
+.pur-sum{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:6px 10px 0;margin-bottom:14px;font-size:14px}.pur-sum b{text-align:right;white-space:nowrap}
+.pur-sum .gt{font-size:16px;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
+.pur-sec{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;background:var(--surface)}
+.pur-sec h4{margin:0 0 6px;font-size:14.5px}.pur-sec p{margin:4px 0;font-size:13.5px}
+.pur-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
+.pur-modes{margin-top:2px}
+.pa-rows{display:grid;gap:6px;margin-top:4px}
+.pa-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:2px 10px;align-items:center;font-size:13.5px;padding:6px 0;border-top:1px solid var(--line)}
+.pa-nm{overflow-wrap:anywhere}.pa-row small{grid-column:1/-1;color:var(--muted);font-size:12px}
+.pa-row input{width:100%;min-width:0;text-align:right}
+.pa-sh{text-align:right;font-weight:700;white-space:nowrap}
+.pa-err{color:var(--accent);font-size:13px}
+
 /* boxes, dropdowns and icon buttons on one line share the same height */
 .rcv-wt input,.rcv-wt select,.rcv-wt .o-ic,.rcv-pkwt input,.rcv-pkwt select,.rcv-pkrow > .o-ic{height:40px;box-sizing:border-box;padding-top:0;padding-bottom:0}.rcv-wt .o-ic,.rcv-pkrow > .o-ic{width:40px}
 .rcv-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px;align-items:start}@media (max-width:520px){.rcv-top{grid-template-columns:minmax(0,1fr)}}
@@ -1782,9 +1816,17 @@ span.star-ic{cursor:default}
   <!-- PURCHASE & EXPENSE: Purchase Requisition · Business Expense (Admins) · Personal Expense (Admins only) -->
   <section id="viewPE" hidden>
     <div class="home-grid">
+      <button type="button" class="home-tile" id="goPur" hidden><span class="ht-ic" aria-hidden="true">🛒</span><b>Purchase</b><small id="homePurN"></small></button>
       <button type="button" class="home-tile" id="goBiz" hidden><span class="ht-ic" aria-hidden="true">🏪</span><b>Business Expense</b><small id="homeBizN"></small></button>
       <button type="button" class="home-tile" id="goEx" hidden><span class="ht-ic" aria-hidden="true">💰</span><b>Personal Expense</b><small id="homeExN"></small></button>
     </div>
+  </section>
+
+  <!-- PURCHASE: raw materials from suppliers, the payment asked from an Admin, the arrival and its transport charge -->
+  <section id="viewPur" hidden>
+    <div class="prq-bar pd-bar"><input type="search" id="purQ" placeholder="Search supplier, item, gate…" aria-label="Search purchases" autocomplete="off"><button type="button" class="btn prq-new fab" id="purNewBtn">+ New purchase</button></div>
+    <div class="chips pd-cats" id="purTabs"></div>
+    <div class="rcv-list" id="purList"></div>
   </section>
 
   <!-- PERSONAL EXPENSE (Admin only) -->
@@ -2084,6 +2126,31 @@ span.star-ic{cursor:default}
     </form>
   </div>
       </div>
+<!-- Purchase: new / edit (date, supplier, gate or logistic, raw materials bought) -->
+<div class="editor" id="purDlg" hidden role="dialog" aria-modal="true" aria-labelledby="purDlgT">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b id="purDlgT">New purchase</b><span class="rcv-dno" id="purDlgNo" hidden></span><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <form id="purForm" class="side-body" novalidate>
+      <div class="ex-row2"><div class="prf"><span>Date <b>*</b></span><span id="purDateBox"></span></div>
+        <label class="prf"><span>Supplier <b>*</b></span><input id="purSup" list="purSupList" autocomplete="off" placeholder="Supplier name"></label></div>
+      <datalist id="purSupList"></datalist>
+      <label class="prf"><span>ပို့မယ့် ဂိတ် / Logistic</span><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်"></label><datalist id="purGateList"></datalist>
+      <div class="prf"><span>Items <b>*</b></span>
+        <div class="so-pick"><input type="search" id="purItQ" autocomplete="off" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" aria-label="Add raw material"><div class="so-hits" id="purItHits" hidden></div></div>
+        <div class="pur-lines" id="purLines"></div>
+        <div class="pur-tot"><span>Total</span><b id="purTotTxt">0 Ks</b></div></div>
+      <label class="prf"><span>Note</span><input id="purNote" autocomplete="off"></label>
+      <div class="prq-actions"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="purSave">Save</button></div>
+    </form>
+  </div>
+</div>
+<!-- Purchase: one purchase, its payment and its arrival -->
+<div class="editor" id="purView" hidden role="dialog" aria-modal="true" aria-labelledby="purViewT">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b id="purViewT">🛒 Purchase</b><span class="rcv-dno" id="purViewNo"></span><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body" id="purBody"></div>
+  </div>
+</div>
 <div class="editor" id="exPplDlg" hidden role="dialog" aria-modal="true" aria-label="People">
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>👥 People</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
@@ -5447,7 +5514,7 @@ const EN={
   "Channel အလိုက် စစ်ရန်":"Filter by channel","Channel အားလုံး":"All channels","အမည်၊ ဖုန်း၊ အော်ဒါနံပါတ် ရှာရန်":"Search name, phone, order number",
   "မပြီးသေး":"Open","ဒီနေ့":"Today","အသစ်":"New","ပြုလုပ်နေ":"In progress","အဆင်သင့်":"Ready","ပေးပြီး":"Handed over","ပယ်ဖျက်":"Cancelled","အားလုံး":"All",
   "ဒေတာ ဖတ်နေသည်…":"Loading…","ဤအမျိုးအစားတွင် အော်ဒါမရှိပါ။":"No orders in this view.","အော်ဒါ မရှိသေးပါ။ “+ အော်ဒါအသစ်” ကိုနှိပ်၍ စတင်ပါ။":"No orders yet. Tap “+ New order” to start.",
-  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","Order ပြင်ခွင့် တောင်းနေပါတယ်":"Edit request","ခွင့်မပြုပါ":"Refuse","ခွင့်ပြုမည်":"Allow","ခွင့်တောင်းမည်":"Ask","ပြင်မည်":"Edit now","ပြင်ခွင့် ရပါပြီ":"Edit allowed","Decorator ရဲ့ ခွင့်ပြုချက် လိုပါတယ်":"Decorator's OK needed","ငွေချေမှု":"Payments","မှတ်ပြီးသား ငွေချေမှု":"Payments recorded","မပြင်တော့ပါ":"Cancel","🔒 Admin သာ":"🔒 Admin only","ဒီငွေချေမှုကို ဖျက်မလား?":"Delete this payment?","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
+  "အခြေအနေ":"Status","ကျန်ငွေ":"Balance","✓ ငွေချေပြီး":"✓ Paid in full","ငွေချေရန်":"Record payment","💸 ငွေလွှဲရန်":"💸 To pay","မရောက်သေး":"Not arrived","📦 ရောက်ပြီ":"📦 Arrived","✓ ငွေလွှဲပြီး":"✓ Paid","ငွေလွှဲမည်":"Pay","ငွေလွှဲပြီး":"Paid","ငွေလွှဲပြီး မှတ်ရန်":"Record payment","📦 ပစ္စည်းရောက်ပြီ":"📦 Goods arrived","💸 Admin ဆီ ငွေလွှဲ request":"💸 Ask Admin to pay","ပစ္စည်းတန်ဖိုးအလိုက်":"By value","အရေအတွက်အလိုက်":"By qty","ကိုယ်တိုင်ခွဲ":"By hand","ကားခ ခွဲပုံ":"Share transport","ကားခ (Ks)":"Transport (Ks)","💸 ငွေလွှဲ":"💸 Payment","📦 ပစ္စည်းရောက် · ကားခ":"📦 Arrival · transport","ပစ္စည်းဖိုး":"Goods","ကားခ ပြင်ရန်":"Change transport","ငွေ မလွှဲရသေးပါ":"Not paid yet","ပစ္စည်း မရောက်သေးပါ":"Not arrived yet","ငွေလွှဲသည့်နေ့":"Paid on","ရောက်သည့်နေ့":"Arrived on","ပို့မယ့် ဂိတ် / Logistic":"Bus gate / logistic","Request ပြန်ရုပ်ရန်":"Withdraw request","ငွေလွှဲမှု ပြန်ဖျက်ရန်":"Remove payment","Order ပြင်ခွင့် တောင်းနေပါတယ်":"Edit request","ခွင့်မပြုပါ":"Refuse","ခွင့်ပြုမည်":"Allow","ခွင့်တောင်းမည်":"Ask","ပြင်မည်":"Edit now","ပြင်ခွင့် ရပါပြီ":"Edit allowed","Decorator ရဲ့ ခွင့်ပြုချက် လိုပါတယ်":"Decorator's OK needed","ငွေချေမှု":"Payments","မှတ်ပြီးသား ငွေချေမှု":"Payments recorded","မပြင်တော့ပါ":"Cancel","🔒 Admin သာ":"🔒 Admin only","ဒီငွေချေမှုကို ဖျက်မလား?":"Delete this payment?","+ ထပ်မှာရန်":"+ Order again","သိမ်းမည်":"Save","ငွေပေးချေနည်း ရွေးပါ":"Choose payment method","ပမာဏ ရိုက်ထည့်ပါ":"Enter the amount","ငွေပေးချေမှု မှတ်ပြီး":"Payment recorded","ပုံကြီးကြည့်ရန်":"View larger",
   "— ရွေးပါ —":"— Choose —","Delivery ရွေးပါ":"Choose who delivers",
   "Cancel ရတဲ့ အကြောင်းရင်း *":"Reason for cancelling *","Cancel ရတဲ့ အကြောင်းရင်း ထည့်ပါ":"Please enter the reason for cancelling",
   "Design မှတ်ချက် –":"Design note –","Delivery မှတ်ချက် –":"Delivery note –",
@@ -5622,8 +5689,8 @@ const ROLES=[{k:"admin",n:"Admin"},{k:"staff",n:"Sale"},{k:"baking",n:"Productio
    accounts are written only by the artifact's Owner/Editors (db rule), so nobody can approve themselves.
    Passwords are never stored — only a salted PBKDF2 hash; the signed-in user is remembered on this device. */
 const PERMS=[["orders.add","Add & edit orders"],["orders.pay","Record payments"],["orders.status","Change order status"],["orders.delete","Delete / cancel orders"],
-  ["orders.print","Print / Save JPEG"],["orders.printed","Tick “Print ပြီး” (printed)"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["admin","Approve accounts & set roles"]];
-const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.printed","orders.report","sales.report","excel","pr.request","customers.add"],
+  ["orders.print","Print / Save JPEG"],["orders.printed","Tick “Print ပြီး” (printed)"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["po.add","Purchase raw material (ask Admin to pay)"],["admin","Approve accounts & set roles"]];
+const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.printed","orders.report","sales.report","excel","pr.request","customers.add","po.add"],
   baking:["orders.print","pr.request"],decoration:["orders.add","orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
 const permsFor=r=>Object.fromEntries(PERMS.map(([k])=>[k,(ROLE_PERMS[r]||[]).includes(k)]));
 const ROLES_DEF=ROLES.filter(r=>r.k!=="admin").map(r=>({...r,perms:ROLE_PERMS[r.k].slice()}));
@@ -6085,7 +6152,7 @@ function syncAuth(){
   $("authView").hidden=!locked;
   $("authLoading").hidden=acctLoaded||!db;$("authForms").hidden=!acctLoaded&&!!db;
   if(locked&&!$("viewNew").hidden)showTab("list");
-  initEx();initTd();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin")))go("pe");if(view==="pt"&&isProdRole())go("home");
+  initEx();initTd();initPur();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin"))||(view==="pur"&&!canPur()))go("pe");if(view==="pt"&&isProdRole())go("home");
   renderMe();render();renderPR();renderTeam();placeHome();renderHome();
 }
 /* to-dos the owner kept before linking move to the linked account, once */
@@ -6097,15 +6164,16 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
+  if(v==="pur"&&!canPur())v="pe";
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
-  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("exFPop").hidden=true;
+  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("viewPur").hidden=v!=="pur";$("exFPop").hidden=true;
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
@@ -6113,7 +6181,7 @@ function go(v){
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();if(v==="pur"){initItems();initPur();initPt();renderPur()}
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -6122,7 +6190,7 @@ function renderHome(){
   $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${seenDrafts().length?` · 📝 ${seenDrafts().length} draft${seenDrafts().length===1?"":"s"}`:""}`;
   $("homePRN").textContent=`${toBuy} item${toBuy===1?"":"s"} to buy`;
   {const n=tds.filter(t=>!t.done).length;$("homeMyTodoN").textContent=`${n} open task${n===1?"":"s"}`;$("homeTodoN").textContent=`${toBuy} to buy · ${n} task${n===1?"":"s"}`}
-  $("goPE").hidden=!can("admin")&&!canSeeEx();
+  $("goPE").hidden=!can("admin")&&!canSeeEx()&&!canPur();purHome();
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
   const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
@@ -6198,7 +6266,7 @@ $("notiPop").addEventListener("click",async e=>{if(!e.target.closest("#notiReloa
 document.addEventListener("click",e=>{if(!$("notiPop").hidden&&!e.target.closest("#notiPop,#notiBtn,#notiHBtn"))$("notiPop").hidden=true});
 document.addEventListener("app-new",notiSync);
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",orders:"sale",pos:"sale",so:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",pur:"pe",orders:"sale",pos:"sale",so:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview, Print setup and the Voucher keep their ✕ on the right instead) */
@@ -6646,6 +6714,205 @@ function initEx(){
   if(pOk&&!exCol){exCol=db.collection("expenses");exUnsub=exCol.onSnapshot(s=>{exs=s.docs.map(d=>({...d.data(),id:d.id}));re();exRescue("personal",exCol,exs)},()=>{exCol=null;exs=[]})}
   if(bOk&&!bxCol){bxCol=db.collection("bizex");bxUnsub=bxCol.onSnapshot(s=>{bxs=s.docs.map(d=>({...d.data(),id:d.id}));re();exRescue("biz",bxCol,bxs)},()=>{bxCol=null;bxs=[]})}
 }
+
+/* ---------- Purchase: buying Raw Material from a supplier (shared "purchases" collection).
+   A purchase has the supplier, the bus gate / logistic it comes by and its item lines. Whoever made it asks an Admin to
+   pay (payReq: wait → ok / no, the Admin records the payment in paid); when the goods arrive the transport charge (ကားခ)
+   is entered and shared over the lines — by their value, by quantity, or by hand — so each line has its cost with transport. ---------- */
+var purs=[],purCol=null,purQ="",purTab="all",purEditing=null,purLines=[],purOpen=null,purAct=null,purArr=null;
+const canPur=()=>can("po.add")||can("admin");
+const purAmt=l=>Math.round(Number(l.qty||0)*Number(l.price||0));
+const purTot=p=>(p.lines||[]).reduce((a,l)=>a+purAmt(l),0);
+const PUR_FR=[["amt","ပစ္စည်းတန်ဖိုးအလိုက်"],["qty","အရေအတွက်အလိုက်"],["hand","ကိုယ်တိုင်ခွဲ"]];
+const purCanEdit=p=>can("admin")||(!p.paid&&!p.arrived&&sameId(p.by,me.id));
+const purCanDel=p=>can("admin")||(!p.paid&&sameId(p.by,me.id));
+/* the unit a raw material is bought in, and the price it was bought at last time */
+const purUnitOf=i=>i?.units?.[0]?.u||i?.purUnit||i?.stockUnit||i?.uom||i?.unit||"";
+function purLastPrice(id){let best=null;for(const p of purs)for(const l of p.lines||[])if(l.iid===id&&(!best||(p.date||"")>best.d))best={d:p.date||"",price:l.price};return best?best.price:""}
+function purNextNo(date){const k="PU"+date.slice(2).replace(/-/g,""),n=purs.filter(p=>String(p.no||"").startsWith(k+"-")).map(p=>Number(String(p.no).split("-")[1])||0);
+  return`${k}-${String(Math.max(0,...n)+1).padStart(2,"0")}`}
+/* the transport charge over the lines: by value or quantity (the Kyat left by rounding go to the biggest lines), or as typed */
+function purFrSplit(lines,total,mode,hand){const n=lines.length;total=Math.round(Number(total)||0);if(!n)return[];
+  if(mode==="hand")return lines.map((l,i)=>Math.round(Number(hand?.[i])||0));
+  const w=lines.map(l=>mode==="qty"?Number(l.qty)||0:purAmt(l)),sw=w.reduce((a,b)=>a+b,0);
+  const out=w.map(x=>sw?Math.floor(total*x/sw):Math.floor(total/n));let left=total-out.reduce((a,b)=>a+b,0);
+  const ord=w.map((x,i)=>i).sort((a,b)=>w[b]-w[a]);for(let k=0;left>0;k=(k+1)%n,left--)out[ord[k]]++;return out}
+function purLocalLoad(){try{return JSON.parse(localStorage.getItem("cakePurchases")||"[]")}catch(e){return[]}}
+function purLocalSave(){try{localStorage.setItem("cakePurchases",JSON.stringify(purs))}catch(e){}}
+async function savePur(p){if(purCol){await purCol.doc(p.id).set(p);return}const i=purs.findIndex(x=>x.id===p.id);if(i>=0)purs[i]=p;else purs.push(p);purLocalSave();purRefresh()}
+async function patchPur(id,patch){if(purCol){await purCol.doc(id).update(patch);return}const p=purs.find(x=>x.id===id);if(p)Object.assign(p,patch);purLocalSave();purRefresh()}
+async function removePur(id){if(purCol){await purCol.doc(id).delete();return}purs=purs.filter(x=>x.id!==id);purLocalSave();purRefresh()}
+function initPur(){if(!db){if(!purs.length)purs=purLocalLoad();return}if(purCol||!canPur())return;purCol=db.collection("purchases");
+  purCol.onSnapshot(s=>{purs=s.docs.map(d=>({...d.data(),id:d.id}));purRefresh()},()=>{purCol=null})}
+function purRefresh(){renderPur();if(!$("purView").hidden)renderPurView();if(view==="home"||view==="pe")renderHome();purWatch()}
+/* an Admin hears of a new request to pay; whoever asked hears the answer (only fresh ones, not those from before the app opened) */
+const purSeen=new Set();
+function purWatch(){if(!db)return;const fresh=t=>!!t&&Date.now()-Date.parse(t)<5*60e3;
+  for(const p of purs){const r=p.payReq;if(!r)continue;
+    if(r.st==="wait"&&can("admin")&&!sameId(r.by,me.id)){const k=p.id+"w"+r.at;if(!purSeen.has(k)){purSeen.add(k);if(fresh(r.at))toast(`💸 ${nameOf(r.by)} က ${p.no} (${p.supplier||""}) အတွက် ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ်`,6000)}}
+    if((r.st==="ok"||r.st==="no")&&r.ansAt&&sameId(r.by,me.id)){const k=p.id+"a"+r.ansAt;if(!purSeen.has(k)){purSeen.add(k);
+      if(fresh(r.ansAt))toast(r.st==="ok"?`✓ ${p.no} · ${nameOf(r.ansBy)} က ငွေလွှဲပြီးပါပြီ`:`${p.no} · ${nameOf(r.ansBy)} က ငွေလွှဲ request ကို ခွင့်မပြုပါ`,6000)}}}}
+function purPills(p){const r=p.payReq,out=[];
+  if(p.paid)out.push(`<span class="pur-pill ok">✓ ငွေလွှဲပြီး</span>`);
+  else if(r?.st==="wait")out.push(`<span class="pur-pill wait">💸 ငွေလွှဲရန်</span>`);
+  else if(r?.st==="no")out.push(`<span class="pur-pill no">ငွေလွှဲ ခွင့်မပြု</span>`);
+  out.push(p.arrived?`<span class="pur-pill ok">📦 ရောက်ပြီ</span>`:`<span class="pur-pill">မရောက်သေး</span>`);return out.join("")}
+const PUR_TABS=[["all","All",()=>true],["wait","💸 ငွေလွှဲရန်",p=>!p.paid&&p.payReq?.st==="wait"],["open","မရောက်သေး",p=>!p.arrived],["arr","📦 ရောက်ပြီ",p=>!!p.arrived]];
+function renderPur(){if($("viewPur").hidden)return;
+  const q=purQ.trim().toLowerCase(),hit=p=>!q||[p.no,p.supplier,p.gate,p.note,...(p.lines||[]).map(l=>l.name)].join(" ").toLowerCase().includes(q);
+  $("purTabs").innerHTML=PUR_TABS.map(([k,n,f])=>`<button type="button" class="chip" data-purtab="${k}" aria-pressed="${purTab===k}">${n} <small>${purs.filter(p=>hit(p)&&f(p)).length}</small></button>`).join("");
+  const f=PUR_TABS.find(t=>t[0]===purTab)[2],list=purs.filter(p=>hit(p)&&f(p)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.at||"").localeCompare(a.at||""));
+  $("purList").innerHTML=list.length?list.map(p=>{const n=(p.lines||[]).length;
+    return`<button type="button" class="pur-card" data-pur="${esc(p.id)}"><span class="pur-cm"><b>${esc(p.no||"")} · <span data-t="${esc(p.supplier||"")}"></span></b>
+      <small>${esc(fmtDate(p.date))}${p.gate?` · 🚌 <span data-t="${esc(p.gate)}"></span>`:""} · ${n} item${n===1?"":"s"}</small><span class="pur-pills">${purPills(p)}</span></span>
+      <span class="pur-amt">${esc(fmt(purTot(p)))}${p.freight?`<small>+ ကားခ ${esc(fmt(p.freight))}</small>`:""}</span></button>`}).join("")
+    :`<div class="prq-empty">${q||purTab!=="all"?"No match.":"No purchases yet. Tap “+ New purchase”."}</div>`;
+  $("purList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("purQ").addEventListener("input",e=>{purQ=e.target.value;renderPur()});
+$("purTabs").addEventListener("click",e=>{const b=e.target.closest("[data-purtab]");if(!b)return;purTab=b.dataset.purtab;renderPur()});
+$("purList").addEventListener("click",e=>{const b=e.target.closest("[data-pur]");if(b)openPurView(b.dataset.pur)});
+$("purNewBtn").addEventListener("click",()=>openPurForm());
+$("goPur").addEventListener("click",()=>go("pur"));
+
+/* the form: date, supplier, gate / logistic, and the raw materials bought (searched by name or short code) */
+function openPurForm(p){if(!canPur())return;
+  if(p&&!purCanEdit(p)){toast("ငွေလွှဲပြီး (သို့) ရောက်ပြီးသား Purchase ကို Admin သာ ပြင်နိုင်ပါတယ်");return}
+  initItems();purEditing=p||null;purLines=(p?.lines||[]).map(l=>({...l}));
+  $("purDlgT").textContent=p?"Edit purchase":"New purchase";$("purDlgNo").textContent=p?.no||"";$("purDlgNo").hidden=!p;
+  $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
+  $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";$("purItQ").value="";$("purItHits").hidden=true;
+  $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
+  $("purGateList").innerHTML=[...new Set([...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
+  renderPurLines();$("purDlg").hidden=false}
+function renderPurLines(){
+  $("purLines").innerHTML=purLines.length?purLines.map((l,i)=>`<div class="pur-ln" data-i="${i}"><span class="pur-lnm"><span data-t="${esc(l.name||"")}"></span>${l.code?` <code>${esc(l.code)}</code>`:""}</span>
+    <button type="button" class="o-ic danger pur-rm" data-pur-rm aria-label="Remove" title="Remove">✕</button>
+    <label class="pur-f"><small>Qty${l.unit?` (${esc(l.unit)})`:""}</small><input class="pur-q" type="number" inputmode="decimal" min="0" step="any" value="${esc(String(l.qty??""))}"></label>
+    <label class="pur-f"><small>Price (Ks)</small><input class="pur-p" type="number" inputmode="numeric" min="0" step="1" value="${esc(String(l.price??""))}"></label>
+    <span class="pur-f pur-la"><small>Amount</small><b>${esc(fmt(purAmt(l)))}</b></span></div>`).join("")
+    :`<p class="pur-empty">အပေါ်က box မှာ Raw Material ရှာပြီး ထည့်ပါ</p>`;
+  $("purLines").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);purSyncTot()}
+function purSyncTot(){$("purTotTxt").textContent=fmt(purLines.reduce((a,l)=>a+purAmt(l),0))}
+$("purLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=purLines[Number(r.dataset.i)];
+  if(e.target.matches(".pur-q"))l.qty=Number(e.target.value)||0;if(e.target.matches(".pur-p"))l.price=Number(e.target.value)||0;
+  r.querySelector(".pur-la b").textContent=fmt(purAmt(l));purSyncTot()});
+$("purLines").addEventListener("click",e=>{if(!e.target.closest("[data-pur-rm]"))return;purLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderPurLines()});
+function purItShow(){const q=pdNorm($("purItQ").value);if(!q){$("purItHits").hidden=true;return}
+  const hs=items.filter(i=>pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).slice(0,30);
+  $("purItHits").innerHTML=hs.length?hs.map(i=>`<button type="button" class="so-hit so-chit" data-pur-it="${esc(i.id)}"><span>${i.code?`<code>${esc(i.code)}</code> `:""}<span data-t="${esc(i.name||"")}"></span></span><small>${esc(purUnitOf(i))}</small></button>`).join("")
+    :`<p class="side-help it-refnone">မတွေ့ပါ</p>`;
+  $("purItHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("purItHits").hidden=false}
+function purPick(id){const i=items.find(x=>x.id===id);if(!i)return;const k=purLines.findIndex(l=>l.iid===i.id);$("purItQ").value="";$("purItHits").hidden=true;
+  if(k<0){purLines.push({iid:i.id,code:i.code||"",name:i.name||"",unit:purUnitOf(i),qty:1,price:purLastPrice(i.id)});renderPurLines()}
+  const q=$("purLines").querySelectorAll(".pur-q")[k<0?purLines.length-1:k];q?.focus();q?.select?.()}
+$("purItQ").addEventListener("input",purItShow);
+$("purItQ").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const b=$("purItHits").querySelector("[data-pur-it]");if(b&&!$("purItHits").hidden)purPick(b.dataset.purIt)});
+$("purItHits").addEventListener("click",e=>{const b=e.target.closest("[data-pur-it]");if(b)purPick(b.dataset.purIt)});
+document.addEventListener("click",e=>{if(!$("purItHits").hidden&&!e.target.closest("#purItHits,#purItQ"))$("purItHits").hidden=true});
+$("purForm").addEventListener("submit",async e=>{e.preventDefault();if(!canPur())return;
+  const date=readDate($("purDateBox").querySelector(".dp")),supplier=$("purSup").value.trim(),gate=$("purGate").value.trim();
+  if(!date){toast("Date ထည့်ပါ");return}
+  if(date>todayISO()){toast("နောက်ရက် ရွေးလို့ မရပါ");return}
+  if(!supplier){toast("Supplier ထည့်ပါ");$("purSup").focus();return}
+  if(!purLines.length){toast("ပစ္စည်း ထည့်ပါ");$("purItQ").focus();return}
+  const bad=purLines.findIndex(l=>!(Number(l.qty)>0));if(bad>=0){toast("Qty ထည့်ပါ");$("purLines").querySelectorAll(".pur-q")[bad]?.focus();return}
+  const now=new Date().toISOString(),sup=pts.find(x=>x.type==="supplier"&&String(x.name||"").toLowerCase()===supplier.toLowerCase());
+  const p={...(purEditing||{}),id:purEditing?.id||("pu"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),no:purEditing?.no||purNextNo(date),
+    date,supplier:sup?.name||supplier,supId:sup?.id||null,gate,note:$("purNote").value.trim(),
+    lines:purLines.map(l=>({iid:l.iid||null,code:l.code||"",name:l.name||"",unit:l.unit||"",qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),...(l.fr!=null?{fr:l.fr}:{})})),
+    ...(purEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
+  /* changed after the goods arrived: the transport charge is shared again (a split by hand only while the lines stay the same) */
+  if(p.arrived&&p.freight){const same=!!purEditing&&(purEditing.lines||[]).length===p.lines.length&&p.lines.every(l=>l.fr!=null),mode=p.frMode==="hand"&&!same?"amt":p.frMode||"amt";
+    const sh=purFrSplit(p.lines,p.freight,mode,p.lines.map(l=>l.fr));p.frMode=mode;p.lines=p.lines.map((l,i)=>({...l,fr:sh[i]}))}
+  try{await savePur(p);$("purDlg").hidden=true;toast("သိမ်းပြီး");openPurView(p.id)}catch(x){toast("သိမ်းမရပါ")}});
+
+/* one purchase: its lines, then asking for / recording the payment, then the arrival with its transport charge */
+function openPurView(id){purOpen=id;purAct=null;renderPurView();$("purView").hidden=false}
+function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView").hidden=true;return}
+  const tot=purTot(p),fr=Number(p.freight||0),sh=p.arrived&&fr?(p.lines||[]).map(l=>Number(l.fr||0)):null,admin=can("admin"),r=p.payReq;
+  $("purViewNo").textContent=p.no||"";
+  const lines=(p.lines||[]).map((l,i)=>{const a=purAmt(l),u=l.unit?" "+esc(l.unit):"";
+    return`<div class="pur-dln"><b data-t="${esc(l.name||"")}"></b><span class="r">${esc(fmt(a))}</span>
+      <small>${esc(String(l.qty))}${u} × ${esc(fmt(l.price))}</small>${sh?`<small class="r">ကားခ ${esc(fmt(sh[i]))}</small><small class="pur-cu">1${u} = ${esc(fmt(Math.round((a+sh[i])/(Number(l.qty)||1))))} <span class="pur-mu">(ကားခ ပါ)</span></small>`:""}</div>`}).join("");
+  let pay;
+  if(purAct==="pay"&&admin&&!p.paid){const ms=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
+    pay=`<div class="ex-row2"><div class="prf"><span>ငွေလွှဲသည့်နေ့</span>${dateSelect("paD",todayISO(),"ငွေလွှဲသည့်နေ့","",false,todayISO())}</div>
+      <label class="prf"><span>Payment method</span><select id="paM">${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select></label></div>
+      <div class="ex-row2"><label class="prf"><span>Amount (Ks)</span><input id="paA" type="number" inputmode="numeric" min="0" step="1" value="${tot}"></label>
+      <label class="prf"><span>Note</span><input id="paN" autocomplete="off"></label></div>
+      <div class="pur-btns"><button type="button" class="btn ghost" data-pa="cancel">Cancel</button><button type="button" class="btn" data-pa="paid">ငွေလွှဲပြီး</button></div>`}
+  else if(p.paid){const d=p.paid;
+    pay=`<p>✓ <b>${esc(fmt(d.amt))}</b> · ${esc(pmLabel(d.method||""))} · ${esc(fmtDate(d.date))}</p><p class="pur-mu">${esc(nameOf(d.by))}${d.note?` · <span data-t="${esc(d.note)}"></span>`:""}</p>
+      ${admin?`<div class="pur-btns"><button type="button" class="link danger" data-pa="unpay">ငွေလွှဲမှု ပြန်ဖျက်ရန်</button></div>`:""}`}
+  else if(r?.st==="wait"){
+    pay=`<p>💸 <b>${esc(nameOf(r.by))}</b> က ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ် · ${esc(rcvWhen(r.at))}</p>`
+      +(admin?`<div class="pur-btns"><button type="button" class="btn ghost" data-pa="refuse">ခွင့်မပြုပါ</button><button type="button" class="btn" data-pa="pay">ငွေလွှဲမည်</button></div>`
+      :sameId(r.by,me.id)?`<div class="pur-btns"><button type="button" class="link" data-pa="unreq">Request ပြန်ရုပ်ရန်</button></div>`:"")}
+  else pay=(r?.st==="no"?`<p class="pa-err">${esc(nameOf(r.ansBy))} က ငွေလွှဲ request ကို ခွင့်မပြုပါ</p>`:`<p class="pur-mu">ငွေ မလွှဲရသေးပါ</p>`)
+      +`<div class="pur-btns">${admin?`<button type="button" class="btn" data-pa="pay">ငွေလွှဲပြီး မှတ်ရန်</button>`:`<button type="button" class="btn" data-pa="req">💸 Admin ဆီ ငွေလွှဲ request</button>`}</div>`;
+  let arr;
+  if(purAct==="arr"){const a=purArr;
+    arr=`<div class="ex-row2"><div class="prf"><span>ရောက်သည့်နေ့</span>${dateSelect("paAD",a.date,"ရောက်သည့်နေ့","",false,todayISO())}</div>
+      <label class="prf"><span>ကားခ (Ks)</span><input id="paFr" type="number" inputmode="numeric" min="0" step="1" value="${a.fr||""}"></label></div>
+      <div class="prf"><span>ကားခ ခွဲပုံ</span><div class="chips pur-modes">${PUR_FR.map(([k,n])=>`<button type="button" class="chip" data-pa-mode="${k}" aria-pressed="${a.mode===k}">${n}</button>`).join("")}</div></div>
+      <div class="pa-rows">${(p.lines||[]).map((l,i)=>`<div class="pa-row" data-i="${i}"><span class="pa-nm" data-t="${esc(l.name||"")}"></span>${a.mode==="hand"?`<input class="pa-h" type="number" inputmode="numeric" min="0" step="1" value="${esc(String(a.hand[i]??""))}" aria-label="ကားခ">`:`<span class="pa-sh"></span>`}<small class="pa-cu"></small></div>`).join("")}</div>
+      <p class="pa-err" id="paErr" hidden></p>
+      <div class="pur-btns"><button type="button" class="btn ghost" data-pa="cancel">Cancel</button><button type="button" class="btn" data-pa="arrived">သိမ်းမည်</button></div>`}
+  else if(p.arrived)arr=`<p>📦 ${esc(fmtDate(p.arrived.date))} · ${esc(nameOf(p.arrived.by))}</p><p>ကားခ <b>${esc(fmt(fr))}</b>${fr?` · ${esc(PUR_FR.find(m=>m[0]===p.frMode)?.[1]||"")}`:""}</p>
+      ${canPur()?`<div class="pur-btns"><button type="button" class="link" data-pa="arr">ကားခ ပြင်ရန်</button></div>`:""}`;
+  else arr=`<p class="pur-mu">ပစ္စည်း မရောက်သေးပါ</p>${canPur()?`<div class="pur-btns"><button type="button" class="btn" data-pa="arr">📦 ပစ္စည်းရောက်ပြီ</button></div>`:""}`;
+  const ed=purCanEdit(p),del=purCanDel(p);
+  $("purBody").innerHTML=`<div class="pur-h"><h3 data-t="${esc(p.supplier||"")}"></h3><p>${esc(fmtDate(p.date))}${p.gate?` · 🚌 <span data-t="${esc(p.gate)}"></span>`:""} · ${esc(nameOf(p.by))}</p>
+      <div class="pur-pills">${purPills(p)}</div>${p.note?`<p class="rcv-note" data-t="${esc(p.note)}"></p>`:""}</div>
+    <div class="pur-dl">${lines}</div>
+    <div class="pur-sum"><span>ပစ္စည်းဖိုး</span><b>${esc(fmt(tot))}</b>${fr?`<span>ကားခ</span><b>${esc(fmt(fr))}</b><span class="gt">စုစုပေါင်း</span><b class="gt">${esc(fmt(tot+fr))}</b>`:""}</div>
+    <section class="pur-sec"><h4>💸 ငွေလွှဲ</h4>${pay}</section>
+    <section class="pur-sec"><h4>📦 ပစ္စည်းရောက် · ကားခ</h4>${arr}</section>
+    ${ed||del?`<div class="prq-actions">${del?`<button type="button" class="btn ghost" data-pa="del">Delete</button>`:""}${ed?`<button type="button" class="btn" data-pa="edit">Edit</button>`:""}</div>`:""}`;
+  $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
+  if(purAct==="arr")purArrSync()}
+/* the transport charge typed so far, shared over the lines, with each line's cost per unit */
+function purArrSync(){const p=purs.find(x=>x.id===purOpen);if(!p||purAct!=="arr")return[];const a=purArr;a.fr=Math.round(Number($("paFr").value)||0);
+  if(a.mode==="hand")a.hand=[...$("purBody").querySelectorAll(".pa-h")].map(i=>i.value===""?"":Number(i.value)||0);
+  const sh=purFrSplit(p.lines,a.fr,a.mode,a.hand);
+  $("purBody").querySelectorAll(".pa-row").forEach((row,i)=>{const l=p.lines[i],s=row.querySelector(".pa-sh");if(s)s.textContent=fmt(sh[i]);
+    row.querySelector(".pa-cu").textContent=`${l.qty}${l.unit?" "+l.unit:""} · 1${l.unit?" "+l.unit:""} = ${fmt(Math.round((purAmt(l)+sh[i])/(Number(l.qty)||1)))} (ကားခ ပါ)`});
+  const e=$("paErr"),sum=sh.reduce((x,y)=>x+y,0);
+  if(a.mode==="hand"&&sum!==a.fr){e.textContent=`ခွဲထားတာ ${fmt(sum)} — ကားခ ${fmt(a.fr)} နဲ့ မတူသေးပါ`;e.hidden=false}else e.hidden=true;return sh}
+$("purBody").addEventListener("input",e=>{if(e.target.matches("#paFr,.pa-h"))purArrSync()});
+$("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purOpen);if(!p)return;
+  const m=e.target.closest("[data-pa-mode]");
+  if(m){purArrSync();purArr.date=readDate($("purBody").querySelector(".paAD"))||purArr.date;
+    if(m.dataset.paMode==="hand"&&purArr.mode!=="hand")purArr.hand=purFrSplit(p.lines,purArr.fr,purArr.mode);
+    purArr.mode=m.dataset.paMode;renderPurView();return}
+  const b=e.target.closest("[data-pa]");if(!b)return;const a=b.dataset.pa,now=new Date().toISOString();
+  if(a==="cancel"){purAct=null;renderPurView();return}
+  if(a==="pay"){if(!can("admin"))return;purAct="pay";renderPurView();$("paA")?.focus();return}
+  if(a==="arr"){purAct="arr";purArr={date:p.arrived?.date||todayISO(),fr:p.freight||0,mode:p.frMode||"amt",hand:(p.lines||[]).map(l=>l.fr??"")};renderPurView();$("paFr")?.focus();return}
+  if(a==="edit"){$("purView").hidden=true;openPurForm(p);return}
+  try{
+    if(a==="req"){await patchPur(p.id,{payReq:{st:"wait",by:me.id||null,at:now}});toast("Admin ဆီ ငွေလွှဲ request ပို့ပြီး")}
+    else if(a==="unreq"){await patchPur(p.id,{payReq:null});toast("Request ပြန်ရုပ်ပြီး")}
+    else if(a==="refuse"){if(!can("admin"))return;await patchPur(p.id,{payReq:{...p.payReq,st:"no",ansBy:me.id||null,ansAt:now}})}
+    else if(a==="paid"){if(!can("admin"))return;const amt=Math.round(Number($("paA").value)||0);if(!(amt>0)){toast("Amount ထည့်ပါ");$("paA").focus();return}
+      const date=readDate($("purBody").querySelector(".paD"))||todayISO(),method=$("paM").value;purAct=null;
+      await patchPur(p.id,{paid:{date,method,cur:pmCur(method),amt,note:$("paN").value.trim(),at:now,by:me.id||null},
+        payReq:p.payReq?{...p.payReq,st:"ok",ansBy:me.id||null,ansAt:now}:null});toast("ငွေလွှဲပြီး မှတ်ပြီး")}
+    else if(a==="unpay"){if(!can("admin")||!await askConfirm("ဒီငွေလွှဲမှုကို ဖျက်မလား?",`${p.no} · ${fmt(p.paid?.amt)}`,"Delete"))return;await patchPur(p.id,{paid:null,payReq:null})}
+    else if(a==="arrived"){const sh=purArrSync(),fr=purArr.fr;
+      if(purArr.mode==="hand"&&sh.reduce((x,y)=>x+y,0)!==fr){toast("ခွဲထားတဲ့ ကားခ စုစုပေါင်းက ကားခ နဲ့ မတူသေးပါ");return}
+      const date=readDate($("purBody").querySelector(".paAD"))||todayISO(),was=!!p.arrived;purAct=null;
+      await patchPur(p.id,{arrived:{date,at:p.arrived?.at||now,by:p.arrived?.by||me.id||null},freight:fr,frMode:purArr.mode,lines:p.lines.map((l,i)=>({...l,fr:sh[i]}))});
+      toast(was?"ကားခ ပြင်ပြီး":"ပစ္စည်းရောက် မှတ်ပြီး")}
+    else if(a==="del"){if(!purCanDel(p)||!await askConfirm("ဒီ Purchase ကို ဖျက်မလား?",`${p.no} · ${p.supplier||""}`,"Delete"))return;
+      await removePur(p.id);$("purView").hidden=true;toast("ဖျက်ပြီး");return}
+    renderPurView()}
+  catch(x){toast("သိမ်းမရပါ");renderPurView()}});
+/* the Purchase tile (and Purchase & Expense on Home) tell an Admin how many purchases wait to be paid */
+function purHome(){$("goPur").hidden=!canPur();
+  const w=purs.filter(p=>!p.paid&&p.payReq?.st==="wait").length,open=purs.filter(p=>!p.arrived).length;
+  $("homePurN").textContent=open?`${open} မရောက်သေး`:purs.length?`${purs.length} purchase${purs.length===1?"":"s"}`:"";
+  for(const t of["goPE","goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(w&&can("admin"))el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${w} ငွေလွှဲရန်</span>`)}}
 
 /* ---------- Purchase Requisition: anyone on the team can ask for an item and tick it once bought.
    Stored in the shared "pr" collection (this browser's storage when opened on its own); pictures use the same photo store as orders. */
@@ -9508,7 +9775,7 @@ coverConnecting(true);
   downloads=null;
   db=await fbReady();
   if(!db){coverConnecting(false);try{const rl=JSON.parse(localStorage.getItem("cakeRoles")||"null");if(rl)applyRoles(rl)}catch(e){}
-    orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");payMethods=pmLocalLoad();unitDoc=unitLocalLoad();initPd();initPt();initTd();initSales();initRcv();try{lastNo=localStorage.getItem("cakeLastNo")}catch(e){}
+    orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");payMethods=pmLocalLoad();unitDoc=unitLocalLoad();initPd();initPt();initTd();initSales();initRcv();initPur();try{lastNo=localStorage.getItem("cakeLastNo")}catch(e){}
     localMode=true;setSync("local");renderMe();render();refreshNo();renderPhotos();
     await loadLocalPhotos();render();renderPR();return}
   syncAuth();   /* shared data: keep the app covered until the signed-in person is known */
