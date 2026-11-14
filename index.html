@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794630064"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794630951"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5715,10 +5715,14 @@ function editReqWatch(){if(!db)return;
     if(Date.now()-Date.parse(r.ansAt)>5*60e3)continue;   /* an old answer (e.g. the app was just opened) is not announced again */
     if(r.st==="ok")askConfirm("ပြင်ခွင့် ရပါပြီ",`${o.no||"Order"} ကို ${nameOf(r.ansBy)} က ပြင်ခွင့်ပေးပါပြီ — မိနစ် ${EDIT_OK_MIN} အတွင်း ပြင်လို့ရပါတယ်။`,"ပြင်မည်",true).then(y=>{if(y){$("preview").hidden=true;startEdit(orders.find(x=>x.id===o.id))}});
     else toast(`${nameOf(r.ansBy)} က ${o.no||""} ကို ပြင်ခွင့် မပေးပါ`,5000)}}
+/* allowing also pauses the decorating (the time so far is kept, "Resume decorating" carries on) and closes the order preview */
 async function ereqAnswer(ok){const box=$("ereqDlg"),o=orders.find(x=>x.id===box.dataset.oid);box.hidden=true;if(!o?.editReq)return;
-  const now=new Date().toISOString();
+  const now=new Date().toISOString(),run=ok&&!!(o.deco?.startAt&&!o.deco.endAt),prevSecs=run?decoSecs(o.deco):0;
+  const lines=[`${ok?"Allowed":"Refused"} ${nameOf(o.editReq.by)} to edit the order while decorating`,...(run?[`Decorating paused · ${fmtClock(prevSecs)}`]:[])];
   try{await patchOrder(o.id,{editReq:{...o.editReq,st:ok?"ok":"no",ansAt:now,ansBy:me.id||null},
-      history:addHist(o,"deco",[`${ok?"Allowed":"Refused"} ${nameOf(o.editReq.by)} to edit the order while decorating`])})}
+      ...(run?{deco:{...o.deco,prevSecs,prevMins:null,startAt:null,endAt:null,photo:null,pausedAt:now},updatedAt:now,updatedBy:me.id||null}:{}),
+      history:addHist(o,"deco",lines)});
+    if(run){if(pvOrder?.id===o.id)$("preview").hidden=true;toast("Decorating paused — ပြင်ပြီးရင် Resume decorating နှိပ်ပြီး ဆက်လုပ်ပါ",5000)}}
   catch(x){toast("သိမ်းမရပါ")}}
 $("ereqYes").addEventListener("click",()=>ereqAnswer(true));
 $("ereqNo").addEventListener("click",()=>ereqAnswer(false));
