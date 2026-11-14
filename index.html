@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794657954"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794658896"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1205,13 +1205,29 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pur-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .pur-pill{font-size:12px;font-weight:600;line-height:1.5;border-radius:999px;padding:1px 9px;background:var(--sunk);color:var(--muted);white-space:nowrap}
 .pur-pill.wait{color:#8A5A00;background:#FFE7A8}.pur-pill.ok{color:#1D6B3A;background:#DDF3E4}.pur-pill.no{color:var(--accent);background:var(--accent-soft)}
-.pur-lines{display:grid;gap:8px;margin-top:2px}
-.pur-ln{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.25fr) minmax(0,1fr) auto;gap:6px 8px;align-items:end;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
-.pur-lnm{grid-column:1/4;grid-row:1;align-self:center;font-weight:600;overflow-wrap:anywhere}.pur-lnm code{color:var(--muted);font-size:12px;font-weight:400}
-.pur-rm{grid-column:4;grid-row:1}
-.pur-f{display:grid;gap:2px;min-width:0}.pur-f small{font-size:12px;color:var(--muted)}.pur-f input{width:100%;min-width:0}
-.pur-la{grid-column:3/5;text-align:right}.pur-la b{white-space:nowrap;line-height:38px}
-.pur-tot{display:flex;justify-content:space-between;align-items:baseline;padding:8px 10px 0;font-size:15px}
+#purDlg{padding:0;place-items:stretch}#purDlg .side-panel.pur-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0}
+#purDlg .side-body{width:min(100%,1000px);margin:0 auto}
+.pur-vt{margin:2px 0 6px;text-align:center;font:600 22px/1.2 Georgia,"Times New Roman",serif;color:var(--vc);letter-spacing:.5px}
+.pur-vo .vo-meta{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.pur-gw input{margin-top:4px}
+.vo-edit #purDateBox .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #purDateBox .dp-ic{display:none}
+.pur-tbl{table-layout:fixed;width:100%}.pur-tbl th:nth-child(1){width:30px}.pur-tbl th:nth-child(2){width:52px}.pur-tbl th:nth-child(4){width:130px}.pur-tbl th:nth-child(5){width:110px}.pur-tbl th:nth-child(6){width:100px}.pur-tbl th:nth-child(7){width:40px}
+.pur-tbl td{overflow:hidden}.pur-tbl td input{width:100%;min-width:0;text-align:right}
+#purLines input{height:34px;min-height:0;box-sizing:border-box;padding-top:0;padding-bottom:0;margin:0;vertical-align:middle}
+.pur-tbl td.pic img{width:40px;height:40px;object-fit:cover;border-radius:6px;display:block}
+.pur-ld{overflow-wrap:anywhere}.pur-ld code{color:#8a7466;font-size:11.5px}
+.pur-qw{display:flex;align-items:center;gap:4px}.pur-qw .pur-q{flex:1;min-width:0}.pur-qu{flex:none;width:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#8a7466;text-align:left}
+#purLines .o-ic{border:0;background:none;box-shadow:none;min-width:0;min-height:0;width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:16px}#purLines .o-ic:hover{background:rgba(0,0,0,.05);border-radius:50%}
+.vo-edit .pur-add td{border:0;padding:6px 0}.pur-add .btn{width:auto}
+#purPickDlg .side-panel{height:min(88vh,760px);max-height:none}#purPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
+#purPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
+@media (max-width:700px){.pur-vo .vo-meta{grid-template-columns:1fr}.pur-vo .vo-no{justify-content:start}
+  .pur-tbl thead{display:none}.pur-tbl,.pur-tbl tbody#purLines{display:block;width:100%}
+  .pur-tbl tbody#purLines tr{display:grid;width:100%;grid-template-columns:22px 44px minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:"no pic desc desc end" "qty qty price price amt";gap:6px;align-items:center;border-bottom:1px solid #c98b6a;padding:8px 0}
+  #purLines td{border:0;padding:0;width:auto;min-width:0}
+  #purLines td:nth-child(1){grid-area:no;align-self:start;padding-top:7px}#purLines td:nth-child(2){grid-area:pic;align-self:start}#purLines td:nth-child(3){grid-area:desc;align-self:start;padding-top:7px}
+  #purLines td:nth-child(4){grid-area:qty}#purLines td:nth-child(5){grid-area:price}#purLines td:nth-child(6){grid-area:amt;min-width:64px}#purLines td:nth-child(7){grid-area:end;align-self:start}
+  .pur-tbl tbody#purLines tr:has(.so-empty){display:block}#purLines td.so-empty{display:block}}
 .pur-empty{margin:4px 0;color:var(--muted);font-size:13px}
 .pur-mu{color:var(--muted)}
 .pur-h{margin-bottom:12px}.pur-h h3{margin:0 0 4px;font-size:18px;overflow-wrap:anywhere}.pur-h>p{margin:2px 0 6px;color:var(--muted);font-size:13.5px}
@@ -1219,6 +1235,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pur-dln{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .pur-dln b{overflow-wrap:anywhere}.pur-dln .r{text-align:right;white-space:nowrap}.pur-dln span.r{font-weight:700}.pur-dln small{color:var(--muted);font-size:12.5px}
 .pur-dln .pur-cu{grid-column:1/-1;color:var(--ink)}
+.pur-dln.wph{grid-template-columns:44px minmax(0,1fr) auto}.pur-dln.wph img{grid-row:1/span 3;width:44px;height:44px;object-fit:cover;border-radius:8px;align-self:start}.pur-dln.wph small:not(.r){grid-column:2}.pur-dln.wph .pur-cu{grid-column:2/-1}
 .pur-sum{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:6px 10px 0;margin-bottom:14px;font-size:14px}.pur-sum b{text-align:right;white-space:nowrap}
 .pur-sum .gt{font-size:16px;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
 .pur-sec{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;background:var(--surface)}
@@ -2126,22 +2143,38 @@ span.star-ic{cursor:default}
     </form>
   </div>
       </div>
-<!-- Purchase: new / edit (date, supplier, gate or logistic, raw materials bought) -->
+<!-- Purchase: new / edit, laid out like a voucher (supplier, gate or logistic, number and date, the raw materials bought) -->
 <div class="editor" id="purDlg" hidden role="dialog" aria-modal="true" aria-labelledby="purDlgT">
-  <div class="ed-panel side-panel">
-    <div class="ed-tools pv-head"><b id="purDlgT">New purchase</b><span class="rcv-dno" id="purDlgNo" hidden></span><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+  <div class="ed-panel side-panel pur-panel">
+    <div class="ed-tools pv-head"><b id="purDlgT">New purchase</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="purForm" class="side-body" novalidate>
-      <div class="ex-row2"><div class="prf"><span>Date <b>*</b></span><span id="purDateBox"></span></div>
-        <label class="prf"><span>Supplier <b>*</b></span><input id="purSup" list="purSupList" autocomplete="off" placeholder="Supplier name"></label></div>
-      <datalist id="purSupList"></datalist>
-      <label class="prf"><span>ပို့မယ့် ဂိတ် / Logistic</span><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်"></label><datalist id="purGateList"></datalist>
-      <div class="prf"><span>Items <b>*</b></span>
-        <div class="so-pick"><input type="search" id="purItQ" autocomplete="off" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" aria-label="Add raw material"><div class="so-hits" id="purItHits" hidden></div></div>
-        <div class="pur-lines" id="purLines"></div>
-        <div class="pur-tot"><span>Total</span><b id="purTotTxt">0 Ks</b></div></div>
-      <label class="prf"><span>Note</span><input id="purNote" autocomplete="off"></label>
-      <div class="prq-actions"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="purSave">Save</button></div>
+      <div class="vo vo-edit pur-vo">
+        <h2 class="pur-vt">Purchase Voucher</h2>
+        <div class="vo-meta">
+          <div class="vo-cust"><h3>Supplier <b class="req">*</b></h3><input id="purSup" list="purSupList" autocomplete="off" placeholder="Supplier name" aria-label="Supplier"><datalist id="purSupList"></datalist></div>
+          <div class="pur-gw"><h3>ပို့မယ့် ဂိတ် / Logistic</h3><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်" aria-label="ပို့မယ့် ဂိတ် / Logistic"><datalist id="purGateList"></datalist></div>
+          <div class="vo-no"><span class="k">PU No#</span><span id="purDlgNo">—</span><span class="k">Date</span><span id="purDateBox"></span></div>
+        </div>
+        <table class="pur-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th></th></tr></thead>
+          <tbody id="purLines"></tbody>
+          <tbody class="pur-add"><tr><td colspan="7"><button type="button" class="btn" id="purAddItem">+ Add item</button></td></tr></tbody>
+          <tfoot class="vo-tot"><tr class="ln"><td colspan="5" class="r k">Net Amount</td><td class="r v" id="purTotTxt">0</td><td class="c">MMK</td></tr></tfoot></table>
+        <div class="vo-note"><input id="purNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
+      </div>
+      <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="purSave">Save</button></div>
     </form>
+  </div>
+</div>
+<!-- Purchase: pick raw materials (with their pictures); each tap adds one more -->
+<div class="editor" id="purPickDlg" hidden role="dialog" aria-modal="true" aria-label="Add raw material">
+  <div class="ed-panel side-panel">
+    <div class="ed-tools pv-head"><b>📦 Add raw material</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body">
+      <input type="search" id="purPickQ" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" autocomplete="off" aria-label="Search raw material">
+      <div class="chips pd-cats so-pcats" id="purPickCats"></div>
+      <div class="so-plist" id="purHits"></div>
+      <div class="cfm-btns"><button type="button" class="btn" data-close-dlg>Done</button></div>
+    </div>
   </div>
 </div>
 <!-- Purchase: one purchase, its payment and its arrival -->
@@ -6778,48 +6811,57 @@ $("goPur").addEventListener("click",()=>go("pur"));
 function openPurForm(p){if(!canPur())return;
   if(p&&!purCanEdit(p)){toast("ငွေလွှဲပြီး (သို့) ရောက်ပြီးသား Purchase ကို Admin သာ ပြင်နိုင်ပါတယ်");return}
   initItems();purEditing=p||null;purLines=(p?.lines||[]).map(l=>({...l}));
-  $("purDlgT").textContent=p?"Edit purchase":"New purchase";$("purDlgNo").textContent=p?.no||"";$("purDlgNo").hidden=!p;
+  $("purDlgT").textContent=p?"Edit purchase":"New purchase";$("purDlgNo").textContent=p?.no||"—";
   $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
-  $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";$("purItQ").value="";$("purItHits").hidden=true;
+  $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";
   $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
   $("purGateList").innerHTML=[...new Set([...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
   renderPurLines();$("purDlg").hidden=false}
+const purLinePhoto=l=>items.find(x=>x.id===l.iid)?.photo||l.photo||"";
 function renderPurLines(){
-  $("purLines").innerHTML=purLines.length?purLines.map((l,i)=>`<div class="pur-ln" data-i="${i}"><span class="pur-lnm"><span data-t="${esc(l.name||"")}"></span>${l.code?` <code>${esc(l.code)}</code>`:""}</span>
-    <button type="button" class="o-ic danger pur-rm" data-pur-rm aria-label="Remove" title="Remove">✕</button>
-    <label class="pur-f"><small>Qty${l.unit?` (${esc(l.unit)})`:""}</small><input class="pur-q" type="number" inputmode="decimal" min="0" step="any" value="${esc(String(l.qty??""))}"></label>
-    <label class="pur-f"><small>Price (Ks)</small><input class="pur-p" type="number" inputmode="numeric" min="0" step="1" value="${esc(String(l.price??""))}"></label>
-    <span class="pur-f pur-la"><small>Amount</small><b>${esc(fmt(purAmt(l)))}</b></span></div>`).join("")
-    :`<p class="pur-empty">အပေါ်က box မှာ Raw Material ရှာပြီး ထည့်ပါ</p>`;
+  $("purLines").innerHTML=purLines.length?purLines.map((l,i)=>{const ph=purLinePhoto(l);return`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${ph?`<img src="${esc(photoUrl(ph))}" alt="">`:""}</td>
+    <td class="pur-ld"><span data-t="${esc(l.name||"")}"></span>${l.code?` <code>${esc(l.code)}</code>`:""}</td>
+    <td class="r"><span class="pur-qw"><input class="pur-q" type="number" inputmode="decimal" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"><span class="pur-qu" title="${esc(l.unit||"")}">${esc(l.unit||"")}</span></span></td>
+    <td class="r"><input class="pur-p" type="number" inputmode="numeric" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></td>
+    <td class="r pur-la">${purAmt(l).toLocaleString("en-US")}</td>
+    <td class="pur-x"><button type="button" class="o-ic danger" data-pur-rm aria-label="Remove" title="Remove">✕</button></td></tr>`}).join("")
+    :`<tr><td colspan="7" class="so-empty">“+ Add item” နဲ့ Raw Material ထည့်ပါ</td></tr>`;
   $("purLines").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);purSyncTot()}
-function purSyncTot(){$("purTotTxt").textContent=fmt(purLines.reduce((a,l)=>a+purAmt(l),0))}
+function purSyncTot(){$("purTotTxt").textContent=purLines.reduce((a,l)=>a+purAmt(l),0).toLocaleString("en-US")}
 $("purLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=purLines[Number(r.dataset.i)];
   if(e.target.matches(".pur-q"))l.qty=Number(e.target.value)||0;if(e.target.matches(".pur-p"))l.price=Number(e.target.value)||0;
-  r.querySelector(".pur-la b").textContent=fmt(purAmt(l));purSyncTot()});
+  r.querySelector(".pur-la").textContent=purAmt(l).toLocaleString("en-US");purSyncTot()});
 $("purLines").addEventListener("click",e=>{if(!e.target.closest("[data-pur-rm]"))return;purLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderPurLines()});
-function purItShow(){const q=pdNorm($("purItQ").value);if(!q){$("purItHits").hidden=true;return}
-  const hs=items.filter(i=>pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).slice(0,30);
-  $("purItHits").innerHTML=hs.length?hs.map(i=>`<button type="button" class="so-hit so-chit" data-pur-it="${esc(i.id)}"><span>${i.code?`<code>${esc(i.code)}</code> `:""}<span data-t="${esc(i.name||"")}"></span></span><small>${esc(purUnitOf(i))}</small></button>`).join("")
-    :`<p class="side-help it-refnone">မတွေ့ပါ</p>`;
-  $("purItHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("purItHits").hidden=false}
-function purPick(id){const i=items.find(x=>x.id===id);if(!i)return;const k=purLines.findIndex(l=>l.iid===i.id);$("purItQ").value="";$("purItHits").hidden=true;
-  if(k<0){purLines.push({iid:i.id,code:i.code||"",name:i.name||"",unit:purUnitOf(i),qty:1,price:purLastPrice(i.id)});renderPurLines()}
-  const q=$("purLines").querySelectorAll(".pur-q")[k<0?purLines.length-1:k];q?.focus();q?.select?.()}
-$("purItQ").addEventListener("input",purItShow);
-$("purItQ").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const b=$("purItHits").querySelector("[data-pur-it]");if(b&&!$("purItHits").hidden)purPick(b.dataset.purIt)});
-$("purItHits").addEventListener("click",e=>{const b=e.target.closest("[data-pur-it]");if(b)purPick(b.dataset.purIt)});
-document.addEventListener("click",e=>{if(!$("purItHits").hidden&&!e.target.closest("#purItHits,#purItQ"))$("purItHits").hidden=true});
+/* the pick list: every raw material with its picture, short code, unit and last price; a tap adds it (again: one more) */
+let purPickCat="";
+function renderPurPick(){const q=pdNorm($("purPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
+  const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(purPickCat&&!cats.includes(purPickCat))purPickCat="";
+  $("purPickCats").innerHTML=`<button type="button" class="chip" data-pupc="" aria-pressed="${!purPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-pupc="${esc(c)}" aria-pressed="${purPickCat===c}">${esc(c)}</button>`).join("");
+  const m=inQ.filter(i=>!purPickCat||(i.cat||"Other")===purPickCat).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,80);
+  $("purHits").innerHTML=m.length?m.map(i=>{const n=purLines.find(l=>l.iid===i.id)?.qty||0,lp=purLastPrice(i.id),u=purUnitOf(i);
+    return`<button type="button" class="so-hit so-phit${n?" on":""}" data-pur-it="${esc(i.id)}">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
+      <span><span data-t="${esc(i.name||"")}"></span><br><code>${esc(i.code||"")}</code>${u?` <small class="so-pu">${esc(u)}</small>`:""}</span><b>${lp!==""?fmt(lp):""}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
+    :`<p class="side-help">မတွေ့ပါ</p>`;
+  $("purHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("purAddItem").addEventListener("click",()=>{initItems();purPickCat="";$("purPickQ").value="";renderPurPick();$("purPickDlg").hidden=false;$("purPickQ").focus()});
+$("purPickQ").addEventListener("input",renderPurPick);
+$("purPickQ").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("purHits").querySelector("[data-pur-it]")?.click()}});
+$("purPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-pupc]");if(b){purPickCat=b.dataset.pupc;renderPurPick()}});
+$("purHits").addEventListener("click",e=>{const b=e.target.closest("[data-pur-it]");if(!b)return;const i=items.find(x=>x.id===b.dataset.purIt);if(!i)return;
+  const l=purLines.find(x=>x.iid===i.id);
+  if(l)l.qty=(Number(l.qty)||0)+1;else purLines.push({iid:i.id,code:i.code||"",name:i.name||"",unit:purUnitOf(i),qty:1,price:purLastPrice(i.id),...(i.photo?{photo:i.photo}:{})});
+  renderPurLines();renderPurPick()});
 $("purForm").addEventListener("submit",async e=>{e.preventDefault();if(!canPur())return;
   const date=readDate($("purDateBox").querySelector(".dp")),supplier=$("purSup").value.trim(),gate=$("purGate").value.trim();
   if(!date){toast("Date ထည့်ပါ");return}
   if(date>todayISO()){toast("နောက်ရက် ရွေးလို့ မရပါ");return}
   if(!supplier){toast("Supplier ထည့်ပါ");$("purSup").focus();return}
-  if(!purLines.length){toast("ပစ္စည်း ထည့်ပါ");$("purItQ").focus();return}
+  if(!purLines.length){toast("ပစ္စည်း ထည့်ပါ");$("purAddItem").focus();return}
   const bad=purLines.findIndex(l=>!(Number(l.qty)>0));if(bad>=0){toast("Qty ထည့်ပါ");$("purLines").querySelectorAll(".pur-q")[bad]?.focus();return}
   const now=new Date().toISOString(),sup=pts.find(x=>x.type==="supplier"&&String(x.name||"").toLowerCase()===supplier.toLowerCase());
   const p={...(purEditing||{}),id:purEditing?.id||("pu"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),no:purEditing?.no||purNextNo(date),
     date,supplier:sup?.name||supplier,supId:sup?.id||null,gate,note:$("purNote").value.trim(),
-    lines:purLines.map(l=>({iid:l.iid||null,code:l.code||"",name:l.name||"",unit:l.unit||"",qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),...(l.fr!=null?{fr:l.fr}:{})})),
+    lines:purLines.map(l=>({iid:l.iid||null,code:l.code||"",name:l.name||"",unit:l.unit||"",qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),...(purLinePhoto(l)?{photo:purLinePhoto(l)}:{}),...(l.fr!=null?{fr:l.fr}:{})})),
     ...(purEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   /* changed after the goods arrived: the transport charge is shared again (a split by hand only while the lines stay the same) */
   if(p.arrived&&p.freight){const same=!!purEditing&&(purEditing.lines||[]).length===p.lines.length&&p.lines.every(l=>l.fr!=null),mode=p.frMode==="hand"&&!same?"amt":p.frMode||"amt";
@@ -6832,7 +6874,8 @@ function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView"
   const tot=purTot(p),fr=Number(p.freight||0),sh=p.arrived&&fr?(p.lines||[]).map(l=>Number(l.fr||0)):null,admin=can("admin"),r=p.payReq;
   $("purViewNo").textContent=p.no||"";
   const lines=(p.lines||[]).map((l,i)=>{const a=purAmt(l),u=l.unit?" "+esc(l.unit):"";
-    return`<div class="pur-dln"><b data-t="${esc(l.name||"")}"></b><span class="r">${esc(fmt(a))}</span>
+    const ph=purLinePhoto(l);
+    return`<div class="pur-dln${ph?" wph":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:""}<b data-t="${esc(l.name||"")}"></b><span class="r">${esc(fmt(a))}</span>
       <small>${esc(String(l.qty))}${u} × ${esc(fmt(l.price))}</small>${sh?`<small class="r">ကားခ ${esc(fmt(sh[i]))}</small><small class="pur-cu">1${u} = ${esc(fmt(Math.round((a+sh[i])/(Number(l.qty)||1))))} <span class="pur-mu">(ကားခ ပါ)</span></small>`:""}</div>`}).join("");
   let pay;
   if(purAct==="pay"&&admin&&!p.paid){const ms=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
