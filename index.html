@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794632860"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794650805"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6629,14 +6629,22 @@ $("exPplForm").addEventListener("submit",async e=>{
 });
 /* Admins read every expense; a person linked to a user also reads them, but the page shows them only their own items.
    Business expenses are read by Admins only (the db rule says so too). */
+function exRescue(k,c,have){if(!FB_BUILD||exRescued.has(k))return;exRescued.add(k);
+  const left=exLocalLoad(k).filter(r=>r?.id&&!have.some(x=>x.id===r.id));
+  if(left.length){for(const r of left){const x={...r,by:r.by||me.id||null};
+      if(x.photos){x.photos=x.photos.filter(p=>!String(p).startsWith("local:"));if(!x.photos.length)delete x.photos}
+      c.doc(x.id).set(x)}
+    toast(`Connect မဖြစ်ခင် သွင်းထားတဲ့ Expense ${left.length} ခု ပြန်ထည့်ပြီး`,5000)}
+  try{localStorage.removeItem(exLocalKey(k))}catch(e){}}
+var exRescued=new Set();
 function initEx(){
   if(!db)return;
   const pOk=canSeeEx(),bOk=can("admin");
   if(exCol&&!pOk){try{exUnsub?.()}catch(x){}exUnsub=null;exCol=null;exs=[]}
   if(bxCol&&!bOk){try{bxUnsub?.()}catch(x){}bxUnsub=null;bxCol=null;bxs=[]}
   const re=()=>{renderEx();if(view==="home"||view==="pe")renderHome()};
-  if(pOk&&!exCol){exCol=db.collection("expenses");exUnsub=exCol.onSnapshot(s=>{exs=s.docs.map(d=>({...d.data(),id:d.id}));re()},()=>{exCol=null;exs=[]})}
-  if(bOk&&!bxCol){bxCol=db.collection("bizex");bxUnsub=bxCol.onSnapshot(s=>{bxs=s.docs.map(d=>({...d.data(),id:d.id}));re()},()=>{bxCol=null;bxs=[]})}
+  if(pOk&&!exCol){exCol=db.collection("expenses");exUnsub=exCol.onSnapshot(s=>{exs=s.docs.map(d=>({...d.data(),id:d.id}));re();exRescue("personal",exCol,exs)},()=>{exCol=null;exs=[]})}
+  if(bOk&&!bxCol){bxCol=db.collection("bizex");bxUnsub=bxCol.onSnapshot(s=>{bxs=s.docs.map(d=>({...d.data(),id:d.id}));re();exRescue("biz",bxCol,bxs)},()=>{bxCol=null;bxs=[]})}
 }
 
 /* ---------- Purchase Requisition: anyone on the team can ask for an item and tick it once bought.
@@ -9492,11 +9500,14 @@ if(IS_IOS){
 
 /* ---------- boot ---------- */
 resetForm();render();go("home");
+const FB_BUILD=typeof fbReady==="function";
+const coverConnecting=on=>{document.body.classList.toggle("locked",on);$("authView").hidden=!on;if(on){$("authLoading").hidden=false;$("authForms").hidden=true}};
+coverConnecting(true);
 (async()=>{
   assets=fbAssets;assetsReady=true;renderPhotos();
   downloads=null;
   db=await fbReady();
-  if(!db){try{const rl=JSON.parse(localStorage.getItem("cakeRoles")||"null");if(rl)applyRoles(rl)}catch(e){}
+  if(!db){coverConnecting(false);try{const rl=JSON.parse(localStorage.getItem("cakeRoles")||"null");if(rl)applyRoles(rl)}catch(e){}
     orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");payMethods=pmLocalLoad();unitDoc=unitLocalLoad();initPd();initPt();initTd();initSales();initRcv();try{lastNo=localStorage.getItem("cakeLastNo")}catch(e){}
     localMode=true;setSync("local");renderMe();render();refreshNo();renderPhotos();
     await loadLocalPhotos();render();renderPR();return}
@@ -9515,7 +9526,7 @@ resetForm();render();go("home");
   db.doc("meta/orderNo").onSnapshot(s=>{lastNo=s.exists?s.data().last||null:null;refreshNo()},()=>{});
   initUsers();initPd();initPt();initSales();initRcv();
 })();
-setTimeout(async()=>{if(false&&mode==="loading"){orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");renderPR();localMode=true;setSync("local");render();renderPhotos();await loadLocalPhotos();render();renderPR()}},11000);
+setTimeout(async()=>{if(false&&mode==="loading"&&!db&&!FB_BUILD){coverConnecting(false);orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");renderPR();localMode=true;setSync("local");render();renderPhotos();await loadLocalPhotos();render();renderPR()}},11000);
 </script>
 
 <script>(function(){const mine=document.querySelector('meta[name="app-build"]')?.content;if(!mine)return;let shown=false;
