@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794661828"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794662544"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2027,6 +2027,8 @@ span.star-ic{cursor:default}
       <!-- while this cake is being decorated: finish it with a photo right here -->
       <button type="button" class="btn" id="pvStart" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L11 15.8 8.2 13z"/><path d="M8 13.5c-2.2 0-4 1.8-4 4 0 1.6-1 2.5-2 3 1 .5 2.5 1 4 1a4 4 0 0 0 4-4z"/></svg><span>Start decorating</span></button>
       <button type="button" class="btn ghost" id="pvCancel" hidden>Cancel decorating</button>
+      <!-- decorating started by mistake: an Admin or whoever took the order clears it, as if never started -->
+      <button type="button" class="btn ghost" id="pvReset" hidden>↺ Reset decorating</button>
       <!-- another decorator joins a cake someone is decorating (e.g. making the topper), with their own time -->
       <button type="button" class="btn" id="pvHelp" hidden>🤝 Help decorating</button>
       <button type="button" class="btn ghost" id="pvHelpDone" hidden>✓ Done helping</button>
@@ -4622,9 +4624,10 @@ function decoStartLabel(o){const d=o?.deco||{};if(!o||isBak(o)||!can("orders.dec
   if(d.endAt)return"Redecorate";
   return fin?"Redecorate":prevSecsOf(d)?"Resume decorating":"Start decorating"}
 function syncPvStart(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder),l=pvFormMode?"":decoStartLabel(o);
-  $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l}
+  $("pvStart").hidden=!l;$("pvStart").querySelector("span").textContent=l;$("pvReset").hidden=pvFormMode||!decoResetOk(o)}
 /* Start / Resume decorating also stops the 10-second countdown: the preview (and its photos) now stay open while decorating */
-$("pvStart").addEventListener("click",()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");
+var pvStartHold=0;
+$("pvStart").addEventListener("click",()=>{if(Date.now()<pvStartHold)return;const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(o&&decoStartLabel(o)){$("pvStart").hidden=true;stopPeek("preview");stopPeek("lightbox");
   if(o.deco?.startAt&&!o.deco.endAt&&o.deco.handedAt)decoTakeBack(o);else decoStart(o)}});
 /* taking a handed-over cake back: the decorator's clock carries on from where it stopped (the hand-over time);
    the helper keeps helping but no longer finishes */
@@ -4696,7 +4699,17 @@ $("pvHelpDone").addEventListener("click",async()=>{const o=pvOrder&&orders.find(
   if(await helpStop(o,"Finished helping")){$("preview").hidden=true;toast("Thanks for helping")}});
 function syncPvFinish(){const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);
   const run=!!(o&&can("orders.decorate")&&o.deco?.startAt&&!o.deco.endAt&&(decoCanAct(o)||helpFinish(o)));   /* a helper can finish only once the decorator has handed the cake over */
-  $("pvFinish").hidden=$("pvFinishLater").hidden=!run;$("pvCancel").hidden=true;syncPvAddPhoto()}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
+  $("pvFinish").hidden=$("pvFinishLater").hidden=!run;$("pvCancel").hidden=true;$("pvReset").hidden=pvFormMode||!decoResetOk(o);syncPvAddPhoto()}   /* no Cancel in the preview: closing it pauses the timer, and Resume carries on */
+/* Reset decorating (it was started by mistake, e.g. a double tap): an Admin or the one who took the order clears the decorating
+   completely — no time kept — and a Preparing order goes back to Pending Order, so it starts again from Start decorating */
+const decoResetOk=o=>!!(o&&o.deco&&!o.deco.endAt&&(o.deco.startAt||prevSecsOf(o.deco))&&(can("admin")||sameId(o.createdBy,me.id)));
+$("pvReset").addEventListener("click",async()=>{const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);if(!decoResetOk(o))return;
+  const secs=o.deco.startAt?decoSecs(o.deco):prevSecsOf(o.deco);
+  if(!await askConfirm(`Reset decorating ${o.no||""}?`,`${nameOf(o.deco.by)} ရဲ့ decorating (${fmtClock(secs)}) ကို ဖျက်ပြီး မစရသေးတဲ့အတိုင်း ပြန်ထားပါမယ်။ Start decorating ကနေ ပြန်စရပါမယ်။`,"Reset"))return;
+  const back=o.status==="baking",now=new Date().toISOString();
+  try{await patchOrder(o.id,{deco:null,...(back?{status:"new"}:{}),updatedAt:now,updatedBy:me.id||null,
+      history:addHist(o,"deco",[`Decorating reset · ${fmtClock(secs)} by ${nameOf(o.deco.by)} removed`,...(back?[`${statusName("baking")} → ${statusName("new")}`]:[])])});
+    syncPvStart();syncPvFinish();syncPvHelp();toast("Decorating reset — Start decorating ကနေ ပြန်စလို့ရပါပြီ",4000)}catch(x){toast("သိမ်းမရပါ")}});
 /* Cancel in the preview; an Admin cancelling someone else's decorating confirms first */
 $("pvCancel").addEventListener("click",async()=>{const o=pvOrder&&(orders.find(x=>x.id===pvOrder.id)||pvOrder);if(!o||!decoCanAct(o))return;
   if(!decoIsMine(o)&&!await askConfirm(`Cancel decorating ${o.no}?`,`${nameOf(o.deco.by)} is decorating this cake. It goes back to Pending Order; the time so far is kept for Resume decorating.`,"Cancel decorating"))return;
@@ -4737,7 +4750,8 @@ $("pvSaveAll").addEventListener("click",async()=>{if(!pvBlob)return;if(formSavin
   const before=lastSavedOrder;
   /* the order just saved: the copy in the list may not have the edit yet (slow internet), so the newer of the two is shown */
   afterSave={at:Date.now(),cont:()=>{const live=orders.find(x=>x.id===lastSavedId),sv=lastSavedOrder?.id===lastSavedId?lastSavedOrder:null;
-    const o=live&&(!sv||String(live.updatedAt||"")>=String(sv.updatedAt||""))?live:sv||live;if(o)openPreview(o)}};
+    const o=live&&(!sv||String(live.updatedAt||"")>=String(sv.updatedAt||""))?live:sv||live;if(o){pvStartHold=Date.now()+1500;$("pvStart").disabled=true;
+      setTimeout(()=>{$("pvStart").disabled=false},1500);openPreview(o)}}};
   $("form").requestSubmit();
   await new Promise(r=>setTimeout(r,60));while(formSaving)await new Promise(r=>setTimeout(r,120));
   b.disabled=false;
