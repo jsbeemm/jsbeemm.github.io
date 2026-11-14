@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794630951"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794632860"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2853,7 +2853,16 @@ function setSync(m){
 }
 addEventListener("online",()=>{if(mode==="db")setSync("db")});addEventListener("offline",()=>{if(mode==="db")setSync("db")});
 const ORDER_KEEP=["deco","printed","noPending","reqDeliAt","deliBy","deliPrev","pickedUpAt","cancelReason","cancelAt","cancelBy"];
-async function saveOrder(o){
+/* saving an edited order writes only what the form holds: decorating, status and the other fields above are changed by
+   others while the form is open (e.g. the decorator resumes), and the editor's older copy must not overwrite them.
+   A form field left empty this time (in the old order, not in the new one) is removed. */
+const ORDER_LIVE=[...ORDER_KEEP,"status"];
+const fieldDel=()=>(col&&window.firebase?.firestore?.FieldValue?.delete?.())??null;
+async function saveOrder(o,prev){
+  if(prev&&orders.some(x=>x.id===o.id)){const patch={};
+    for(const[k,v]of Object.entries(o))if(!ORDER_LIVE.includes(k))patch[k]=v;
+    for(const k of Object.keys(prev))if(!(k in o)&&!ORDER_LIVE.includes(k)&&k!=="id")patch[k]=fieldDel();
+    await patchOrder(o.id,patch);newFlavorTodos(o).catch(()=>{});return}
   if(col){await col.doc(o.id).set(o)}
   else{const i=orders.findIndex(x=>x.id===o.id);if(i>=0)orders[i]=o;else orders.push(o);localSave();render()}
   newFlavorTodos(o).catch(()=>{});
@@ -4171,7 +4180,7 @@ $("form").addEventListener("submit",async e=>{
       if(c==="offline")o.noPending=true;else if(c==="ok")delete o.noPending;
       else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:noUsedMsg(no,id);
         err.hidden=false;if(c==="taken"&&!noTouched){$("fNo").value=nextNo();checkNo()}goToField([$("fNo")]);return}}
-    await saveOrder(o);
+    await saveOrder(o,prev);
     /* the customer's name or phone changed: offer to change the other orders with the same old name and phone too */
     if(prev&&(prev.name!==o.name||prev.phone!==o.phone))await renameSameCust(prev,o);
     /* the old number is free again once an order moves to a new one */
