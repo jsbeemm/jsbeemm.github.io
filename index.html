@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794716306"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719302"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4169,6 +4169,13 @@ function nextNo(){
   /* skip numbers other orders already use */
   let n=last?incNo(last):"A000";for(let i=0;i<26000&&orders.some(o=>o.no===n);i++)n=incNo(n);return n;
 }
+function decNo(no){const L=no.charCodeAt(0),n=Number(no.slice(1));
+  if(n>0)return no[0]+String(n-1).padStart(3,"0");return L>65?String.fromCharCode(L-1)+"999":null}
+/* an order's number changed by hand: a number further on moves where new numbers continue from; when the latest number given
+   (e.g. G310) is moved to an unused one further back (G100), G310 is free again and the next new order gets it */
+async function noMoved(oldNo,newNo){
+  if(!lastNo||newNo>lastNo){await saveLastNo(newNo);return}
+  if(oldNo&&oldNo===lastNo&&newNo<oldNo){const d=decNo(oldNo);if(d)await saveLastNo(d)}}
 /* the number just saved becomes the base for the next one, even when it was typed by hand */
 async function saveLastNo(no){
   lastNo=no;
@@ -4286,14 +4293,14 @@ $("form").addEventListener("submit",async e=>{
       if(c==="offline")o.noPending=true;else if(c==="ok")delete o.noPending;
       else{err.textContent=c==="busy"?`${no} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။ ခဏနေ ပြန်နှိပ်ပါ (သို့) နံပါတ်အသစ် ရေးပါ။`:noUsedMsg(no,id);
         err.hidden=false;if(c==="taken"&&!noTouched){$("fNo").value=nextNo();checkNo()}goToField([$("fNo")]);return}}
-    await saveOrder(o,prev);
+    const prevNo=prev?.no;await saveOrder(o,prev);
     /* the customer's name or phone changed: offer to change the other orders with the same old name and phone too */
     if(prev&&(prev.name!==o.name||prev.phone!==o.phone))await renameSameCust(prev,o);
     /* the old number is free again once an order moves to a new one */
-    if(prev&&prev.no!==no)releaseNo(prev.no,id);
+    if(prev&&prevNo!==no)releaseNo(prevNo,id);
     /* photos removed while editing are no longer referenced by any order */
     if(prev)(prev.photos||[]).filter(id=>!o.photos.includes(id)).forEach(deletePhoto);
-    if(no&&(!prev||prev.no!==no))await saveLastNo(no);
+    if(no&&!prev)await saveLastNo(no);else if(no&&prevNo!==no)await noMoved(prevNo,no);
     lastSavedId=id;lastSavedOrder=o;
     if(draftId)dropDraft(draftId).catch(()=>{});   /* a finished draft becomes the order */
     toast(o.noPending?`📴 ${o.no} သိမ်းပြီး — Offline ဖြစ်နေလို့ Order နံပါတ်ကို Internet ပြန်ရမှ အတည်ပြုပါမယ်`:prev?"ပြင်ဆင်ချက် သိမ်းပြီး":`${o.no||o.name||"Order"} သိမ်းပြီး`,o.noPending?6000:undefined);resetForm(true);showTab("list");
@@ -4838,7 +4845,7 @@ $("slipNoIn").addEventListener("input",()=>{const v=$("slipNoIn").value.toUpperC
 $("slipNoIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("slipNoOk").click()}});
 /* give an order a new number (from Print setup or the order preview): not used by another order, claimed so no other phone
    takes it, the old one freed, the change written into the order's history. Returns the updated order, or null. */
-async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o.no)return o;
+async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o.no)return o;const old=o.no;
   const bad=m=>{toast(m,4000);inp?.focus();return null};
   if(!NO_RE.test(n))return bad("Order နံပါတ်ကို စာလုံး ၁ လုံး + ဂဏန်း ၃ လုံး (ဥပမာ A012) ဖြင့် ရေးပါ။");
   /* say which order has it (it may be cancelled, finished, or outside the list's filters) */
@@ -4847,7 +4854,7 @@ async function setOrderNo(o,n,inp){n=String(n||"").trim().toUpperCase();if(n===o
     if(c==="taken"||c==="busy")return bad(c==="busy"?`${n} ကို အခြားတစ်ယောက် ယခု သိမ်းနေပါသည်။`:`${n} ကို အခြားအော်ဒါတွင် သုံးပြီးဖြစ်သည်။`);
     const p={no:n,...(c==="offline"?{noPending:true}:{noPending:false}),updatedAt:new Date().toISOString(),updatedBy:me.id||null,history:addHist(o,"edit",[`Order No ${o.no||"—"} → ${n}`])};
     /* a number from further back (not used yet) does not move where the next new number continues from */
-    await patchOrder(o.id,p);if(o.no)releaseNo(o.no,o.id);if(!lastNo||n>lastNo)await saveLastNo(n);toast(`Order နံပါတ် ${n}`,3000);return{...o,...p}}
+    await patchOrder(o.id,p);if(old)releaseNo(old,o.id);await noMoved(old,n);toast(`Order နံပါတ် ${n}`,3000);return{...o,...p}}
   catch(x){toast("သိမ်းမရပါ");return null}}
 $("slipNoOk").addEventListener("click",async()=>{const o=slipOrder&&(orders.find(x=>x.id===slipOrder.id)||slipOrder);if(!o)return;
   const b=$("slipNoOk");b.disabled=true;
