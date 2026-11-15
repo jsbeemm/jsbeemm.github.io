@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794741109"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794747001"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1842,7 +1842,7 @@ span.star-ic{cursor:default}
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
       <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button>
-      <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden>
+      <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden><button type="button" class="chip" id="itClearAll" hidden title="Raw Material အားလုံးကို ဖျက်ရန် (Excel ကနေ ပြန် import မလုပ်ခင်)">🗑 အားလုံးဖျက်</button>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
     <div class="chips pd-cats" id="itCats"></div>
@@ -8980,7 +8980,7 @@ var itOldShow=false;   /* the old Selling Price boxes show only for a ⏸ item *
 function renderItems(){
   if(typeof renderPurPick==="function"&&!$("purPickDlg").hidden)renderPurPick();
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=true;   /* Import Excel is put away (its code stays, to bring back if needed) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
+  $("itImport").hidden=!admin;$("itClearAll").hidden=!admin||!items.length;$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
   $("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   /* units / prices checked (✓ in the item form) or not yet: the two chips filter the list and show how many are in each */
   const q=pdNorm(itQ),inQ0=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
@@ -9193,6 +9193,16 @@ $("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
 $("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";renderItems()});
 $("itOkDone").addEventListener("click",()=>{itOk=itOk==="done"?"":"done";renderItems()});
 $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
+/* start again from the Excel: every raw material is deleted (Admins, asked twice). An item keeps the same id when it is imported
+   again (from its Short Code), so purchases, inventory and vouchers that point to it find it again. */
+$("itClearAll").addEventListener("click",async()=>{if(!can("admin")||!items.length)return;const n=items.length,nu=items.filter(i=>(i.units||[]).length).length;
+  if(!await askConfirm(`Raw Material ${n} ခု အားလုံး ဖျက်မလား?`,[`App ထဲမှာ ထည့်ထားတာတွေ ပျောက်ပါမယ် — Unit rows (${nu} ခု) နဲ့ ဈေးနှုန်းတွေ၊ Mr.Bee / Wholesale ဈေး၊ app ထဲမှာ တင်ထားတဲ့ ပုံ။`,
+    "Purchase, Inventory, JS voucher တွေကတော့ မပျက်ပါ။ Excel ကနေ Short Code တူတူနဲ့ ပြန် import လုပ်ရင် အဲ့ဒါတွေနဲ့ ပြန်ချိတ်မိပါမယ်။"].join("\n\n"),"Delete"))return;
+  if(!await askConfirm("သေချာပါသလား?",`Raw Material ${n} ခုကို ပြန်ယူလို့ မရအောင် ဖျက်ပါမယ်။ ဖျက်ပြီးရင် 📥 Import Excel နဲ့ ပြန်ထည့်ပါ။`,"အားလုံးဖျက်"))return;
+  const ids=items.map(i=>i.id);let done=0;toast("ဖျက်နေသည်…",20000);
+  if(db&&db.batch){for(let i=0;i<ids.length;i+=400){const b=db.batch();ids.slice(i,i+400).forEach(id=>b.delete(db.collection("items").doc(id)));try{await b.commit();done+=Math.min(400,ids.length-i)}catch(x){}}}
+  else{done=ids.length;items=[];try{localStorage.setItem("cakeItems","[]")}catch(x){}}
+  toast(done<ids.length?`ဖျက်ပြီး ${done} / ${ids.length} — ကျန်တာ ပြန်နှိပ်ပါ`:`✓ Raw Material ${done} ခု ဖျက်ပြီး — 📥 Import Excel နဲ့ ပြန်ထည့်ပါ`,7000);renderItems()});
 /* Import: the "Items" sheet (or the first one) with headers Short Code, Name, Category, Sub Category, Purchase Unit, Purchase Conversion,
    Base Unit, Ref:, Stock Count Unit, Sales Allowed, Selling Price, Note, Usage, Old Name. Each row is matched by Short Code; only new or
    changed items are written. Items missing from the file are left as they are. */
@@ -9218,8 +9228,9 @@ $("itFile").addEventListener("change",async e=>{const f=e.target.files[0];e.targ
       if(old){if(it.price==null&&old.price!=null)it.price=old.price;if(it.mbPrice==null&&old.mbPrice!=null)it.mbPrice=old.mbPrice;if(it.whPrice==null&&old.whPrice!=null)it.whPrice=old.whPrice}
       const keys=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","tracked","uom","consId","consName","consQty","sale","price","mbPrice","whPrice","note","usage","oldName"];
       const same=old&&keys.every(k=>JSON.stringify(old[k]??null)===JSON.stringify(it[k]??null));
-      /* a photo added in the app stays */
-      if(!same)plan.push({id,doc:{...it,...(old?.photo?{photo:old.photo}:{}),...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
+      /* only the columns of the file change: what was added in the app (unit rows with their prices, the photo …) stays */
+      const base=old?{...old}:{};delete base.id;for(const k of keys)delete base[k];
+      if(!same)plan.push({id,doc:{...base,...it,...(old?{at:old.at||now}:{at:now}),updatedAt:now,updatedBy:me.id||null},isNew:!old})}
     const nNew=plan.filter(p=>p.isNew).length,nChg=plan.length-nNew,nSale=rows.length?[...seen].length:0;
     if(!plan.length){toast(`ပြောင်းစရာ မရှိပါ — Items ${nSale} ခု အားလုံး တူနေပါတယ်`,5000);await itExcelPhotos(ab,[]);return}
     if(!await askConfirm(`Items ${plan.length} ခု သိမ်းမလား?`,`အသစ် ${nNew} · ပြင်ဆင် ${nChg}${dup?` · Short Code ထပ်နေလို့ ကျော် ${dup}`:""}`,"Save")){await itExcelPhotos(ab,[]);return}
@@ -9316,13 +9327,14 @@ function soXlPlan(rows,pre=false,pays=null,taken=null){const h=rows[0].map(x=>xl
     disc:c("discount"),net:c("net amount"),other:c("other name"),phone:c("phone number"),ch:c("channel"),deliv:c("delivery info")};
   if(C.no<0||C.desc<0||C.qty<0)return null;
   const groups=new Map();for(const r of rows.slice(1)){const no=xlStr(r[C.no]);if(!no)continue;if(!groups.has(no))groups.set(no,[]);groups.get(no).push(r)}
-  const have=new Set([...vos.map(v=>String(v.no||"")),...(taken||[])]),byCode=new Map(items.filter(i=>i.code).map(i=>[pdNorm(i.code),i]));
+  const have=new Set([...vos.map(v=>String(v.no||"")),...(taken||[])]),byCode=new Map(items.filter(i=>i.code).map(i=>[pdNorm(i.code),i])),byItName=new Map(items.filter(i=>i.name).map(i=>[pdNorm(i.name),i]));
   const custs=pts.filter(p=>p.type==="js"),byName=new Map(custs.map(p=>[pdNorm(p.name),p]));
   const now=new Date().toISOString(),out=[],skip=[],noCust=new Set(),noItem=new Set(),bad=[];
   for(const[no,rs]of groups){if(have.has(no)){skip.push(no);continue}
     const f=rs[0],get=k=>C[k]<0?"":rs.map(r=>r[C[k]]).find(x=>xlStr(x)!=="");
     const date=xlDate(f[C.date]);if(!date){bad.push(no);continue}
-    const lines=rs.map(r=>{const code=xlStr(r[C.id]),it=code?byCode.get(pdNorm(code)):null;if(code&&!it)noItem.add(code);
+    /* by Short Code; a code not found falls back to the raw material with exactly that Description as its name */
+    const lines=rs.map(r=>{const code=xlStr(r[C.id]),it=(code?byCode.get(pdNorm(code)):null)||byItName.get(pdNorm(xlStr(r[C.desc])))||null;if(code&&!it)noItem.add(code);
       const l={...(it?{pid:it.id}:{}),code,name:xlStr(r[C.desc]),qty:xlNum(r[C.qty]),price:Math.round(xlNum(r[C.price]))};
       const n=C.note<0?"":xlStr(r[C.note]);if(n)l.note=n;if(it?.photo)l.photo=it.photo;return l}).filter(l=>l.name&&l.qty);
     if(!lines.length){bad.push(no);continue}
