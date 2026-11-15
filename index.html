@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794735904"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794736034"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1225,6 +1225,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purDlg .side-body{width:min(100%,1000px);margin:0 auto}
 .pur-vt{margin:2px 0 6px;text-align:center;font:600 22px/1.2 Georgia,"Times New Roman",serif;color:var(--vc);letter-spacing:.5px}
 .pur-vo .vo-meta{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.pur-gw input{margin-top:4px}
+.pur-gin{display:flex;align-items:flex-end;gap:6px}.pur-gin input{flex:1;min-width:0}.pur-gin .o-ic{flex:none;align-self:stretch;width:40px;height:auto;margin-top:4px;color:var(--muted)}.pur-gin .o-ic:hover{color:var(--accent)}
+.pur-gin .o-ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .vo-edit #purDateBox .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #purDateBox .dp-ic{display:none}
 .pur-tbl{table-layout:fixed;width:100%}.pur-tbl th:nth-child(1){width:30px}.pur-tbl th:nth-child(2){width:52px}.pur-tbl th:nth-child(4){width:130px}.pur-tbl th:nth-child(5){width:110px}.pur-tbl th:nth-child(6){width:100px}.pur-tbl th:nth-child(7){width:40px}
 .pur-tbl td{overflow:hidden}.pur-tbl td input{width:100%;min-width:0;text-align:right}
@@ -2189,7 +2191,7 @@ span.star-ic{cursor:default}
         <h2 class="pur-vt">Purchase Voucher</h2>
         <div class="vo-meta">
           <div class="vo-cust"><h3>Supplier <b class="req">*</b></h3><input id="purSup" list="purSupList" autocomplete="off" placeholder="Supplier name" aria-label="Supplier"><datalist id="purSupList"></datalist></div>
-          <div class="pur-gw"><h3>ပို့မယ့် ဂိတ် / Logistic</h3><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်" aria-label="ပို့မယ့် ဂိတ် / Logistic"><datalist id="purGateList"></datalist></div>
+          <div class="pur-gw"><h3>ပို့မယ့် ဂိတ် / Logistic</h3><div class="pur-gin"><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်" aria-label="ပို့မယ့် ဂိတ် / Logistic"><button type="button" class="o-ic" id="purGateAdd" aria-label="Add gate" title="Gate အသစ် ထည့်ရန်"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div><datalist id="purGateList"></datalist></div>
           <div class="vo-no"><span class="k">PU No#</span><span id="purDlgNo">—</span><span class="k">Date</span><span id="purDateBox"></span></div>
         </div>
         <table class="pur-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th></th></tr></thead>
@@ -6885,6 +6887,7 @@ function openPurForm(p){if(!canPur())return;
   $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
   $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";
   $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
+  $("purGateAdd").hidden=!canAddCust();
   $("purGateList").innerHTML=[...new Set([...pts.filter(x=>x.type==="gate").map(x=>x.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
   renderPurLines();$("purDlg").hidden=false}
 const purLinePhoto=l=>items.find(x=>x.id===l.iid)?.photo||l.photo||"";
@@ -9322,6 +9325,11 @@ $("soCustQ").addEventListener("keydown",e=>{if(e.key==="Enter")e.preventDefault(
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 var ptAfterSave=null;
+/* Purchase: a new gate is added right from the voucher (the Gates form, the typed name filled in); once saved it is picked */
+const purGateFill=()=>{$("purGateList").innerHTML=[...new Set([...pts.filter(x=>x.type==="gate").map(x=>x.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("")};
+$("purGateAdd").addEventListener("click",()=>{if(!canAddCust()){toast("Gate အသစ် ထည့်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
+  const nm=$("purGate").value.trim();ptType="gate";openPtForm(null);$("ptTypeSel").value="gate";ptSyncType();$("ptName").value=nm;
+  ptAfterSave=p=>{if(p.type!=="gate")return;$("purGate").value=p.name;purGateFill()}});
 function soRegister(){if(!canAddCust()){toast("Customer အသစ် Register လုပ်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
   const nm=$("soCustQ").value.trim(),ph=$("soPhone").value.trim(),ct=SO_SHOP[soB].ct;ptType=ct;openPtForm(null);
   $("ptTypeSel").value=ct;ptSyncType();$("ptName").value=nm;const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&ph)pi.value=ph;
