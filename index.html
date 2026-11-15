@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794721337"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794724629"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,6 +1201,19 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+/* Inventory */
+.prq-bar.inv-bar{flex-wrap:wrap;row-gap:8px}.inv-locw{flex:0 1 340px;min-width:0;align-items:center}.inv-locw select{flex:1;min-width:0}.inv-bar #invQ{flex:1 1 220px;min-width:0}
+.inv-bar .inv-locw select,.inv-bar #invQ{height:44px;box-sizing:border-box;margin:0}.inv-bar .inv-locw .o-ic{height:44px;width:44px;flex:none}
+.inv-meta{margin:6px 2px 8px;font-size:13px;color:var(--muted)}
+.inv-list{display:grid;gap:6px}
+.inv-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.inv-row img,.inv-row .so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
+.inv-row.on{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.inv-nm{display:grid;gap:2px;min-width:0}.inv-nm b{overflow-wrap:anywhere;font-weight:600}.inv-nm small{color:var(--muted);font-size:12px}.inv-nm code{font-size:11.5px}
+.inv-qw{display:flex;align-items:center;gap:6px}.inv-q{width:96px;height:38px;text-align:right;box-sizing:border-box}.inv-u{width:40px;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-locs{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}.inv-locs b{color:var(--ink)}
+.inv-tot{text-align:right;white-space:nowrap}.inv-tot b{font-size:16px}.inv-tot small{color:var(--muted)}
+@media (max-width:520px){.inv-q{width:80px}.inv-bar .inv-locw,.inv-bar #invQ{flex-basis:100%}}
 /* Purchase */
 .pur-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer}
 .pur-cm{display:grid;gap:3px;min-width:0}.pur-cm b{font-size:15px;overflow-wrap:anywhere}.pur-cm small{font-size:13px;color:var(--muted)}
@@ -1777,6 +1790,7 @@ span.star-ic{cursor:default}
       <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Expense</b><small id="homePEN"></small></button>
       <button type="button" class="home-tile" id="goProd"><span class="ht-ic" aria-hidden="true">🥐</span><b>Bakery Products</b><small id="homeProdN"></small></button>
       <button type="button" class="home-tile" id="goItems"><span class="ht-ic" aria-hidden="true">🧺</span><b>Raw Material</b><small id="homeItemsN"></small></button>
+      <button type="button" class="home-tile" id="goInv" hidden><span class="ht-ic" aria-hidden="true">🗃️</span><b>Inventory</b><small id="homeInvN">Opening · Location</small></button>
       <button type="button" class="home-tile" id="goPt"><span class="ht-ic" aria-hidden="true">🤝</span><b>Customers &amp; Suppliers</b><small id="homePtN"></small></button>
       <button type="button" class="home-tile" id="goRcv"><span class="ht-ic" aria-hidden="true">📦</span><b>Goods Received</b><small id="homeRcvN"></small></button>
     </div>
@@ -1892,6 +1906,16 @@ span.star-ic{cursor:default}
       <button type="button" class="btn prq-new fab" id="ptNewBtn">+ Add</button></div>
     <div class="chips pd-cats" id="ptTabs"></div>
     <div class="pt-grid" id="ptList"></div>
+  </section>
+
+  <!-- INVENTORY: the opening stock of each raw material at each location (Admins) -->
+  <section id="viewInv" hidden>
+    <div class="prq-bar pd-bar inv-bar"><div class="rcv-wt inv-locw" id="invLocW"><select id="invLoc" aria-label="Location"></select><button type="button" class="o-ic" id="invLocMng" aria-label="Edit locations" title="Add / edit / delete locations"></button></div>
+      <input type="search" id="invQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off"></div>
+    <div class="chips pd-cats" id="invTabs"></div>
+    <div class="chips pd-cats inv-cats" id="invCats"></div>
+    <p class="inv-meta" id="invMeta"></p>
+    <div class="inv-list" id="invList"></div>
   </section>
 
   <!-- GOODS RECEIVED: step 1 weigh + photo the arrival, step 2 each package's items -->
@@ -2339,7 +2363,7 @@ span.star-ic{cursor:default}
       </div>
 <!-- Goods Received → the city list: add, rename, delete -->
 <div class="editor" id="cityDlg" hidden role="dialog" aria-modal="true" aria-labelledby="cityDlgT" style="z-index:45"><div class="cfm-box city-box">
-  <h3 id="cityDlgT">📍 Cities</h3>  <div class="pm-wrap"><table class="pm-tbl ppl-tbl"><thead><tr><th id="cityColH">City</th><th>Arrivals</th><th></th></tr></thead><tbody id="cityRows"></tbody></table></div>  <div class="pd-catadd"><input id="cityNew" placeholder="New city name" autocomplete="off" aria-label="New city name"><button type="button" class="btn" id="cityAddBtn">+ Add</button></div>  <div class="cfm-btns"><button type="button" class="btn" data-close-dlg>Done</button></div></div></div>
+  <h3 id="cityDlgT">📍 Cities</h3>  <div class="pm-wrap"><table class="pm-tbl ppl-tbl"><thead><tr><th id="cityColH">City</th><th id="cityCntH">Arrivals</th><th></th></tr></thead><tbody id="cityRows"></tbody></table></div>  <div class="pd-catadd"><input id="cityNew" placeholder="New city name" autocomplete="off" aria-label="New city name"><button type="button" class="btn" id="cityAddBtn">+ Add</button></div>  <div class="cfm-btns"><button type="button" class="btn" data-close-dlg>Done</button></div></div></div>
 <div class="editor" id="posCartDlg" hidden role="dialog" aria-modal="true" aria-label="Cart">
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>🛒 Cart · <span id="posTierTag"></span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
@@ -6232,16 +6256,17 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],inv:["<span>Inventory</span>","Opening လက်ကျန် · Location"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
   if(v==="pur"&&!canPur())v="home";
+  if(v==="inv"&&!can("admin"))v="home";   /* Inventory: Admins only */
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
-  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("viewPur").hidden=v!=="pur";$("exFPop").hidden=true;
+  $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("viewPur").hidden=v!=="pur";$("viewInv").hidden=v!=="inv";$("exFPop").hidden=true;
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
@@ -6249,7 +6274,7 @@ function go(v){
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();if(v==="pur"){initItems();initPur();initPt();renderPur()}
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();if(v==="pur"){initItems();initPur();initPt();renderPur()}if(v==="inv"){initItems();initInv();renderInv()}
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -6258,7 +6283,7 @@ function renderHome(){
   $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${seenDrafts().length?` · 📝 ${seenDrafts().length} draft${seenDrafts().length===1?"":"s"}`:""}`;
   $("homePRN").textContent=`${toBuy} item${toBuy===1?"":"s"} to buy`;
   {const n=tds.filter(t=>!t.done).length;$("homeMyTodoN").textContent=`${n} open task${n===1?"":"s"}`;$("homeTodoN").textContent=`${toBuy} to buy · ${n} task${n===1?"":"s"}`}
-  $("goPE").hidden=!can("admin")&&!canSeeEx();purHome();
+  $("goPE").hidden=!can("admin")&&!canSeeEx();purHome();$("goInv").hidden=!can("admin");
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
   const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
@@ -7019,6 +7044,62 @@ function purHome(){$("goPur").hidden=!canPur();
   const w=purs.filter(p=>!p.paid&&p.payReq?.st==="wait").length,open=purs.filter(p=>!p.arrived).length;
   $("homePurN").textContent=open?`${open} မရောက်သေး`:purs.length?`${purs.length} purchase${purs.length===1?"":"s"}`:"";
   for(const t of["goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(w&&can("admin"))el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${w} ငွေလွှဲရန်</span>`)}}
+
+/* ---------- Inventory: the opening stock of each raw material at each location (Admins).
+   Locations are a shared list (meta/invLocs), managed like the cities / gates of Goods Received.
+   One record per raw material and location in the shared "inventory" collection: {iid, code, name, loc, qty, unit}. ---------- */
+var invs=[],invCol=null,invLocCur="",invQ="",invCat="",invMode="open";
+const invUnitOf=i=>i?.stockUnit||i?.uom||i?.unit||purUnitOf(i)||"";
+function invLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeInv")||"[]")}catch(e){return[]}}
+function invLocalSave(){try{localStorage.setItem("cakeInv",JSON.stringify(invs))}catch(e){}}
+async function saveInv(r){if(invCol){await invCol.doc(r.id).set(r);return}const i=invs.findIndex(x=>x.id===r.id);if(i>=0)invs[i]=r;else invs.push(r);invLocalSave();invRefresh()}
+async function removeInv(id){if(invCol){await invCol.doc(id).delete();return}invs=invs.filter(x=>x.id!==id);invLocalSave();invRefresh()}
+function initInv(){if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!can("admin"))return;invCol=db.collection("inventory");
+  invCol.onSnapshot(s=>{invs=s.docs.map(d=>({...d.data(),id:d.id}));invRefresh()},()=>{invCol=null})}
+/* while a quantity is being typed the list is not redrawn (only the count line), so the box keeps its place */
+function invRefresh(){if($("viewInv").hidden)return;if(document.activeElement?.matches?.("#invList .inv-q"))invMetaSync();else renderInv()}
+const invPickLoc=v=>{if(v&&v!=="__new")invLocCur=v;renderInv()};
+const fmtQ=n=>Number(n).toLocaleString("en-US",{maximumFractionDigits:3});
+function invMetaSync(){const n=invs.filter(r=>r.loc===invLocCur).length;
+  $("invMeta").textContent=invMode==="open"&&invLocCur?`${invLocCur} · Opening ထည့်ပြီး ${n} ခု`:invMode==="sum"?`Location ${lstItems("loc").length} ခု · ပစ္စည်း ${new Set(invs.map(r=>r.iid)).size} ခု`:""}
+function renderInv(){if($("viewInv").hidden)return;
+  if(document.activeElement!==$("invLoc"))rcvFillList("loc",invLocCur);
+  $("invTabs").innerHTML=[["open","Opening ထည့်ရန်"],["sum","စုစုပေါင်း"]].map(([k,n])=>`<button type="button" class="chip" data-invmode="${k}" aria-pressed="${invMode===k}">${n}</button>`).join("");
+  $("invLocW").hidden=invMode!=="open";
+  const q=pdNorm(invQ),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
+  const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(invCat&&!cats.includes(invCat))invCat="";
+  $("invCats").innerHTML=`<button type="button" class="chip" data-invcat="" aria-pressed="${!invCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-invcat="${esc(c)}" aria-pressed="${invCat===c}">${esc(c)}</button>`).join("");
+  const list=inQ.filter(i=>!invCat||(i.cat||"Other")===invCat).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const pic=i=>i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`;
+  invMetaSync();
+  if(invMode==="open"){
+    if(!invLocCur){$("invList").innerHTML=`<div class="prq-empty">Location ရွေးပါ — မရှိသေးရင် "+ Add location…" နဲ့ ထည့်ပါ</div>`;return}
+    $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=invUnitOf(i);
+      return`<div class="inv-row${r?" on":""}" data-iid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><small>${i.code?`<code>${esc(i.code)}</code> · `:""}${esc(i.cat||"")}</small></span>
+        <span class="inv-qw"><input class="inv-q" type="number" inputmode="decimal" min="0" step="any" value="${r?esc(String(r.qty)):""}" aria-label="Opening qty"><span class="inv-u" title="${esc(u)}">${esc(u)}</span></span></div>`}).join("")
+      :`<div class="prq-empty">${q?"No match.":"Raw Material မရှိသေးပါ"}</div>`}
+  else{const has=list.filter(i=>invs.some(r=>r.iid===i.id));
+    $("invList").innerHTML=has.length?has.map(i=>{const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),u=invUnitOf(i),tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
+      return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(r.qty)}</b></span>`).join("")}</span></span>
+        <span class="inv-tot"><b>${fmtQ(tot)}</b> <small>${esc(u)}</small></span></div>`}).join("")
+      :`<div class="prq-empty">${q||invCat?"No match.":"Opening မထည့်ရသေးပါ"}</div>`}
+  $("invList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+$("invTabs").addEventListener("click",e=>{const b=e.target.closest("[data-invmode]");if(b){invMode=b.dataset.invmode;renderInv()}});
+$("invCats").addEventListener("click",e=>{const b=e.target.closest("[data-invcat]");if(b){invCat=b.dataset.invcat;renderInv()}});
+$("invQ").addEventListener("input",e=>{invQ=e.target.value;renderInv()});
+$("invLoc").addEventListener("change",()=>{const v=$("invLoc").value;if(v!=="__new")invPickLoc(v)});
+$("goInv").addEventListener("click",()=>go("inv"));
+/* a quantity is saved when the box is left (or Enter, which moves to the next one); an emptied box removes it */
+$("invList").addEventListener("change",async e=>{if(!e.target.matches(".inv-q")||!can("admin"))return;const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,it=items.find(x=>x.id===iid),loc=invLocCur;
+  const v=e.target.value.trim(),rec=invs.find(r=>r.iid===iid&&r.loc===loc),now=new Date().toISOString();
+  try{if(v===""){if(rec)await removeInv(rec.id);row.classList.remove("on")}
+    else{const q=Number(v);if(!(q>=0)){toast("Qty မှားနေပါတယ်");e.target.focus();return}if(rec&&Number(rec.qty)===q)return;
+      await saveInv({...(rec||{id:"iv"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),at:now,by:me.id||null}),iid,code:it?.code||"",name:it?.name||"",loc,qty:q,unit:invUnitOf(it),
+        ...(rec?{updatedAt:now,updatedBy:me.id||null}:{})});row.classList.add("on")}
+    invMetaSync()}catch(x){toast("သိမ်းမရပါ")}});
+$("invList").addEventListener("keydown",e=>{if(e.key!=="Enter"||!e.target.matches(".inv-q"))return;e.preventDefault();
+  const all=[...$("invList").querySelectorAll(".inv-q")],n=all[all.indexOf(e.target)+1];e.target.blur();if(n){n.focus();n.select()}});
+$("invList").addEventListener("focusout",e=>{if(e.target.matches(".inv-q"))setTimeout(()=>{if(!document.activeElement?.matches?.("#invList .inv-q"))renderInv()},0)});
 
 /* ---------- Purchase Requisition: anyone on the team can ask for an item and tick it once bought.
    Stored in the shared "pr" collection (this browser's storage when opened on its own); pictures use the same photo store as orders. */
@@ -7916,7 +7997,10 @@ const RCV_BACK={"To Buy List":"pr","Purchase & Expense":"pe"};
    "+ Add …" in a dropdown and the pencil beside it open the same small form to add, rename (arrivals follow the new name) or delete */
 const RCV_LISTS={
   city:{doc:"meta/rcvCities",local:"cakeRcvCities",field:"city",sel:"rcvCity",mng:"rcvCityMng",title:"📍 Cities",col:"City",one:"city",defaults:["Mdy","Ygn","Lashio"],list:null},
-  gate:{doc:"meta/rcvGates",local:"cakeRcvGates",field:"gate",sel:"rcvGate",mng:"rcvGateMng",title:"🚌 Bus gates",col:"Gate",one:"gate",defaults:[],list:null}};
+  gate:{doc:"meta/rcvGates",local:"cakeRcvGates",field:"gate",sel:"rcvGate",mng:"rcvGateMng",title:"🚌 Bus gates",col:"Gate",one:"gate",defaults:[],list:null},
+  loc:{doc:"meta/invLocs",local:"cakeInvLocs",field:"loc",sel:"invLoc",mng:"invLocMng",title:"📍 Locations",col:"Location",one:"location",defaults:[],list:null}};
+/* how many records use a name: arrivals for a city / gate, opening stock lines for a location */
+const lstUses=(k,c)=>k==="loc"?invs.filter(r=>r.loc===c):rcvs.filter(r=>r[lstOf(k).field]===c);
 var lstKey="city",lstEdit=null,lstPick=false;
 const lstOf=k=>RCV_LISTS[k];
 const lstItems=k=>(lstOf(k).list||lstOf(k).defaults).slice();
@@ -7933,7 +8017,8 @@ function rcvFillList(k,cur){const L=lstOf(k),list=lstItems(k),s=$(L.sel);
   s.dataset.prev=cur||""}
 function renderLst(){const L=lstOf(lstKey);
   $("cityDlgT").textContent=L.title;$("cityColH").textContent=L.col;$("cityNew").placeholder=`New ${L.one} name`;
-  $("cityRows").innerHTML=lstItems(lstKey).map((c,i)=>{const n=rcvs.filter(r=>r[L.field]===c).length;
+  $("cityCntH").textContent=lstKey==="loc"?"Items":"Arrivals";
+  $("cityRows").innerHTML=lstItems(lstKey).map((c,i)=>{const n=lstUses(lstKey,c).length;
     return c===lstEdit
       ?`<tr class="editing" data-i="${i}"><td><input type="text" class="city-name" value="${esc(c)}" aria-label="${L.col} name"></td><td>${n}</td>
         <td class="pm-acts"><span class="pm-ab"><button type="button" class="o-ic" data-city-ok aria-label="Save" title="Save">✓</button><button type="button" class="o-ic" data-city-no aria-label="Cancel" title="Cancel">✕</button></span></td></tr>`
@@ -7943,15 +8028,16 @@ function renderLst(){const L=lstOf(lstKey);
   /* while a name is being edited, "+ Add" and Done wait until it is saved (✓) or cancelled (✕) */
   const ed=lstEdit!=null;$("cityAddBtn").disabled=$("cityNew").disabled=ed;$("cityDlg").querySelector(".cfm-btns [data-close-dlg]").disabled=ed;
   $("cityRows").querySelector(".city-name")?.focus()}
-function lstDone(){const s=$(lstOf(lstKey).sel),cur=s.value;rcvFillList(lstKey,cur==="__new"?"":cur);if(!$("rcvDet").hidden)renderRcvDet();renderRcv()}
+function lstDone(){const s=$(lstOf(lstKey).sel),cur=s.value;rcvFillList(lstKey,cur==="__new"?"":cur);if(lstKey==="loc"){invPickLoc($("invLoc").value);return}if(!$("rcvDet").hidden)renderRcvDet();renderRcv()}
 async function lstRename(i){const L=lstOf(lstKey),old=lstItems(lstKey)[i],inp=$("cityRows").querySelector(".city-name");if(old==null||!inp)return;
   const n=lstNorm(inp.value);if(!n){toast(`${L.col} နာမည် ထည့်ပါ`);return}
   if(n===old){lstEdit=null;renderLst();return}
   if(lstHas(lstKey,n,old)){toast(`"${n}" ရှိပြီးသားပါ`);return}
   try{const list=lstItems(lstKey);list[i]=n;await lstSave(lstKey,list);
     /* arrivals with the old name follow the new one */
-    const its=rcvs.filter(r=>r[L.field]===old),now=new Date().toISOString();
-    for(const r of its)await saveRcv({...r,[L.field]:n,updatedAt:now,updatedBy:me.id||null});
+    const its=lstUses(lstKey,old),now=new Date().toISOString();
+    for(const r of its)await(lstKey==="loc"?saveInv:saveRcv)({...r,[L.field]:n,updatedAt:now,updatedBy:me.id||null});
+    if(lstKey==="loc"&&invLocCur===old)invLocCur=n;
     if($(L.sel).value===old)rcvFillList(lstKey,n);
     lstEdit=null;renderLst();lstDone();toast(`${n} saved${its.length?` · ${its.length} arrival${its.length===1?"":"s"}`:""}`)}
   catch(x){toast("သိမ်းမရပါ")}}
@@ -7959,8 +8045,8 @@ $("cityRows").addEventListener("click",async e=>{const tr=e.target.closest("tr[d
   if(e.target.closest("[data-city-edit]")){lstEdit=c;renderLst();return}
   if(e.target.closest("[data-city-no]")){lstEdit=null;renderLst();return}
   if(e.target.closest("[data-city-ok]")){await lstRename(i);return}
-  if(e.target.closest("[data-city-del]")){const n=rcvs.filter(r=>r[L.field]===c).length;
-    if(!await askConfirm(`Delete “${c}”?`,n?`${n} arrival${n===1?"":"s"} keep this name; it is only taken off the dropdown.`:"It is taken off the dropdown."))return;
+  if(e.target.closest("[data-city-del]")){const n=lstUses(lstKey,c).length,what=lstKey==="loc"?"opening line":"arrival";
+    if(!await askConfirm(`Delete “${c}”?`,n?`${n} ${what}${n===1?"":"s"} keep this name; it is only taken off the dropdown.`:"It is taken off the dropdown."))return;
     try{await lstSave(lstKey,lstItems(lstKey).filter((_,j)=>j!==i));renderLst();lstDone();toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}}});
 $("cityRows").addEventListener("keydown",e=>{if(!e.target.matches(".city-name"))return;
   if(e.key==="Enter"){e.preventDefault();lstRename(Number(e.target.closest("tr").dataset.i))}if(e.key==="Escape"){lstEdit=null;renderLst()}});
@@ -7968,7 +8054,7 @@ async function lstAddFromDlg(){const L=lstOf(lstKey),n=lstNorm($("cityNew").valu
   if(lstHas(lstKey,n)){toast(`"${n}" ရှိပြီးသားပါ`);return}
   try{await lstSave(lstKey,[...lstItems(lstKey),n]);$("cityNew").value="";renderLst();lstDone();
     /* opened from "+ Add …": the new name is picked and the form closes */
-    if(lstPick){lstPick=false;rcvFillList(lstKey,n);$("cityDlg").hidden=true}toast(`${n} added`)}catch(x){toast("သိမ်းမရပါ")}}
+    if(lstPick){lstPick=false;rcvFillList(lstKey,n);$("cityDlg").hidden=true;if(lstKey==="loc")invPickLoc(n)}toast(`${n} added`)}catch(x){toast("သိမ်းမရပါ")}}
 $("cityAddBtn").addEventListener("click",lstAddFromDlg);
 $("cityNew").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lstAddFromDlg()}});
 function openLst(k,pick){lstKey=k;lstPick=!!pick;lstEdit=null;$("cityNew").value="";renderLst();$("cityDlg").hidden=false;if(pick)setTimeout(()=>$("cityNew").focus(),50)}
@@ -8729,7 +8815,7 @@ function initItems(){
   if(itCol)return;itCol=db.collection("items");
   db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items"||!$("purPickDlg").hidden)renderItems();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
+    if(view==="items"||!$("purPickDlg").hidden)renderItems();if(view==="inv")renderInv();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
 }
 /* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
    changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
