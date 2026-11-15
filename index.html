@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719876"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719958"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1770,7 +1770,8 @@ span.star-ic{cursor:default}
       <button type="button" class="home-tile ht-brand" id="goSale" aria-label="Mr.Bee Bakery"><img class="ht-logo" src="img/brand-mrbee.jpg" alt="Mr.Bee Bakery"><small id="homeSaleN"></small></button>
       <button type="button" class="home-tile ht-brand" id="goSaleJs" aria-label="JS Bakery Supply"><img class="ht-logo" src="img/brand-js.jpg" alt="JS Bakery Supply"><small id="homeSaleJsN"></small></button>
       <button type="button" class="home-tile" id="goTodo"><span class="ht-ic" aria-hidden="true">✅</span><b>To-do list</b><small id="homeTodoN"></small></button>
-      <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Purchase &amp; Expense</b><small id="homePEN"></small></button>
+      <button type="button" class="home-tile" id="goPur" hidden><span class="ht-ic" aria-hidden="true">🛒</span><b>Purchase</b><small id="homePurN"></small></button>
+      <button type="button" class="home-tile" id="goPE"><span class="ht-ic" aria-hidden="true">🧾</span><b>Expense</b><small id="homePEN"></small></button>
       <button type="button" class="home-tile" id="goProd"><span class="ht-ic" aria-hidden="true">🥐</span><b>Bakery Products</b><small id="homeProdN"></small></button>
       <button type="button" class="home-tile" id="goItems"><span class="ht-ic" aria-hidden="true">🧺</span><b>Raw Material</b><small id="homeItemsN"></small></button>
       <button type="button" class="home-tile" id="goPt"><span class="ht-ic" aria-hidden="true">🤝</span><b>Customers &amp; Suppliers</b><small id="homePtN"></small></button>
@@ -1841,7 +1842,6 @@ span.star-ic{cursor:default}
   <!-- PURCHASE & EXPENSE: Purchase Requisition · Business Expense (Admins) · Personal Expense (Admins only) -->
   <section id="viewPE" hidden>
     <div class="home-grid">
-      <button type="button" class="home-tile" id="goPur" hidden><span class="ht-ic" aria-hidden="true">🛒</span><b>Purchase</b><small id="homePurN"></small></button>
       <button type="button" class="home-tile" id="goBiz" hidden><span class="ht-ic" aria-hidden="true">🏪</span><b>Business Expense</b><small id="homeBizN"></small></button>
       <button type="button" class="home-tile" id="goEx" hidden><span class="ht-ic" aria-hidden="true">💰</span><b>Personal Expense</b><small id="homeExN"></small></button>
     </div>
@@ -6229,12 +6229,12 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["Purchase <span>&amp; Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
-  if(v==="pur"&&!canPur())v="pe";
+  if(v==="pur"&&!canPur())v="home";
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
@@ -6255,7 +6255,7 @@ function renderHome(){
   $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${seenDrafts().length?` · 📝 ${seenDrafts().length} draft${seenDrafts().length===1?"":"s"}`:""}`;
   $("homePRN").textContent=`${toBuy} item${toBuy===1?"":"s"} to buy`;
   {const n=tds.filter(t=>!t.done).length;$("homeMyTodoN").textContent=`${n} open task${n===1?"":"s"}`;$("homeTodoN").textContent=`${toBuy} to buy · ${n} task${n===1?"":"s"}`}
-  $("goPE").hidden=!can("admin")&&!canSeeEx()&&!canPur();purHome();
+  $("goPE").hidden=!can("admin")&&!canSeeEx();purHome();
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
   const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
@@ -6331,7 +6331,7 @@ $("notiPop").addEventListener("click",async e=>{if(!e.target.closest("#notiReloa
 document.addEventListener("click",e=>{if(!$("notiPop").hidden&&!e.target.closest("#notiPop,#notiBtn,#notiHBtn"))$("notiPop").hidden=true});
 document.addEventListener("app-new",notiSync);
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",pur:"pe",orders:"sale",pos:"sale",so:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",pur:"home",orders:"sale",pos:"sale",so:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview, Print setup and the Voucher keep their ✕ on the right instead) */
@@ -7015,7 +7015,7 @@ $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purO
 function purHome(){$("goPur").hidden=!canPur();
   const w=purs.filter(p=>!p.paid&&p.payReq?.st==="wait").length,open=purs.filter(p=>!p.arrived).length;
   $("homePurN").textContent=open?`${open} မရောက်သေး`:purs.length?`${purs.length} purchase${purs.length===1?"":"s"}`:"";
-  for(const t of["goPE","goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(w&&can("admin"))el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${w} ငွေလွှဲရန်</span>`)}}
+  for(const t of["goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(w&&can("admin"))el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${w} ငွေလွှဲရန်</span>`)}}
 
 /* ---------- Purchase Requisition: anyone on the team can ask for an item and tick it once bought.
    Stored in the shared "pr" collection (this browser's storage when opened on its own); pictures use the same photo store as orders. */
