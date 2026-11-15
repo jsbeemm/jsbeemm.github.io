@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794736978"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794737162"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1238,7 +1238,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pur-tbl td{overflow:hidden}.pur-tbl td input{width:100%;min-width:0;text-align:right}
 #purLines input{height:34px;min-height:0;box-sizing:border-box;padding-top:0;padding-bottom:0;margin:0;vertical-align:middle}
 .pur-tbl td.pic img{width:40px;height:40px;object-fit:cover;border-radius:6px;display:block}
-.pur-ld{overflow-wrap:anywhere}.pur-ld code{color:#8a7466;font-size:11.5px}
+.pur-ld{overflow-wrap:anywhere}
+.pur-tbl td input.pur-ln{display:block;width:100%;margin-top:6px;text-align:left;font-size:13px;height:32px;padding:4px 8px;box-sizing:border-box}
+.pur-vnote{display:grid;gap:4px}.pur-vnote>span{font-size:13px;font-weight:600;color:#8a7466}.pur-vnote textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:56px;font:inherit}
+#purBody .pur-dln .pur-lnote{grid-column:1/-1;color:var(--ink)!important;overflow-wrap:anywhere}#purBody .pur-dln.wph .pur-lnote{grid-column:2/-1}.pur-ld code{color:#8a7466;font-size:11.5px}
 .pur-qw{display:flex;align-items:center;gap:4px}.pur-qw .pur-q{flex:1;min-width:0}.pur-qu{flex:none;width:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:#8a7466;text-align:left}
 #purLines .o-ic{border:0;background:none;box-shadow:none;min-width:0;min-height:0;width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:16px}#purLines .o-ic:hover{background:rgba(0,0,0,.05);border-radius:50%}
 .vo-edit .pur-add td{border:0;padding:6px 0}
@@ -2207,7 +2210,7 @@ span.star-ic{cursor:default}
           <tbody id="purLines"></tbody>
           <tbody class="pur-add"><tr><td colspan="7"><button type="button" class="btn" id="purAddItem">+ Add item</button></td></tr></tbody>
           <tfoot class="vo-tot"><tr class="ln"><td colspan="5" class="r k">Net Amount</td><td class="r v" id="purTotTxt">0</td><td class="c">MMK</td></tr></tfoot></table>
-        <div class="vo-note"><input id="purNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
+        <label class="vo-note pur-vnote"><span>Voucher Note</span><textarea id="purNote" rows="2" placeholder="ဒီ voucher အတွက် မှတ်ချက်" aria-label="Voucher note"></textarea></label>
       </div>
       <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn" id="purSave">Save</button></div>
     </form>
@@ -6917,7 +6920,7 @@ function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("adm
   return(r?.st==="no"?`<p class="pa-err">${esc(nameOf(r.ansBy))} က ${K.nm} ငွေလွှဲ request ကို ခွင့်မပြုပါ</p>`:`<p class="pur-mu">${K.nm} ငွေ မလွှဲရသေးပါ</p>`)
     +`<div class="pur-btns">${admin?`<button type="button" class="btn" data-pa="pay" ${dk}>ငွေလွှဲပြီး မှတ်ရန်</button>`:canPur()?`<button type="button" class="btn" data-pa="req" ${dk}>💸 Admin ဆီ ${K.nm} ငွေလွှဲ request</button>`:""}</div>`}
 function renderPur(){if($("viewPur").hidden)return;
-  const q=purQ.trim().toLowerCase(),hit=p=>!q||[p.no,p.supplier,p.gate,p.note,...(p.lines||[]).map(l=>l.name)].join(" ").toLowerCase().includes(q);
+  const q=purQ.trim().toLowerCase(),hit=p=>!q||[p.no,p.supplier,p.gate,p.note,...(p.lines||[]).flatMap(l=>[l.name,l.note])].join(" ").toLowerCase().includes(q);
   $("purTabs").innerHTML=PUR_TABS.map(([k,n,f])=>`<button type="button" class="chip" data-purtab="${k}" aria-pressed="${purTab===k}">${n} <small>${purs.filter(p=>hit(p)&&f(p)).length}</small></button>`).join("");
   const f=PUR_TABS.find(t=>t[0]===purTab)[2],list=purs.filter(p=>hit(p)&&f(p)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.at||"").localeCompare(a.at||""));
   $("purList").innerHTML=list.length?list.map(p=>{const n=(p.lines||[]).length;
@@ -6949,7 +6952,7 @@ function renderPurLines(){
   $("purLines").innerHTML=purLines.length?purLines.map((l,i)=>{const ph=purLinePhoto(l);return`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${ph?`<img src="${esc(photoUrl(ph))}" alt="">`:""}</td>
     <td class="pur-ld">${(()=>{const it=items.find(x=>x.id===l.iid),fam=it&&fm.get(soFamKey(it)),many=fam&&fam.length>1;
       return`<span class="so-ldn"><span class="so-ldt"><span data-t="${esc(l.name||"")}"></span>${l.code?` <code>${esc(l.code)}</code>`:""}</span>${many?`<button type="button" class="so-lue" aria-label="Change size / unit" title="Size / unit ပြောင်းရန်"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>`:""}</span>`
-        +(many?`<select class="pur-lu" hidden aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${purOptOn(o,l)?"selected":""}>${esc(purOptName(o))}${o.k<0&&o.un?` (${esc(o.un)})`:""}</option>`).join("")}</select>`:"")})()}</td>
+        +(many?`<select class="pur-lu" hidden aria-label="Size / unit">${fam.map(o=>`<option value="${esc(o.it.id)}|${o.k}" ${purOptOn(o,l)?"selected":""}>${esc(purOptName(o))}${o.k<0&&o.un?` (${esc(o.un)})`:""}</option>`).join("")}</select>`:"")})()}<input class="pur-ln" value="${esc(l.note||"")}" placeholder="Note" aria-label="Item note" autocomplete="off"></td>
     <td class="r"><span class="pur-qw"><input class="pur-q" type="number" inputmode="decimal" min="0" step="any" value="${esc(String(l.qty??""))}" aria-label="Qty"><span class="pur-qu" title="${esc(l.unit||"")}">${esc(l.unit||"")}</span></span></td>
     <td class="r"><input class="pur-p" type="number" inputmode="numeric" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price"></td>
     <td class="r pur-la">${purAmt(l).toLocaleString("en-US")}</td>
@@ -6958,6 +6961,7 @@ function renderPurLines(){
   $("purLines").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);purSyncTot()}
 function purSyncTot(){$("purTotTxt").textContent=purLines.reduce((a,l)=>a+purAmt(l),0).toLocaleString("en-US")}
 $("purLines").addEventListener("input",e=>{const r=e.target.closest("[data-i]");if(!r)return;const l=purLines[Number(r.dataset.i)];
+  if(e.target.matches(".pur-ln")){l.note=e.target.value;return}
   if(e.target.matches(".pur-q"))l.qty=Number(e.target.value)||0;if(e.target.matches(".pur-p"))l.price=Number(e.target.value)||0;
   r.querySelector(".pur-la").textContent=purAmt(l).toLocaleString("en-US");purSyncTot()});
 $("purLines").addEventListener("change",e=>{if(!e.target.matches(".pur-lu"))return;const l=purLines[Number(e.target.closest("[data-i]").dataset.i)],[id,k]=e.target.value.split("|");
@@ -7005,7 +7009,7 @@ $("purForm").addEventListener("submit",async e=>{e.preventDefault();if(!canPur()
   const now=new Date().toISOString(),sup=pts.find(x=>x.type==="supplier"&&String(x.name||"").toLowerCase()===supplier.toLowerCase());
   const p={...(purEditing||{}),id:purEditing?.id||("pu"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),no:purEditing?.no||purNextNo(date),
     date,supplier:sup?.name||supplier,supId:sup?.id||null,gate,note:$("purNote").value.trim(),
-    lines:purLines.map(l=>({iid:l.iid||null,code:l.code||"",name:l.name||"",unit:l.unit||"",qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),...(purLinePhoto(l)?{photo:purLinePhoto(l)}:{}),...(l.u!=null?{u:l.u}:{}),...(l.fr!=null?{fr:l.fr}:{})})),
+    lines:purLines.map(l=>({iid:l.iid||null,code:l.code||"",name:l.name||"",unit:l.unit||"",qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),...(purLinePhoto(l)?{photo:purLinePhoto(l)}:{}),...(l.u!=null?{u:l.u}:{}),...(l.fr!=null?{fr:l.fr}:{}),...(String(l.note||"").trim()?{note:String(l.note).trim()}:{})})),
     ...(purEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   /* changed after the goods arrived: the transport charge is shared again (a split by hand only while the lines stay the same) */
   if(p.arrived&&p.freight){const same=!!purEditing&&(purEditing.lines||[]).length===p.lines.length&&p.lines.every(l=>l.fr!=null),mode=p.frMode==="hand"&&!same?"amt":p.frMode||"amt";
@@ -7020,7 +7024,7 @@ function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView"
   const lines=(p.lines||[]).map((l,i)=>{const a=purAmt(l),u=l.unit?" "+esc(l.unit):"";
     const ph=purLinePhoto(l);
     return`<div class="pur-dln${ph?" wph":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:""}<b data-t="${esc(l.name||"")}"></b><span class="r">${esc(fmt(a))}</span>
-      <small>${esc(String(l.qty))}${u} × ${esc(fmt(l.price))}</small>${sh?`<small class="r">ကားခ ${esc(fmt(sh[i]))}</small><small class="pur-cu">1${u} = ${esc(fmt(Math.round((a+sh[i])/(Number(l.qty)||1))))} <span class="pur-mu">(ကားခ ပါ)</span></small>`:""}</div>`}).join("");
+      <small>${esc(String(l.qty))}${u} × ${esc(fmt(l.price))}</small>${l.note?`<small class="pur-lnote">📝 <span data-t="${esc(l.note)}"></span></small>`:""}${sh?`<small class="r">ကားခ ${esc(fmt(sh[i]))}</small><small class="pur-cu">1${u} = ${esc(fmt(Math.round((a+sh[i])/(Number(l.qty)||1))))} <span class="pur-mu">(ကားခ ပါ)</span></small>`:""}</div>`}).join("");
   const pay=purPayBlock(p,"g"),frPay=p.arrived&&(fr>0||p.frPaid||p.frReq)?purPayBlock(p,"f"):"";
   let arr;
   if(purAct==="arr"){const a=purArr;
