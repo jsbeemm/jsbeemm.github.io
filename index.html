@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719690"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719804"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1718,7 +1718,7 @@ span.star-ic{cursor:default}
             </div>
             <div class="row">
               <label class="f"><span>ပို့ရမည့်လိပ်စာ <b>*</b></span><textarea id="fAddr" rows="2"></textarea></label>
-              <label class="f"><span>Delivery charge (Ks)</span><input id="fDelivAmt" type="number" min="0" step="500" placeholder="0"></label>
+              <label class="f"><span>Delivery charge (Ks) <b>*</b></span><input id="fDelivAmt" type="number" min="0" step="500" placeholder="ပို့ခ (အခမဲ့ဆို 0)"></label>
             </div>
           </div>
           <label class="f deliv-note"><span>Delivery မှတ်ချက်</span><textarea id="fDelivNote" rows="2" placeholder="ဥပမာ – ဖုန်းဆက်ပြီးမှ ပို့ရန်၊ Surprise ဖြစ်၍ လက်ခံသူ နာမည်…"></textarea></label>
@@ -4045,7 +4045,7 @@ function fillForm(o){
   {const sm=SMALL[o.decoType]?o.decoType:"";document.querySelectorAll('input[name="fTiersR"]').forEach(i=>i.checked=i.value===(sm||$("fTiers").value))}
   $("fMiniDeco").value=o.miniDeco==="fondant"||o.miniDeco==="mixed"?o.miniDeco:"cream";
   tierDraft=tiersOf(o).map(t=>({dummy:!!t.dummy,size:t.size||"1",layers:t.dummy?[]:(t.layers||[]).slice(),...(t.dummy?{dh:dumH(t)}:{}),...tierXtra(t)}));renderTierList();
-  setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||"";$("fDiscount").value=o.discount||"";
+  setCharges(orderCharges(o));$("fDelivAmt").value=o.delivAmt||(o.id&&o.delivery==="delivery"?"0":"");$("fDiscount").value=o.discount||"";
   $("fMsg").value=o.msg||"";$("fDesign").value=o.design||"";$("fDesignNew").checked=!!o.designNew;$("fDesignGiven").checked=!!o.designGiven;$("fDsnSex").value=o.designSex||"";$("fDsnAge").value=o.designAge||"";syncDcWho();
   /* older orders kept cream colour and one general note — fold them into the design note */
   $("fDesignNote").value=o.designNote??[o.color?"ခရင်မ် – "+o.color:"",o.note||""].filter(Boolean).join("\n");
@@ -4223,7 +4223,9 @@ function formMissing(f){
   const miss=[],at=[],need=(cond,label,id)=>{if(cond){miss.push(label);at.push($(id))}};
   need(!f.name,"အမည်","fName");need(!f.phone,"ဖုန်းနံပါတ်","fPhone");need(!f.channel,"Channel","fChannel");need(f.channel==="Others"&&!f.chOther,"Others Account","fChOther");
   need(!f.date,"နေ့စွဲ","fDatePick");need(!f.delivery,"Pickup / Delivery","fDelivOpts");need(!f.time,"အချိန်",$("fTime").value==="special"?"fTimeSpecial":"fTime");
-  if(f.delivery==="delivery"){need(!f.recvName,"လက်ခံမည့်သူ အမည်","fRecvName");need(!f.recvPhone,"လက်ခံမည့်သူ ဖုန်း","fRecvPhone");need(!f.addr,"လိပ်စာ","fAddr")}
+  if(f.delivery==="delivery"){need(!f.recvName,"လက်ခံမည့်သူ အမည်","fRecvName");need(!f.recvPhone,"လက်ခံမည့်သူ ဖုန်း","fRecvPhone");need(!f.addr,"လိပ်စာ","fAddr");
+    /* the delivery charge must be written (0 when delivery is free) */
+    need($("fDelivAmt").value.trim()==="","Delivery charge","fDelivAmt")}
   /* a bakery products order needs at least one product (nothing about a cake) */
   if(isBak(f)){need(!bakItemsOf(f).length,"Bakery products","bakSet");need(!!f.date&&f.date<minDate,"ယနေ့ သို့မဟုတ် နောက်ရက် နေ့စွဲ","fDatePick");return{miss,at}}
   const sk=SMALL[f.decoType]?f.decoType:"";
