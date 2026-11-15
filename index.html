@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794739077"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794740451"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,6 +1201,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+.so-xl{margin:0 0 8px}.so-xl:not(:has(.chip:not([hidden]))){display:none}
 /* Home: a cake still being decorated */
 .deco-rem{display:grid;gap:8px;margin:0 0 12px}
 .deco-rem-b{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
@@ -1831,6 +1832,7 @@ span.star-ic{cursor:default}
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
+    <div class="chips so-xl"><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
@@ -9296,6 +9298,71 @@ function initSo(){initSoDrafts();initPo();
 async function saveSo(v){if(db){const d={...v};delete d.id;await db.collection("jsSales").doc(v.id).set(d);return}
   const i=vos.findIndex(x=>x.id===v.id);if(i>=0)vos[i]=v;else vos.push(v);vos=vos.slice();try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
 async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete();return}vos=vos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
+/* ---------- JS vouchers from the old Excel (JS Vouchers.xlsm, sheet Saved_Js_Invoices): Admins only.
+   One row per item line; the rows of one Invoice Number make one voucher, kept with its own number (JS25SEP19001 …).
+   They are finished vouchers: given in full and paid in full (one payment "Excel" on the voucher date), marked xl:true.
+   A number already in the app is skipped, so the same file can be imported again; "Excel ပြန်ဖျက်" takes them all out. ---------- */
+const XL_PAY="Excel";
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXlBtn").hidden=!ok;$("soXlDel").hidden=!ok||!vos.some(v=>v.xl)}
+const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
+  if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
+const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
+const xlNum=v=>{const n=Number(String(v??"").replace(/,/g,""));return isFinite(n)?n:0};
+/* the rows → vouchers (not saved yet), with what did not match */
+function soXlPlan(rows){const h=rows[0].map(x=>xlStr(x).toLowerCase()),c=k=>h.indexOf(k);
+  const C={no:c("invoice number"),date:c("date"),cust:c("customer"),id:c("id"),desc:c("description"),qty:c("qty"),price:c("price"),note:c("note"),
+    disc:c("discount"),net:c("net amount"),other:c("other name"),phone:c("phone number"),ch:c("channel"),deliv:c("delivery info")};
+  if(C.no<0||C.desc<0||C.qty<0)return null;
+  const groups=new Map();for(const r of rows.slice(1)){const no=xlStr(r[C.no]);if(!no)continue;if(!groups.has(no))groups.set(no,[]);groups.get(no).push(r)}
+  const have=new Set(vos.map(v=>String(v.no||""))),byCode=new Map(items.filter(i=>i.code).map(i=>[pdNorm(i.code),i]));
+  const custs=pts.filter(p=>p.type==="js"),byName=new Map(custs.map(p=>[pdNorm(p.name),p]));
+  const now=new Date().toISOString(),out=[],skip=[],noCust=new Set(),noItem=new Set(),bad=[];
+  for(const[no,rs]of groups){if(have.has(no)){skip.push(no);continue}
+    const f=rs[0],get=k=>C[k]<0?"":rs.map(r=>r[C[k]]).find(x=>xlStr(x)!=="");
+    const date=xlDate(f[C.date]);if(!date){bad.push(no);continue}
+    const lines=rs.map(r=>{const code=xlStr(r[C.id]),it=code?byCode.get(pdNorm(code)):null;if(code&&!it)noItem.add(code);
+      const l={...(it?{pid:it.id}:{}),code,name:xlStr(r[C.desc]),qty:xlNum(r[C.qty]),price:Math.round(xlNum(r[C.price]))};
+      const n=C.note<0?"":xlStr(r[C.note]);if(n)l.note=n;if(it?.photo)l.photo=it.photo;return l}).filter(l=>l.name&&l.qty);
+    if(!lines.length){bad.push(no);continue}
+    const disc=Math.round(xlNum(get("disc")));if(disc>0)lines.push({name:"Discount",qty:1,price:-disc});
+    const sum=soNetOf(lines),netX=Math.round(xlNum(get("net"))),net=netX>0?netX:sum;
+    const cn=xlStr(f[C.cust])||"Walk in",p=byName.get(pdNorm(cn));if(!p&&pdNorm(cn)!==pdNorm("Walk in"))noCust.add(cn);
+    const ch=xlStr(get("ch")),other=xlStr(get("other"));
+    const v={id:"xl"+no,no,date,at:date+"T00:00:00.000Z",by:me.id||null,byName:"Excel",xl:true,xlAt:now,customer:p?.name||cn,...(p?{custId:p.id}:{}),
+      ...(xlStr(get("phone"))?{phone:xlStr(get("phone"))}:{}),...(ch&&ch!=="0"&&ch!=="undefined"&&!/^#/.test(ch)?{channel:ch}:{}),
+      ...(xlStr(get("deliv"))?{deliv:xlStr(get("deliv"))}:{}),...(other?{note:"Other name: "+other}:{}),
+      lines,net,payments:[{amt:net,method:XL_PAY,date,at:now,by:me.id||null}],...(sum!==net?{xlSum:sum}:{})};
+    out.push(v)}
+  out.sort((a,b)=>a.no.localeCompare(b.no));return{out,skip,noCust:[...noCust],noItem:[...noItem],bad}}
+$("soXlBtn").addEventListener("click",()=>{if(!can("admin"))return;$("soXlFile").value="";$("soXlFile").click()});
+$("soXlFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f||!can("admin"))return;initItems();initPt();
+  toast("Excel ဖတ်နေသည်…",20000);let rows=null;
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js");
+    const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellStyles:false,cellHTML:false});
+    const sn=wb.SheetNames.find(n=>/saved_js_invoices/i.test(n))||wb.SheetNames.find(n=>{const r=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,blankrows:false})[0]||[];return r.some(x=>/invoice number/i.test(String(x)))});
+    if(sn)rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,blankrows:false})}catch(x){toast("Excel ဖတ်မရပါ");return}
+  const plan=rows&&rows.length>1?soXlPlan(rows):null;
+  if(!plan){toast("“Saved_Js_Invoices” sheet (Invoice Number, Description, Qty …) ကို မတွေ့ပါ",6000);return}
+  const{out,skip,noCust,noItem,bad}=plan;
+  if(!out.length){toast(skip.length?`Voucher ${skip.length} စောင်လုံး app ထဲမှာ ရှိပြီးသားပါ`:"ထည့်စရာ voucher မရှိပါ",6000);return}
+  const tot=out.reduce((s,v)=>s+v.net,0),d0=out.reduce((m,v)=>v.date<m?v.date:m,out[0].date),d1=out.reduce((m,v)=>v.date>m?v.date:m,out[0].date);
+  const msg=[`${fmtDate(d0)} – ${fmtDate(d1)} · စုစုပေါင်း ${fmt(tot)}`,"Finished (ပစ္စည်းပေးပြီး၊ ငွေရပြီး) အဖြစ် ထည့်ပါမယ်။ Payment method ကို “Excel” လို့ မှတ်ပါမယ်။",
+    skip.length?`App ထဲမှာ နံပါတ်တူ ရှိပြီးသားလို့ ကျော်မယ် ${skip.length} စောင်`:"",
+    noCust.length?`JS Customer စာရင်းနဲ့ နာမည်မကိုက် ${noCust.length} ယောက် (နာမည်ပဲ မှတ်ပါမယ်): ${noCust.slice(0,8).join(", ")}${noCust.length>8?" …":""}`:"",
+    noItem.length?`Raw Material Short Code မကိုက် ${noItem.length} ခု (Description အတိုင်း မှတ်ပါမယ်): ${noItem.slice(0,8).join(", ")}${noItem.length>8?" …":""}`:"",
+    bad.length?`ရက်စွဲ / item မပါလို့ ကျော်မယ် ${bad.length} စောင်: ${bad.slice(0,5).join(", ")}`:""].filter(Boolean).join("\n\n");
+  if(!await askConfirm(`Excel ထဲက JS voucher ${out.length} စောင် ထည့်မလား?`,msg,"Import"))return;
+  let done=0,fail=0;
+  if(db&&db.batch){for(let i=0;i<out.length;i+=400){const b=db.batch();for(const v of out.slice(i,i+400)){const d={...v};delete d.id;b.set(db.collection("jsSales").doc(v.id),d)}
+      try{await b.commit();done+=Math.min(400,out.length-i)}catch(x){fail+=Math.min(400,out.length-i)}toast(`ထည့်နေသည်… ${done+fail} / ${out.length}`,20000)}}
+  else for(const v of out){try{await saveSo(v);done++}catch(x){fail++}}
+  toast(`✓ Excel voucher ${done} စောင် ထည့်ပြီး${fail?` · မထည့်နိုင် ${fail} (ပြန် import လုပ်ရင် ကျန်တာ ဆက်ထည့်ပါမယ်)`:""}`,7000);soXlSync();renderSo()});
+/* take every Excel-imported voucher out again (vouchers made in the app stay) */
+$("soXlDel").addEventListener("click",async()=>{if(!can("admin"))return;const xs=vos.filter(v=>v.xl);if(!xs.length)return;
+  if(!await askConfirm(`Excel က ထည့်ထားတဲ့ voucher ${xs.length} စောင် ဖျက်မလား?`,"App ထဲမှာ ရေးထားတဲ့ voucher တွေ မပျက်ပါ။ Excel ဖိုင်ကနေ နောက်မှ ပြန် import လုပ်လို့ ရပါတယ်။","Delete"))return;
+  let done=0;if(db&&db.batch){for(let i=0;i<xs.length;i+=400){const b=db.batch();xs.slice(i,i+400).forEach(v=>b.delete(db.collection("jsSales").doc(v.id)));try{await b.commit();done+=Math.min(400,xs.length-i)}catch(x){}}}
+  else for(const v of xs){try{await removeSo(v.id);done++}catch(x){}}
+  toast(`Excel voucher ${done} စောင် ဖျက်ပြီး`,5000);soXlSync();renderSo()});
 /* JS26NOV01002 = JS + year + month + day + the day's running number */
 function soNo(d,b="js"){const pre=(b==="mb"?"MB":"JS")+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
@@ -9340,7 +9407,7 @@ $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-s
 /* the list: Preorder / Unfinished / Finished, what to buy, and every voucher. Orders made with the earlier Order screen
    still show here by their own stage. */
 const poStage=p=>{const s=poState(p);return s==="done"?"fin":s==="todo"&&!poMade(p).length?"pre":"unf"};
-function renderSo(){if($("viewSo").hidden)return;
+function renderSo(){if($("viewSo").hidden)return;soXlSync();
   const q=pdNorm(soQ),hit=x=>!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q));
   /* this shop's vouchers; the earlier Order screen and "to buy" are JS's only */
   const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];
