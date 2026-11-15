@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794662544"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794716306"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6277,7 +6277,7 @@ function renderHome(){
     gs.classList.toggle("glow",left>0);gs.querySelector(".ht-badge")?.remove();
     if(left)gs.insertAdjacentHTML("beforeend",`<span class="ht-badge">${left} not finished</span>`)}
   $("homeProdN").textContent=pds.length?`${pds.length} products`:"";
-  {const c=pts.filter(p=>p.type!=="supplier").length,sp=pts.length-c;$("homePtN").textContent=pts.length?`${c} customers${can("admin")?` · ${sp} suppliers`:""}`:""}
+  {const c=pts.filter(p=>p.type==="customer"||p.type==="js").length,sp=pts.filter(p=>p.type==="supplier").length;$("homePtN").textContent=pts.length?`${c} customers${can("admin")?` · ${sp} suppliers`:""}`:""}
   $("goEx").hidden=!canSeeEx();$("goBiz").hidden=!can("admin");
   $("goPt").hidden=isProdRole();
   const mo=todayISO().slice(0,7),inMo=r=>(r.date||"").slice(0,7)===mo;
@@ -6843,7 +6843,7 @@ function openPurForm(p){if(!canPur())return;
   $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
   $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";
   $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
-  $("purGateList").innerHTML=[...new Set([...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
+  $("purGateList").innerHTML=[...new Set([...pts.filter(x=>x.type==="gate").map(x=>x.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
   renderPurLines();$("purDlg").hidden=false}
 const purLinePhoto=l=>items.find(x=>x.id===l.iid)?.photo||l.photo||"";
 function renderPurLines(){
@@ -7616,7 +7616,8 @@ function initPd(){
 /* ---------- Customers & Suppliers: Mr.Bee customers, JS customers and suppliers in the shared "parties" collection.
    Everyone signed in reads them; Admins add, edit and delete; people with "Add customers" (Sale) add customers. ---------- */
 const canAddCust=()=>can("admin")||can("customers.add");
-const PT_TYPES=[["customer","Mr.Bee Customers","Mr.Bee Customer"],["js","JS Customers","JS Customer"],["supplier","Suppliers","Supplier"]];
+/* Gates: the bus gates and logistics that bring purchases (offered in Purchase and Goods Received) */
+const PT_TYPES=[["customer","Mr.Bee Customers","Mr.Bee Customer"],["js","JS Customers","JS Customer"],["supplier","Suppliers","Supplier"],["gate","Gates","Gate"]];
 var pts=[],ptCol=null,ptType="customer",ptQ="",ptEditing=null;
 function ptLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeParties")||"[]")}catch(e){return[]}}
 function ptLocalSave(){try{localStorage.setItem("cakeParties",JSON.stringify(pts))}catch(e){}}
@@ -7666,7 +7667,7 @@ document.addEventListener("focusout",e=>{const el=e.target;if(!el.matches?.("inp
 /* Channel is picked from a short list (no typing); a value saved before that is not on the list stays offered */
 function chFill(sel,list,v){v=v||"";sel.innerHTML=`<option value="">— ရွေးပါ —</option>`+[...list,...(v&&!list.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");sel.value=v}
 function ptSyncCh(t,v){chFill($("ptChannel"),t==="customer"?CHANNELS:PT_CH_OTHER,v??$("ptChannel").value)}
-function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
+function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;$("ptChannel").closest(".prf").hidden=$("ptAcct").closest(".prf").hidden=t==="gate";ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
 /* any number of phones and addresses (older records kept "phone" as "09…, 09…" and up to two addresses) */
 const ptPhonesOf=p=>p?.phones||String(p?.phone||"").split(/,\s*/).filter(Boolean);
 const ptAddrsOf=p=>p?.addresses||[p?.address,p?.address2].filter(Boolean);
@@ -7716,7 +7717,7 @@ $("ptForm").addEventListener("submit",async e=>{
   const recv=arows.map(x=>x.rn||x.rp?{n:x.rn,p:x.rp}:null);p.recv=recv.some(Boolean)?recv:null;if(!p.recv)delete p.recv;
   /* "phone" and "address" (the default) are kept as well, for searching and for older screens */
   const f={otherName:v("ptOther"),phones:phones.length?phones:null,phone:phones.length?phones.join(", "):null,channel:v("ptChannel"),account:v("ptAcct"),
-    addresses:addresses.length?addresses:null,defAddr:addresses.length>1?defAddr:null,address:addresses[defAddr]||null,address2:null,short,country:type==="supplier"?v("ptCountry"):null,currency:type==="supplier"?($("ptCur").value||null):null};
+    addresses:addresses.length?addresses:null,defAddr:addresses.length>1?defAddr:null,address:addresses[defAddr]||null,address2:null,short,...(type==="gate"?{channel:null,account:null}:{}),country:type==="supplier"?v("ptCountry"):null,currency:type==="supplier"?($("ptCur").value||null):null};
   for(const k in f)if(f[k]==null)delete p[k];else p[k]=f[k];
   try{await savePt(p);$("ptDlg").hidden=true;ptEditing=null;ptType=type;renderPt();toast("သိမ်းပြီး");if(typeof ptAfterSave==="function"){const f=ptAfterSave;ptAfterSave=null;f(p)}}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}
 });
@@ -7905,7 +7906,8 @@ async function lstSave(k,list){const L=lstOf(k);
   else{try{localStorage.setItem(L.local,JSON.stringify(list))}catch(x){}}
   L.list=list}
 /* an arrival saved with a name that was later deleted keeps it, so it stays in its own dropdown */
-function rcvFillList(k,cur){const L=lstOf(k),list=lstItems(k),s=$(L.sel);if(cur&&!list.includes(cur))list.push(cur);
+function rcvFillList(k,cur){const L=lstOf(k),list=lstItems(k),s=$(L.sel);
+  if(k==="gate")for(const p of pts)if(p.type==="gate"&&p.name&&!list.some(c=>c.toLowerCase()===p.name.toLowerCase()))list.push(p.name);if(cur&&!list.includes(cur))list.push(cur);
   s.innerHTML=`<option value="">— Choose ${L.one} —</option>`+list.map(c=>`<option value="${esc(c)}" ${c===cur?"selected":""}>${esc(c)}</option>`).join("")+`<option value="__new">+ Add ${L.one}…</option>`;
   s.dataset.prev=cur||""}
 function renderLst(){const L=lstOf(lstKey);
