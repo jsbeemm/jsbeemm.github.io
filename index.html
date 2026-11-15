@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719302"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794719690"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1225,6 +1225,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purPickDlg .side-panel{height:min(88vh,760px);max-height:none}#purPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
 #purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
 #purPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
+.pur-one{cursor:pointer}.pur-fn{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px}
+.pur-ied{display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border:0;border-radius:14px;background:none;color:var(--muted);cursor:pointer;font:inherit}
+.pur-ied svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.pur-ied small{font-size:11px}
+.pur-ied:hover{color:var(--accent);background:var(--accent-soft)}.pur-ied:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 @media (max-width:700px){.pur-vo .vo-meta{grid-template-columns:1fr}.pur-vo .vo-no{justify-content:start}
   .pur-tbl thead{display:none}.pur-tbl,.pur-tbl tbody#purLines{display:block;width:100%}
   .pur-tbl tbody#purLines tr{display:grid;width:100%;grid-template-columns:22px 44px minmax(0,1fr) minmax(0,1fr) auto;grid-template-areas:"no pic desc desc end" "qty qty price price amt";gap:6px;align-items:center;border-bottom:1px solid #c98b6a;padding:8px 0}
@@ -2179,7 +2183,6 @@ span.star-ic{cursor:default}
       <input type="search" id="purPickQ" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" autocomplete="off" aria-label="Search raw material">
       <div class="chips pd-cats so-pcats" id="purPickCats"></div>
       <div class="so-plist" id="purHits"></div>
-      <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button></div>
     </div>
   </div>
 </div>
@@ -6328,7 +6331,7 @@ const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",pur:"pe",orders:"sale",p
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview, Print setup and the Voucher keep their ✕ on the right instead) */
-document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelector(".x-close");if(!x||h.closest("#preview,#slipDlg,#soView"))return;
+document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelector(".x-close");if(!x||h.closest("#preview,#slipDlg,#soView,#purPickDlg"))return;
   const b=document.createElement("button");b.type="button";b.className="back-btn dlg-back";b.setAttribute("aria-label","Back");b.title="Back";b.innerHTML=BACK_SVG;
   b.addEventListener("click",()=>x.click());h.prepend(b);x.classList.add("x-hid")});
 $("backBtn").addEventListener("click",()=>{if(view==="orders"&&!$("viewNew").hidden){showTab("list");return}go(BACK_TO[view]||"home")});
@@ -6877,6 +6880,8 @@ $("purLines").addEventListener("click",e=>{const pen=e.target.closest(".so-lue")
   if(!e.target.closest("[data-pur-rm]"))return;purLines.splice(Number(e.target.closest("[data-i]").dataset.i),1);renderPurLines()});
 /* the pick list: every raw material with its picture, short code, unit and last price; a tap adds it (again: one more) */
 let purPickCat="";
+/* the pencil beside a raw material (Admins): opens it to add a unit, fix the name, picture … ; a family shows one per item (with its code) */
+const purEdBtn=(it,code)=>can("admin")?`<button type="button" class="pur-ied" data-pur-ed="${esc(it.id)}" aria-label="Edit raw material" title="Raw material ပြင်ရန်${code?" · "+esc(it.code||""):""}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg>${code&&it.code?`<small>${esc(it.code)}</small>`:""}</button>`:"";
 function renderPurPick(){const q=pdNorm($("purPickQ").value),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(purPickCat&&!cats.includes(purPickCat))purPickCat="";
   $("purPickCats").innerHTML=`<button type="button" class="chip" data-pupc="" aria-pressed="${!purPickCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-pupc="${esc(c)}" aria-pressed="${purPickCat===c}">${esc(c)}</button>`).join("");
@@ -6885,18 +6890,20 @@ function renderPurPick(){const q=pdNorm($("purPickQ").value),inQ=items.filter(i=
   $("purHits").innerHTML=m.length?m.map(i=>{const k=soFamKey(i),fam=fm.get(k)||purOptsOf(i);
     if(fam.length>1){if(seen.has(k))return"";seen.add(k);const its=[...new Set(fam.map(o=>o.it))],on=fam.some(o=>purLines.some(l=>purOptOn(o,l)));
       return`<div class="so-hit so-phit so-fam${on?" on":""}">${img(its.find(x=>x.photo)?.photo)}
-        <span><span data-t="${esc(soFamName(k,its))}"></span><span class="so-uchips">${fam.map(o=>{const q=purLines.find(l=>purOptOn(o,l))?.qty,lp=purLastPrice(o.it.id,o.k);
+        <span><span class="pur-fn"><span data-t="${esc(soFamName(k,its))}"></span>${its.map(it=>purEdBtn(it,its.length>1)).join("")}</span><span class="so-uchips">${fam.map(o=>{const q=purLines.find(l=>purOptOn(o,l))?.qty,lp=purLastPrice(o.it.id,o.k);
           return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-pur-it="${esc(o.it.id)}" data-pur-u="${o.k}" title="${esc(purOptName(o))} · ${esc(o.it.code||"")}">${esc(o.label||o.un||"—")}${lp!==""?` <b>${fmt(lp)}</b>`:""}${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
     const o=fam[0],n=purLines.find(l=>purOptOn(o,l))?.qty,lp=purLastPrice(o.it.id,o.k);
-    return`<button type="button" class="so-hit so-phit${n!=null?" on":""}" data-pur-it="${esc(o.it.id)}" data-pur-u="${o.k}">${img(o.it.photo)}
-      <span><span data-t="${esc(o.it.name||"")}"></span><br><code>${esc(o.it.code||"")}</code>${o.label||o.un?` <small class="so-pu">${esc(o.label||o.un)}</small>`:""}</span><b>${lp!==""?fmt(lp):""}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
+    return`<div class="so-hit so-phit pur-one${n!=null?" on":""}" data-pur-it="${esc(o.it.id)}" data-pur-u="${o.k}" role="button" tabindex="0">${img(o.it.photo)}
+      <span><span class="pur-fn"><span data-t="${esc(o.it.name||"")}"></span>${purEdBtn(o.it,false)}</span><code>${esc(o.it.code||"")}</code>${o.label||o.un?` <small class="so-pu">${esc(o.label||o.un)}</small>`:""}</span><b>${lp!==""?fmt(lp):""}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</div>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
   $("purHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("purAddItem").addEventListener("click",()=>{initItems();purPickCat="";$("purPickQ").value="";renderPurPick();$("purPickDlg").hidden=false;$("purPickQ").focus()});
 $("purPickQ").addEventListener("input",renderPurPick);
 $("purPickQ").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("purHits").querySelector("[data-pur-it]")?.click()}});
 $("purPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-pupc]");if(b){purPickCat=b.dataset.pupc;renderPurPick()}});
-$("purHits").addEventListener("click",e=>{const b=e.target.closest("[data-pur-it]");if(!b)return;const i=items.find(x=>x.id===b.dataset.purIt);if(!i)return;
+$("purHits").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".pur-one")){e.preventDefault();e.target.click()}});
+$("purHits").addEventListener("click",e=>{const ed=e.target.closest("[data-pur-ed]");if(ed){e.stopPropagation();const it=items.find(x=>x.id===ed.dataset.purEd);if(it)openItForm(it);return}
+  const b=e.target.closest("[data-pur-it]");if(!b)return;const i=items.find(x=>x.id===b.dataset.purIt);if(!i)return;
   const u=Number(b.dataset.purU??-1),o=purOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,un:purUnitOf(i)};
   let k=purLines.findIndex(l=>purOptOn(o,l));if(k<0){const l={qty:"",price:""};purSetOpt(l,o);purLines.push(l);k=purLines.length-1}
   $("purPickDlg").hidden=true;renderPurLines();const q=$("purLines").querySelector(`tr[data-i="${k}"] .pur-q`);if(q){q.focus();q.select()}});
@@ -8715,7 +8722,7 @@ function initItems(){
   if(itCol)return;itCol=db.collection("items");
   db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items")renderItems();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
+    if(view==="items"||!$("purPickDlg").hidden)renderItems();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
 }
 /* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
    changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
@@ -8807,6 +8814,7 @@ function prMoveHold(i,rows){const r=rows.find(x=>x.p>0||x.w>0||x.m>0);if(!r)retu
   return Number(r.c)>1&&((!!r.of&&!uSame(r.of,i.unit))||(!i.units?.length&&!i.stockUnit&&Number(r.c)<100))}
 var itOldShow=false;   /* the old Selling Price boxes show only for a ⏸ item */
 function renderItems(){
+  if(typeof renderPurPick==="function"&&!$("purPickDlg").hidden)renderPurPick();
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
   $("itImport").hidden=true;   /* Import Excel is put away (its code stays, to bring back if needed) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
   $("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
