@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794736399"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794736978"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,6 +1201,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+/* Home: a cake still being decorated */
+.deco-rem{display:grid;gap:8px;margin:0 0 12px}
+.deco-rem-b{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.deco-rem-b .dr-ic{font-size:24px;line-height:1}.deco-rem-b .dr-t{display:grid;gap:2px;min-width:0}.deco-rem-b b{font-size:15px;overflow-wrap:anywhere}
+.deco-rem-b small{font-size:13px;color:var(--muted)}.deco-rem-b .dr-go{font-size:24px;color:var(--accent);line-height:1}
+.deco-rem-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* Inventory */
 .prq-bar.inv-bar{flex-wrap:wrap;row-gap:8px}.inv-locw{flex:0 1 340px;min-width:0;align-items:center}.inv-locw select{flex:1;min-width:0}.inv-bar #invQ{flex:1 1 220px;min-width:0}
 .inv-bar .inv-locw select,.inv-bar #invQ{height:44px;box-sizing:border-box;margin:0}.inv-bar .inv-locw .o-ic{height:44px;width:44px;flex:none}
@@ -1784,6 +1790,8 @@ span.star-ic{cursor:default}
 
   <!-- HOME -->
   <section id="viewHome" hidden>
+    <!-- a cake I am still decorating (the app was left, or reopened, before Finish decorating) -->
+    <div class="deco-rem" id="decoRem" hidden></div>
     <div class="home-grid">
       <!-- one tile per shop: Mr.Bee Bakery and JS Bakery Supply open their own Sale page -->
       <button type="button" class="home-tile ht-brand" id="goSale" aria-label="Mr.Bee Bakery"><img class="ht-logo" src="img/brand-mrbee.jpg" alt="Mr.Bee Bakery"><small id="homeSaleN"></small></button>
@@ -5424,6 +5432,19 @@ function tickDeco(){
   if(!$("preview").hidden){syncPvFinish();syncPvStart();syncPvHelp();syncPvPrinted()}
 }
 setInterval(tickDeco,1000);
+/* the cakes I am decorating right now (started and not finished; a helper's once it is handed to them) */
+function myLiveDecos(){return orders.filter(o=>o.deco?.startAt&&!o.deco.endAt&&((can("orders.decorate")&&!!db&&decoMineLive(o))||helpFinish(o)))}
+/* Home reminds of them, so Finish decorating is not forgotten while the timer runs on */
+function decoRemSync(){const el=$("decoRem");if(!el)return;const l=myLiveDecos();el.hidden=!l.length;
+  const h=l.map(o=>`<button type="button" class="deco-rem-b" data-deco-rem="${esc(o.id)}"><span class="dr-ic" aria-hidden="true">🎂</span>
+    <span class="dr-t"><b>${esc(o.no||"")}${o.name?` · <span data-t="${esc(o.name)}"></span>`:""}</b><small>Decorating လုပ်နေဆဲပါ — ပြီးရင် Finish decorating နှိပ်ပါ</small></span><span class="dr-go" aria-hidden="true">›</span></button>`).join("");if(el._h===h)return;el._h=h;el.innerHTML=h;
+  el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+$("decoRem").addEventListener("click",e=>{const b=e.target.closest("[data-deco-rem]");if(!b)return;const o=orders.find(x=>x.id===b.dataset.decoRem);if(o)openPreview(o)});
+/* when the app is opened again with a cake still being decorated, its preview (timer, Finish decorating) comes back by itself */
+let decoReopened=false;
+function decoReopen(){if(decoReopened||performance.now()>20000||!db||!me.id||view!=="home"||!$("preview").hidden)return;
+  const l=myLiveDecos();if(l.length!==1)return;decoReopened=true;openPreview(l[0]);toast(`${l[0].no} — Decorating လုပ်နေဆဲပါ`,4000)}
+setInterval(()=>{decoReopen();if(!$("viewHome").hidden)decoRemSync()},1500);
 async function decoStart(o){
   const now=new Date().toISOString(),redo=!!o.deco?.endAt||o.status==="ready"||o.status==="deli_req";   /* a Ready cake is redecorated, even if it was set Ready by hand */
   /* redecorating a finished cake carries on from its whole decorating time; the new finish photo replaces the old one */
@@ -6281,6 +6302,7 @@ function go(v){
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
+  decoRemSync();
   if(!prs)return;
   const open=orders.filter(o=>["new","baking","ready","deli_req"].includes(o.status)).length,toBuy=prs.filter(r=>!r.done).length;
   $("homeOrdersN").textContent=`${open} open order${open===1?"":"s"}${seenDrafts().length?` · 📝 ${seenDrafts().length} draft${seenDrafts().length===1?"":"s"}`:""}`;
