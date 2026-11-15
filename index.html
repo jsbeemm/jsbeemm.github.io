@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794740451"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794741109"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1832,7 +1832,7 @@ span.star-ic{cursor:default}
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
-    <div class="chips so-xl"><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
+    <div class="chips so-xl"><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
@@ -9298,23 +9298,25 @@ function initSo(){initSoDrafts();initPo();
 async function saveSo(v){if(db){const d={...v};delete d.id;await db.collection("jsSales").doc(v.id).set(d);return}
   const i=vos.findIndex(x=>x.id===v.id);if(i>=0)vos[i]=v;else vos.push(v);vos=vos.slice();try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
 async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete();return}vos=vos.filter(x=>x.id!==id);try{localStorage.setItem("cakeJsSales",JSON.stringify(vos))}catch(x){}renderSo()}
-/* ---------- JS vouchers from the old Excel (JS Vouchers.xlsm, sheet Saved_Js_Invoices): Admins only.
-   One row per item line; the rows of one Invoice Number make one voucher, kept with its own number (JS25SEP19001 …).
-   They are finished vouchers: given in full and paid in full (one payment "Excel" on the voucher date), marked xl:true.
+/* ---------- JS vouchers from the old Excel (JS Vouchers.xlsm): Admins only. Marked xl:true.
+   Saved_Js_Invoices: one row per item line; the rows of one Invoice Number make one voucher, kept with its own number
+   (JS25SEP19001 …), given in full. Sale_Order_Invoices: the same, as Preorders (nothing given yet).
+   Payments (Date, Invoice Number, Payment Method, Paid Amount, Note) become each voucher's payments; a finished voucher
+   with no payment row is taken as paid in full ("Excel" on its date).
    A number already in the app is skipped, so the same file can be imported again; "Excel ပြန်ဖျက်" takes them all out. ---------- */
 const XL_PAY="Excel";
-function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXlBtn").hidden=!ok;$("soXlDel").hidden=!ok||!vos.some(v=>v.xl)}
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXlBtn").hidden=$("soXpBtn").hidden=!ok;$("soXlDel").hidden=!ok||!vos.some(v=>v.xl)}
 const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
   if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
 const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
 const xlNum=v=>{const n=Number(String(v??"").replace(/,/g,""));return isFinite(n)?n:0};
 /* the rows → vouchers (not saved yet), with what did not match */
-function soXlPlan(rows){const h=rows[0].map(x=>xlStr(x).toLowerCase()),c=k=>h.indexOf(k);
+function soXlPlan(rows,pre=false,pays=null,taken=null){const h=rows[0].map(x=>xlStr(x).toLowerCase()),c=k=>h.indexOf(k);
   const C={no:c("invoice number"),date:c("date"),cust:c("customer"),id:c("id"),desc:c("description"),qty:c("qty"),price:c("price"),note:c("note"),
     disc:c("discount"),net:c("net amount"),other:c("other name"),phone:c("phone number"),ch:c("channel"),deliv:c("delivery info")};
   if(C.no<0||C.desc<0||C.qty<0)return null;
   const groups=new Map();for(const r of rows.slice(1)){const no=xlStr(r[C.no]);if(!no)continue;if(!groups.has(no))groups.set(no,[]);groups.get(no).push(r)}
-  const have=new Set(vos.map(v=>String(v.no||""))),byCode=new Map(items.filter(i=>i.code).map(i=>[pdNorm(i.code),i]));
+  const have=new Set([...vos.map(v=>String(v.no||"")),...(taken||[])]),byCode=new Map(items.filter(i=>i.code).map(i=>[pdNorm(i.code),i]));
   const custs=pts.filter(p=>p.type==="js"),byName=new Map(custs.map(p=>[pdNorm(p.name),p]));
   const now=new Date().toISOString(),out=[],skip=[],noCust=new Set(),noItem=new Set(),bad=[];
   for(const[no,rs]of groups){if(have.has(no)){skip.push(no);continue}
@@ -9331,22 +9333,42 @@ function soXlPlan(rows){const h=rows[0].map(x=>xlStr(x).toLowerCase()),c=k=>h.in
     const v={id:"xl"+no,no,date,at:date+"T00:00:00.000Z",by:me.id||null,byName:"Excel",xl:true,xlAt:now,customer:p?.name||cn,...(p?{custId:p.id}:{}),
       ...(xlStr(get("phone"))?{phone:xlStr(get("phone"))}:{}),...(ch&&ch!=="0"&&ch!=="undefined"&&!/^#/.test(ch)?{channel:ch}:{}),
       ...(xlStr(get("deliv"))?{deliv:xlStr(get("deliv"))}:{}),...(other?{note:"Other name: "+other}:{}),
-      lines,net,payments:[{amt:net,method:XL_PAY,date,at:now,by:me.id||null}],...(sum!==net?{xlSum:sum}:{})};
+      lines,net,payments:pays?.has(no)?pays.get(no).map(p=>({...p,at:now,by:me.id||null})):pre?[]:[{amt:net,method:XL_PAY,date,at:now,by:me.id||null}],
+      ...(pre?{pre:true}:{}),...(sum!==net?{xlSum:sum}:{})};
     out.push(v)}
   out.sort((a,b)=>a.no.localeCompare(b.no));return{out,skip,noCust:[...noCust],noItem:[...noItem],bad}}
 $("soXlBtn").addEventListener("click",()=>{if(!can("admin"))return;$("soXlFile").value="";$("soXlFile").click()});
 $("soXlFile").addEventListener("change",async e=>{const f=e.target.files[0];if(!f||!can("admin"))return;initItems();initPt();
-  toast("Excel ဖတ်နေသည်…",20000);let rows=null;
+  toast("Excel ဖတ်နေသည်…",20000);let rows=null,preRows=null,payRows=null;
   try{await loadLib("lib/xlsx-0.18.5.full.min.js");
     const wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellStyles:false,cellHTML:false});
-    const sn=wb.SheetNames.find(n=>/saved_js_invoices/i.test(n))||wb.SheetNames.find(n=>{const r=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,blankrows:false})[0]||[];return r.some(x=>/invoice number/i.test(String(x)))});
-    if(sn)rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,blankrows:false})}catch(x){toast("Excel ဖတ်မရပါ");return}
-  const plan=rows&&rows.length>1?soXlPlan(rows):null;
+    const aoa=n=>n?XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,blankrows:false}):null;
+    const sn=wb.SheetNames.find(n=>/saved_js_invoices/i.test(n))||wb.SheetNames.find(n=>!/sale_order|payment/i.test(n)&&(aoa(n)[0]||[]).some(x=>/invoice number/i.test(String(x))));
+    rows=aoa(sn);preRows=aoa(wb.SheetNames.find(n=>/sale_order_invoices/i.test(n)));
+    payRows=aoa(wb.SheetNames.find(n=>(aoa(n)[0]||[]).some(x=>/paid amount/i.test(String(x)))))}catch(x){toast("Excel ဖတ်မရပါ");return}
+  /* Payments: Date, Invoice Number, Payment Method, Paid Amount, Note */
+  let pays=null,payOrphan=[],payN=0;
+  if(payRows&&payRows.length>1){const h=payRows[0].map(x=>xlStr(x).toLowerCase()),c=t=>h.findIndex(x=>x.startsWith(t));
+    const P={date:c("date"),no:c("invoice number"),m:c("payment method"),amt:c("paid amount"),note:c("note")};
+    if(P.no>=0&&P.amt>=0){pays=new Map();for(const r of payRows.slice(1)){const no=xlStr(r[P.no]),amt=Math.round(xlNum(r[P.amt]));if(!no||!amt)continue;
+      const p={amt,method:xlStr(r[P.m])||"Cash",date:xlDate(r[P.date])||"",...(P.note>=0&&xlStr(r[P.note])?{note:xlStr(r[P.note])}:{})};
+      if(!pays.has(no))pays.set(no,[]);pays.get(no).push(p);payN++}}}
+  const plan=rows&&rows.length>1?soXlPlan(rows,false,pays):null;
   if(!plan){toast("“Saved_Js_Invoices” sheet (Invoice Number, Description, Qty …) ကို မတွေ့ပါ",6000);return}
-  const{out,skip,noCust,noItem,bad}=plan;
+  const prePlan=preRows&&preRows.length>1?soXlPlan(preRows,true,pays,plan.out.map(v=>v.no)):null;
+  for(const v of plan.out.concat(prePlan?.out||[]))for(const p of v.payments)if(!p.date)p.date=v.date;
+  if(pays){const known=new Set([...plan.out,...(prePlan?.out||[])].map(v=>v.no).concat(plan.skip,prePlan?.skip||[]));payOrphan=[...pays.keys()].filter(k=>!known.has(k))}
+  const out=plan.out.concat(prePlan?.out||[]),skip=plan.skip.concat(prePlan?.skip||[]),bad=plan.bad.concat(prePlan?.bad||[]);
+  const noCust=[...new Set(plan.noCust.concat(prePlan?.noCust||[]))],noItem=[...new Set(plan.noItem.concat(prePlan?.noItem||[]))];
   if(!out.length){toast(skip.length?`Voucher ${skip.length} စောင်လုံး app ထဲမှာ ရှိပြီးသားပါ`:"ထည့်စရာ voucher မရှိပါ",6000);return}
   const tot=out.reduce((s,v)=>s+v.net,0),d0=out.reduce((m,v)=>v.date<m?v.date:m,out[0].date),d1=out.reduce((m,v)=>v.date>m?v.date:m,out[0].date);
-  const msg=[`${fmtDate(d0)} – ${fmtDate(d1)} · စုစုပေါင်း ${fmt(tot)}`,"Finished (ပစ္စည်းပေးပြီး၊ ငွေရပြီး) အဖြစ် ထည့်ပါမယ်။ Payment method ကို “Excel” လို့ မှတ်ပါမယ်။",
+  const fin=plan.out,np=prePlan?.out.length||0,unpaid=fin.filter(v=>soPaid(v)<v.net),over=out.filter(v=>soPaid(v)>v.net);
+  const msg=[`${fmtDate(d0)} – ${fmtDate(d1)} · စုစုပေါင်း ${fmt(tot)}`,
+    `✓ Finished (ပစ္စည်းပေးပြီး) ${fin.length} စောင်${np?` · 📋 Preorder (Sale_Order_Invoices) ${np} စောင်`:""}`,
+    pays?`💵 Payments sheet ထဲက ငွေလက်ခံ ${payN} ကြိမ် (ရက်စွဲ၊ Payment method အတိုင်း)`:"Payments sheet မတွေ့လို့ Finished တွေကို voucher ရက်စွဲနဲ့ “Excel” payment အဖြစ် အပြည့် ရပြီးလို့ မှတ်ပါမယ်။",
+    unpaid.length?`Finished ထဲမှာ ငွေမပြည့်သေး ${unpaid.length} စောင် (Unfinished အဖြစ် ပေါ်ပါမယ်): ${unpaid.slice(0,5).map(v=>v.no).join(", ")}`:"",
+    over.length?`ပေးငွေက Net Amount ထက်များ ${over.length} စောင်: ${over.slice(0,5).map(v=>`${v.no} (${fmt(soPaid(v)-v.net)} ပို)`).join(", ")}`:"",
+    payOrphan.length?`Voucher မရှိလို့ မထည့်ရတဲ့ payment ${payOrphan.length} ခု: ${payOrphan.slice(0,6).join(", ")}`:"",
     skip.length?`App ထဲမှာ နံပါတ်တူ ရှိပြီးသားလို့ ကျော်မယ် ${skip.length} စောင်`:"",
     noCust.length?`JS Customer စာရင်းနဲ့ နာမည်မကိုက် ${noCust.length} ယောက် (နာမည်ပဲ မှတ်ပါမယ်): ${noCust.slice(0,8).join(", ")}${noCust.length>8?" …":""}`:"",
     noItem.length?`Raw Material Short Code မကိုက် ${noItem.length} ခု (Description အတိုင်း မှတ်ပါမယ်): ${noItem.slice(0,8).join(", ")}${noItem.length>8?" …":""}`:"",
@@ -9363,6 +9385,48 @@ $("soXlDel").addEventListener("click",async()=>{if(!can("admin"))return;const xs
   let done=0;if(db&&db.batch){for(let i=0;i<xs.length;i+=400){const b=db.batch();xs.slice(i,i+400).forEach(v=>b.delete(db.collection("jsSales").doc(v.id)));try{await b.commit();done+=Math.min(400,xs.length-i)}catch(x){}}}
   else for(const v of xs){try{await removeSo(v.id);done++}catch(x){}}
   toast(`Excel voucher ${done} စောင် ဖျက်ပြီး`,5000);soXlSync();renderSo()});
+/* ---------- JS vouchers out to Excel, in the same layout as the old JS Vouchers.xlsm:
+   Saved_Js_Invoices (finished) and Sale_Order_Invoices (not finished yet): one row per item line, the voucher's
+   Total / Discount / Net Amount / Other Name / Phone / Channel / Delivery Info on its last line, Batch No = number/line.
+   Added after those two (they stay as they were): Payments, ငွေရရန်ကျန် (what is still owed / to give) and open Orders. ---------- */
+const XL_HEAD=["Invoice Number","Date","Customer","No","ID","Description","Qty","Price","Amount","Note","Total","Discount","Net Amount","Other Name","Phone Number","Channel","Delivery Info","Batch No"];
+const XL_W=[16,10,22,5,10,46,7,9,11,24,11,9,11,18,16,14,40,18];
+const xlSerial=d=>{const[y,m,dd]=String(d||"").split("-").map(Number);return y?(Date.UTC(y,m-1,dd)-Date.UTC(1899,11,30))/864e5:""};
+const xlIsDisc=l=>/^discount$/i.test(String(l.name||"").trim())&&Number(l.price)<0;
+function soXlRows(v){const ls=(v.lines||[]).filter(l=>!xlIsDisc(l)),disc=(v.lines||[]).filter(xlIsDisc).reduce((s,l)=>s-Math.round(Number(l.qty||0)*Number(l.price||0)),0);
+  const tot=soNetOf(ls),p=v.custId?pts.find(x=>x.id===v.custId):null,on=/^Other name: /.test(v.note||"")?v.note.slice(12):"",other=on||p?.otherName||"";
+  const vn=v.note&&!on?v.note:"";
+  return ls.map((l,i)=>{const last=i===ls.length-1,amt=Math.round(Number(l.qty||0)*Number(l.price||0));
+    return[v.no,xlSerial(v.date),v.customer||"",i+1,l.code||"",l.name||"",Number(l.qty)||0,Number(l.price)||"",amt||"",[l.note,last?vn:""].filter(Boolean).join(" · "),
+      last?tot:"",last&&disc?disc:"",last?Number(v.net)||0:"",last?other:"",last?v.phone||"":"",last?v.channel||"":"",last?soDelivOf(v)||"":"",`${v.no}/${i+1}`]})}
+function xlSheet(head,rows,widths,dateCols=[],moneyCols=[]){const ws=XLSX.utils.aoa_to_sheet([head,...rows]);ws["!cols"]=widths.map(w=>({wch:w}));
+  ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(1,rows.length),c:head.length-1}})};
+  for(let r=1;r<=rows.length;r++){for(const c of dateCols){const x=ws[XLSX.utils.encode_cell({r,c})];if(x&&x.t==="n")x.z="d-mmm-yy"}
+    for(const c of moneyCols){const x=ws[XLSX.utils.encode_cell({r,c})];if(x&&x.t==="n")x.z="#,##0"}}return ws}
+async function soXlExport(){if(!can("admin"))return;
+  const vs=vos.filter(soMine).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.no).localeCompare(String(b.no)));
+  if(!vs.length&&!pos.length){toast("ထုတ်စရာ voucher မရှိသေးပါ",3000);return}
+  toast("Excel ပြင်ဆင်နေသည်…",8000);
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js");
+    const fin=vs.filter(v=>soStage(v)==="fin"),open=vs.filter(v=>soStage(v)!=="fin"),M=[6,7,8,10,11,12];
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,xlSheet(XL_HEAD,fin.flatMap(soXlRows),XL_W,[1],M),"Saved_Js_Invoices");
+    XLSX.utils.book_append_sheet(wb,xlSheet(XL_HEAD,open.flatMap(soXlRows),XL_W,[1],M),"Sale_Order_Invoices");
+    /* every payment taken, by its own date */
+    /* the Payments sheet as in the old Excel: Shop, No, Date, Invoice Number, Customer/Supplier, Order No, Payment Method:, Paid Amount, Note */
+    const pays=vs.flatMap(v=>(v.payments||[]).map(p=>[xlSerial(p.date||v.date),v.no,v.customer||"",v.poNo||"",p.method||"",Number(p.amt)||0,p.note||""]))
+      .sort((a,b)=>a[0]-b[0]||String(a[1]).localeCompare(String(b[1]))).map((r,i)=>["JS Myanmar",i+1,...r.slice(0,2),...r.slice(2)]);
+    XLSX.utils.book_append_sheet(wb,xlSheet(["Shop","No","Date","Invoice Number","Customer/Supplier","Order No","Payment Method:","Paid Amount","Note"],pays,[12,6,10,16,22,14,14,12,30],[2],[7]),"Payments");
+    /* what is still owed or still to give, for chasing */
+    const owe=open.map(v=>{const left=soLeftAll(v);return[v.no,xlSerial(v.date),v.customer||"",v.phone||"",Number(v.net)||0,soPaid(v),soBal(v),left||"",{pre:"Preorder",unf:"Unfinished"}[soStage(v)]||""]});
+    XLSX.utils.book_append_sheet(wb,xlSheet(["Invoice Number","Date","Customer","Phone Number","Net Amount","Paid","Balance","Qty to give","Status"],owe,[16,10,22,16,12,12,12,10,12],[1],[4,5,6]),"ငွေရရန်ကျန်");
+    /* customer orders (OR…) not finished: what was ordered, given, left */
+    const po=pos.filter(p=>poStage(p)!=="fin").sort((a,b)=>String(a.date).localeCompare(String(b.date))).flatMap(p=>(p.lines||[]).map((l,i)=>[p.no,xlSerial(p.date),p.customer||"",i+1,l.code||"",l.name||"",Number(l.qty)||0,Number(l.given)||0,poLeft(l),Number(l.price)||0,p.phone||""]));
+    if(po.length)XLSX.utils.book_append_sheet(wb,xlSheet(["Order No","Date","Customer","No","ID","Description","Qty","Given","Left","Price","Phone Number"],po,[16,10,22,5,10,46,7,7,7,9,16],[1],[9]),"Orders");
+    const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+    await saveFile(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),`JS Vouchers ${todayISO()}.xlsx`,"Excel",false);
+  }catch(x){if(x?.code==="declined")return;toast("Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}}
+$("soXpBtn").addEventListener("click",soXlExport);
 /* JS26NOV01002 = JS + year + month + day + the day's running number */
 function soNo(d,b="js"){const pre=(b==="mb"?"MB":"JS")+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
