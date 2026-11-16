@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821095"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821686"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,6 +1201,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+.it-codehint{display:grid;gap:3px;margin-top:4px;font-size:12.5px;color:var(--muted);line-height:1.45}.it-codehint .ic-bad{color:var(--accent);font-weight:600}.it-codehint .ic-list{display:grid;gap:1px;max-height:9.5em;overflow:auto}.it-codehint .ic-row{overflow-wrap:anywhere}.it-codehint code{color:var(--ink);font-size:12px}.it-codehint .ic-next{color:var(--ink)}.it-codehint .link{font-size:12.5px;padding:0;margin-left:2px}
+#itCode.bad{border-color:var(--accent)}
 /* customers to register */
 .nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
 .nc-list{display:grid;gap:8px}
@@ -2490,7 +2492,7 @@ span.star-ic{cursor:default}
       <div class="it-grid">
         <label class="prf"><span>Category</span><select id="itCat"></select></label>
         <label class="prf"><span>Sub Category</span><select id="itSub"></select></label>
-        <label class="prf"><span>Short Code <b>*</b></span><input id="itCode" autocomplete="off"></label>
+        <label class="prf"><span>Short Code <b>*</b></span><input id="itCode" autocomplete="off" spellcheck="false"><small class="it-codehint" id="itCodeHint" hidden></small></label>
         <label class="prf it-wide"><span>Name <b>*</b></span><input id="itName" autocomplete="off"></label>
         <!-- how it is bought / sold: 1 ct = 24 pcs, 1 ct = 48 pcs, … (a price makes it sellable in that unit) -->
         <div class="it-wide it-units"><span class="it-uh">Purchase Unit = Purchase Conversion</span>
@@ -7829,8 +7831,8 @@ function renderPt(){
   $("ptNewBtn").textContent="+ Add "+PT_TYPES.find(t=>t[0]===ptType)[2];
   const inType=pts.filter(p=>p.type===ptType&&hit(p)),nOk=inType.filter(p=>p.addrOk).length;
   $("ptAddrF").innerHTML=admin?[["","All",inType.length],["todo","📍 လိပ်စာ စစ်ရန်",inType.length-nOk],["ok","✓ စစ်ပြီး",nOk]].map(([k,n,c])=>`<button type="button" class="chip" data-ptaf="${k}" aria-pressed="${ptAddrF===k}">${n} <small>${c}</small></button>`).join(""):"";
-  $("ptAddrF").hidden=!admin;
-  const list=inType.filter(p=>!admin||!ptAddrF||(ptAddrF==="ok")===!!p.addrOk).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const chk=admin&&ptType==="js";$("ptAddrF").hidden=!chk;if(!chk)$("ptAddrF").innerHTML="";   /* addresses are checked for JS customers only */
+  const list=inType.filter(p=>!chk||!ptAddrF||(ptAddrF==="ok")===!!p.addrOk).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   $("ptList").innerHTML=list.length?list.map(p=>{const sup=p.type==="supplier";
     const tags=[p.short&&`<span class="pt-tag code">${esc(p.short)}</span>`,(p.type==="customer"?`<span class="pt-tag">${esc(custChannel(p))}</span>`:p.channel&&`<span class="pt-tag">${esc(p.channel)}</span>`),
       sup&&(p.country||p.currency)&&`<span class="pt-tag sky">${esc([p.country,p.currency].filter(Boolean).join(" · "))}</span>`].filter(Boolean).join("");
@@ -7843,7 +7845,7 @@ function renderPt(){
         ${(()=>{/* the default address comes first and is marked when there is more than one */
           const ads=ptAddrsOf(p),di=ptDefOf(p),many=ads.length>1,rcs=ptRecvOf(p),a=ads.map((ad,i)=>[(rcs[i]?.n||rcs[i]?.p?`${[rcs[i].n,rcs[i].p].filter(Boolean).join(" ")} · `:"")+ad,i===di]).sort((x,y)=>y[1]-x[1]);
           return a.map(([ad,def])=>`<small class="pt-line">📍 <span data-t="${esc(ad)}"></span>${many&&def?` <span class="pt-tag pt-deftag">Default</span>`:""}</small>`).join("")})()}
-        ${admin?`<button type="button" class="pt-chk${p.addrOk?" on":""}" data-ptchk aria-pressed="${!!p.addrOk}" title="${p.addrOk?`${esc(nameOf(p.addrOk.by))} · ${esc(fmtDate((p.addrOk.at||"").slice(0,10)))}`:"လိပ်စာ စစ်ပြီးရင် နှိပ်ပါ"}">${p.addrOk?"✓ လိပ်စာ စစ်ပြီး":"📍 လိပ်စာ စစ်ရန်"}</button>`:""}</div></article>`}).join("")
+        ${chk?`<button type="button" class="pt-chk${p.addrOk?" on":""}" data-ptchk aria-pressed="${!!p.addrOk}" title="${p.addrOk?`${esc(nameOf(p.addrOk.by))} · ${esc(fmtDate((p.addrOk.at||"").slice(0,10)))}`:"လိပ်စာ စစ်ပြီးရင် နှိပ်ပါ"}">${p.addrOk?"✓ လိပ်စာ စစ်ပြီး":"📍 လိပ်စာ စစ်ရန်"}</button>`:""}</div></article>`}).join("")
     :`<div class="prq-empty">Nothing here${q?" matches the search":" yet"}.</div>`;
   $("ptList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
@@ -7899,10 +7901,10 @@ function openPtForm(p){
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
   $("ptPhones").innerHTML="";const phs=ptPhonesOf(p);(phs.length?phs:[""]).forEach(v=>ptPhoneRow(v));
   $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p),rcs=ptRecvOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di,rcs[i]));
-  $("ptAddrOk").checked=!!p?.addrOk;
+  $("ptAddrOk").checked=!!p?.addrOk;$("ptAddrOk").closest("label").hidden=(p?.type||ptType)!=="js";
   ptSyncType();$("ptDel").hidden=!p;$("ptDlg").hidden=false;$("ptName").focus();
 }
-$("ptTypeSel").addEventListener("change",ptSyncType);
+$("ptTypeSel").addEventListener("change",()=>{ptSyncType();$("ptAddrOk").closest("label").hidden=$("ptTypeSel").value!=="js"});
 $("ptForm").addEventListener("submit",async e=>{
   e.preventDefault();const v=id=>$(id).value.trim().replace(/[ \t]+/g," ")||null,type=$("ptTypeSel").value,name=v("ptName");
   if(!(can("admin")||(!ptEditing&&canAddCust()&&type!=="supplier")))return;
@@ -9053,6 +9055,24 @@ $("itPhotoBox").addEventListener("click",e=>{if(e.target.id==="itPhotoRm"){itPho
 const IT_F=[["itCat","cat"],["itSub","sub"],["itCode","code"],["itName","name"],["itUnit","unit"],["itRef","ref"],
   ["itStockUnit","stockUnit"],["itUnitOk","unitOk","b"],["itUom","uom"],["itConsId","consId"],["itConsName","consName"],["itConsQty","consQty","n"],["itNote","note"]];
 /* tapping an item opens it; "+ Add raw material" opens an empty one (Admins) */
+/* Short Code: the same code (ignoring capitals and spaces) cannot be used twice. While typing, a code already used shows which
+   raw material has it; the next free code with the same letters is offered (oil0016 → oil0017, keeping the zeros). */
+function itNextCode(c){const m=/^(.*?)(\d+)$/.exec(String(c||"").trim());const pre=(m?m[1]:String(c||"").trim()).replace(/\s+/g,"");if(!pre)return"";
+  const re=new RegExp("^"+pre.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(\\d+)$","i");let max=m?-1:1,w=m?m[2].length:1;
+  for(const it of items){const x=re.exec(String(it.code||"").trim());if(x){max=Math.max(max,Number(x[1]));w=Math.max(w,x[1].length)}}
+  let n=max+1;const used=new Set(items.map(i=>pdNorm(i.code)));let out;do{out=pre+String(n).padStart(w,"0");n++}while(used.has(pdNorm(out)));return out}
+/* while typing: the code already taken (and by what), the existing codes that start the same way, and the next free one */
+function itCodeSync(){const h=$("itCodeHint"),c=$("itCode").value.trim(),k=pdNorm(c).replace(/\s+/g,"");
+  if(!c){h.hidden=true;$("itCode").classList.remove("bad");return}
+  const others=items.filter(x=>x.id!==itEditing?.id&&x.code),hit=others.find(x=>pdNorm(x.code).replace(/\s+/g,"")===k);
+  const same=others.filter(x=>pdNorm(x.code).replace(/\s+/g,"").startsWith(k)).sort((a,b)=>String(a.code).localeCompare(String(b.code),undefined,{numeric:true}));
+  $("itCode").classList.toggle("bad",!!hit);
+  const nx=hit?itNextCode(hit.code):same.length&&k.length>=3?itNextCode(same[same.length-1].code):"";
+  const show=same.slice(-6);
+  h.innerHTML=(hit?`<span class="ic-bad">⚠ “${esc(hit.code)}” ကို <b data-t="${esc(hit.name||"")}"></b> မှာ သုံးပြီးသားပါ</span>`:"")
+    +(same.length&&!(hit&&same.length===1)?`<span class="ic-h">ရှိပြီးသား code ${same.length} ခု${same.length>show.length?` (နောက်ဆုံး ${show.length} ခု)`:""}</span><span class="ic-list">${show.map(x=>`<span class="ic-row"><code>${esc(x.code)}</code> <span data-t="${esc(x.name||"")}"></span></span>`).join("")}</span>`:"")
+    +(nx&&pdNorm(nx)!==k?`<span class="ic-next">နောက်ထပ်လွတ်တဲ့ code: <button type="button" class="link" data-it-next="${esc(nx)}">${esc(nx)} သုံးမယ်</button></span>`:"");
+  h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=!h.innerHTML}
 function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
   const uniq=f=>[...new Set(items.map(f).filter(Boolean))].sort();
@@ -9060,7 +9080,7 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").tex
   $("itUnitList").innerHTML=uList().map(v=>`<option value="${esc(v)}">`).join("");   /* Settings → Units */
   /* a new item starts in the category being looked at */
   for(const[id,k,t]of IT_F){if(k==="cat"||k==="sub")continue;const el=$(id);if(t==="b")el.checked=!!i?.[k];else if(el.tagName==="SELECT"){el.innerHTML="";el.dataset.v=i?.[k]??""}else el.value=i?.[k]??""}
-  itRefName();$("itRefHits").hidden=true;
+  itRefName();$("itRefHits").hidden=true;itCodeSync();
   itUnitsFill(i);
   /* the old Selling Price boxes are gone: a price that is only in them is put on its unit row now (and saved with the item);
      only a price that can't go on a row as it is (⏸ in the price-move report) still shows the old boxes, to fix by hand */
@@ -9179,7 +9199,7 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
     if(t==="b")v[k]=el.checked;else{const s=String(el.value).trim().replace(/\s+/g," ");v[k]=t==="n"?(s===""?null:(isFinite(Number(s))?Number(s):null)):s}}
   if(!v.code){toast("Short Code ထည့်ပါ");$("itCode").focus();return}
   if(!v.name){toast("Name ထည့်ပါ");$("itName").focus();return}
-  if(items.some(x=>x.id!==i?.id&&pdNorm(x.code)===pdNorm(v.code))){toast(`Short Code "${v.code}" ရှိပြီးသားပါ`);$("itCode").focus();return}
+  {const ck=c=>pdNorm(c).replace(/\s+/g,""),dup=items.find(x=>x.id!==i?.id&&ck(x.code)===ck(v.code));if(dup){toast(`Short Code "${v.code}" ကို ${dup.name} မှာ သုံးပြီးသားပါ`,4000);$("itCode").focus();itCodeSync();return}}
   if(items.some(x=>x.id!==i?.id&&pdNorm(x.name)===pdNorm(v.name))){toast(`"${v.name}" ဆိုတဲ့ နာမည် ရှိပြီးသားပါ`);$("itName").focus();return}
   /* an item with a JS price is sold at JS */
   const price=num("itPrice"),mbPrice=num("itMbPrice"),whPrice=num("itWhPrice"),now=new Date().toISOString(),id=i?.id||itIdOf(v.code);
@@ -9227,6 +9247,8 @@ $("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
 $("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";renderItems()});
 $("itOkDone").addEventListener("click",()=>{itOk=itOk==="done"?"":"done";renderItems()});
 $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
+$("itCode").addEventListener("input",itCodeSync);
+$("itCodeHint").addEventListener("click",e=>{const b=e.target.closest("[data-it-next]");if(!b)return;e.preventDefault();$("itCode").value=b.dataset.itNext;itCodeSync();$("itCode").focus()});
 /* start again from the Excel: every raw material is deleted (Admins, asked twice). An item keeps the same id when it is imported
    again (from its Short Code), so purchases, inventory and vouchers that point to it find it again. */
 $("itClearAll").addEventListener("click",async()=>{if(!can("admin")||!items.length)return;const n=items.length,nu=items.filter(i=>(i.units||[]).length).length;
