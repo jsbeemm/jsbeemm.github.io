@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794829691"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794831200"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1206,6 +1206,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+#todoConf .conf-card{margin:0 0 16px}   /* the same gap as between the To-do tiles */
 .it-codehint{display:grid;gap:3px;margin-top:4px;font-size:12.5px;color:var(--muted);line-height:1.45}.it-codehint .ic-bad{color:var(--accent);font-weight:600}.it-codehint .ic-list{display:grid;gap:1px;max-height:9.5em;overflow:auto}.it-codehint .ic-row{overflow-wrap:anywhere}.it-codehint code{color:var(--ink);font-size:12px}.it-codehint .ic-next{color:var(--ink)}.it-codehint .ic-after{font-size:12px;margin-left:4px;white-space:nowrap}.it-codehint .link{font-size:12.5px;padding:0;margin-left:2px}
 #itCode.bad{border-color:var(--accent)}
 /* customers to register */
@@ -1881,6 +1882,7 @@ span.star-ic{cursor:default}
 
   <!-- TO-DO LIST: To Buy List (shared) · My to-do list (each person's own) -->
   <section id="viewTodo" hidden>
+    <div id="todoConf"></div>   <!-- 🔔 money to confirm (each account owner's banking check) -->
     <div class="home-grid">
       <button type="button" class="home-tile" id="goPR"><span class="ht-ic" aria-hidden="true">🛒</span><b>To Buy List</b><small id="homePRN"></small></button>
       <button type="button" class="home-tile" id="goMyTodo"><span class="ht-ic" aria-hidden="true">📝</span><b>My to-do list</b><small id="homeMyTodoN"></small></button>
@@ -6351,10 +6353,12 @@ function renderHome(){
   $("goPE").hidden=!can("admin")&&!canSeeEx();purHome();$("goInv").hidden=!can("admin");
   {const n=rcvs.filter(rcvTodo).length,t=rcvs.filter(r=>r.date===todayISO()).length;$("homeRcvN").textContent=`Today ${t}${n?` · ${n} to unpack`:""}`}
   /* anyone (Admins too) with an open To Buy item or task assigned to them sees the tiles light up */
-  const mine=prs.filter(r=>!r.done&&isMyPR(r)).length;
+  const mine=prs.filter(r=>!r.done&&isMyPR(r)).length,myConf=confEntries().filter(eMine);
   const tdN=tds.filter(t=>!t.done&&((!!t.assignTo&&!!tdMe()&&sameId(t.assignTo,tdMe()))||(t.owner===ADMIN_TD&&can("admin")))).length;
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
+  {const t=$("goTodo"),n=myConf.length;t.querySelector(".conf-b")?.remove();if(n){t.classList.add("glow");t.insertAdjacentHTML("beforeend",`<span class="ht-badge conf-b">🔔 ${n} ငွေစစ်ရန်</span>`)}}
+  if(view==="todo")renderTodoConf();
   /* To Buy items / tasks due today or overdue (not done yet): the tiles turn amber / red with a count */
   {const pl=prs.filter(r=>dueCls(r.due,r.done)==="due-late").length,pt=prs.filter(r=>dueCls(r.due,r.done)==="due-today").length,
      tl=tds.filter(t=>dueCls(t.due,t.done)==="due-late").length,tt=tds.filter(t=>dueCls(t.due,t.done)==="due-today").length;
@@ -6371,12 +6375,8 @@ function renderHome(){
   syncSaleBrand();
   /* the account owner sees how much money is waiting for their confirmation */
   /* Sales report: people allowed in Accounts ("View sales report"), plus anyone with money waiting for their confirmation */
-  const myConf=confEntries().filter(eMine);
-  $("goSaleRep").hidden=!can("sales.report")&&!myConf.length;
-  /* money to confirm: each shop's tile counts its own sales; Sales report counts the shop that is open */
-  {const cnt=b=>myConf.filter(e=>e.brand===b).length;
-   [["goSale",cnt("mb")],["goSaleJs",cnt("js")],["goSaleRep",cnt(saleBrand)]].forEach(([id,n])=>{const t=$(id);t.classList.toggle("glow",n>0);t.querySelector(".ht-badge")?.remove();
-    if(n)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">🔔 ${n} to confirm</span>`)})}
+  $("goSaleRep").hidden=!can("sales.report");
+  ["goSale","goSaleJs","goSaleRep"].forEach(id=>{const t=$(id);t.classList.remove("glow");t.querySelector(".ht-badge")?.remove()});
   /* decorators work on cake orders only, so JS is not shown to them */
   $("goSaleJs").hidden=!!db&&myRole()==="decoration";
   /* decorators: the Sale tile shows only today's order count (no money), and lights up while today's cakes are not all finished */
@@ -8743,6 +8743,15 @@ function confCardHtml(){
     ${each.length?`<p class="conf-sub">Each payment</p><table class="ex-tbl"><tbody>${each.map(e=>`<tr><td><b>${confIc[e.k]} ${esc(e.no)}</b> · ${esc(pmLabel(e.pay))}<br><small class="ex-c">${e.date===todayISO()?"Today":fmtDate(e.date)}${e.who?` · <span data-t="${esc(e.who)}"></span>`:""}${canAct?"":` · ${esc(nameOf(eOwner(e)))}`}</small></td><td class="ex-r">${eAmt(e)}</td>
       <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-e="${esc(eKey(e))}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
   </div>`}
+function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+/* Confirm / Confirm closing: true when the click was one of them */
+async function confClick(e){
+  const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
+  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=confEntries().filter(x=>x.pay===pay&&x.date===date&&eMine(x)),amt=list.reduce((a,x)=>a+x.amt,0);
+    if(!list.length)return true;if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} payment${list.length===1?"":"s"} · ${fmt(amt)}\nConfirm that this money has reached you.`,"Confirm"))return true;
+    cc.disabled=true;try{await confirmEntries(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`)}catch(x){toast("သိမ်းမရပါ")}renderTodoConf();renderHome();return true}
+  return false}
+$("todoConf").addEventListener("click",confClick);
 /* the small status on a sale row */
 const confChip=s=>!saleOwner(s)||!Number(s.total||0)?"":s.conf?`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(saleOwner(s)))} to confirm</span>`;
 /* a payment method's line opens its detail: the POS sales and cake order payments taken that way on the day */
@@ -8813,7 +8822,6 @@ function renderPosRep(){
     </div>`;
     $("posRepBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);return}
   $("posRepBody").innerHTML=`<div class="ex-rep">
-    ${confCardHtml()}
     <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum+voSum)}</b>
       <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?"":` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`} · Vouchers ${fmt(voSum)} (${vop.length} payment${vop.length===1?"":"s"})</small></div>
     ${true?`<div class="ex-card"><p class="ac-h">📄 Voucher payments</p>${vop.length?`<table class="ex-tbl"><tbody>${vop.map(x=>`<tr class="cake-pay" data-so-open="${esc(x.v.id)}" tabindex="0" role="button"><td><b>${esc(x.v.no)}</b> <span data-t="${esc(x.v.customer||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(voSum)}</b></td></tr></tbody></table>`:`<p class="side-help">No voucher payments in this period.</p>`}</div>`:""}
@@ -8933,11 +8941,6 @@ $("posRepBody").addEventListener("click",async e=>{
   const rd=e.target.closest("[data-rep-prod]");if(rd){posRepProd=rd.dataset.repProd;posRepPay=null;posRepRet=null;renderPosRep();scrollTo({top:0});return}
   if(e.target.closest("[data-rep-back]")){posRepPay=posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
   const rp=e.target.closest("[data-rep-pay]");if(rp){posRepPay=rp.dataset.repPay;posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
-  const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`);renderPosRep()}catch(x){toast("သိမ်းမရပါ")}}return}
-  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=confEntries().filter(x=>x.pay===pay&&x.date===date&&eMine(x)),amt=list.reduce((a,x)=>a+x.amt,0);
-    if(!list.length)return;if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} payment${list.length===1?"":"s"} · ${fmt(amt)}
-Confirm that this money has reached you.`,"Confirm"))return;
-    cc.disabled=true;try{await confirmEntries(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`);renderPosRep()}catch(x){toast("သိမ်းမရပါ")}return}
   const co=e.target.closest("[data-cake-o]");if(co){const o=orders.find(x=>x.id===co.dataset.cakeO);if(o)openPreview(o);return}
   const pr=e.target.closest("[data-sale-print]");if(pr){printSale(sales.find(s=>s.id===pr.dataset.salePrint));return}
   const row=e.target.closest("[data-sale]");if(row&&!e.target.closest("[data-sale-del]")){openSaleDet(sales.find(s=>s.id===row.dataset.sale));return}
@@ -8948,7 +8951,7 @@ $("goSale").addEventListener("click",()=>{setSaleBrand("mb");go("sale")});
 $("goSaleJs").addEventListener("click",()=>{setSaleBrand("js");go("sale")});
 $("goPos").addEventListener("click",()=>{posTab="sell";go("pos")});
 $("goItems").addEventListener("click",()=>go("items"));
-$("goSaleRep").addEventListener("click",()=>{if(!can("sales.report")&&!confEntries().some(eMine))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
+$("goSaleRep").addEventListener("click",()=>{if(!can("sales.report"))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
 /* ---------- Items: the raw items list (collection "items", one doc per Short Code), brought in from the Items Excel by an Admin.
    Loaded the first time Sale, POS or Items is opened. ---------- */
 var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false,itOk="";
