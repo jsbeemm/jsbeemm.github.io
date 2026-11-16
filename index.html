@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794828277"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794828474"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1850,7 +1850,7 @@ span.star-ic{cursor:default}
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
-    <div class="chips so-xl"><button type="button" class="chip" id="soNoCustBtn" hidden title="JS Customer စာရင်းထဲ မရှိသေးတဲ့ voucher customer တွေ">👤 Customer မသွင်းရသေး <b>0</b></button><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
+    <div class="chips so-xl"><button type="button" class="chip" id="soNoCustBtn" hidden title="JS Customer စာရင်းထဲ မရှိသေးတဲ့ voucher customer တွေ">👤 Customer မသွင်းရသေး <b>0</b></button><button type="button" class="chip" id="soConfAll" hidden title="ပစ္စည်းပေးပြီး ငွေပြည့်ပြီးသား voucher တွေကို ငွေစစ်ပြီး မှတ်ရန်">✓ ငွေစစ်ပြီး မှတ်ရန် <b>0</b></button><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
@@ -8718,6 +8718,7 @@ const eOwner=e=>payOwnerOf(e.pay);
 const eMine=e=>!e.conf&&sameId(eOwner(e),me.id);
 /* one payment on a voucher / order: waiting for its owner, or confirmed */
 const payConfNeed=p=>!!p&&!p.conf&&!!payOwnerOf(p.method)&&Number(p.amt)>0&&String(p.at||"")>=CONF_FROM;
+const soConfPend=v=>!v?.xl&&(v?.payments||[]).some(payConfNeed);
 const payConfChip=p=>!payOwnerOf(p?.method)||String(p?.at||"")<CONF_FROM?"":p.conf?`<span class="conf-chip ok">✓ ${esc(nameOf(p.conf.by))} စစ်ပြီး</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(payOwnerOf(p.method)))} စစ်ရန်</span>`;
 async function confirmEntries(list,closing){const now=new Date().toISOString(),c={by:me.id||null,at:now,...(closing?{closing:true}:{})};
   const by=new Map();for(const e of list){const k=e.k+"|"+e.id;if(!by.has(k))by.set(k,[]);by.get(k).push(e)}
@@ -9425,7 +9426,8 @@ async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete
    A number already in the app is skipped, so the same file can be imported again; "Excel ပြန်ဖျက်" takes them all out. ---------- */
 const XL_PAY="Excel";
 /* the old Excel is in (16-Nov-2026): its import and undo are put away (their code stays); Excel export stays */
-function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true;soNoCustSync()}
+const soConfAllList=()=>vos.filter(soMine).filter(v=>soDelivered(v)&&soBal(v)<=0&&soConfPend(v));
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";{const n=can("admin")?soConfAllList().length:0;$("soConfAll").hidden=!n;$("soConfAll").querySelector("b").textContent=n}$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true;soNoCustSync()}
 const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
   if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
 const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
@@ -9608,13 +9610,13 @@ function soGivenArr(v){const ls=v.lines||[];if(!v.pre||vBrand(v)==="mb")return l
 const soLeftArr=v=>{const g=soGivenArr(v);return(v.lines||[]).map((l,i)=>Math.max(0,Number(l.qty||0)-g[i]))};
 const soLeftAll=v=>soLeftArr(v).reduce((s,x)=>s+x,0);
 const soDelivered=v=>soLeftAll(v)<=0;
-function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&!(v.payments||[]).some(payConfNeed))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
+function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&!soConfPend(v))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
 function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0),b=soBal(v),paid=soPaid(v);
   if(soStage(v)==="fin")return`<span class="conf-chip ok">✓ Finished</span>`;
   /* only what is still owed shows: goods still to give, money still to get */
   return(left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"")
     +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")
-    +((v.payments||[]).some(payConfNeed)?`<span class="conf-chip">⏳ ငွေစစ်ရန်</span>`:"")}
+    +(soConfPend(v)?`<span class="conf-chip">⏳ ငွေစစ်ရန်</span>`:"")}
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
@@ -9660,6 +9662,12 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
+$("soConfAll").addEventListener("click",async()=>{if(!can("admin"))return;const list=soConfAllList();if(!list.length)return;
+  const amt=list.reduce((a,v)=>a+(v.payments||[]).filter(payConfNeed).reduce((x,p)=>x+Number(p.amt||0),0),0);
+  if(!await askConfirm(`Voucher ${list.length} စောင် ငွေစစ်ပြီး မှတ်မလား?`,`ပစ္စည်းပေးပြီး ငွေပြည့်ပြီးသား voucher တွေရဲ့ မစစ်ရသေးတဲ့ payment တွေ (${fmt(amt)}) ကို ငွေစစ်ပြီးလို့ မှတ်ပါမယ်။ ပစ္စည်းပေးရန်ကျန်တာ၊ ငွေရရန်ကျန်တာတွေကိုတော့ မထိပါ။`,"မှတ်မယ်"))return;
+  const now=new Date().toISOString(),c={by:me.id||null,at:now,bulk:true};let done=0;toast("မှတ်နေသည်…",20000);
+  for(const v of list){try{await saveSo({...v,payments:(v.payments||[]).map(p=>payConfNeed(p)?{...p,conf:c}:p),updatedAt:now,updatedBy:me.id||null});done++}catch(x){}}
+  toast(`✓ Voucher ${done} စောင် ငွေစစ်ပြီး မှတ်ပြီး`,5000);soXlSync();renderSo()});
 /* opening Vouchers starts on Unfinished (JS) / money still to get (Mr.Bee) */
 $("goSo").addEventListener("click",()=>{soTab=saleBrand==="js"?"unf":"owe";go("so")});
 /* ---- the form ---- */
@@ -10152,7 +10160,7 @@ function openSoView(v){soOpen=v.id;$("soPaper").value="A5";try{$("soOrient").val
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;$("soDelivBtn").hidden=soDelivered(v);
   const ps=v.payments||[];
-  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
+  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
   $("soPays").insertAdjacentHTML("afterbegin",soStatusHtml(v));
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
   const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
