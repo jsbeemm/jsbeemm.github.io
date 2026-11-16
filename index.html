@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794808920"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794820028"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,6 +1201,13 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
+/* customers to register */
+.nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
+.nc-list{display:grid;gap:8px}
+.nc-row{display:grid;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.nc-main{display:grid;gap:2px;min-width:0}.nc-main b{overflow-wrap:anywhere}.nc-main small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}.nc-alt{font-style:italic}
+.nc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-act .btn{height:38px;padding:0 12px;margin:0}
+.nc-link{display:flex;gap:6px;flex:1 1 220px;min-width:0}.nc-link select{flex:1;min-width:0;height:38px;margin:0;padding-top:0;padding-bottom:0;line-height:36px}.nc-act .btn{flex:none;width:auto}
 .so-xl{margin:0 0 8px}.so-xl:not(:has(.chip:not([hidden]))){display:none}
 /* Home: a cake still being decorated */
 .deco-rem{display:grid;gap:8px;margin:0 0 12px}
@@ -1832,7 +1839,7 @@ span.star-ic{cursor:default}
   <section id="viewSo" hidden>
     <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
-    <div class="chips so-xl"><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
+    <div class="chips so-xl"><button type="button" class="chip" id="soNoCustBtn" hidden title="JS Customer စာရင်းထဲ မရှိသေးတဲ့ voucher customer တွေ">👤 Customer မသွင်းရသေး <b>0</b></button><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="chips pd-cats" id="soTabs"></div>
     <div class="ex-list" id="soList"></div>
@@ -2381,6 +2388,14 @@ span.star-ic{cursor:default}
 <!-- Goods Received → the city list: add, rename, delete -->
 <div class="editor" id="cityDlg" hidden role="dialog" aria-modal="true" aria-labelledby="cityDlgT" style="z-index:45"><div class="cfm-box city-box">
   <h3 id="cityDlgT">📍 Cities</h3>  <div class="pm-wrap"><table class="pm-tbl ppl-tbl"><thead><tr><th id="cityColH">City</th><th id="cityCntH">Arrivals</th><th></th></tr></thead><tbody id="cityRows"></tbody></table></div>  <div class="pd-catadd"><input id="cityNew" placeholder="New city name" autocomplete="off" aria-label="New city name"><button type="button" class="btn" id="cityAddBtn">+ Add</button></div>  <div class="cfm-btns"><button type="button" class="btn" data-close-dlg>Done</button></div></div></div>
+<!-- JS vouchers whose customer is not on the JS Customers list: register or link each name -->
+<div class="editor" id="soNoCustDlg" hidden role="dialog" aria-modal="true" aria-labelledby="soNoCustT">
+  <div class="ed-panel side-panel nc-panel">
+    <div class="ed-tools pv-head"><b id="soNoCustT">👤 Customer မသွင်းရသေး</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body"><p class="nc-help"><span id="soNoCustN"></span> — Register နှိပ်ရင် JS Customer အသစ်အဖြစ် ထည့်ပြီး voucher တွေနဲ့ ချိတ်ပေးပါမယ်။ စာရင်းထဲမှာ နာမည်ကွဲနဲ့ ရှိပြီးသားဆိုရင် ရွေးပြီး 🔗 ချိတ် နှိပ်ပါ။</p>
+      <div class="nc-list" id="soNoCustList"></div></div>
+  </div>
+</div>
 <div class="editor" id="posCartDlg" hidden role="dialog" aria-modal="true" aria-label="Cart">
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>🛒 Cart · <span id="posTierTag"></span></b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
@@ -9317,7 +9332,7 @@ async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete
    A number already in the app is skipped, so the same file can be imported again; "Excel ပြန်ဖျက်" takes them all out. ---------- */
 const XL_PAY="Excel";
 /* the old Excel is in (16-Nov-2026): its import and undo are put away (their code stays); Excel export stays */
-function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true}
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true;soNoCustSync()}
 const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
   if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
 const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
@@ -9440,6 +9455,51 @@ async function soXlExport(){if(!can("admin"))return;
     await saveFile(new Blob([buf],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),`JS Vouchers ${todayISO()}.xlsx`,"Excel",false);
   }catch(x){if(x?.code==="declined")return;toast("Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}}
 $("soXpBtn").addEventListener("click",soXlExport);
+/* ---------- vouchers whose customer is not on the JS Customers list (the Excel import keeps such names as typed).
+   Admins see them grouped by name, with how many vouchers; each can be registered as a new JS customer (the form opens with the
+   name, phone and delivery address from its latest voucher) or linked to a customer already on the list. Either way every voucher
+   with that name is linked to the customer. ---------- */
+function soNoCustGroups(){const ct=SO_SHOP.js.ct,m=new Map();
+  for(const v of vos.filter(soMine)){if(v.custId&&pts.some(p=>p.id===v.custId))continue;const n=String(v.customer||"").trim();if(!n||pdNorm(n)===pdNorm("Walk in"))continue;
+    const k=pdNorm(n);if(!m.has(k))m.set(k,{k,names:{},vs:[]});const g=m.get(k);g.names[n]=(g.names[n]||0)+1;g.vs.push(v)}
+  return[...m.values()].map(g=>{g.vs.sort((a,b)=>String(b.date).localeCompare(String(a.date)));g.name=Object.entries(g.names).sort((a,b)=>b[1]-a[1])[0][0];
+    g.last=g.vs[0];g.phone=g.vs.find(v=>v.phone)?.phone||"";g.deliv=soDelivOf(g.vs.find(v=>soDelivOf(v))||{})||"";
+    g.net=g.vs.reduce((s,v)=>s+Number(v.net||0),0);return g}).sort((a,b)=>b.vs.length-a.vs.length||a.name.localeCompare(b.name))}
+/* a customer already on the list whose name looks like this one (one inside the other, ignoring spaces / capitals) */
+function soCustGuess(name){const k=pdNorm(name).replace(/\s+/g,""),cs=pts.filter(p=>p.type===SO_SHOP.js.ct);if(k.length<3)return null;
+  return cs.find(p=>{const q=pdNorm(p.name).replace(/\s+/g,"");return q.length>=3&&(q.includes(k)||k.includes(q))})||null}
+function soNoCustSync(){const b=$("soNoCustBtn");if(!b)return;const ok=can("admin")&&saleBrand==="js",n=ok?soNoCustGroups().length:0;b.hidden=!n;b.querySelector("b").textContent=n;
+  if(!$("soNoCustDlg").hidden)renderNoCust()}
+function renderNoCust(){const gs=soNoCustGroups(),cs=pts.filter(p=>p.type===SO_SHOP.js.ct).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  $("soNoCustN").textContent=gs.length?`${gs.length} ယောက် · voucher ${gs.reduce((s,g)=>s+g.vs.length,0)} စောင်`:"";
+  const opts=cs.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+  $("soNoCustList").innerHTML=gs.length?gs.map(g=>{const gu=soCustGuess(g.name);
+    return`<div class="nc-row" data-nc="${esc(g.k)}"><div class="nc-main"><b data-t="${esc(g.name)}"></b>
+      <small>voucher ${g.vs.length} စောင် · ${esc(fmt(g.net))} · နောက်ဆုံး ${esc(fmtDate(g.last.date))}${g.phone?` · <span data-t="${esc(g.phone.replace(/\n/g," "))}"></span>`:""}</small>
+      ${Object.keys(g.names).length>1?`<small class="nc-alt">ရေးပုံ: <span data-t="${esc(Object.keys(g.names).join(" / "))}"></span></small>`:""}</div>
+      <div class="nc-act"><button type="button" class="btn" data-nc-reg>➕ Register</button>
+        <span class="nc-link"><select data-nc-sel aria-label="Customer ရှိပြီးသားနဲ့ ချိတ်ရန်"><option value="">ရှိပြီးသားနဲ့ ချိတ်ရန်…</option>${opts}</select><button type="button" class="btn ghost" data-nc-link${gu?"":" disabled"}>🔗 ချိတ်</button></span></div></div>`
+      .replace(`<option value="${gu?esc(gu.id):"\u0000"}">`,`<option value="${gu?esc(gu.id):""}" selected>`)}).join("")
+    :`<div class="prq-empty">✓ Voucher တိုင်းရဲ့ customer က JS Customer စာရင်းထဲမှာ ရှိပြီးပါပြီ</div>`;
+  $("soNoCustList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+/* every voucher of the group gets the customer (its id, and the name as it is on the list) */
+async function soLinkGroup(g,p){const now=new Date().toISOString(),vs=g.vs.map(v=>({...v,custId:p.id,customer:p.name,updatedAt:now,updatedBy:me.id||null}));
+  if(db&&db.batch){for(let i=0;i<vs.length;i+=400){const b=db.batch();vs.slice(i,i+400).forEach(v=>b.update(db.collection("jsSales").doc(v.id),{custId:p.id,customer:p.name,updatedAt:now,updatedBy:me.id||null}));await b.commit()}}
+  else for(const v of vs)await saveSo(v);
+  toast(`✓ ${p.name} — voucher ${vs.length} စောင် ချိတ်ပြီး`,4000);soNoCustSync()}
+$("soNoCustBtn").addEventListener("click",()=>{if(!can("admin"))return;initPt();renderNoCust();$("soNoCustDlg").hidden=false});
+$("soNoCustList").addEventListener("change",e=>{const s=e.target.closest("[data-nc-sel]");if(s)s.closest(".nc-row").querySelector("[data-nc-link]").disabled=!s.value});
+$("soNoCustList").addEventListener("click",async e=>{const row=e.target.closest("[data-nc]");if(!row||!can("admin"))return;
+  const g=soNoCustGroups().find(x=>x.k===row.dataset.nc);if(!g)return;
+  if(e.target.closest("[data-nc-link]")){const p=pts.find(x=>x.id===row.querySelector("[data-nc-sel]").value);if(!p)return;
+    if(!await askConfirm(`“${g.name}” ကို “${p.name}” နဲ့ ချိတ်မလား?`,`Voucher ${g.vs.length} စောင်ရဲ့ customer ကို “${p.name}” လို့ ပြောင်းပါမယ်။`,"ချိတ်"))return;
+    try{await soLinkGroup(g,p)}catch(x){toast("သိမ်းမရပါ")}return}
+  if(e.target.closest("[data-nc-reg]")){ptType=SO_SHOP.js.ct;openPtForm(null);$("ptTypeSel").value=SO_SHOP.js.ct;ptSyncType();$("ptName").value=g.name;
+    const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&g.phone)pi.value=g.phone.split(/[\n,]/)[0].replace(/'/g,"").trim();
+    const ai=$("ptAddrs").querySelector("textarea");if(ai&&g.deliv)ai.value=g.deliv;
+    if(g.last.channel&&$("ptChannel")){const c=$("ptChannel");if([...(c.options||[])].some(o=>o.value===g.last.channel))c.value=g.last.channel}
+    /* once saved, the vouchers with this name are linked to the new customer */
+    ptAfterSave=p=>{if(p.type!==SO_SHOP.js.ct)return;soLinkGroup(g,p).catch(()=>toast("Voucher ချိတ်မရပါ"))}}});
 /* JS26NOV01002 = JS + year + month + day + the day's running number */
 function soNo(d,b="js"){const pre=(b==="mb"?"MB":"JS")+d.slice(2,4)+SO_MON[Number(d.slice(5,7))-1]+d.slice(8,10);
   const n=vos.filter(v=>String(v.no||"").startsWith(pre)).reduce((m,v)=>Math.max(m,Number(String(v.no).slice(pre.length))||0),0);return pre+String(n+1).padStart(3,"0")}
