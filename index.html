@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821686"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821905"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1201,7 +1201,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .td-dtog{border:0;background:none;color:var(--muted);font:inherit;font-weight:600;font-size:14px;text-align:left;padding:10px 4px 4px;cursor:pointer}
 /* Goods Received */
 .rcv-list{display:grid;gap:8px}
-.it-codehint{display:grid;gap:3px;margin-top:4px;font-size:12.5px;color:var(--muted);line-height:1.45}.it-codehint .ic-bad{color:var(--accent);font-weight:600}.it-codehint .ic-list{display:grid;gap:1px;max-height:9.5em;overflow:auto}.it-codehint .ic-row{overflow-wrap:anywhere}.it-codehint code{color:var(--ink);font-size:12px}.it-codehint .ic-next{color:var(--ink)}.it-codehint .link{font-size:12.5px;padding:0;margin-left:2px}
+.it-codehint{display:grid;gap:3px;margin-top:4px;font-size:12.5px;color:var(--muted);line-height:1.45}.it-codehint .ic-bad{color:var(--accent);font-weight:600}.it-codehint .ic-list{display:grid;gap:1px;max-height:9.5em;overflow:auto}.it-codehint .ic-row{overflow-wrap:anywhere}.it-codehint code{color:var(--ink);font-size:12px}.it-codehint .ic-next{color:var(--ink)}.it-codehint .ic-after{font-size:12px;margin-left:4px;white-space:nowrap}.it-codehint .link{font-size:12.5px;padding:0;margin-left:2px}
 #itCode.bad{border-color:var(--accent)}
 /* customers to register */
 .nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
@@ -9061,17 +9061,21 @@ function itNextCode(c){const m=/^(.*?)(\d+)$/.exec(String(c||"").trim());const p
   const re=new RegExp("^"+pre.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(\\d+)$","i");let max=m?-1:1,w=m?m[2].length:1;
   for(const it of items){const x=re.exec(String(it.code||"").trim());if(x){max=Math.max(max,Number(x[1]));w=Math.max(w,x[1].length)}}
   let n=max+1;const used=new Set(items.map(i=>pdNorm(i.code)));let out;do{out=pre+String(n).padStart(w,"0");n++}while(used.has(pdNorm(out)));return out}
+function itAfterCode(c){const m=/^(.*?)(\d+)$/.exec(String(c||"").trim());if(!m)return"";const pre=m[1].replace(/\s+/g,""),w=m[2].length;
+  const used=new Set(items.map(i=>pdNorm(i.code).replace(/\s+/g,"")));let n=Number(m[2])+1,out;do{out=pre+String(n).padStart(w,"0");n++}while(used.has(pdNorm(out)));return out}
 /* while typing: the code already taken (and by what), the existing codes that start the same way, and the next free one */
 function itCodeSync(){const h=$("itCodeHint"),c=$("itCode").value.trim(),k=pdNorm(c).replace(/\s+/g,"");
   if(!c){h.hidden=true;$("itCode").classList.remove("bad");return}
   const others=items.filter(x=>x.id!==itEditing?.id&&x.code),hit=others.find(x=>pdNorm(x.code).replace(/\s+/g,"")===k);
   const same=others.filter(x=>pdNorm(x.code).replace(/\s+/g,"").startsWith(k)).sort((a,b)=>String(a.code).localeCompare(String(b.code),undefined,{numeric:true}));
   $("itCode").classList.toggle("bad",!!hit);
-  const nx=hit?itNextCode(hit.code):same.length&&k.length>=3?itNextCode(same[same.length-1].code):"";
-  const show=same.slice(-6);
+  /* the free code right after a given one (ao0111 → ao0112), or after the last of its kind (ao0116) */
+  const after=hit?itAfterCode(hit.code):"",nx=hit?itNextCode(hit.code):same.length&&k.length>=3?itNextCode(same[same.length-1].code):"";
+  const show=same.slice(-30),num=x=>Number((/(\d+)$/.exec(String(x||"").trim())||[])[1]),go=x=>{const a=itAfterCode(x);return a&&num(a)===num(x)+1?` <button type="button" class="link ic-after" data-it-next="${esc(a)}" title="${esc(x)} နောက်ကပ် လွတ်တဲ့ code">→ ${esc(a)}</button>`:""};
   h.innerHTML=(hit?`<span class="ic-bad">⚠ “${esc(hit.code)}” ကို <b data-t="${esc(hit.name||"")}"></b> မှာ သုံးပြီးသားပါ</span>`:"")
-    +(same.length&&!(hit&&same.length===1)?`<span class="ic-h">ရှိပြီးသား code ${same.length} ခု${same.length>show.length?` (နောက်ဆုံး ${show.length} ခု)`:""}</span><span class="ic-list">${show.map(x=>`<span class="ic-row"><code>${esc(x.code)}</code> <span data-t="${esc(x.name||"")}"></span></span>`).join("")}</span>`:"")
-    +(nx&&pdNorm(nx)!==k?`<span class="ic-next">နောက်ထပ်လွတ်တဲ့ code: <button type="button" class="link" data-it-next="${esc(nx)}">${esc(nx)} သုံးမယ်</button></span>`:"");
+    +(same.length&&!(hit&&same.length===1)?`<span class="ic-h">ရှိပြီးသား code ${same.length} ခု${same.length>show.length?` (နောက်ဆုံး ${show.length} ခု)`:""} — → နှိပ်ရင် အဲ့ code နောက်ကပ် လွတ်တဲ့ code</span><span class="ic-list">${show.map(x=>`<span class="ic-row"><code>${esc(x.code)}</code> <span data-t="${esc(x.name||"")}"></span>${go(x.code)}</span>`).join("")}</span>`:"")
+    +(after&&pdNorm(after)!==pdNorm(nx)?`<span class="ic-next">${esc(hit.code)} နောက်ကပ်: <button type="button" class="link" data-it-next="${esc(after)}">${esc(after)} သုံးမယ်</button></span>`:"")
+    +(nx&&pdNorm(nx)!==k?`<span class="ic-next">${after&&pdNorm(after)!==pdNorm(nx)?"နောက်ဆုံး code နောက်":"နောက်ထပ်လွတ်တဲ့ code"}: <button type="button" class="link" data-it-next="${esc(nx)}">${esc(nx)} သုံးမယ်</button></span>`:"");
   h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=!h.innerHTML}
 function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
