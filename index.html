@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794826642"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794828037"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3231,7 +3231,8 @@ function readForm(){
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
     return{note:r.querySelector(".cn").value.trim(),amt:unit*qty,...(qty>1?{qty,unit}:{}),...(r.dataset.ph?{photo:r.dataset.ph}:{})}}).filter(c=>c.note||c.amt||c.photo);
-  const payments=[...document.querySelectorAll("#payList .pay")].map(r=>({date:readDate(r.querySelector(".pd")),method:r.querySelector(".pm").value,amt:Math.max(0,Number(r.querySelector(".pa").value)||0),at:r.dataset.at||new Date().toISOString()})).filter(p=>p.amt);
+  const payments=[...document.querySelectorAll("#payList .pay")].map(r=>{const p={date:readDate(r.querySelector(".pd")),method:r.querySelector(".pm").value,amt:Math.max(0,Number(r.querySelector(".pa").value)||0),at:r.dataset.at||new Date().toISOString()};
+    if(r.dataset.conf&&p.method===r.dataset.m0&&String(p.amt)===r.dataset.a0)try{p.conf=JSON.parse(r.dataset.conf)}catch(e){}return p}).filter(p=>p.amt);
   const delivery=(document.querySelector('input[name="fDeliv"]:checked')?.value||"");
   const r={
     name:$("fName").value.trim(),phone:$("fPhone").value.trim(),
@@ -3674,7 +3675,7 @@ function addPayRow(p={}){
   const sm=pmFor("sale"),methods=sm.includes(p.method)||!p.method?sm:[...sm,p.method];
   r.innerHTML=`${dateSelect("pd",p.date,"ပေးသည့်နေ့","",false,todayISO())}<select class="pm" aria-label="ငွေပေးချေနည်း">${methods.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input class="pa" type="number" min="0" step="1000" placeholder="Ks" aria-label="ပမာဏ"><button type="button" class="rm" aria-label="ဖယ်ရှားရန်">×</button>`;
   r.querySelector(".pm").value=p.method||(methods.includes("Cash")?"Cash":methods[0]||"");r.querySelector(".pa").value=p.amt||"";
-  r.dataset.at=p.at||p.date||"";
+  r.dataset.at=p.at||p.date||"";if(p.conf){r.dataset.conf=JSON.stringify(p.conf);r.dataset.m0=p.method||"";r.dataset.a0=String(Number(p.amt)||0)}
   if(payLocked(p)){r.classList.add("locked");r.title="ယခင်နေ့က မှတ်ထားသော ငွေချေမှု — Admin သာ ပြင်နိုင်သည်";
     r.querySelectorAll("button,select,input").forEach(el=>el.disabled=true);}
   $("payList").append(r);return r;
@@ -3697,7 +3698,7 @@ function qpPaysHtml(o){const ps=orderPayments(o);if(!ps.length)return"";
   return`<div class="qp-pays"><b class="qp-ph">မှတ်ပြီးသား ငွေချေမှု</b>${ps.map((p,i)=>{const ed=payEd?.oid===o.id&&payEd.i===i,lk=payLocked(p),d=p.date||payDay(p);
     if(ed&&!payEd.del){const sm=pmFor("sale"),ms=sm.includes(p.method)||!p.method?sm:[...sm,p.method];
       return`<div class="qp-pe">${dateSelect("qpe-d",d,"ပေးသည့်နေ့","",false,todayISO())}<select class="qpe-m" aria-label="ငွေပေးချေနည်း">${ms.map(m=>`<option value="${esc(m)}"${m===p.method?" selected":""}>${esc(pmLabel(m))}</option>`).join("")}</select><input type="number" class="qpe-a" min="0" step="500" value="${Number(p.amt)||""}" aria-label="ပမာဏ"><span class="qp-btns"><button class="link" data-pe-save="${o.id}" data-i="${i}">သိမ်းမည်</button><button class="link" data-pe-no>မပြင်တော့ပါ</button></span></div>`}
-    return`<div class="qp-p"><span class="qp-pt">${esc(fmtDate(d))} · ${esc(pmLabel(p.method||""))} · <b>${esc(fmt(Number(p.amt)||0))}</b></span>${
+    return`<div class="qp-p"><span class="qp-pt">${esc(fmtDate(d))} · ${esc(pmLabel(p.method||""))} · <b>${esc(fmt(Number(p.amt)||0))}</b> ${payConfChip(p)}</span>${
       ed?`<span class="confirm"><span>ဒီငွေချေမှုကို ဖျက်မလား?</span> <button class="link danger" data-pd-yes="${o.id}" data-i="${i}">ဖျက်မည်</button><button class="link" data-pe-no>မဖျက်ပါ</button></span>`
       :lk?`<small class="qp-lk" title="ယခင်နေ့က မှတ်ထားသော ငွေချေမှု — Admin သာ ပြင်နိုင်သည်">🔒 Admin သာ</small>`
       :`<span class="qp-pb"><button type="button" class="o-ic qp-ib" data-pe="${o.id}" data-i="${i}" aria-label="Edit payment" title="Edit">${PAY_ED_IC}</button><button type="button" class="o-ic qp-ib danger" data-pd="${o.id}" data-i="${i}" aria-label="Delete payment" title="Delete">${PAY_DEL_IC}</button></span>`}</div>`}).join("")}</div>`}
@@ -5574,6 +5575,7 @@ $("orders").addEventListener("click",async e=>{
     let line;
     if(t.dataset.peSave){const box=t.closest(".qp-pe");
       const nw={...old,date:readDate(box.querySelector(".qpe-d"))||old.date||todayISO(),method:box.querySelector(".qpe-m").value,amt:Math.max(0,Number(box.querySelector(".qpe-a").value)||0)};
+      if(nw.method!==old.method||nw.amt!==Number(old.amt))delete nw.conf;
       if(!nw.amt){toast("ပမာဏ ရိုက်ထည့်ပါ");box.querySelector(".qpe-a").focus();return}
       if(nw.date===(old.date||payDay(old))&&nw.method===old.method&&nw.amt===Number(old.amt)){payEd=null;render();return}
       ps[i]=nw;line=`Payment changed: ${payDesc(old)} → ${payDesc(nw)}`}
@@ -6369,9 +6371,10 @@ function renderHome(){
   syncSaleBrand();
   /* the account owner sees how much money is waiting for their confirmation */
   /* Sales report: people allowed in Accounts ("View sales report"), plus anyone with money waiting for their confirmation */
-  $("goSaleRep").hidden=!can("sales.report")&&!sales.some(isMineToConf);
+  const myConf=confEntries().filter(eMine);
+  $("goSaleRep").hidden=!can("sales.report")&&!myConf.length;
   /* money to confirm: each shop's tile counts its own sales; Sales report counts the shop that is open */
-  {const cnt=b=>sales.filter(s=>isMineToConf(s)&&brandOf(s)===b).length;
+  {const cnt=b=>myConf.filter(e=>e.brand===b).length;
    [["goSale",cnt("mb")],["goSaleJs",cnt("js")],["goSaleRep",cnt(saleBrand)]].forEach(([id,n])=>{const t=$(id);t.classList.toggle("glow",n>0);t.querySelector(".ht-badge")?.remove();
     if(n)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">🔔 ${n} to confirm</span>`)})}
   /* decorators work on cake orders only, so JS is not shown to them */
@@ -8701,20 +8704,43 @@ const needsConf=s=>!!saleOwner(s)&&!s.conf&&Number(s.total||0)!==0;
 const isMineToConf=s=>needsConf(s)&&sameId(saleOwner(s),me.id);
 async function confirmSales(list,closing){const now=new Date().toISOString();
   for(const s of list)await saveSale({...s,conf:{by:me.id||null,at:now,...(closing?{closing:true}:{})}})}
+/* every money entry an account owner checks: POS sales, and (recorded from CONF_FROM on) payments on JS / Mr.Bee vouchers and on
+   cake orders. A payment is done only once the owner of its account has confirmed it reached them. Vouchers from the old Excel
+   and payments recorded before this check began are not asked. */
+const CONF_FROM="2026-11-16T00:00:00.000Z";
+const payOwnerOf=m=>pmOf(m)?.owner||null;
+function confEntries(){const out=[],late=p=>String(p?.at||"")>=CONF_FROM;
+  for(const s of sales)if(saleOwner(s)&&Number(s.total||0)!==0)out.push({k:"sale",id:s.id,i:-1,pay:s.pay,date:s.date,amt:Number(s.total||0),no:s.no,who:s.customer||"",conf:s.conf,at:s.at,brand:brandOf(s)});
+  for(const v of vos)if(!v.xl)(v.payments||[]).forEach((p,i)=>{if(payOwnerOf(p.method)&&Number(p.amt)>0&&late(p))out.push({k:"vo",id:v.id,i,pay:p.method,date:p.date||v.date,amt:Number(p.amt),no:v.no,who:v.customer||"",conf:p.conf,at:p.at,brand:vBrand(v)})});
+  for(const o of orders)if(o.status!=="cancel")(o.payments||[]).forEach((p,i)=>{if(payOwnerOf(p.method)&&Number(p.amt)>0&&late(p))out.push({k:"ord",id:o.id,i,pay:p.method,date:p.date||String(p.at||"").slice(0,10),amt:Number(p.amt),no:o.no||"",who:o.name||"",conf:p.conf,at:p.at,brand:"mb"})});
+  return out}
+const eOwner=e=>payOwnerOf(e.pay);
+const eMine=e=>!e.conf&&sameId(eOwner(e),me.id);
+/* one payment on a voucher / order: waiting for its owner, or confirmed */
+const payConfNeed=p=>!!p&&!p.conf&&!!payOwnerOf(p.method)&&Number(p.amt)>0&&String(p.at||"")>=CONF_FROM;
+const payConfChip=p=>!payOwnerOf(p?.method)||String(p?.at||"")<CONF_FROM?"":p.conf?`<span class="conf-chip ok">✓ ${esc(nameOf(p.conf.by))} စစ်ပြီး</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(payOwnerOf(p.method)))} စစ်ရန်</span>`;
+async function confirmEntries(list,closing){const now=new Date().toISOString(),c={by:me.id||null,at:now,...(closing?{closing:true}:{})};
+  const by=new Map();for(const e of list){const k=e.k+"|"+e.id;if(!by.has(k))by.set(k,[]);by.get(k).push(e)}
+  for(const[k,es]of by){const e0=es[0];
+    if(e0.k==="sale"){const s=sales.find(x=>x.id===e0.id);if(s)await saveSale({...s,conf:c})}
+    else if(e0.k==="vo"){const v=vos.find(x=>x.id===e0.id);if(!v)continue;const ix=new Set(es.map(e=>e.i));await saveSo({...v,payments:(v.payments||[]).map((p,i)=>ix.has(i)?{...p,conf:c}:p)})}
+    else{const o=orders.find(x=>x.id===e0.id);if(!o)continue;const ix=new Set(es.map(e=>e.i));await patchOrder(o.id,{payments:(o.payments||[]).map((p,i)=>ix.has(i)?{...p,conf:c}:p)})}}}
+const confIc={sale:"🧾",vo:"📄",ord:"🎂"};
+const eKey=e=>`${e.k}|${e.id}|${e.i}`;
 /* the "to confirm" card on top of Sales report: the owner gets the buttons, an Admin sees who is still to confirm */
 function confCardHtml(){
-  const pend=sales.filter(needsConf);if(!pend.length)return"";
-  const mine=pend.filter(isMineToConf),admin=can("admin");if(!mine.length&&!admin)return"";
+  const pend=confEntries().filter(e=>!e.conf);if(!pend.length)return"";
+  const mine=pend.filter(eMine),admin=can("admin");if(!mine.length&&!admin)return"";
   const show=mine.length?mine:pend,canAct=!!mine.length;
-  const each=show.filter(s=>pmOf(s.pay)?.confirmAt!=="closing").sort((a,b)=>(b.at||"").localeCompare(a.at||""));
-  const groups={};show.filter(s=>pmOf(s.pay)?.confirmAt==="closing").forEach(s=>{const k=s.pay+"|"+s.date,g=groups[k]||(groups[k]={pay:s.pay,date:s.date,n:0,amt:0});g.n++;g.amt+=Number(s.total||0)});
+  const each=show.filter(e=>pmOf(e.pay)?.confirmAt!=="closing").sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));
+  const groups={};show.filter(e=>pmOf(e.pay)?.confirmAt==="closing").forEach(e=>{const k=e.pay+"|"+e.date,g=groups[k]||(groups[k]={pay:e.pay,date:e.date,n:0,amt:0});g.n++;g.amt+=e.amt});
   const gl=Object.values(groups).sort((a,b)=>b.date.localeCompare(a.date)||a.pay.localeCompare(b.pay));
-  const sAmt=s=>Number(s.total||0)<0?`Refund ${fmt(-s.total)}`:fmt(s.total);
+  const eAmt=e=>e.amt<0?`Refund ${fmt(-e.amt)}`:fmt(e.amt);
   return`<div class="ex-card conf-card"><p class="ac-h">🔔 Money to confirm${canAct?"":" · waiting for the account owners"}</p>
-    ${gl.length?`<p class="conf-sub">At closing</p><table class="ex-tbl"><tbody>${gl.map(g=>`<tr><td><b>${esc(pmLabel(g.pay))}</b> · ${g.date===todayISO()?"Today":fmtDate(g.date)}<br><small class="ex-c">${g.n} sale${g.n===1?"":"s"}${canAct?"":` · ${esc(nameOf(pmOf(g.pay)?.owner))}`}</small></td><td class="ex-r">${fmt(g.amt)}</td>
+    ${gl.length?`<p class="conf-sub">At closing</p><table class="ex-tbl"><tbody>${gl.map(g=>`<tr><td><b>${esc(pmLabel(g.pay))}</b> · ${g.date===todayISO()?"Today":fmtDate(g.date)}<br><small class="ex-c">${g.n} payment${g.n===1?"":"s"}${canAct?"":` · ${esc(nameOf(pmOf(g.pay)?.owner))}`}</small></td><td class="ex-r">${fmt(g.amt)}</td>
       <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-close="${esc(g.pay)}|${esc(g.date)}">Confirm closing</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
-    ${each.length?`<p class="conf-sub">Each sale</p><table class="ex-tbl"><tbody>${each.map(s=>`<tr><td><b>${esc(s.no)}</b> · ${esc(pmLabel(s.pay))}<br><small class="ex-c">${s.date===todayISO()?"Today":fmtDate(s.date)}${s.customer?` · ${esc(s.customer)}`:""}${canAct?"":` · ${esc(nameOf(saleOwner(s)))}`}</small></td><td class="ex-r">${sAmt(s)}</td>
-      <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-sale="${esc(s.id)}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
+    ${each.length?`<p class="conf-sub">Each payment</p><table class="ex-tbl"><tbody>${each.map(e=>`<tr><td><b>${confIc[e.k]} ${esc(e.no)}</b> · ${esc(pmLabel(e.pay))}<br><small class="ex-c">${e.date===todayISO()?"Today":fmtDate(e.date)}${e.who?` · <span data-t="${esc(e.who)}"></span>`:""}${canAct?"":` · ${esc(nameOf(eOwner(e)))}`}</small></td><td class="ex-r">${eAmt(e)}</td>
+      <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-e="${esc(eKey(e))}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
   </div>`}
 /* the small status on a sale row */
 const confChip=s=>!saleOwner(s)||!Number(s.total||0)?"":s.conf?`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(saleOwner(s)))} to confirm</span>`;
@@ -8906,11 +8932,11 @@ $("posRepBody").addEventListener("click",async e=>{
   const rd=e.target.closest("[data-rep-prod]");if(rd){posRepProd=rd.dataset.repProd;posRepPay=null;posRepRet=null;renderPosRep();scrollTo({top:0});return}
   if(e.target.closest("[data-rep-back]")){posRepPay=posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
   const rp=e.target.closest("[data-rep-pay]");if(rp){posRepPay=rp.dataset.repPay;posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
-  const cs=e.target.closest("[data-conf-sale]");if(cs){const s=sales.find(x=>x.id===cs.dataset.confSale);if(s&&isMineToConf(s)){cs.disabled=true;try{await confirmSales([s],false);toast(`${s.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}return}
-  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=sales.filter(s=>s.pay===pay&&s.date===date&&isMineToConf(s)),amt=list.reduce((a,s)=>a+Number(s.total||0),0);
-    if(!list.length)return;if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} sale${list.length===1?"":"s"} · ${fmt(amt)}
+  const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`);renderPosRep()}catch(x){toast("သိမ်းမရပါ")}}return}
+  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=confEntries().filter(x=>x.pay===pay&&x.date===date&&eMine(x)),amt=list.reduce((a,x)=>a+x.amt,0);
+    if(!list.length)return;if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} payment${list.length===1?"":"s"} · ${fmt(amt)}
 Confirm that this money has reached you.`,"Confirm"))return;
-    cc.disabled=true;try{await confirmSales(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`)}catch(x){toast("သိမ်းမရပါ")}return}
+    cc.disabled=true;try{await confirmEntries(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`);renderPosRep()}catch(x){toast("သိမ်းမရပါ")}return}
   const co=e.target.closest("[data-cake-o]");if(co){const o=orders.find(x=>x.id===co.dataset.cakeO);if(o)openPreview(o);return}
   const pr=e.target.closest("[data-sale-print]");if(pr){printSale(sales.find(s=>s.id===pr.dataset.salePrint));return}
   const row=e.target.closest("[data-sale]");if(row&&!e.target.closest("[data-sale-del]")){openSaleDet(sales.find(s=>s.id===row.dataset.sale));return}
@@ -8921,7 +8947,7 @@ $("goSale").addEventListener("click",()=>{setSaleBrand("mb");go("sale")});
 $("goSaleJs").addEventListener("click",()=>{setSaleBrand("js");go("sale")});
 $("goPos").addEventListener("click",()=>{posTab="sell";go("pos")});
 $("goItems").addEventListener("click",()=>go("items"));
-$("goSaleRep").addEventListener("click",()=>{if(!can("sales.report")&&!sales.some(isMineToConf))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
+$("goSaleRep").addEventListener("click",()=>{if(!can("sales.report")&&!confEntries().some(eMine))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
 /* ---------- Items: the raw items list (collection "items", one doc per Short Code), brought in from the Items Excel by an Admin.
    Loaded the first time Sale, POS or Items is opened. ---------- */
 var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false,itOk="";
@@ -9384,7 +9410,7 @@ const soTierPrice=(pp,t)=>t==="w"&&pp.w>0?pp.w:t==="f"&&pp.f>0?pp.f:pp.r;
 function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
-  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
+  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="home")renderHome();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
     if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}
     if(poOpen&&!$("poView").hidden){const p=pos.find(x=>x.id===poOpen);if(p)renderPoView(p)}},()=>{soCol=null});
 }
@@ -9582,12 +9608,13 @@ function soGivenArr(v){const ls=v.lines||[];if(!v.pre||vBrand(v)==="mb")return l
 const soLeftArr=v=>{const g=soGivenArr(v);return(v.lines||[]).map((l,i)=>Math.max(0,Number(l.qty||0)-g[i]))};
 const soLeftAll=v=>soLeftArr(v).reduce((s,x)=>s+x,0);
 const soDelivered=v=>soLeftAll(v)<=0;
-function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0)return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
+function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&!(v.payments||[]).some(payConfNeed))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
 function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0),b=soBal(v),paid=soPaid(v);
   if(soStage(v)==="fin")return`<span class="conf-chip ok">✓ Finished</span>`;
   /* only what is still owed shows: goods still to give, money still to get */
   return(left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"")
-    +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")}
+    +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")
+    +((v.payments||[]).some(payConfNeed)?`<span class="conf-chip">⏳ ငွေစစ်ရန်</span>`:"")}
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
@@ -10124,7 +10151,7 @@ function openSoView(v){soOpen=v.id;$("soPaper").value="A5";try{$("soOrient").val
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;$("soDelivBtn").hidden=soDelivered(v);
   const ps=v.payments||[];
-  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
+  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
   $("soPays").insertAdjacentHTML("afterbegin",soStatusHtml(v));
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
   const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
@@ -10348,7 +10375,7 @@ coverConnecting(true);
   db.doc("meta/units").onSnapshot(s=>{unitDoc=s.exists?s.data().list||null:null;if(!$("unitDlg").hidden)renderUnits()},()=>{});
   db.doc("meta/exPeople").onSnapshot(s=>{exPplDoc=s.exists?s.data().list||null:null;initEx();renderEx();renderHome()},()=>{});
   db.doc("meta/orderNo").onSnapshot(s=>{lastNo=s.exists?s.data().last||null:null;refreshNo()},()=>{});
-  initUsers();initPd();initPt();initSales();initRcv();
+  initUsers();initPd();initPt();initSales();initRcv();initSo();
 })();
 setTimeout(async()=>{if(false&&mode==="loading"&&!db&&!FB_BUILD){coverConnecting(false);orders=localLoad();prs=prLocalLoad();drafts=draftLocalLoad();exs=exLocalLoad();bxs=exLocalLoad("biz");renderPR();localMode=true;setSync("local");render();renderPhotos();await loadLocalPhotos();render();renderPR()}},11000);
 </script>
