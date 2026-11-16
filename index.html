@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821905"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794822839"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -998,6 +998,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soPickDlg #soPickQ,#soPickDlg .cfm-btns{flex:none}#soPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#soPickDlg .so-pcats .chip{flex:none}
 #soPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .so-phit{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px}
+#itDlg{z-index:40}   /* the raw material form opens above the voucher / purchase pick lists */
+.so-one{cursor:pointer}.so-one:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .so-fam{cursor:default}.so-uchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.so-uchip{font-size:13px;padding:5px 10px}.so-uchip b{margin-left:4px}.so-uchip.on{border-color:var(--accent);color:var(--accent)}
 .so-ldw{flex-wrap:wrap}#soLines .so-lu{width:100%;flex-basis:100%;font-size:12px}#soLines .so-lu[hidden],#soLines .so-lue[hidden]{display:none!important}.so-ldn{display:flex;align-items:flex-start;gap:2px;width:100%;min-width:0}.so-ldw .so-ldn .so-ldt{flex:0 1 auto;min-width:0}
@@ -8922,7 +8924,7 @@ function initItems(){
   if(itCol)return;itCol=db.collection("items");
   db.doc("meta/itemCats").onSnapshot(s=>{itCatsDoc=s.exists?s.data().list||null:null;if(!$("itCatDlg").hidden)renderItCats()},()=>{});
   itCol.onSnapshot(s=>{items=s.docs.map(d=>({...d.data(),id:d.id}));itLoaded=true;
-    if(view==="items"||!$("purPickDlg").hidden)renderItems();if(view==="inv")renderInv();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
+    if(view==="items"||!$("purPickDlg").hidden||!$("soPickDlg").hidden)renderItems();if(view==="inv")renderInv();if(!$("unitDlg").hidden)renderUnits();if(view==="pos"&&saleBrand==="js")renderPos();if(view==="sale"||view==="home")syncSaleBrand();if(typeof soOpen!=="undefined"&&soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}},()=>{itCol=null});
 }
 /* ---- Raw Material categories: each with its sub categories. The shop's list is kept in meta/itemCats; until it is first
    changed, this starting list is used. Categories or sub categories that items use but the list lacks still show. ---- */
@@ -9015,6 +9017,7 @@ function prMoveHold(i,rows){const r=rows.find(x=>x.p>0||x.w>0||x.m>0);if(!r)retu
 var itOldShow=false;   /* the old Selling Price boxes show only for a ⏸ item */
 function renderItems(){
   if(typeof renderPurPick==="function"&&!$("purPickDlg").hidden)renderPurPick();
+  if(typeof renderSoPick==="function"&&!$("soPickDlg").hidden)renderSoPick();
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
   $("itImport").hidden=!admin;$("itClearAll").hidden=true;   /* delete-all is put away now the raw materials are in (its code stays) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
   $("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
@@ -9782,18 +9785,20 @@ function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=soItems().filter(
   $("soHits").innerHTML=m.length?m.map(i=>{const k=soFamKey(i),fam=fm.get(k)||soOptsOf(i);
     if(fam.length>1){if(seen.has(k))return"";seen.add(k);const its=[...new Set(fam.map(o=>o.it))],ph=its.find(x=>x.photo)?.photo,on=fam.some(o=>soLines.some(l=>soOptOn(o,l)));
       return`<div class="so-hit so-phit so-fam${on?" on":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
-        <span><span data-t="${esc(soFamName(k,its))}"></span><span class="so-uchips">${fam.map(o=>{const q=soLines.find(l=>soOptOn(o,l))?.qty;
+        <span><span class="pur-fn"><span data-t="${esc(soFamName(k,its))}"></span>${its.filter(x=>!x.mb).map(x=>purEdBtn(x,its.length>1)).join("")}</span><span class="so-uchips">${fam.map(o=>{const q=soLines.find(l=>soOptOn(o,l))?.qty;
           return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" title="${esc(soOptName(o))} · ${esc(o.it.code||"")}">${esc(o.label)} <b>${fmt(o.price)}</b>${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
     /* one price only: the whole card adds it (its unit, if it is a unit row's price, shows beside the Short Code) */
     const o=fam[0],n=soLines.find(l=>soOptOn(o,l))?.qty||0;
-    return`<button type="button" class="so-hit so-phit${n?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}">${o.it.photo?`<img src="${esc(photoUrl(o.it.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
-      <span><span data-t="${esc(o.it.name)}"></span><br><code>${esc(o.it.code||"")}</code>${o.k>=0&&o.label?` <small class="so-pu">${esc(o.label)}</small>`:""}</span><b>${o.price>0?fmt(o.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</button>`}).join("")
+    return`<div class="so-hit so-phit so-one${n?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" role="button" tabindex="0">${o.it.photo?`<img src="${esc(photoUrl(o.it.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
+      <span><span class="pur-fn"><span data-t="${esc(o.it.name)}"></span>${o.it.mb?"":purEdBtn(o.it,false)}</span><code>${esc(o.it.code||"")}</code>${o.k>=0&&o.label?` <small class="so-pu">${esc(o.label)}</small>`:""}</span><b>${o.price>0?fmt(o.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</div>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
   $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("soAddItem").addEventListener("click",()=>{initItems();soPickCat="";$("soPickQ").value="";renderSoPick();$("soPickDlg").hidden=false;$("soPickQ").focus()});
 $("soPickQ").addEventListener("input",renderSoPick);
 $("soPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-sopc]");if(b){soPickCat=b.dataset.sopc;renderSoPick()}});
-$("soHits").addEventListener("click",async e=>{const b=e.target.closest("[data-so-add]");if(!b)return;const i=soItem(b.dataset.soAdd);if(!i)return;
+$("soHits").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".so-one")){e.preventDefault();e.target.click()}});
+$("soHits").addEventListener("click",async e=>{const ed=e.target.closest("[data-pur-ed]");if(ed){e.stopPropagation();const it=items.find(x=>x.id===ed.dataset.purEd);if(it)openItForm(it);return}
+  const b=e.target.closest("[data-so-add]");if(!b)return;const i=soItem(b.dataset.soAdd);if(!i)return;
   const u=Number(b.dataset.soU??-1),o=soOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,price:Number(i.price)||0};
   let k=soLines.findIndex(l=>soOptOn(o,l));if(k<0){const l={pid:i.id,code:i.code||"",name:soOptName(o),qty:"",price:o.price,...(o.k>=0?{u:o.k}:{}),...(i.photo?{photo:i.photo}:{})};
     /* Mr.Bee: the customer's price (Wholesale / Food Panda) when the product has it */
