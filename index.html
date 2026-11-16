@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794820028"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794821095"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1347,6 +1347,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
 .pt-card{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;align-items:start}
 .pt-card[role=button]{cursor:pointer}.pt-card[role=button]:hover{border-color:var(--accent)}
+.pt-chk{justify-self:start;margin-top:6px;height:30px;padding:0 12px;border-radius:999px;border:1.5px dashed var(--line);background:none;color:var(--muted);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+.pt-chk:hover{border-color:var(--accent);color:var(--accent)}.pt-chk.on{border-style:solid;border-color:color-mix(in srgb,var(--mint) 55%,var(--line));background:color-mix(in srgb,var(--mint) 14%,transparent);color:var(--ink)}
+.pt-chk:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pt-addrok{margin-top:8px}
 .pt-av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:17px}
 .pt-body{display:grid;gap:3px;min-width:0}.pt-name{font-size:15px;overflow-wrap:anywhere}.pt-other{font-size:12.5px;color:var(--muted)}
 .pt-tags{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0}.pt-tag{font-size:11.5px;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--sunk);color:var(--ink)}
@@ -1929,6 +1933,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="ptQ" placeholder="Search name, phone, code…" aria-label="Search" autocomplete="off">
       <button type="button" class="btn prq-new fab" id="ptNewBtn">+ Add</button></div>
     <div class="chips pd-cats" id="ptTabs"></div>
+    <div class="chips pd-cats pt-addrf" id="ptAddrF"></div>   <!-- address checking: all / to check / checked -->
     <div class="pt-grid" id="ptList"></div>
   </section>
 
@@ -2328,7 +2333,8 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Country</span><input id="ptCountry" autocomplete="off" list="ptCoList"></label>
         <datalist id="ptCoList"><option>Myanmar</option><option>Thailand</option><option>China</option></datalist>
         <label class="prf"><span>Default currency</span><select id="ptCur"></select></label></div>
-      <div class="prf"><span>Address</span><div class="pt-multi" id="ptAddrs"></div><button type="button" class="chip pt-add" id="ptAddrAdd">+ Add address</button></div>
+      <div class="prf"><span>Address</span><div class="pt-multi" id="ptAddrs"></div><button type="button" class="chip pt-add" id="ptAddrAdd">+ Add address</button>
+        <label class="check pt-addrok"><input type="checkbox" id="ptAddrOk"> ✓ လိပ်စာ စစ်ပြီး</label></div>
       <div class="prq-actions"><button type="button" class="btn ghost danger-t" id="ptDel" hidden>Delete</button><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="submit" class="btn">Save</button></div>
     </form>
   </div>
@@ -7821,7 +7827,10 @@ function renderPt(){
   const q=pdNorm(ptQ),hit=p=>!q||["name","otherName","phone","short","account","channel","address","address2"].some(k=>pdNorm(p[k]).includes(q))||ptAddrsOf(p).some(a=>pdNorm(a).includes(q))||ptPhonesOf(p).some(n=>pdNorm(n).includes(q));
   $("ptTabs").innerHTML=PT_TYPES.filter(([k])=>admin||k!=="supplier").map(([k,n])=>`<button type="button" class="chip" data-pttype="${k}" aria-pressed="${ptType===k}">${n} <small>${pts.filter(p=>p.type===k&&hit(p)).length}</small></button>`).join("");
   $("ptNewBtn").textContent="+ Add "+PT_TYPES.find(t=>t[0]===ptType)[2];
-  const list=pts.filter(p=>p.type===ptType&&hit(p)).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const inType=pts.filter(p=>p.type===ptType&&hit(p)),nOk=inType.filter(p=>p.addrOk).length;
+  $("ptAddrF").innerHTML=admin?[["","All",inType.length],["todo","📍 လိပ်စာ စစ်ရန်",inType.length-nOk],["ok","✓ စစ်ပြီး",nOk]].map(([k,n,c])=>`<button type="button" class="chip" data-ptaf="${k}" aria-pressed="${ptAddrF===k}">${n} <small>${c}</small></button>`).join(""):"";
+  $("ptAddrF").hidden=!admin;
+  const list=inType.filter(p=>!admin||!ptAddrF||(ptAddrF==="ok")===!!p.addrOk).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   $("ptList").innerHTML=list.length?list.map(p=>{const sup=p.type==="supplier";
     const tags=[p.short&&`<span class="pt-tag code">${esc(p.short)}</span>`,(p.type==="customer"?`<span class="pt-tag">${esc(custChannel(p))}</span>`:p.channel&&`<span class="pt-tag">${esc(p.channel)}</span>`),
       sup&&(p.country||p.currency)&&`<span class="pt-tag sky">${esc([p.country,p.currency].filter(Boolean).join(" · "))}</span>`].filter(Boolean).join("");
@@ -7833,13 +7842,20 @@ function renderPt(){
         ${ptPhonesOf(p).length?`<small class="pt-line">📞 ${ptTel(ptPhonesOf(p).join(", "))}</small>`:""}
         ${(()=>{/* the default address comes first and is marked when there is more than one */
           const ads=ptAddrsOf(p),di=ptDefOf(p),many=ads.length>1,rcs=ptRecvOf(p),a=ads.map((ad,i)=>[(rcs[i]?.n||rcs[i]?.p?`${[rcs[i].n,rcs[i].p].filter(Boolean).join(" ")} · `:"")+ad,i===di]).sort((x,y)=>y[1]-x[1]);
-          return a.map(([ad,def])=>`<small class="pt-line">📍 <span data-t="${esc(ad)}"></span>${many&&def?` <span class="pt-tag pt-deftag">Default</span>`:""}</small>`).join("")})()}</div></article>`}).join("")
+          return a.map(([ad,def])=>`<small class="pt-line">📍 <span data-t="${esc(ad)}"></span>${many&&def?` <span class="pt-tag pt-deftag">Default</span>`:""}</small>`).join("")})()}
+        ${admin?`<button type="button" class="pt-chk${p.addrOk?" on":""}" data-ptchk aria-pressed="${!!p.addrOk}" title="${p.addrOk?`${esc(nameOf(p.addrOk.by))} · ${esc(fmtDate((p.addrOk.at||"").slice(0,10)))}`:"လိပ်စာ စစ်ပြီးရင် နှိပ်ပါ"}">${p.addrOk?"✓ လိပ်စာ စစ်ပြီး":"📍 လိပ်စာ စစ်ရန်"}</button>`:""}</div></article>`}).join("")
     :`<div class="prq-empty">Nothing here${q?" matches the search":" yet"}.</div>`;
   $("ptList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 $("ptTabs").addEventListener("click",e=>{const b=e.target.closest("[data-pttype]");if(!b)return;ptType=b.dataset.pttype;renderPt()});
+var ptAddrF="";
+$("ptAddrF").addEventListener("click",e=>{const b=e.target.closest("[data-ptaf]");if(!b)return;ptAddrF=b.dataset.ptaf;renderPt()});
 $("ptQ").addEventListener("input",e=>{ptQ=e.target.value;renderPt()});
-$("ptList").addEventListener("click",e=>{if(e.target.closest("a"))return;if(!can("admin"))return;const c=e.target.closest("[data-pt]");if(c)openPtForm(pts.find(p=>p.id===c.dataset.pt))});
+$("ptList").addEventListener("click",async e=>{if(e.target.closest("a"))return;if(!can("admin"))return;const c=e.target.closest("[data-pt]");if(!c)return;const p=pts.find(x=>x.id===c.dataset.pt);if(!p)return;
+  /* the mark on the card: checked ↔ to check, without opening the customer */
+  if(e.target.closest("[data-ptchk]")){const n={...p};if(p.addrOk)delete n.addrOk;else n.addrOk={by:me.id||null,at:new Date().toISOString()};
+    try{await savePt(n);if(!db){renderPt()}toast(n.addrOk?`✓ ${p.name} — လိပ်စာ စစ်ပြီး`:`${p.name} — စစ်ရန် ပြန်ထားပြီး`,2500)}catch(x){toast("သိမ်းမရပါ")}return}
+  openPtForm(p)});
 $("ptList").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-pt]"))e.target.click()});
 $("goPt").addEventListener("click",()=>go("pt"));
 $("ptNewBtn").addEventListener("click",()=>openPtForm(null));
@@ -7883,6 +7899,7 @@ function openPtForm(p){
   $("ptCur").innerHTML=`<option value="">—</option>`+CURRENCIES.map(c=>`<option ${c===(p?.currency||(p?"":"MMK"))?"selected":""}>${c}</option>`).join("");
   $("ptPhones").innerHTML="";const phs=ptPhonesOf(p);(phs.length?phs:[""]).forEach(v=>ptPhoneRow(v));
   $("ptAddrs").innerHTML="";const ads=ptAddrsOf(p),di=ptDefOf(p),rcs=ptRecvOf(p);(ads.length?ads:[""]).forEach((v,i)=>ptAddrRow(v,i===di,rcs[i]));
+  $("ptAddrOk").checked=!!p?.addrOk;
   ptSyncType();$("ptDel").hidden=!p;$("ptDlg").hidden=false;$("ptName").focus();
 }
 $("ptTypeSel").addEventListener("change",ptSyncType);
@@ -7907,6 +7924,8 @@ $("ptForm").addEventListener("submit",async e=>{
   const f={otherName:v("ptOther"),phones:phones.length?phones:null,phone:phones.length?phones.join(", "):null,channel:v("ptChannel"),account:v("ptAcct"),
     addresses:addresses.length?addresses:null,defAddr:addresses.length>1?defAddr:null,address:addresses[defAddr]||null,address2:null,short,...(type==="gate"?{channel:null,account:null}:{}),country:type==="supplier"?v("ptCountry"):null,currency:type==="supplier"?($("ptCur").value||null):null};
   for(const k in f)if(f[k]==null)delete p[k];else p[k]=f[k];
+  /* the address checked mark: kept as it was when still ticked, new when just ticked */
+  if($("ptAddrOk").checked)p.addrOk=ptEditing?.addrOk||{by:me.id||null,at:new Date().toISOString()};else delete p.addrOk;
   try{await savePt(p);$("ptDlg").hidden=true;ptEditing=null;ptType=type;renderPt();toast("သိမ်းပြီး");if(typeof ptAfterSave==="function"){const f=ptAfterSave;ptAfterSave=null;f(p)}}catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}
 });
 $("ptDel").addEventListener("click",async()=>{const p=ptEditing;if(!p||!can("admin"))return;
