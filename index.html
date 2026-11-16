@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794828037"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794828277"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9387,7 +9387,7 @@ async function itExcelPhotos(ab,plan){
 /* ---------- JS vouchers (sales orders): collection "jsSales". A voucher has the customer, delivery info, lines (an item from
    Raw Material, or a free line such as Delivery), the net amount and its payments; the rest is owed. A voucher shows the
    customer's other unpaid vouchers too (အကြွေးစာရင်း). Printed on A5 (landscape) by default, or A4. ---------- */
-var vos=[],soCol=null,soLoaded=false,soQ="",soTab="pre",soEditing=null,soLines=[],soOpen=null;
+var vos=[],soCol=null,soLoaded=false,soQ="",soTab="unf",soEditing=null,soLines=[],soOpen=null;
 const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
 function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
@@ -9643,7 +9643,7 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   /* this shop's vouchers; the earlier Order screen and "to buy" are JS's only */
   const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];
   /* Mr.Bee: only "money still to get" and All; JS keeps Preorder / Unfinished / Finished / to buy */
-  if(js&&soTab==="owe")soTab="pre";if(!js&&soTab!=="all")soTab="owe";
+  if(js&&soTab==="owe")soTab="unf";if(!js&&soTab!=="all")soTab="owe";
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>n[soStage(v)]++);ps.forEach(p=>n[poStage(p)]++);
   $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unf","⏳ Unfinished",n.unf],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
       :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
@@ -9660,7 +9660,8 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
-$("goSo").addEventListener("click",()=>go("so"));
+/* opening Vouchers starts on Unfinished (JS) / money still to get (Mr.Bee) */
+$("goSo").addEventListener("click",()=>{soTab=saleBrand==="js"?"unf":"owe";go("so")});
 /* ---- the form ---- */
 /* Customer: typing filters the JS customers (name, short code, phone); picking one fills the voucher. Typed text that is not
    picked from the list is a walk-in / other customer. */
