@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794822839"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794823167"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4543,7 +4543,9 @@ async function buildPreviewCanvas(o){
         let fs=22;while(fs>18&&width(info,fs)>room)fs--;
         if(width(info,fs)<=room)text(info,x0,y,fs,{color:C.muted});else{text(money(amt),P+LW,y,size,{align:"right",weight:bold?700:400,color});y+=30;text(info,P,y,20,{color:C.muted});return}}
       text(money(amt),P+LW,y,size,{align:"right",weight:bold?700:400,color})};
-    row(isBak(o)?"Products":"Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
+    /* cupcakes: one line each — price of one × how many */
+    if(!isBak(o)&&o.cupItems?.length)o.cupItems.forEach(l=>row(cupLbl(l),Math.round(Number(l.qty||0)*Number(l.price||0)),{color:C.muted,info:`${money(l.price)} × ${l.qty}`}));
+    else row(isBak(o)?"Products":"Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
     /* a charge written on several lines: the first line with the amount, the rest under it */
     orderCharges(o).forEach(ch=>{const [l1,...more]=String(ch.note||"Additional").split("\n");row(l1,ch.amt,{color:C.muted,info:chQty(ch)});
       more.forEach(l=>{if(!l.trim())return;font(24);wrapLines(ctx,l,LW).forEach(w=>{y+=36;text(w,P,y,24,{color:C.muted})})})});
@@ -4994,7 +4996,9 @@ function slipHTML(o,live=false){
       return pics.length||tb?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
     ${/* a bakery order has no Cake row, so Total's own top line follows the items; a second rule would double it */
       isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount?"":`<hr class="pr-rule">`}
-    ${isBak(o)?"":row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
+    ${/* cupcakes: one line each with its price (price of one × how many), instead of a single Cake line */
+      isBak(o)?"":o.cupItems?.length?o.cupItems.map(l=>row(cupLbl(l),Math.round(Number(l.qty||0)*Number(l.price||0)),"pr-item",`${money(l.price)} × ${l.qty}`)).join("")
+      :row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
     ${row("Total",o.total,"pr-tot")}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
     ${pays.map((p,i)=>row(i?"Paid":"Deposit",p.amt,"",[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · "))).join("")}
     ${pays.length?(bal?row("Balance",bal,"pr-bal"):`<div class="pr-bal pr-paid">✓ Paid in full</div>`):""}
