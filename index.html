@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794747001"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794808920"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8980,7 +8980,7 @@ var itOldShow=false;   /* the old Selling Price boxes show only for a ⏸ item *
 function renderItems(){
   if(typeof renderPurPick==="function"&&!$("purPickDlg").hidden)renderPurPick();
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itClearAll").hidden=!admin||!items.length;$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
+  $("itImport").hidden=!admin;$("itClearAll").hidden=true;   /* delete-all is put away now the raw materials are in (its code stays) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
   $("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   /* units / prices checked (✓ in the item form) or not yet: the two chips filter the list and show how many are in each */
   const q=pdNorm(itQ),inQ0=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
@@ -9316,7 +9316,8 @@ async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete
    with no payment row is taken as paid in full ("Excel" on its date).
    A number already in the app is skipped, so the same file can be imported again; "Excel ပြန်ဖျက်" takes them all out. ---------- */
 const XL_PAY="Excel";
-function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXlBtn").hidden=$("soXpBtn").hidden=!ok;$("soXlDel").hidden=!ok||!vos.some(v=>v.xl)}
+/* the old Excel is in (16-Nov-2026): its import and undo are put away (their code stays); Excel export stays */
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true}
 const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
   if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
 const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
