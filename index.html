@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794826506"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794826642"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2225,7 +2225,7 @@ span.star-ic{cursor:default}
         <h2 class="pur-vt">Purchase Voucher</h2>
         <div class="vo-meta">
           <div class="vo-cust"><h3>Supplier <b class="req">*</b></h3><input id="purSup" list="purSupList" autocomplete="off" placeholder="Supplier name" aria-label="Supplier"><datalist id="purSupList"></datalist></div>
-          <div class="pur-gw"><h3>ပို့မယ့် ဂိတ် / Logistic</h3><div class="pur-gin"><input id="purGate" list="purGateList" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည်" aria-label="ပို့မယ့် ဂိတ် / Logistic"><button type="button" class="o-ic" id="purGateAdd" aria-label="Add gate" title="Gate အသစ် ထည့်ရန်"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div><datalist id="purGateList"></datalist></div>
+          <div class="pur-gw"><h3>ပို့မယ့် ဂိတ် / Logistic</h3><div class="so-pick pur-gpick"><input id="purGate" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည် (ရိုက်ပြီးရှာပါ)" aria-label="ပို့မယ့် ဂိတ် / Logistic"><div class="so-hits" id="purGateHits" hidden></div></div></div>
           <div class="vo-no"><span class="k">PU No#</span><span id="purDlgNo">—</span><span class="k">Date</span><span id="purDateBox"></span></div>
         </div>
         <table class="pur-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th></th></tr></thead>
@@ -6978,8 +6978,7 @@ function openPurForm(p){if(!canPur())return;
   $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
   $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";
   $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
-  $("purGateAdd").hidden=!canAddCust();
-  $("purGateList").innerHTML=[...new Set([...pts.filter(x=>x.type==="gate").map(x=>x.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("");
+  $("purGateHits").hidden=true;
   renderPurLines();$("purDlg").hidden=false}
 const purLinePhoto=l=>items.find(x=>x.id===l.iid)?.photo||l.photo||"";
 function renderPurLines(){
@@ -9658,11 +9657,26 @@ $("soCustQ").addEventListener("keydown",e=>{if(e.key==="Enter")e.preventDefault(
 $("soCustQ").addEventListener("blur",()=>setTimeout(()=>{$("soCustHits").hidden=true},200));
 $("soCustHits").addEventListener("mousedown",e=>e.preventDefault());
 var ptAfterSave=null;
-/* Purchase: a new gate is added right from the voucher (the Gates form, the typed name filled in); once saved it is picked */
-const purGateFill=()=>{$("purGateList").innerHTML=[...new Set([...pts.filter(x=>x.type==="gate").map(x=>x.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].map(g=>`<option value="${esc(g)}">`).join("")};
-$("purGateAdd").addEventListener("click",()=>{if(!canAddCust()){toast("Gate အသစ် ထည့်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
-  const nm=$("purGate").value.trim();ptType="gate";openPtForm(null);$("ptTypeSel").value="gate";ptSyncType();$("ptName").value=nm;
-  ptAfterSave=p=>{if(p.type!=="gate")return;$("purGate").value=p.name;purGateFill()}});
+/* Purchase: the gate box searches as you type, like the JS voucher's customer box — the Gates (with phone), the bus gates of
+   Goods Received and gates used before; a name not on the Gates list can be registered as a new Gate right from here */
+function purGateHits(){const q=pdNorm($("purGate").value),gs=pts.filter(p=>p.type==="gate");
+  const names=[...new Set([...gs.map(p=>p.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].filter(n=>!q||pdNorm(n).includes(q)||gs.some(p=>p.name===n&&ptPhonesOf(p).some(x=>pdNorm(x).includes(q))))
+    .sort((a,b)=>String(a).localeCompare(String(b)));
+  const h=$("purGateHits");
+  h.innerHTML=names.length?names.map(n=>{const p=gs.find(x=>x.name===n);return`<button type="button" class="so-hit so-chit" data-pur-gate="${esc(n)}"><span data-t="${esc(n)}"></span><small>${esc(p?ptPhonesOf(p)[0]||"":"")}</small></button>`}).join("")
+    :`<p class="side-help so-noc">Gate စာရင်းထဲ မရှိပါ</p>`;
+  if(q&&canAddCust()&&!gs.some(p=>pdNorm(p.name)===q))h.insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-pur-greg><span>➕ Register “<span data-t="${esc($("purGate").value.trim())}"></span>” as a new Gate</span></button>`);
+  h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=false}
+function purGateRegister(){if(!canAddCust()){toast("Gate အသစ် ထည့်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
+  const nm=$("purGate").value.trim();$("purGateHits").hidden=true;ptType="gate";openPtForm(null);$("ptTypeSel").value="gate";ptSyncType();$("ptName").value=nm;
+  /* once saved, the new gate is picked */
+  ptAfterSave=p=>{if(p.type!=="gate")return;$("purGate").value=p.name}}
+$("purGate").addEventListener("input",purGateHits);$("purGate").addEventListener("focus",purGateHits);
+$("purGate").addEventListener("keydown",e=>{if(e.key==="Escape")$("purGateHits").hidden=true});
+$("purGate").addEventListener("blur",()=>setTimeout(()=>{$("purGateHits").hidden=true},200));
+$("purGateHits").addEventListener("mousedown",e=>e.preventDefault());
+$("purGateHits").addEventListener("click",e=>{if(e.target.closest("[data-pur-greg]")){purGateRegister();return}
+  const b=e.target.closest("[data-pur-gate]");if(!b)return;$("purGate").value=b.dataset.purGate;$("purGateHits").hidden=true});
 function soRegister(){if(!canAddCust()){toast("Customer အသစ် Register လုပ်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
   const nm=$("soCustQ").value.trim(),ph=$("soPhone").value.trim(),ct=SO_SHOP[soB].ct;ptType=ct;openPtForm(null);
   $("ptTypeSel").value=ct;ptSyncType();$("ptName").value=nm;const pi=$("ptPhones").querySelector(".pt-ph");if(pi&&ph)pi.value=ph;
