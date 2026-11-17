@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794919560"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794919773"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1227,7 +1227,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .nc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-act .btn{height:38px;padding:0 12px;margin:0}
 .nc-link{display:flex;gap:6px;flex:1 1 220px;min-width:0}.nc-link select{flex:1;min-width:0;height:38px;margin:0;padding-top:0;padding-bottom:0;line-height:36px}.nc-act .btn{flex:none;width:auto}
 .so-xl{margin:0 0 8px}
-.so-dgate{display:grid;gap:4px;margin:10px 0 4px}.so-dgl{font-size:13px;color:var(--muted)}.so-dgate .so-pick{position:relative;max-width:420px}.so-xl:not(:has(.chip:not([hidden]))){display:none}
+.so-dmeta{display:flex;justify-content:flex-end;align-items:end;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dmeta .prf{margin:0}
+.so-dgate{flex:1 1 140px;max-width:260px}.so-dgate .so-pick{position:relative;margin:0}
+.so-dmeta .dp,.so-dmeta #soDGate{height:42px;box-sizing:border-box;margin:0}.so-xl:not(:has(.chip:not([hidden]))){display:none}
 /* Home: a cake still being decorated */
 .deco-rem{display:grid;gap:8px;margin:0 0 12px}
 .deco-rem-b{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
@@ -2657,8 +2659,9 @@ span.star-ic{cursor:default}
         <div class="prf"><span>Date</span><div id="soPDate"></div></div>
         <button type="button" class="btn" id="soPSave">Save payment</button></div>
       <div class="so-delform" id="soDelForm" hidden><p class="ac-h">🚚 ယခု ပေးမယ့် အရေအတွက်</p><div id="soDelRows"></div>
-        <div class="so-dgate"><span class="so-dgl">🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည် (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div>
-        <div class="so-delbar"><div class="prf"><span>Date</span><div id="soDDate"></div></div><button type="button" class="btn ghost" id="soDCancel">Cancel</button><button type="button" class="btn" id="soDSave">Save</button></div></div>
+        <!-- the gate and the date on one row, at the right; Cancel / Save under them -->
+        <div class="so-dmeta"><div class="prf so-dgate"><span>🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် / logistic (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div><div class="prf"><span>Date</span><div id="soDDate"></div></div></div>
+        <div class="so-delbar"><button type="button" class="btn ghost" id="soDCancel">Cancel</button><button type="button" class="btn" id="soDSave">Save</button></div></div>
       <div class="so-pays" id="soPays"></div>
       <div class="so-preview"><div id="soPrev"></div></div>
     </div>
