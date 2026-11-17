@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918867"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918985"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1226,7 +1226,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .nc-main{display:grid;gap:2px;min-width:0}.nc-main b{overflow-wrap:anywhere}.nc-main small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}.nc-alt{font-style:italic}
 .nc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-act .btn{height:38px;padding:0 12px;margin:0}
 .nc-link{display:flex;gap:6px;flex:1 1 220px;min-width:0}.nc-link select{flex:1;min-width:0;height:38px;margin:0;padding-top:0;padding-bottom:0;line-height:36px}.nc-act .btn{flex:none;width:auto}
-.so-xl{margin:0 0 8px}.so-xl:not(:has(.chip:not([hidden]))){display:none}
+.so-xl{margin:0 0 8px}
+.so-dgate{display:grid;gap:4px;margin:10px 0 4px}.so-dgl{font-size:13px;color:var(--muted)}.so-dgate .so-pick{position:relative;max-width:420px}.so-xl:not(:has(.chip:not([hidden]))){display:none}
 /* Home: a cake still being decorated */
 .deco-rem{display:grid;gap:8px;margin:0 0 12px}
 .deco-rem-b{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--accent);border-radius:14px;background:var(--accent-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
@@ -2656,6 +2657,7 @@ span.star-ic{cursor:default}
         <div class="prf"><span>Date</span><div id="soPDate"></div></div>
         <button type="button" class="btn" id="soPSave">Save payment</button></div>
       <div class="so-delform" id="soDelForm" hidden><p class="ac-h">🚚 ယခု ပေးမယ့် အရေအတွက်</p><div id="soDelRows"></div>
+        <div class="so-dgate"><span class="so-dgl">🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် (သို့) logistic နာမည် (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div>
         <div class="so-delbar"><div class="prf"><span>Date</span><div id="soDDate"></div></div><button type="button" class="btn ghost" id="soDCancel">Cancel</button><button type="button" class="btn" id="soDSave">Save</button></div></div>
       <div class="so-pays" id="soPays"></div>
       <div class="so-preview"><div id="soPrev"></div></div>
@@ -9789,17 +9791,18 @@ function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
   if(vBrand(v)==="mb")return`<p class="po-chips so-stage">${st==="fin"?`<span class="conf-chip ok"><b>✓ Paid</b></span>`:soChips(v)}</p>`;
   return`<p class="po-chips so-stage"><span class="conf-chip${st==="fin"?" ok":""}"><b>${lbl}</b></span>${st==="fin"?"":soChips(v)}</p>`
-    +(ds.length?`<p class="ac-h">🚚 Delivered</p><table class="ex-tbl"><tbody>${ds.map((d,i)=>`<tr><td>${esc(soDate(d.date))}</td><td>${Object.entries(d.lines||{}).map(([k,q])=>`${(v.lines||[])[k]?.name||"?"} × ${poNum(q)}`).map(esc).join(", ")}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${i}" aria-label="Remove delivery" title="Remove delivery">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"")}
+    +(ds.length?`<p class="ac-h">🚚 Delivered</p><table class="ex-tbl"><tbody>${ds.map((d,i)=>`<tr><td>${esc(soDate(d.date))}${d.gate?`<br><small>🚌 ${esc(d.gate)}</small>`:""}</td><td>${Object.entries(d.lines||{}).map(([k,q])=>`${(v.lines||[])[k]?.name||"?"} × ${poNum(q)}`).map(esc).join(", ")}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${i}" aria-label="Remove delivery" title="Remove delivery">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"")}
 /* 🚚 Delivered: how many of each item are given now (everything left, unless lowered) */
 $("soDelivBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const left=soLeftArr(v);
   $("soDelRows").innerHTML=`<table class="ex-tbl so-deltbl"><thead><tr><th>Description</th><th class="r">ကျန်</th><th class="r">ယခုပေး</th></tr></thead><tbody>${(v.lines||[]).map((l,i)=>left[i]>0?`<tr><td data-t="${esc(l.name||"")}"></td><td class="r">${poNum(left[i])}</td><td class="r"><input type="number" min="0" max="${left[i]}" step="any" value="${left[i]}" data-so-dq="${i}" aria-label="Qty given now"></td></tr>`:"").join("")}</tbody></table>`;
   $("soDelRows").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
-  $("soDDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=false});
+  $("soDDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=false;
+  {let last=null;for(const x of vos)if(x.custId&&x.custId===v.custId)for(const d of x.deliveries||[])if(d.gate&&(!last||(d.at||"")>(last.at||"")))last=d;$("soDGate").value=last?.gate||"";$("soDGateHits").hidden=true}});
 $("soDCancel").addEventListener("click",()=>{$("soDelForm").hidden=true});
 $("soDSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const left=soLeftArr(v),lines={};
   for(const inp of $("soDelRows").querySelectorAll("[data-so-dq]")){const i=Number(inp.dataset.soDq),q=Math.min(left[i],Math.max(0,Number(inp.value)||0));if(q>0)lines[i]=q}
   if(!Object.keys(lines).length){toast("ပေးမယ့် အရေအတွက် ထည့်ပါ");return}
-  const now=new Date().toISOString(),n={...v,pre:true,deliveries:[...(v.deliveries||[]),{date:readDate($("soDDate").querySelector(".dp"))||todayISO(),lines,at:now,by:me.id||null}],updatedAt:now};
+  const now=new Date().toISOString(),n={...v,pre:true,deliveries:[...(v.deliveries||[]),{date:readDate($("soDDate").querySelector(".dp"))||todayISO(),lines,...($("soDGate").value.trim()?{gate:$("soDGate").value.trim()}:{}),at:now,by:me.id||null}],updatedAt:now};
   try{await saveSo(n);$("soDelForm").hidden=true;renderSoView(n);toast(soDelivered(n)?"✓ Delivered — အကုန်ပေးပြီး":"✓ Delivered — ကျန်တာ နောက်မှ ပေးရန်")}catch(x){toast("သိမ်းမရပါ")}});
 $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-so-drm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const i=Number(b.dataset.soDrm),d=(v.deliveries||[])[i];if(!d||!await askConfirm("Remove this delivery?",soDate(d.date),"Remove"))return;
@@ -9867,13 +9870,28 @@ var ptAfterSave=null;
 /* Purchase: the gate box searches as you type, like the JS voucher's customer box — the Gates (with phone), the bus gates of
    Goods Received and gates used before; a name not on the Gates list can be registered as a new Gate right from here */
 function purGateHits(){const q=pdNorm($("purGate").value),gs=pts.filter(p=>p.type==="gate");
-  const names=[...new Set([...gs.map(p=>p.name),...lstItems("gate"),...purs.map(x=>x.gate).filter(Boolean)])].filter(n=>!q||pdNorm(n).includes(q)||gs.some(p=>p.name===n&&ptPhonesOf(p).some(x=>pdNorm(x).includes(q))))
-    .sort((a,b)=>String(a).localeCompare(String(b)));
+  const names=gateNames(q,gs);
   const h=$("purGateHits");
   h.innerHTML=names.length?names.map(n=>{const p=gs.find(x=>x.name===n);return`<button type="button" class="so-hit so-chit" data-pur-gate="${esc(n)}"><span data-t="${esc(n)}"></span><small>${esc(p?ptPhonesOf(p)[0]||"":"")}</small></button>`}).join("")
     :`<p class="side-help so-noc">Gate စာရင်းထဲ မရှိပါ</p>`;
   if(q&&canAddCust()&&!gs.some(p=>pdNorm(p.name)===q))h.insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-pur-greg><span>➕ Register “<span data-t="${esc($("purGate").value.trim())}"></span>” as a new Gate</span></button>`);
   h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=false}
+function gateNames(q,gs){return[...new Set([...gs.map(p=>p.name),...lstItems("gate"),...purs.map(x=>x.gate),...vos.flatMap(v=>(v.deliveries||[]).map(d=>d.gate))].filter(Boolean))]
+  .filter(n=>!q||pdNorm(n).includes(q)||gs.some(p=>p.name===n&&ptPhonesOf(p).some(x=>pdNorm(x).includes(q)))).sort((a,b)=>String(a).localeCompare(String(b)))}
+/* Voucher 🚚 Delivered: the gate it was sent with, searched the same way (and a new Gate can be registered from here) */
+function soDGateHits(){const box=$("soDGate"),q=pdNorm(box.value),gs=pts.filter(p=>p.type==="gate"),names=gateNames(q,gs),h=$("soDGateHits");
+  h.innerHTML=names.length?names.map(n=>{const p=gs.find(x=>x.name===n);return`<button type="button" class="so-hit so-chit" data-sod-gate="${esc(n)}"><span data-t="${esc(n)}"></span><small>${esc(p?ptPhonesOf(p)[0]||"":"")}</small></button>`}).join("")
+    :`<p class="side-help so-noc">Gate စာရင်းထဲ မရှိပါ</p>`;
+  if(q&&canAddCust()&&!gs.some(p=>pdNorm(p.name)===q))h.insertAdjacentHTML("beforeend",`<button type="button" class="so-hit so-reg" data-sod-greg><span>➕ Register “<span data-t="${esc(box.value.trim())}"></span>” as a new Gate</span></button>`);
+  h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=false}
+$("soDGate").addEventListener("input",soDGateHits);$("soDGate").addEventListener("focus",()=>{initPt();soDGateHits()});
+$("soDGate").addEventListener("keydown",e=>{if(e.key==="Escape")$("soDGateHits").hidden=true;if(e.key==="Enter")e.preventDefault()});
+$("soDGate").addEventListener("blur",()=>setTimeout(()=>{$("soDGateHits").hidden=true},200));
+$("soDGateHits").addEventListener("mousedown",e=>e.preventDefault());
+$("soDGateHits").addEventListener("click",e=>{if(e.target.closest("[data-sod-greg]")){if(!canAddCust()){toast("Gate အသစ် ထည့်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
+    const nm=$("soDGate").value.trim();$("soDGateHits").hidden=true;ptType="gate";openPtForm(null);$("ptTypeSel").value="gate";ptSyncType();$("ptName").value=nm;
+    ptAfterSave=p=>{if(p.type==="gate")$("soDGate").value=p.name};return}
+  const b=e.target.closest("[data-sod-gate]");if(!b)return;$("soDGate").value=b.dataset.sodGate;$("soDGateHits").hidden=true});
 function purGateRegister(){if(!canAddCust()){toast("Gate အသစ် ထည့်ခွင့် မရှိပါ — Admin ကို ပြောပါ",5000);return}
   const nm=$("purGate").value.trim();$("purGateHits").hidden=true;ptType="gate";openPtForm(null);$("ptTypeSel").value="gate";ptSyncType();$("ptName").value=nm;
   /* once saved, the new gate is picked */
