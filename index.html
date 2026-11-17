@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794917341"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794917652"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9678,13 +9678,14 @@ const XL_HEAD=["Invoice Number","Date","Customer","No","ID","Description","Qty",
 const XL_W=[16,10,22,5,10,46,7,8,9,11,24,11,9,11,18,16,14,40,18];
 const xlSerial=d=>{const[y,m,dd]=String(d||"").split("-").map(Number);return y?(Date.UTC(y,m-1,dd)-Date.UTC(1899,11,30))/864e5:""};
 const xlIsDisc=l=>/^discount$/i.test(String(l.name||"").trim())&&Number(l.price)<0;
-/* the Unit a line's Qty counts in (pk, ct, or the size 1kg), as in the sales-by-item report */
+/* the Unit a line's Qty counts in (pk, ct, or the size 1kg), as in the sales-by-item report;
+   left empty on vouchers brought in from the old Excel (their prices and units were not matched) */
 const xlUnit=l=>{const it=l.pid&&items.find(i=>i.id===l.pid);return it?isUnitOf(it,l.u):""};
 function soXlRows(v){const ls=(v.lines||[]).filter(l=>!xlIsDisc(l)),disc=(v.lines||[]).filter(xlIsDisc).reduce((s,l)=>s-Math.round(Number(l.qty||0)*Number(l.price||0)),0);
   const tot=soNetOf(ls),p=v.custId?pts.find(x=>x.id===v.custId):null,on=/^Other name: /.test(v.note||"")?v.note.slice(12):"",other=on||p?.otherName||"";
   const vn=v.note&&!on?v.note:"";
   return ls.map((l,i)=>{const last=i===ls.length-1,amt=Math.round(Number(l.qty||0)*Number(l.price||0));
-    return[v.no,xlSerial(v.date),v.customer||"",i+1,l.code||"",l.name||"",Number(l.qty)||0,xlUnit(l),Number(l.price)||"",amt||"",[l.note,last?vn:""].filter(Boolean).join(" · "),
+    return[v.no,xlSerial(v.date),v.customer||"",i+1,l.code||"",l.name||"",Number(l.qty)||0,v.xl?"":xlUnit(l),Number(l.price)||"",amt||"",[l.note,last?vn:""].filter(Boolean).join(" · "),
       last?tot:"",last&&disc?disc:"",last?Number(v.net)||0:"",last?other:"",last?v.phone||"":"",last?v.channel||"":"",last?soDelivOf(v)||"":"",`${v.no}/${i+1}`]})}
 function xlSheet(head,rows,widths,dateCols=[],moneyCols=[]){const ws=XLSX.utils.aoa_to_sheet([head,...rows]);ws["!cols"]=widths.map(w=>({wch:w}));
   ws["!autofilter"]={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(1,rows.length),c:head.length-1}})};
