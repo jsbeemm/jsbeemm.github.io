@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794915558"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794916107"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9645,6 +9645,7 @@ function soGivenArr(v){const ls=v.lines||[];if(!v.pre||vBrand(v)==="mb")return l
 const soLeftArr=v=>{const g=soGivenArr(v);return(v.lines||[]).map((l,i)=>Math.max(0,Number(l.qty||0)-g[i]))};
 const soLeftAll=v=>soLeftArr(v).reduce((s,x)=>s+x,0);
 const soDelivered=v=>soLeftAll(v)<=0;
+/* the debt list on a voucher (အကြွေးစာရင်း) leaves out Preorder vouchers: nothing given, nothing paid yet */
 function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&!soConfPend(v))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
 function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0),b=soBal(v),paid=soPaid(v);
   if(soStage(v)==="fin")return`<span class="conf-chip ok">✓ Finished</span>`;
@@ -10159,7 +10160,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   /* an order voucher: each order's cake design photos under the items (with its order number when there are several) */
   const opics=await Promise.all((v.orderPhotos||[]).map(async g=>({no:g.no||"",urls:(await Promise.all((g.ids||[]).map(soPhoto))).filter(Boolean)})));
-  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0).sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
+  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre").sort((a,b)=>(a.date||"").localeCompare(b.date||"")):[];
   const oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vo">
     ${sh.head?`<div class="vo-top"><div class="vo-hbox"><img class="vo-head" src="${sh.head}" alt="${esc(sh.name)}"><p>${sh.ph}</p></div></div>`:`<div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>`}
@@ -10248,7 +10249,7 @@ const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",sys
 document.head.insertAdjacentHTML("beforeend",`<style id="soRcCss">${SO_RC_CSS}</style>`);
 /* the receipt: shop, voucher number / channel / date, customer and delivery, then the lines (qty · item @ price · amount) and the money */
 function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
-  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
+  const owe=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre"):[],oweSum=owe.reduce((s,x)=>s+soBal(x),0),sh=SO_SHOP[vBrand(v)];
   return`<div class="vr">
     <div class="c sh">${sh.rc}</div><div class="c sm">${sh.ph}</div>
     <div class="sm meta"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span>${v.orderFor?`<span class="k">Order for</span><span>${esc(v.orderFor)}</span>`:""}${v.mode?`<span class="k">Pickup / Delivery</span><span>${esc(v.mode)}</span>`:""}</div>
