@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794920243"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794920369"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -959,6 +959,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .po-fin{opacity:.75}.po-buy .lnk{color:var(--accent);cursor:pointer;text-decoration:underline}
 .so-stage{margin:0 0 8px}.so-delform{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}.so-deltbl{width:100%}.so-deltbl th,.so-deltbl td{padding:5px 8px;text-align:left}.so-deltbl .r{text-align:right}
 .so-deltbl input{width:90px;text-align:right}.so-drem{color:var(--muted)}.so-drem.on{color:var(--accent);font-weight:700}
+.so-pact{white-space:nowrap}.so-pact .o-ic+.o-ic{margin-left:6px}
 .so-delbar{display:flex;gap:8px;align-items:end;justify-content:flex-end;flex-wrap:wrap;margin-top:8px}.so-delbar .prf{margin:0;margin-right:auto}.so-delbar .btn{width:auto;margin:0}
 .po-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0}.po-dl{white-space:pre-line;font-size:13px;opacity:.85;margin-top:4px}
 .po-meta{display:grid;grid-template-columns:auto auto;gap:2px 8px;align-content:start}.po-meta .k{text-align:right;opacity:.7}
@@ -1044,7 +1045,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
   #soView .pv-head .so-sel select{width:100%;max-width:none!important;height:40px;padding:0 8px!important}}
 .so-sel{display:contents}
 .so-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}.so-paper{display:inline-flex;align-items:center;gap:6px;font-size:13px}.so-paper select{width:auto;padding:5px 8px}
-.so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:10px}
+.so-payform{display:grid;grid-template-columns:1fr 1fr 1fr auto auto;gap:8px;align-items:end;margin-bottom:10px}
 /* the boxes and the Save button: one height, one bottom line */
 .so-payform input,.so-payform select,.so-payform .dp-btn,.so-payform .btn{height:44px;min-height:0;margin:0;box-sizing:border-box;vertical-align:bottom}
 .so-payform .dp,.so-payform .dp-btn{display:flex;width:100%;align-items:center}.so-payform .btn{width:auto;padding-block:0;display:inline-flex;align-items:center;justify-content:center}.so-payform .prf{margin:0}
@@ -1052,7 +1053,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soShot{position:fixed;left:-99999px;top:0;background:#fff;padding:0}
 /* an item picked from Raw Material shows its name as plain text; only free lines (Delivery, Other) are typed */
 .so-ldt{display:block;padding:6px 2px;line-height:1.35;word-break:break-word}
-@media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr}}
+@media (max-width:560px){.so-lh{display:none}.so-line{grid-template-columns:1fr 1fr 1fr 34px}.so-line .so-ld{grid-column:1/-1}.so-payform{grid-template-columns:1fr 1fr}.so-payform .prf{grid-column:1/-1}}
 .it-units{margin:6px 0 8px}.it-uact{display:flex;align-items:center;justify-content:flex-end;gap:2px}
 .it-sc{display:inline-flex;align-items:center;gap:4px;margin-right:auto;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}.it-sc input{width:18px;height:18px;margin:0;accent-color:var(--accent)}
 .it-sc:has(input:checked){color:var(--accent)}
@@ -2658,7 +2659,7 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Amount (Ks)</span><input id="soPAmt" type="number" min="0" step="1"></label>
         <label class="prf"><span>Method</span><select id="soPMethod"></select></label>
         <div class="prf"><span>Date</span><div id="soPDate"></div></div>
-        <button type="button" class="btn" id="soPSave">Save payment</button></div>
+        <button type="button" class="btn ghost" id="soPCancel">Cancel</button><button type="button" class="btn" id="soPSave">Save payment</button></div>
       <div class="so-delform" id="soDelForm" hidden><p class="ac-h">🚚 ယခု ပေးမယ့် အရေအတွက်</p><div id="soDelRows"></div>
         <!-- the date and the gate on one row, at the right; Cancel / Save under them -->
         <div class="so-dmeta"><div class="prf"><span>Date</span><div id="soDDate"></div></div><div class="prf so-dgate"><span>🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် / logistic (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div></div>
@@ -10397,7 +10398,7 @@ function openSoView(v){soOpen=v.id;$("soPaper").value="A5";try{$("soOrient").val
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0;$("soDelivBtn").hidden=soDelivered(v);
   const ps=v.payments||[];
-  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
+  $("soPays").innerHTML=ps.length?`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
   $("soPays").insertAdjacentHTML("afterbegin",soStatusHtml(v));
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
   const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=soIsLabel()?soLabelHtml(v,$("soPaper").value):rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
@@ -10413,13 +10414,30 @@ addEventListener("resize",soFit);
 $("soEditBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;$("soView").hidden=true;openSoForm(v)});
 $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v||!can("admin"))return;
   if(!await askConfirm(`Delete ${v.no}?`,`${v.customer||""} · ${fmt(v.net||0)}`))return;try{await removeSo(v.id);poSync(v,null).catch(()=>{});$("soView").hidden=true;soOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
-$("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
+/* a voucher payment can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
+var soPEdit=null;
+const soPayEditable=(v,p)=>!v.xl&&(can("admin")||(sameId(p.by,me.id)&&String(p.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
+function soPayFormSet(edit){soPEdit=edit;$("soPSave").textContent=edit==null?"Save payment":"Save changes"}
+$("soPCancel").addEventListener("click",()=>{$("soPayForm").hidden=true;soPayFormSet(null)});
+$("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soPayFormSet(null);
   $("soPAmt").value=soBal(v);$("soPMethod").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=false;$("soPAmt").focus()});
 $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const amt=Math.round(Number($("soPAmt").value)||0);
-  if(!(amt>0)){toast("ပေးငွေ ထည့်ပါ");return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
+  if(!(amt>0)){toast("ပေးငွေ ထည့်ပါ");return}
+  /* editing one payment: it keeps when / by whom it was taken; a changed method or amount has to be checked again */
+  if(soPEdit!=null){const i=soPEdit,old=(v.payments||[])[i];if(!old||!soPayEditable(v,old))return;const room=soBal(v)+Number(old.amt||0);
+    if(amt>room){toast(`ကျန်ငွေ ${fmt(room)} ထက် များနေပါတယ်`);return}
+    const nw={...old,amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||old.date||todayISO()};
+    if(nw.method!==old.method||nw.amt!==Number(old.amt)){delete nw.conf;delete nw.sconf}
+    const now=new Date().toISOString(),n={...v,payments:v.payments.map((p,k)=>k===i?nw:p),updatedAt:now,updatedBy:me.id||null};
+    try{await saveSo(n);$("soPayForm").hidden=true;soPayFormSet(null);renderSoView(n);toast("✓ Payment ပြင်ပြီး")}catch(x){toast("သိမ်းမရပါ")}return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
   const now=new Date().toISOString(),n={...v,payments:[...(v.payments||[]),{amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||todayISO(),at:now,by:me.id||null}],updatedAt:now};
   try{await saveSo(n);$("soPayForm").hidden=true;renderSoView(n);toast("✓ Payment သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}});
+$("soPays").addEventListener("click",e=>{const b=e.target.closest("[data-so-ped]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  const i=Number(b.dataset.soPed),p=(v.payments||[])[i];if(!p||!soPayEditable(v,p))return;soPayFormSet(i);
+  const ms=pmFor("sale");if(p.method&&!ms.includes(p.method))ms.push(p.method);
+  $("soPAmt").value=Number(p.amt)||0;$("soPMethod").innerHTML=ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");$("soPMethod").value=p.method||"Cash";
+  $("soPDate").innerHTML=dateSelect("",p.date||todayISO(),"Date","",false,todayISO());$("soDelForm").hidden=true;$("soPayForm").hidden=false;$("soPayForm").scrollIntoView({block:"nearest"});$("soPAmt").focus()});
 $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-so-prm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const p=(v.payments||[])[Number(b.dataset.soPrm)];if(!p||!await askConfirm("Remove this payment?",`${soDate(p.date)} · ${fmt(p.amt)}`))return;
   const n={...v,payments:v.payments.filter((_,i)=>i!==Number(b.dataset.soPrm)),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
