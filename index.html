@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794893141"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794894909"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4400,7 +4400,11 @@ $("form").addEventListener("submit",async e=>{
 });
 
 /* ---------- order preview card (photo to save / share) ---------- */
-let downloads=null, pvBlob=null, pvName="", pvOrder=null;
+let downloads=null, pvBlob=null, pvName="", pvOrder=null, pvJpg=null;
+/* pictures go to the share sheet as JPG: some apps (Viber on Android) are not offered a PNG */
+async function toJpeg(b){if(!b||b.type==="image/jpeg")return b;const im=await createImageBitmap(b),c=document.createElement("canvas");c.width=im.width;c.height=im.height;
+  const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0);return await new Promise(r=>c.toBlob(r,"image/jpeg",.92))}
+const jpgName=n=>String(n||"picture").replace(/\.png$/i,"")+".jpg";
 const MM_FONT='"Noto Sans Myanmar","Padauk",sans-serif';
 const fmtTimeShort=t=>t==="tbc"?"အချိန်ပြန်ပြောမည်":fmtTime(t).replace(" ","").toLowerCase();
 function wrapLines(ctx,text,maxW){
@@ -4678,7 +4682,7 @@ async function openPreview(o,fromForm=false){const run=++pvRun;
   $("preview").hidden=false;$("pvImg").removeAttribute("src");$("pvNote").textContent="ပုံ ပြင်ဆင်နေသည်…";$("pvSave").disabled=$("pvShare").disabled=$("pvSaveAll").disabled=true;
   $("pvSaveAll").hidden=!fromForm||!canWriteOrders();
   pvOrder=o;const blob=await buildPreview(o);if(run!==pvRun)return;
-  pvBlob=blob;pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";
+  pvBlob=blob;pvName=`${o.no||"order"} ${o.name||""}`.trim()+".png";pvJpg=toJpeg(blob).catch(()=>null);   /* ready before Share is tapped */
   /* a data: picture (not a blob: link), so pressing and holding it on a phone saves / shares the picture itself */
   const url=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(blob)});if(run!==pvRun)return;
   $("pvImg").src=url;
@@ -5111,7 +5115,7 @@ $("pvPrint").addEventListener("click",()=>{const o=pvOrder;if(!o)return;printOrd
    and failing that the viewer is told to save it and send it from the chat app. */
 $("pvShare").addEventListener("click",async()=>{
   if(!pvBlob)return;
-  const file=new File([pvBlob],pvName,{type:"image/png"});
+  const jb=await pvJpg,file=jb?new File([jb],jpgName(pvName),{type:"image/jpeg"}):new File([pvBlob],pvName,{type:"image/png"});
   /* 1) the phone's own share sheet with the picture itself — only when the browser can really attach files here
         (otherwise it quietly shares the page link, which Telegram shows as a link) */
   if(navigator.canShare?.({files:[file]})){
@@ -6076,7 +6080,7 @@ $("ordShareBtn").addEventListener("click",async()=>{
     $("bsMsg").textContent=`ပုံ ပြင်ဆင်နေသည်… ${i} / ${list.length}`;
     try{const b=await buildPreview(o);if(run!==bsRun)return;
       const name=`${o.no||"order"} ${o.name||""}`.trim().replace(/[\\/:*?"<>|]+/g," ")+".png";
-      bsFiles.push(new File([b],name,{type:"image/png"}));const u=URL.createObjectURL(b);bsUrls.push(u);
+      const jb=await toJpeg(b).catch(()=>null);bsFiles.push(jb?new File([jb],jpgName(name),{type:"image/jpeg"}):new File([b],name,{type:"image/png"}));const u=URL.createObjectURL(b);bsUrls.push(u);
       $("bsThumbs").insertAdjacentHTML("beforeend",`<img src="${u}" alt="${esc(name)}">`)}
     catch(x){if(run!==bsRun)return;fail++}}
   if(run!==bsRun)return;
@@ -10317,10 +10321,10 @@ $("soImgBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOp
    on a computer, the picture copied to paste into a chat. */
 let soShare=null;
 function soPrepShare(v){const key=[v.id,v.updatedAt||v.at,$("soPaper").value,$("soOrient").value,soBal(v)].join("|");if(soShare?.key===key)return;
-  soShare={key,ready:soMakeImage(v,"image/png").then(r=>{if(soShare?.key===key)soShare.img=r;return r}).catch(()=>null)}}
+  soShare={key,ready:soMakeImage(v,"image/jpeg").then(r=>{if(soShare?.key===key)soShare.img=r;return r}).catch(()=>null)}}
 $("soShareBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soPrepShare(v);
   let r=soShare.img;if(!r){toast("ပုံ ပြင်ဆင်နေသည်…",8000);r=await soShare.ready}if(!r){toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000);return}
-  const file=new File([r.blob],r.name,{type:"image/png"});
+  const file=new File([r.blob],r.name,{type:r.blob.type||"image/jpeg"});
   if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file]});return}catch(x){if(x?.name==="AbortError")return}}
   if(isPhone()&&innerWidth<=600){showToSave(r.blob,"ပုံကို ဖိထားပြီး “Share” ကို ရွေးပါ → Telegram / Viber / Messenger",r.name);return}
   if(isPhone()){saveFile(r.blob,r.name,"ပုံ");return}
