@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794908869"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794909113"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4528,7 +4528,9 @@ async function buildPreviewCanvas(o){
 
     /* ── cake ── */
     rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
-    if(isBak(o)){bakItemsOf(o).forEach(l=>{font(30,700);wrapLines(ctx,l.name||"",LW-120).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});text(`× ${l.qty}`,P+LW,y,30,{align:"right",weight:700})})}else{
+    /* each product: its name, the line amount on the right, and "price × qty" under the name (as on the slip) */
+    if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
+      text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted})})}else{
     y+=48;font(36,700);
     /* the shape outline with the size written inside it (as on the order card); a size too long to fit stays in the title */
     const sfit=o.shape?shapeSizeFit(shpKey,o.sizeName):null;
@@ -4560,8 +4562,8 @@ async function buildPreviewCanvas(o){
       y=top+boxH;
     }}
 
-    /* ── payment ── */
-    rule();
+    /* ── payment ── (a bakery order with nothing else goes straight to Total, whose own line follows the items) */
+    if(isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount)y+=10;else rule();
     const row=(l,amt,{bold=false,size=28,color=C.ink,info=""}={})=>{y+=size*1.75;
       text(l,P,y,size,{weight:bold?700:400,color});
       if(info){const x0=P+width(l,size,bold?700:400)+12,room=P+LW-width(money(amt),size,bold?700:400)-20-x0;
@@ -4570,7 +4572,7 @@ async function buildPreviewCanvas(o){
       text(money(amt),P+LW,y,size,{align:"right",weight:bold?700:400,color})};
     /* cupcakes: one line each — price of one × how many */
     if(!isBak(o)&&o.cupItems?.length)o.cupItems.forEach(l=>row(cupLbl(l),Math.round(Number(l.qty||0)*Number(l.price||0)),{color:C.muted,info:`${money(l.price)} × ${l.qty}`}));
-    else row(isBak(o)?"Products":"Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
+    else if(!isBak(o))row("Cake",o.basePrice,{color:C.muted,info:o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:""});
     /* a charge written on several lines: the first line with the amount, the rest under it */
     orderCharges(o).forEach(ch=>{const [l1,...more]=String(ch.note||"Additional").split("\n");row(l1,ch.amt,{color:C.muted,info:chQty(ch)});
       more.forEach(l=>{if(!l.trim())return;font(24);wrapLines(ctx,l,LW).forEach(w=>{y+=36;text(w,P,y,24,{color:C.muted})})})});
