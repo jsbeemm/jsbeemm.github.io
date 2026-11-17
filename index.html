@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918028"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918416"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2690,7 +2690,7 @@ span.star-ic{cursor:default}
 <div class="editor" id="bsDlg" hidden role="dialog" aria-modal="true" aria-labelledby="bsT" style="z-index:50"><div class="cfm-box"><h3 id="bsT">Preview ပုံများ Share</h3><p id="bsMsg"></p><div class="bs-thumbs" id="bsThumbs"></div><div class="cfm-btns"><button type="button" class="btn ghost" id="bsNo">Cancel</button><button type="button" class="btn" id="bsGo" disabled>Share</button></div></div></div>
 <div class="editor" id="ereqDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="ereqT" style="z-index:60"><div class="cfm-box"><h3 id="ereqT">Order ပြင်ခွင့် တောင်းနေပါတယ်</h3><p id="ereqMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="ereqNo">ခွင့်မပြုပါ</button><button type="button" class="btn" id="ereqYes">ခွင့်ပြုမည်</button></div></div></div>
 <div class="editor" id="cfmDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfmTitle" style="z-index:50"><div class="cfm-box"><h3 id="cfmTitle"></h3><p id="cfmMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="cfmNo">Cancel</button><button type="button" class="btn danger" id="cfmYes">Delete</button></div></div></div>
-<div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">ဆက်ရေးမည်</button><button type="button" class="btn ghost" id="soLvDrop">မသိမ်းဘဲ ထွက်မည်</button><button type="button" class="btn" id="soLvSave">Draft သိမ်းမည်</button></div></div></div>
+<div class="editor" id="soLeaveDlg" hidden role="alertdialog" aria-modal="true" aria-labelledby="soLvT" style="z-index:50"><div class="cfm-box"><h3 id="soLvT"></h3><p id="soLvMsg"></p><div class="cfm-btns"><button type="button" class="btn ghost" id="soLvStay">Keep editing</button><button type="button" class="btn ghost" id="soLvDrop">Leave without saving</button><button type="button" class="btn" id="soLvSave">Save draft</button></div></div></div>
 <div class="lightbox" id="lightbox" hidden><button type="button" class="lb-close" id="lbClose">✕ <span>ပိတ်ရန်</span></button><img id="lightImg" alt="ဒီဇိုင်း ဓာတ်ပုံ"><div class="lb-foot"><button type="button" class="lb-save" id="lbSave" hidden><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span>Save image</span></button><p class="lb-tip" id="lbTip" hidden>ပုံကို ဖိထားပြီး “Save Image” (သို့) “Save to Photos” ကို ရွေးပါ — Photos ထဲ ရောက်ပါမယ်</p></div></div>
 
 <!-- ===== Firebase build: shop sign-in, Firestore database, photos kept in Firestore =====
@@ -10113,9 +10113,10 @@ async function soSaveDraft(){const now=new Date().toISOString(),old=soDrafts.fin
   await putSoDraft(d)}
 /* the three choices: keep it (a draft, or for a saved voucher, save the changes) / leave without keeping / keep writing */
 function soAskLeave(){return new Promise(res=>{const ed=!!soEditing;
-  $("soLvT").textContent=ed?"ပြင်ထားတာ သိမ်းမလား?":"Draft သိမ်းမလား?";
-  $("soLvMsg").textContent=ed?"ပြင်ထားတာတွေ မသိမ်းရသေးပါ။":"ရေးလက်စ Voucher ကို Draft အဖြစ် သိမ်းထားရင် နောက်မှ ဆက်ရေးလို့ ရပါတယ်။";
-  $("soLvSave").textContent=ed?"သိမ်းမည်":"Draft သိမ်းမည်";$("soLeaveDlg").hidden=false;$("soLvSave").focus();
+  /* written in English (as the voucher screens are) */
+  $("soLvT").textContent=ed?"Save your changes?":"Save as a draft?";
+  $("soLvMsg").textContent=ed?"You have changes that are not saved yet.":"Save this voucher as a draft to finish it later.";
+  $("soLvSave").textContent=ed?"Save":"Save draft";$("soLeaveDlg").hidden=false;$("soLvSave").focus();
   const done=v=>{$("soLeaveDlg").hidden=true;$("soLvSave").onclick=$("soLvDrop").onclick=$("soLvStay").onclick=$("soLeaveDlg").onclick=null;res(v)};
   $("soLvSave").onclick=()=>done("save");$("soLvDrop").onclick=()=>done("drop");$("soLvStay").onclick=()=>done("stay");
   $("soLeaveDlg").onclick=e=>{if(e.target===$("soLeaveDlg"))done("stay")}})}
