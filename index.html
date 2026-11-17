@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794896464"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794908869"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2921,12 +2921,14 @@ const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov",
 const fmtDate=iso=>{if(!iso)return"--";const[y,m,d]=iso.split("-");return d+"-"+MONTHS[Number(m)-1]+"-"+y};
 /* "17:00" -> "5:00 PM" */
 /* "tbc" = the customer will confirm the time later */
-const fmtTime=t=>{if(!t)return"--";if(t==="tbc")return"အချိန်ပြန်ပြောမည်";let[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return`${h}:${String(m).padStart(2,"0")} ${ap}`};
+/* "any" = send it whenever it is ready */
+const timeWord=t=>t==="tbc"||t==="any";
+const fmtTime=t=>{if(!t)return"--";if(t==="tbc")return"အချိန်ပြန်ပြောမည်";if(t==="any")return"ရတဲ့ချိန်ပို့ပေးရန်";let[h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return`${h}:${String(m).padStart(2,"0")} ${ap}`};
 /* pickup time: 8:00 AM – 6:00 PM every half hour */
 const TIME_OPTS=[];for(let m=8*60;m<=18*60;m+=30)TIME_OPTS.push(String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"));
 /* last option "Special request" opens a second list of times outside shop hours */
 /* a new order starts with no time picked, so the time is always chosen on purpose (saving needs one) */
-$("fTime").innerHTML=`<option value="">-- အချိန်ရွေးရန် --</option>`+TIME_OPTS.map(t=>`<option value="${t}">${fmtTime(t)}</option>`).join("")+`<option value="special">⭐ Special request</option><option value="tbc">⏳ အချိန်ပြန်ပြောမည်</option>`;
+$("fTime").innerHTML=`<option value="">-- အချိန်ရွေးရန် --</option>`+TIME_OPTS.map(t=>`<option value="${t}">${fmtTime(t)}</option>`).join("")+`<option value="special">⭐ Special request</option><option value="tbc">⏳ အချိန်ပြန်ပြောမည်</option><option value="any">🕒 ရတဲ့ချိန်ပို့ပေးရန်</option>`;
 /* special times: outside shop hours (5:00 AM onwards — nothing between midnight and 4:30 AM), on the hour or half hour only */
 const SPECIAL_OPTS=[];for(let m=5*60;m<24*60;m+=30){const t=String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");if(!TIME_OPTS.includes(t))SPECIAL_OPTS.push(t)}
 function fillSpecial(extra){const list=extra&&!SPECIAL_OPTS.includes(extra)?[extra,...SPECIAL_OPTS].sort():SPECIAL_OPTS;
@@ -2935,7 +2937,7 @@ $("fTimeSpecial").addEventListener("change",()=>$("fTimeSpecial").classList.remo
 function syncSpecial(){const sp=$("fTime").value==="special";$("fTimeSpecial").hidden=!sp;$("fTimeSpecial").required=sp}
 $("fTime").addEventListener("change",()=>{syncSpecial();$("fTime").classList.remove("bad");if($("fTime").value==="special")$("fTimeSpecial").focus()});
 function getTime(){return $("fTime").value==="special"?$("fTimeSpecial").value:$("fTime").value}
-function setTime(t){t=t||"";keepTime=editingId?t:"";timeRestore($("fTime"));$("fTime").classList.remove("bad");$("fTimeSpecial").classList.remove("bad");const std=!t||t==="tbc"||TIME_OPTS.includes(t);fillSpecial(std?"":t);$("fTime").value=std?t:"special";$("fTimeSpecial").value=std?"":t;syncSpecial();syncTimeOpts()}
+function setTime(t){t=t||"";keepTime=editingId?t:"";timeRestore($("fTime"));$("fTime").classList.remove("bad");$("fTimeSpecial").classList.remove("bad");const std=!t||timeWord(t)||TIME_OPTS.includes(t);fillSpecial(std?"":t);$("fTime").value=std?t:"special";$("fTimeSpecial").value=std?"":t;syncSpecial();syncTimeOpts()}
 /* for an order due today, only times still ahead of now can be picked (an order being edited keeps its own saved time) */
 var keepTime="";
 function nowHM(){const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
@@ -3752,7 +3754,7 @@ const phList=s=>String(s||"").split(/[,\/]+/).map(x=>x.trim()).filter(Boolean);
 const custPh=s=>String(phList(s)[0]||"").replace(/\D/g,"").replace(/^(?:95|0)+/,"");
 const addrKey=s=>String(s||"").toLowerCase().replace(/[\s,.၊။\-]+/g,"");
 const balOf=o=>Math.max(0,(o.total||0)-(o.deposit||0));
-function custGrp(o){if(!o?.date||!o.time||o.time==="tbc"||!custPh(o.phone)||o.status==="cancel")return[];
+function custGrp(o){if(!o?.date||!o.time||timeWord(o.time)||!custPh(o.phone)||o.status==="cancel")return[];
   const dv=o.delivery||"pickup",same=x=>x.status!=="cancel"&&x.date===o.date&&x.time===o.time&&custPh(x.phone)===custPh(o.phone)&&(x.delivery||"pickup")===dv&&(dv!=="delivery"||addrKey(x.addr)===addrKey(o.addr));
   const list=orders.filter(x=>x.id!==o.id&&x.id!==o.selfId&&(!o.no||x.no!==o.no)&&same(x));if(!list.length)return[];
   return[...list,o].sort((a,b)=>String(a.no||"").localeCompare(String(b.no||"")))}
@@ -4411,7 +4413,7 @@ async function toJpeg(b){if(!b||b.type==="image/jpeg")return b;const im=await cr
   const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0);return await new Promise(r=>c.toBlob(r,"image/jpeg",.92))}
 const jpgName=n=>String(n||"picture").replace(/\.png$/i,"")+".jpg";
 const MM_FONT='"Noto Sans Myanmar","Padauk",sans-serif';
-const fmtTimeShort=t=>t==="tbc"?"အချိန်ပြန်ပြောမည်":fmtTime(t).replace(" ","").toLowerCase();
+const fmtTimeShort=t=>timeWord(t)?fmtTime(t):fmtTime(t).replace(" ","").toLowerCase();
 function wrapLines(ctx,text,maxW){
   /* iPhone canvases can measure Burmese as almost no width: then a safe estimate is used, so the text still wraps */
   const px=parseFloat((String(ctx.font).match(/(\d+(?:\.\d+)?)px/)||[])[1])||16;
@@ -5003,8 +5005,8 @@ function slipHTML(o,live=false){
     <div class="pr-head">
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
       <div class="pr-no">${esc(o.no||"")}</div>
-      <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${o.time==="tbc"?"":fmtTimeShort(o.time)}</div>
-      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||o.time==="tbc"||o.delivery==="later"?`<div class="pr-notes">${o.time==="tbc"?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[o.delivery==="later"?`<span class="pr-call">Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:"",!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${timeWord(o.time)?"":fmtTimeShort(o.time)}</div>
+      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||timeWord(o.time)||o.delivery==="later"?`<div class="pr-notes">${timeWord(o.time)?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[o.delivery==="later"?`<span class="pr-call">Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:"",!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
@@ -5698,7 +5700,7 @@ const EN={
   /* form */
   "မှာယူသည့် Channel":"Order channel","ဘယ်သူ့ Account ကနေ လာသလဲ":"Which account did it come from?","ဥပမာ – Ma Hla ၏ Personal Messenger":"e.g. Ma Hla's personal Messenger","အမည်":"Name","ဖုန်းနံပါတ်":"Phone number",
   "📲 Share ပုံများ":"📲 Share pictures","Preview ပုံများ Share":"Share preview pictures","Share စရာ အော်ဒါ မရှိပါ":"No orders to share","ပုံ မလုပ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the pictures — try again","ပုံများ ပြင်ဆင်ဖို့ အချိန်ကြာနိုင်ပါတယ်။ ဆက်လုပ်မလား?":"Making the pictures may take a while. Continue?","ဆက်လုပ်မည်":"Continue",
-  "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ အချိန်ပြန်ပြောမည်":"⏳ Customer will confirm time",
+  "ယူမည့်နေ့ / အချိန်":"Date / time","နေ့စွဲ":"Date","ရက်":"Day","လ":"Month","ခုနှစ်":"Year","အချိန်":"Time","Special request အချိန်":"Special request time","-- အချိန်ရွေးရန် --":"-- Choose time --","-- ရက်ရွေးရန် --":"-- Choose date --","⬇ Backup ထုတ်မည်":"⬇ Export backup","📊 Excel ထုတ်မည်":"📊 Export to Excel","စာရင်းမှာ လက်ရှိပြနေတဲ့ အော်ဒါများ (ရွေးထားတဲ့ နေ့စွဲ / အခြေအနေ / Channel / ရှာဖွေမှု အတိုင်း)":"The orders the list shows now (by the chosen date, status, channel and search)","ထုတ်စရာ အော်ဒါ မရှိပါ":"No orders to export","Excel ပြင်ဆင်နေသည်…":"Preparing Excel…","Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ":"Could not make the Excel file — please try again","⬆ Backup ပြန်ထည့်မည်":"⬆ Import backup","ထည့်မည်":"Import","Backup ပြင်ဆင်နေသည်…":"Preparing backup…","Backup ထည့်နေသည်…":"Importing backup…","ဒါ Cake Orders backup ဖိုင် မဟုတ်ပါ":"This is not a Cake Orders backup file","နံပါတ်":"number","ကိတ်သား ရွေးပါ":"Choose a flavor","Size နှင့် ကိတ်သား ရွေးပါ":"Choose size and flavor","Size ရွေးပါ":"Choose a size","ကိတ်သား":"flavor","⏳ အချိန်ပြန်ပြောမည်":"⏳ Customer will confirm time","🕒 ရတဲ့ချိန်ပို့ပေးရန်":"🕒 Send when ready","ရတဲ့ချိန်ပို့ပေးရန်":"Send when ready",
   "Pickup – ဆိုင်တွင် လာယူမည်":"Pickup – at the shop","လာယူမလား Delivery ယူမလား ပြန်ပြောမည်":"Will tell later – pickup or delivery","📞 စောရလျှင် ဖုန်းဆက်ပေးပါ":"📞 Call if it's ready early","📞 စောရလျှင် ဖုန်းဆက်":"📞 Call if early","📷 ဓာတ်ပုံပို့ပေးရန်":"📷 Send a photo of the cake","🧾 ဘောက်ချာထည့်ပေးရန်":"🧾 Put a voucher in","ဘောက်ချာထည့်ပေးရန်":"Put a voucher in","🧾 ဘောက်ချာထည့်ရန်":"🧾 ဘောက်ချာထည့်ရန်","📷 ဓာတ်ပုံပို့ရန်":"📷 Send photo","Delivery – အိမ်အရောက်ပို့":"Delivery – to the door",
   "ကိတ်":"Cake","ပုံမှန်ကိတ်သား":"Regular flavors","အခြားကိတ်သား":"Other flavor","စာရင်းမပါသော ကိတ်သား":"Flavor not on the list","See less ▴":"See less ▴",
   "ရွေးထားသော ကိတ်သား":"Selected flavor","ကိတ်သားအမည်":"Flavor name","ဥပမာ – Mango Mousse":"e.g. Mango Mousse",
