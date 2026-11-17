@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918985"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794919560"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3273,8 +3273,9 @@ function readForm(){
   /* a charge saves its total (qty × amount for one); with a quantity over 1 it also keeps qty and the one-piece amount */
   const charges=[...document.querySelectorAll("#chargeList .charge")].map(r=>{const unit=Math.max(0,Number(r.querySelector(".ca").value)||0),qty=Math.max(1,parseInt(r.querySelector(".cq").value)||1);
     return{note:r.querySelector(".cn").value.trim(),amt:unit*qty,...(qty>1?{qty,unit}:{}),...(r.dataset.ph?{photo:r.dataset.ph}:{})}}).filter(c=>c.note||c.amt||c.photo);
-  const payments=[...document.querySelectorAll("#payList .pay")].map(r=>{const p={date:readDate(r.querySelector(".pd")),method:r.querySelector(".pm").value,amt:Math.max(0,Number(r.querySelector(".pa").value)||0),at:r.dataset.at||new Date().toISOString()};
-    if(r.dataset.conf&&p.method===r.dataset.m0&&String(p.amt)===r.dataset.a0)try{p.conf=JSON.parse(r.dataset.conf)}catch(e){}return p}).filter(p=>p.amt);
+  const payments=[...document.querySelectorAll("#payList .pay")].map(r=>{const p={date:readDate(r.querySelector(".pd")),method:r.querySelector(".pm").value,amt:Math.max(0,Number(r.querySelector(".pa").value)||0),at:r.dataset.at||new Date().toISOString(),by:r.dataset.by||me.id||null};
+    if(r.dataset.conf&&p.method===r.dataset.m0&&String(p.amt)===r.dataset.a0)try{p.conf=JSON.parse(r.dataset.conf)}catch(e){}
+    if(r.dataset.sconf&&p.method===r.dataset.m0&&String(p.amt)===r.dataset.a0)try{p.sconf=JSON.parse(r.dataset.sconf)}catch(e){}return p}).filter(p=>p.amt);
   const delivery=(document.querySelector('input[name="fDeliv"]:checked')?.value||"");
   const r={
     name:$("fName").value.trim(),phone:$("fPhone").value.trim(),
@@ -3721,7 +3722,7 @@ function addPayRow(p={}){
   const sm=pmFor("sale"),methods=sm.includes(p.method)||!p.method?sm:[...sm,p.method];
   r.innerHTML=`${dateSelect("pd",p.date,"ပေးသည့်နေ့","",false,todayISO())}<select class="pm" aria-label="ငွေပေးချေနည်း">${methods.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select><input class="pa" type="number" min="0" step="1000" placeholder="Ks" aria-label="ပမာဏ"><button type="button" class="rm" aria-label="ဖယ်ရှားရန်">×</button>`;
   r.querySelector(".pm").value=p.method||(methods.includes("Cash")?"Cash":methods[0]||"");r.querySelector(".pa").value=p.amt||"";
-  r.dataset.at=p.at||p.date||"";if(p.conf){r.dataset.conf=JSON.stringify(p.conf);r.dataset.m0=p.method||"";r.dataset.a0=String(Number(p.amt)||0)}
+  r.dataset.at=p.at||p.date||"";if(p.by)r.dataset.by=p.by;if(p.sconf)r.dataset.sconf=JSON.stringify(p.sconf);if(p.conf)r.dataset.conf=JSON.stringify(p.conf);if(p.conf||p.sconf){r.dataset.m0=p.method||"";r.dataset.a0=String(Number(p.amt)||0)}
   if(payLocked(p)){r.classList.add("locked");r.title="ယခင်နေ့က မှတ်ထားသော ငွေချေမှု — Admin သာ ပြင်နိုင်သည်";
     r.querySelectorAll("button,select,input").forEach(el=>el.disabled=true);}
   $("payList").append(r);return r;
@@ -5644,7 +5645,7 @@ $("orders").addEventListener("click",async e=>{
     let line;
     if(t.dataset.peSave){const box=t.closest(".qp-pe");
       const nw={...old,date:readDate(box.querySelector(".qpe-d"))||old.date||todayISO(),method:box.querySelector(".qpe-m").value,amt:Math.max(0,Number(box.querySelector(".qpe-a").value)||0)};
-      if(nw.method!==old.method||nw.amt!==Number(old.amt))delete nw.conf;
+      if(nw.method!==old.method||nw.amt!==Number(old.amt)){delete nw.conf;delete nw.sconf}
       if(!nw.amt){toast("ပမာဏ ရိုက်ထည့်ပါ");box.querySelector(".qpe-a").focus();return}
       if(nw.date===(old.date||payDay(old))&&nw.method===old.method&&nw.amt===Number(old.amt)){payEd=null;render();return}
       ps[i]=nw;line=`Payment changed: ${payDesc(old)} → ${payDesc(nw)}`}
@@ -5656,7 +5657,7 @@ $("orders").addEventListener("click",async e=>{
     return}
   if(t.dataset.qpSave){
     const box=t.closest(".qp"),o=orders.find(x=>x.id===t.dataset.qpSave);
-    const add={at:new Date().toISOString(),date:readDate(box.querySelector(".qp-d"))||todayISO(),method:box.querySelector(".qp-m").value,amt:Math.max(0,Number(box.querySelector(".qp-a").value)||0)};
+    const add={at:new Date().toISOString(),by:me.id||null,date:readDate(box.querySelector(".qp-d"))||todayISO(),method:box.querySelector(".qp-m").value,amt:Math.max(0,Number(box.querySelector(".qp-a").value)||0)};
     if(!add.method){toast("ငွေပေးချေနည်း ရွေးပါ");box.querySelector(".qp-m").focus();return}
     if(!add.amt){toast("ပမာဏ ရိုက်ထည့်ပါ");box.querySelector(".qp-a").focus();return}
     /* the same customer's orders together: each order's balance is recorded on that order (same date and method) */
@@ -8779,56 +8780,82 @@ const needsConf=s=>!!saleOwner(s)&&!s.conf&&Number(s.total||0)!==0;
 const isMineToConf=s=>needsConf(s)&&sameId(saleOwner(s),me.id);
 async function confirmSales(list,closing){const now=new Date().toISOString();
   for(const s of list)await saveSale({...s,conf:{by:me.id||null,at:now,...(closing?{closing:true}:{})}})}
-/* every money entry an account owner checks: POS sales, and (recorded from CONF_FROM on) payments on JS / Mr.Bee vouchers and on
-   cake orders. A payment is done only once the owner of its account has confirmed it reached them. Vouchers from the old Excel
-   and payments recorded before this check began are not asked. */
+/* every money entry that is checked: POS sales, and payments on JS / Mr.Bee vouchers and on cake orders.
+   · a method with an account owner (Settings → Payment methods): the owner confirms (each payment, or the day's total at closing)
+     — vouchers / orders from CONF_FROM on
+   · a method with no owner, from CONF2_FROM on:
+       Cash — the seller holds it: only the day's total, confirmed at closing by Sale or Admin
+       any other — the seller confirms each payment first, then Sale or Admin confirms the day's total at closing
+   A payment is done (a voucher can be Finished) only once its last step is confirmed. Vouchers from the old Excel are not asked. */
 const CONF_FROM="2026-11-16T00:00:00.000Z";
+const CONF2_FROM="2026-11-17T13:00:00.000Z";
 const payOwnerOf=m=>pmOf(m)?.owner||null;
-function confEntries(){const out=[],late=p=>String(p?.at||"")>=CONF_FROM;
-  for(const s of sales)if(saleOwner(s)&&Number(s.total||0)!==0)out.push({k:"sale",id:s.id,i:-1,pay:s.pay,date:s.date,amt:Number(s.total||0),no:s.no,who:s.customer||"",conf:s.conf,at:s.at,brand:brandOf(s)});
-  for(const v of vos)if(!v.xl)(v.payments||[]).forEach((p,i)=>{if(payOwnerOf(p.method)&&Number(p.amt)>0&&late(p))out.push({k:"vo",id:v.id,i,pay:p.method,date:p.date||v.date,amt:Number(p.amt),no:v.no,who:v.customer||"",conf:p.conf,at:p.at,brand:vBrand(v)})});
-  for(const o of orders)if(o.status!=="cancel")(o.payments||[]).forEach((p,i)=>{if(payOwnerOf(p.method)&&Number(p.amt)>0&&late(p))out.push({k:"ord",id:o.id,i,pay:p.method,date:p.date||String(p.at||"").slice(0,10),amt:Number(p.amt),no:o.no||"",who:o.name||"",conf:p.conf,at:p.at,brand:"mb"})});
+const isCashM=m=>/^cash$/i.test(String(m||"").trim());
+/* how a payment is checked: "own" (its account owner), "cash" (closing only), "two" (seller, then closing), "" (not asked) */
+function confMode(m,at,sale){if(payOwnerOf(m))return sale||String(at||"")>=CONF_FROM?"own":"";if(String(at||"")<CONF2_FROM)return"";return isCashM(m)?"cash":"two"}
+const isCloser=()=>can("admin")||myRole()==="staff";
+function confEntries(){const out=[];
+  for(const s of sales){const md=confMode(s.pay,s.at,true);if(md&&Number(s.total||0)!==0)out.push({k:"sale",id:s.id,i:-1,pay:s.pay,date:s.date,amt:Number(s.total||0),no:s.no,who:s.customer||"",conf:s.conf,sconf:s.sconf,seller:s.by||null,mode:md,at:s.at,brand:brandOf(s)})}
+  for(const v of vos)if(!v.xl)(v.payments||[]).forEach((p,i)=>{const md=confMode(p.method,p.at);if(md&&Number(p.amt)>0)out.push({k:"vo",id:v.id,i,pay:p.method,date:p.date||v.date,amt:Number(p.amt),no:v.no,who:v.customer||"",conf:p.conf,sconf:p.sconf,seller:p.by||v.by||null,mode:md,at:p.at,brand:vBrand(v)})});
+  for(const o of orders)if(o.status!=="cancel")(o.payments||[]).forEach((p,i)=>{const md=confMode(p.method,p.at);if(md&&Number(p.amt)>0)out.push({k:"ord",id:o.id,i,pay:p.method,date:p.date||String(p.at||"").slice(0,10),amt:Number(p.amt),no:o.no||"",who:o.name||"",conf:p.conf,sconf:p.sconf,seller:p.by||o.createdBy||null,mode:md,at:p.at,brand:"mb"})});
   return out}
 const eOwner=e=>payOwnerOf(e.pay);
-const eMine=e=>!e.conf&&sameId(eOwner(e),me.id);
-/* one payment on a voucher / order: waiting for its owner, or confirmed */
-const payConfNeed=p=>!!p&&!p.conf&&!!payOwnerOf(p.method)&&Number(p.amt)>0&&String(p.at||"")>=CONF_FROM;
+/* the step an entry waits for: "each" (one by one) or "close" (the day's total) */
+const eStage=e=>e.mode==="own"?(pmOf(e.pay)?.confirmAt==="closing"?"close":"each"):e.mode==="cash"?"close":e.sconf?"close":"each";
+/* the entry waits for me: its owner; for no-owner methods the seller (first step) or Sale / Admin (closing) */
+const eMine=e=>{if(e.conf)return false;if(e.mode==="own")return sameId(eOwner(e),me.id);if(eStage(e)==="close")return isCloser();return sameId(e.seller,me.id)};
+const eWho=e=>e.mode==="own"?nameOf(eOwner(e)):eStage(e)==="close"?"Sale / Admin":nameOf(e.seller)||"Seller";
+/* one payment on a voucher / order: waiting for a check, or confirmed */
+const payConfNeed=p=>!!p&&!p.conf&&Number(p.amt)>0&&!!confMode(p.method,p.at);
 const soConfPend=v=>!v?.xl&&(v?.payments||[]).some(payConfNeed);
-const payConfChip=p=>!payOwnerOf(p?.method)||String(p?.at||"")<CONF_FROM?"":p.conf?`<span class="conf-chip ok">✓ ${esc(nameOf(p.conf.by))} စစ်ပြီး</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(payOwnerOf(p.method)))} စစ်ရန်</span>`;
+function payConfChip(p){const md=confMode(p?.method,p?.at);if(!md)return"";
+  if(p.conf)return`<span class="conf-chip ok">✓ ${esc(nameOf(p.conf.by))} စစ်ပြီး</span>`;
+  if(md==="own")return`<span class="conf-chip">⏳ ${esc(nameOf(payOwnerOf(p.method)))} စစ်ရန်</span>`;
+  if(md==="two"&&!p.sconf)return`<span class="conf-chip">⏳ ရောင်းသူ confirm ရန်</span>`;
+  return`<span class="conf-chip">⏳ ညနေ total confirm ရန်</span>`}
+/* confirming: a two-step payment's first click is the seller's (sconf); every other confirm is the last one (conf) */
 async function confirmEntries(list,closing){const now=new Date().toISOString(),c={by:me.id||null,at:now,...(closing?{closing:true}:{})};
+  const fld=e=>e.mode==="two"&&!e.sconf?"sconf":"conf";
   const by=new Map();for(const e of list){const k=e.k+"|"+e.id;if(!by.has(k))by.set(k,[]);by.get(k).push(e)}
   for(const[k,es]of by){const e0=es[0];
-    if(e0.k==="sale"){const s=sales.find(x=>x.id===e0.id);if(s)await saveSale({...s,conf:c})}
-    else if(e0.k==="vo"){const v=vos.find(x=>x.id===e0.id);if(!v)continue;const ix=new Set(es.map(e=>e.i));await saveSo({...v,payments:(v.payments||[]).map((p,i)=>ix.has(i)?{...p,conf:c}:p)})}
-    else{const o=orders.find(x=>x.id===e0.id);if(!o)continue;const ix=new Set(es.map(e=>e.i));await patchOrder(o.id,{payments:(o.payments||[]).map((p,i)=>ix.has(i)?{...p,conf:c}:p)})}}}
+    if(e0.k==="sale"){const s=sales.find(x=>x.id===e0.id);if(s)await saveSale({...s,[fld(e0)]:c})}
+    else{const fx=new Map(es.map(e=>[e.i,fld(e)])),upd=ps=>(ps||[]).map((p,i)=>fx.has(i)?{...p,[fx.get(i)]:c}:p);
+      if(e0.k==="vo"){const v=vos.find(x=>x.id===e0.id);if(v)await saveSo({...v,payments:upd(v.payments)})}
+      else{const o=orders.find(x=>x.id===e0.id);if(o)await patchOrder(o.id,{payments:upd(o.payments)})}}}}
 const confIc={sale:"🧾",vo:"📄",ord:"🎂"};
 const eKey=e=>`${e.k}|${e.id}|${e.i}`;
-/* the "to confirm" card on top of Sales report: the owner gets the buttons, an Admin sees who is still to confirm */
+/* the "Money to confirm" card (To-do list): the person whose step it is gets the buttons, an Admin sees who is still to confirm */
 function confCardHtml(){
   const pend=confEntries().filter(e=>!e.conf);if(!pend.length)return"";
   const mine=pend.filter(eMine),admin=can("admin");if(!mine.length&&!admin)return"";
   const show=mine.length?mine:pend,canAct=!!mine.length;
-  const each=show.filter(e=>pmOf(e.pay)?.confirmAt!=="closing").sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));
-  const groups={};show.filter(e=>pmOf(e.pay)?.confirmAt==="closing").forEach(e=>{const k=e.pay+"|"+e.date,g=groups[k]||(groups[k]={pay:e.pay,date:e.date,n:0,amt:0});g.n++;g.amt+=e.amt});
+  const each=show.filter(e=>eStage(e)==="each").sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));
+  const groups={};show.filter(e=>eStage(e)==="close").forEach(e=>{const k=e.pay+"|"+e.date,g=groups[k]||(groups[k]={pay:e.pay,date:e.date,n:0,amt:0,who:eWho(e)});g.n++;g.amt+=e.amt});
+  /* a two-step method's day still has payments waiting for their sellers: said beside its total */
+  const waitSeller=(pay,date)=>pend.filter(e=>e.pay===pay&&e.date===date&&e.mode==="two"&&!e.sconf).length;
   const gl=Object.values(groups).sort((a,b)=>b.date.localeCompare(a.date)||a.pay.localeCompare(b.pay));
   const eAmt=e=>e.amt<0?`Refund ${fmt(-e.amt)}`:fmt(e.amt);
   return`<div class="ex-card conf-card"><p class="ac-h">🔔 Money to confirm${canAct?"":" · waiting for the account owners"}</p>
-    ${gl.length?`<p class="conf-sub">At closing</p><table class="ex-tbl"><tbody>${gl.map(g=>`<tr><td><b>${esc(pmLabel(g.pay))}</b> · ${g.date===todayISO()?"Today":fmtDate(g.date)}<br><small class="ex-c">${g.n} payment${g.n===1?"":"s"}${canAct?"":` · ${esc(nameOf(pmOf(g.pay)?.owner))}`}</small></td><td class="ex-r">${fmt(g.amt)}</td>
-      <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-close="${esc(g.pay)}|${esc(g.date)}">Confirm closing</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
-    ${each.length?`<p class="conf-sub">Each payment</p><table class="ex-tbl"><tbody>${each.map(e=>`<tr><td><b>${confIc[e.k]} ${esc(e.no)}</b> · ${esc(pmLabel(e.pay))}<br><small class="ex-c">${e.date===todayISO()?"Today":fmtDate(e.date)}${e.who?` · <span data-t="${esc(e.who)}"></span>`:""}${canAct?"":` · ${esc(nameOf(eOwner(e)))}`}</small></td><td class="ex-r">${eAmt(e)}</td>
+    ${gl.length?`<p class="conf-sub">At closing</p><table class="ex-tbl"><tbody>${gl.map(g=>{const ws=waitSeller(g.pay,g.date);return`<tr><td><b>${esc(pmLabel(g.pay))}</b> · ${g.date===todayISO()?"Today":fmtDate(g.date)}<br><small class="ex-c">${g.n} payment${g.n===1?"":"s"}${canAct?"":` · ${esc(g.who)}`}${ws?` · ⏳ ရောင်းသူ confirm မလုပ်ရသေး ${ws}`:""}</small></td><td class="ex-r">${fmt(g.amt)}</td>
+      <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-close="${esc(g.pay)}|${esc(g.date)}">Confirm closing</button>`:""}</td></tr>`}).join("")}</tbody></table>`:""}
+    ${each.length?`<p class="conf-sub">Each payment</p><table class="ex-tbl"><tbody>${each.map(e=>`<tr><td><b>${confIc[e.k]} ${esc(e.no)}</b> · ${esc(pmLabel(e.pay))}<br><small class="ex-c">${e.date===todayISO()?"Today":fmtDate(e.date)}${e.who?` · <span data-t="${esc(e.who)}"></span>`:""}${canAct?"":` · ${esc(eWho(e))}`}</small></td><td class="ex-r">${eAmt(e)}</td>
       <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-e="${esc(eKey(e))}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
   </div>`}
 function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 /* Confirm / Confirm closing: true when the click was one of them */
 async function confClick(e){
-  const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
-  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=confEntries().filter(x=>x.pay===pay&&x.date===date&&eMine(x)),amt=list.reduce((a,x)=>a+x.amt,0);
-    if(!list.length)return true;if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} payment${list.length===1?"":"s"} · ${fmt(amt)}\nConfirm that this money has reached you.`,"Confirm"))return true;
+  const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)&&eStage(en)==="each"){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
+  const cc=e.target.closest("[data-conf-close]");if(cc){const[pay,date]=cc.dataset.confClose.split("|");const list=confEntries().filter(x=>x.pay===pay&&x.date===date&&eMine(x)&&eStage(x)==="close"),amt=list.reduce((a,x)=>a+x.amt,0);
+    if(!list.length)return true;const own=list[0].mode==="own";
+    if(!await askConfirm(`Confirm closing · ${pmLabel(pay)}`,`${date===todayISO()?"Today":fmtDate(date)} · ${list.length} payment${list.length===1?"":"s"} · ${fmt(amt)}\n${own?"Confirm that this money has reached you.":"Confirm that the day's total is right."}`,"Confirm"))return true;
     cc.disabled=true;try{await confirmEntries(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`)}catch(x){toast("သိမ်းမရပါ")}renderTodoConf();renderHome();return true}
   return false}
 $("todoConf").addEventListener("click",confClick);
 /* the small status on a sale row */
-const confChip=s=>!saleOwner(s)||!Number(s.total||0)?"":s.conf?`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`:`<span class="conf-chip">⏳ ${esc(nameOf(saleOwner(s)))} to confirm</span>`;
+function confChip(s){const md=confMode(s.pay,s.at,true);if(!md||!Number(s.total||0))return"";
+  if(s.conf)return`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`;
+  if(md==="own")return`<span class="conf-chip">⏳ ${esc(nameOf(saleOwner(s)))} to confirm</span>`;
+  return`<span class="conf-chip">⏳ ${md==="two"&&!s.sconf?"Seller":"Closing"} to confirm</span>`}
 /* a payment method's line opens its detail: the POS sales and cake order payments taken that way on the day */
 var posRepPay=null,posRepProd=null,posRepRet=null;
 function renderPosRep(){
