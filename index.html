@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794916107"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794916278"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -991,7 +991,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soLines .o-ic{border:0;background:none;box-shadow:none;min-width:0;min-height:0;width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:16px}#soLines .o-ic:hover{background:var(--bg-soft,rgba(0,0,0,.05));border-radius:50%}.so-tbl .so-lq,.so-tbl .so-lp{text-align:right}.so-tbl td{overflow:hidden}
 .so-addbtns .btn{width:auto}
 .so-tbl td.pic img{width:40px;height:40px;object-fit:cover;border-radius:6px}.so-empty{text-align:center;color:var(--muted);padding:18px}
-.vo-edit .so-add td{border:0;padding:6px 0}.vo-edit #soPaid{width:100%;text-align:right}.vo-edit #soPay{width:auto;min-width:0;max-width:120px;padding:5px 6px}
+.vo-edit .so-add td{border:0;padding:6px 0}.vo-edit #soPaid{width:100%;text-align:right}.vo-edit #soPay{width:auto;min-width:0;max-width:120px;padding:5px 6px;margin-right:10px;font-weight:400;vertical-align:middle}
 .vo-edit .vo-note{margin-top:10px}
 .so-pcats{margin:8px 0}.so-plist{display:grid;gap:6px}
 /* Add item keeps one size while typing: the window has a fixed height, the categories stay on one line (scroll sideways), only the list scrolls */
@@ -2563,7 +2563,7 @@ span.star-ic{cursor:default}
           <tbody class="so-add"><tr><td colspan="8"><div class="so-addbtns"><button type="button" class="btn" id="soAddItem">+ Add item</button><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div></td></tr></tbody>
           <tfoot class="vo-tot">
             <tr><td colspan="5" class="r k">Net Amount</td><td class="r v" id="soNet">0</td><td class="c">MMK</td><td></td></tr>
-            <tr class="so-money"><td colspan="4" class="r k">Paid Amount</td><td class="r" id="soPaidW"><select id="soPay" aria-label="Payment method"></select></td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td></tr>
+            <tr class="so-money"><td colspan="5" class="r k"><span id="soPaidW"><select id="soPay" aria-label="Payment method"></select></span>Paid Amount</td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td></tr>
             <tr class="ln so-money"><td colspan="5" class="r k">Balance</td><td class="r v" id="soBalTxt">0</td><td class="c">MMK</td><td></td></tr>
           </tfoot></table>
         <div class="vo-note"><input id="soNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
