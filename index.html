@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794894909"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794895919"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6068,8 +6068,12 @@ $("xlExport").addEventListener("click",()=>{$("settingsPanel").hidden=true;expor
 $("ordXlBtn").addEventListener("click",()=>{if(can("excel"))exportExcel()});
 /* Share the preview pictures of the orders shown: they are made one by one first (that takes a while), then a second tap
    opens the share sheet, because phones only allow it straight after a tap */
-let bsFiles=[],bsUrls=[],bsRun=0;
-function bsClose(){bsRun++;bsUrls.forEach(u=>URL.revokeObjectURL(u));bsUrls=[];bsFiles=[];$("bsThumbs").innerHTML="";$("bsDlg").hidden=true}
+let bsFiles=[],bsUrls=[],bsRun=0,bsAt=0;
+/* Chrome on Android shares at most 10 files (about 50 MB) at a time: more pictures go in groups, one Share tap each */
+const BS_MAX=/Android/i.test(navigator.userAgent)?10:500;
+function bsPart(){const out=[];let size=0;for(let i=bsAt;i<bsFiles.length&&out.length<BS_MAX;i++){if(out.length&&size+bsFiles[i].size>40e6)break;out.push(bsFiles[i]);size+=bsFiles[i].size}return out}
+function bsBtn(){const n=bsPart().length;$("bsGo").textContent=bsFiles.length>n||bsAt?`Share ${bsAt+1}–${bsAt+n} / ${bsFiles.length}`:"Share"}
+function bsClose(){bsRun++;bsAt=0;bsUrls.forEach(u=>URL.revokeObjectURL(u));bsUrls=[];bsFiles=[];$("bsThumbs").innerHTML="";$("bsDlg").hidden=true}
 $("ordShareBtn").addEventListener("click",async()=>{
   const list=shownList.slice();
   if(!list.length){toast("Share စရာ အော်ဒါ မရှိပါ",3000);return}
@@ -6087,9 +6091,13 @@ $("ordShareBtn").addEventListener("click",async()=>{
   if(!bsFiles.length){$("bsMsg").textContent="ပုံ မလုပ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ";return}
   const share=!!navigator.canShare?.({files:bsFiles});
   $("bsMsg").textContent=`ပုံ ${bsFiles.length} ပုံ အဆင်သင့်ဖြစ်ပါပြီ`+(fail?` (${fail} ပုံ မရပါ)`:"")+(share?" — Share နှိပ်ပြီး Viber ကို ရွေးပါ":" — Save all နှိပ်ပြီး Viber ထဲက ပုံရွေး၍ ပို့ပါ");
-  $("bsGo").textContent=share?"Share":"Save all";$("bsGo").disabled=false});
+  bsAt=0;if(share)bsBtn();else $("bsGo").textContent="Save all";$("bsGo").disabled=false});
 $("bsGo").addEventListener("click",async()=>{if(!bsFiles.length)return;const fs=bsFiles.slice();
-  if(navigator.canShare?.({files:fs})){try{await navigator.share({files:fs});bsClose()}catch(x){if(x?.name!=="AbortError")toast("Share မရပါ — ပြန်စမ်းကြည့်ပါ",4000)}return}
+  const part=bsPart();
+  if(part.length&&navigator.canShare?.({files:part})){try{await navigator.share({files:part});bsAt+=part.length;
+      if(bsAt>=bsFiles.length){bsClose();return}
+      bsBtn();$("bsMsg").textContent=`ပုံ ${bsAt} ပုံ ပို့ပြီး — ကျန် ${bsFiles.length-bsAt} ပုံအတွက် Share ထပ်နှိပ်ပါ`}
+    catch(x){if(x?.name!=="AbortError")toast(`Share မရပါ (${x?.name||"error"}) — ပြန်စမ်းကြည့်ပါ`,5000)}return}
   /* no share sheet here (a computer): each picture is saved as a file */
   for(const f of fs)await saveFile(f,f.name,"ပုံ");bsClose()});
 $("bsNo").addEventListener("click",bsClose);
