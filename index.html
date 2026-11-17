@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794895919"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794896464"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -348,6 +348,7 @@ legend{font-weight:700;font-size:14px;padding:0 6px;color:var(--accent)}
 .row.dc-row{grid-template-columns:minmax(0,1fr) minmax(0,3fr);align-items:start}
 @media (max-width:480px){.row.dc-row{grid-template-columns:minmax(0,1fr)}.row.dc-row > label:first-child{max-width:50%}}
 label.f{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.ph-add{justify-self:start;border:0;background:none;color:var(--accent);font:inherit;font-size:12.5px;font-weight:600;padding:2px 0;cursor:pointer}
 label.f > span b{color:var(--accent);font-weight:500}
 .opts{display:flex;flex-wrap:wrap;gap:6px}
 .opt{position:relative}
@@ -1753,7 +1754,7 @@ span.star-ic{cursor:default}
             <div class="f bak-namew"><label class="f" style="margin:0"><span>အမည် <b>*</b><button type="button" class="bak-pickb" id="bakPickBtn" hidden>👥 Customer</button></span><input id="fName" required></label>
               <span class="bak-chip" id="bakChip" hidden></span>
               <div class="bak-pop" id="bakPop" hidden><input type="search" id="bakPopQ" placeholder="Customer ရှာရန်" autocomplete="off"><div class="bak-popl" id="bakPopL"></div></div></div>
-            <label class="f"><span>ဖုန်းနံပါတ် <b>*</b></span><input id="fPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx" required></label>
+            <label class="f"><span>ဖုန်းနံပါတ် <b>*</b></span><input id="fPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx" required><button type="button" class="ph-add" data-ph-add="fPhone">+ ဖုန်း နောက်တစ်လုံး</button></label>
           </div>
         </fieldset>
 
@@ -1763,7 +1764,7 @@ span.star-ic{cursor:default}
             <label class="check recv-same"><input type="checkbox" id="fRecvSame"> မှာယူသူကိုယ်တိုင် လက်ခံပါမည်</label>
             <div class="row">
               <label class="f"><span>လက်ခံမည့်သူ အမည် <b>*</b></span><input id="fRecvName"></label>
-              <label class="f"><span>လက်ခံမည့်သူ ဖုန်းနံပါတ် <b>*</b></span><input id="fRecvPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx"></label>
+              <label class="f"><span>လက်ခံမည့်သူ ဖုန်းနံပါတ် <b>*</b></span><input id="fRecvPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx"><button type="button" class="ph-add" data-ph-add="fRecvPhone">+ ဖုန်း နောက်တစ်လုံး</button></label>
             </div>
             <div class="row">
               <label class="f"><span>ပို့ရမည့်လိပ်စာ <b>*</b></span><textarea id="fAddr" rows="2"></textarea></label>
@@ -3657,6 +3658,10 @@ $("fRecvSame").addEventListener("change",()=>{
   syncRecv();updateReceipt();if(!$("fRecvSame").checked)$("fRecvName").focus();
 });
 ["fName","fPhone"].forEach(id=>$(id).addEventListener("input",()=>{if($("fRecvSame").checked)syncRecv()}));
+/* a phone's number keypad has no comma: "+ ဖုန်း နောက်တစ်လုံး" adds ", " so a second number can be typed (the keypad stays open) */
+document.addEventListener("pointerdown",e=>{if(e.target.closest("[data-ph-add]"))e.preventDefault()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-ph-add]");if(!b)return;e.preventDefault();const inp=$(b.dataset.phAdd);if(!inp)return;
+  const v=inp.value.replace(/[,\s]+$/,"");if(v)inp.value=v+", ";inp.dispatchEvent(new Event("input",{bubbles:true}));inp.focus();const n=inp.value.length;try{inp.setSelectionRange(n,n)}catch(x){}});
 
 /* ---------- payments (more than one allowed, each with its own date and method) ---------- */
 /* payment methods are kept in Settings (meta/payMethods), not in the code: each has a currency and the places it is offered —
