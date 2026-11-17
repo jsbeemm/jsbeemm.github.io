@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918416"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794918515"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10009,6 +10009,8 @@ function soFamMap(){const m=new Map();for(const i of soItems()){const o=soOptsOf
 /* a voucher line's description: the item's name, then what one of its unit is (Sugar 1pk=1kg) */
 const soOptName=o=>{if(o.k<0)return o.it.name;const u=o.it.units[o.k];return`${o.it.name} ${soULabel(u)}`.trim()};
 /* the unit a line's Qty counts in: the chosen unit row's 1 Unit (ct), else the item's Stock Count Unit */
+/* the unit beside Qty on the voucher itself (as in the form); none on vouchers brought in from the old Excel */
+function soVoUnit(v,l){if(v.xl||!l.pid)return"";const it=(vBrand(v)==="mb"?mbItems():items).find(x=>x.id===l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
 function soLineUnit(l){const it=soItem(l.pid);if(!it)return"";const u=l.u!=null&&it.units?.[l.u];return u?(u.u||u.n||""):(it.units?.length?it.stockUnit||"":"")}
 const soOptOn=(o,l)=>l.pid===o.it.id&&(l.u??-1)===o.k;
 /* the size: from the name ("… 5kg"), else from Purchase Conversion in the base unit (25000 g → 25kg), else the count unit (pk) */
@@ -10286,7 +10288,7 @@ const SO_CSS=`.vo{--vc:#B4572A;font-family:"Noto Sans Myanmar","Padauk","Myanmar
 .vo-owe{margin-top:12px;border:1px solid #c98b6a;border-radius:6px;padding:8px 10px}.vo-owe h4{margin:0 0 6px;color:var(--vc);font-size:13px}
 .vo-owe table{margin:0}.vo-owe td,.vo-owe th{padding:4px 6px;font-size:12px}
 .vo-sign{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}.vo-sign div{text-align:center}.vo-sign span{display:block;height:26px;border-bottom:1px solid currentColor;margin-bottom:4px}.vo-sign b{font-weight:600;font-size:12px}
-.vo-note{margin-top:8px}.vo-opics{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.vo-opics img{height:170px;width:auto;max-width:48%;border:1px solid #e3d6dc;border-radius:6px}.vo-opno{flex-basis:100%;text-align:center;font-size:13px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
+.vo-note{margin-top:8px}.vo-u{font-size:.85em;color:#777}.vo-opics{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.vo-opics img{height:170px;width:auto;max-width:48%;border:1px solid #e3d6dc;border-radius:6px}.vo-opno{flex-basis:100%;text-align:center;font-size:13px}.vo-thanks{text-align:center;margin-top:12px;font-size:12px;line-height:1.9}`;
 document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style>`);
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
@@ -10306,7 +10308,7 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
       <div class="vo-no"><span class="k">SO No#</span><span>${esc(v.no)}</span>${v.channel?`<span class="k">Channel#</span><span>${esc(v.channel)}</span>`:""}<span class="k">Date</span><span>${esc(soDate(v.date))}</span>${v.orderFor?`<span class="k">Order for</span><span>${esc(v.orderFor)}</span>`:""}${v.mode?`<span class="k">Pickup / Delivery</span><span>${esc(v.mode)}</span>`:""}</div>
     </div>
     <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
-      ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
+      ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}${(u=>u?` <span class="vo-u">${esc(u)}</span>`:"")(soVoUnit(v,l))}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
     </tbody><tfoot class="vo-tot">
       <tr><td colspan="5" class="r k">Net Amount</td><td class="r v">${m(v.net)}</td><td class="c">MMK</td></tr>
       <tr><td colspan="5" class="r k">Paid Amount</td><td class="r v">${paid?m(paid):"-"}</td><td class="c">MMK</td></tr>
