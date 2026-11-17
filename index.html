@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794920369"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794920674"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9823,22 +9823,37 @@ function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
   if(vBrand(v)==="mb")return`<p class="po-chips so-stage">${st==="fin"?`<span class="conf-chip ok"><b>✓ Paid</b></span>`:soChips(v)}</p>`;
   return`<p class="po-chips so-stage"><span class="conf-chip${st==="fin"?" ok":""}"><b>${lbl}</b></span>${st==="fin"?"":soChips(v)}</p>`
-    +(ds.length?`<p class="ac-h">🚚 Delivered</p><table class="ex-tbl"><tbody>${ds.map((d,i)=>`<tr><td>${esc(soDate(d.date))}${d.gate?`<br><small>🚌 ${esc(d.gate)}</small>`:""}</td><td>${Object.entries(d.lines||{}).map(([k,q])=>`${(v.lines||[])[k]?.name||"?"} × ${poNum(q)}`).map(esc).join(", ")}</td><td class="ex-v">${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${i}" aria-label="Remove delivery" title="Remove delivery">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"")}
+    +(ds.length?`<p class="ac-h">🚚 Delivered</p><table class="ex-tbl"><tbody>${ds.map((d,i)=>`<tr><td>${esc(soDate(d.date))}${d.gate?`<br><small>🚌 ${esc(d.gate)}</small>`:""}</td><td>${Object.entries(d.lines||{}).map(([k,q])=>`${(v.lines||[])[k]?.name||"?"} × ${poNum(q)}`).map(esc).join(", ")}</td><td class="ex-v so-pact">${soDelEditable(v,d)?`<button type="button" class="o-ic" data-so-ded="${i}" aria-label="Edit delivery" title="Edit delivery">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${i}" aria-label="Remove delivery" title="Remove delivery">✕</button>`:""}</td></tr>`).join("")}</tbody></table>`:"")}
 /* 🚚 Delivered: how many of each item are given now (everything left, unless lowered) */
-$("soDelivBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const left=soLeftArr(v);
-  $("soDelRows").innerHTML=`<table class="ex-tbl so-deltbl"><thead><tr><th>Description</th><th class="r">ကျန်</th><th class="r">ယခုပေး</th><th class="r">ပေးရန်ကျန်</th></tr></thead><tbody>${(v.lines||[]).map((l,i)=>left[i]>0?`<tr><td data-t="${esc(l.name||"")}"></td><td class="r">${poNum(left[i])}</td><td class="r"><input type="number" min="0" max="${left[i]}" step="any" value="${left[i]}" data-so-dq="${i}" aria-label="Qty given now"></td><td class="r so-drem" data-so-drem="${i}">0</td></tr>`:"").join("")}</tbody></table>`;
+/* a delivery can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
+var soDEdit=null;
+const soDelEditable=(v,d)=>!v.xl&&(can("admin")||(sameId(d.by,me.id)&&String(d.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
+/* what is left of each line, not counting delivery ei (the one being edited) */
+function soDelLeft(v,ei){const left=soLeftArr(v).slice(),d=ei!=null?(v.deliveries||[])[ei]:null;if(d)for(const[k,q]of Object.entries(d.lines||{}))left[k]=(left[k]||0)+Number(q||0);return left}
+function soDelOpen(v,ei){soDEdit=ei;const d=ei!=null?(v.deliveries||[])[ei]:null,left=soDelLeft(v,ei),now=k=>d?Number(d.lines?.[k]||0):left[k];
+  $("soDelForm").querySelector(".ac-h").textContent=d?"✎ Delivered ပြင်ရန်":"🚚 ယခု ပေးမယ့် အရေအတွက်";$("soDSave").textContent=d?"Save changes":"Save";
+  $("soDelRows").innerHTML=`<table class="ex-tbl so-deltbl"><thead><tr><th>Description</th><th class="r">ကျန်</th><th class="r">ယခုပေး</th><th class="r">ပေးရန်ကျန်</th></tr></thead><tbody>${(v.lines||[]).map((l,i)=>left[i]>0?`<tr><td data-t="${esc(l.name||"")}"></td><td class="r">${poNum(left[i])}</td><td class="r"><input type="number" min="0" max="${left[i]}" step="any" value="${now(i)}" data-so-dq="${i}" aria-label="Qty given now"></td><td class="r so-drem${left[i]-now(i)>0?" on":""}" data-so-drem="${i}">${poNum(left[i]-now(i))}</td></tr>`:"").join("")}</tbody></table>`;
   $("soDelRows").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
-  $("soDDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=false;
-  {let last=null;for(const x of vos)if(x.custId&&x.custId===v.custId)for(const d of x.deliveries||[])if(d.gate&&(!last||(d.at||"")>(last.at||"")))last=d;$("soDGate").value=last?.gate||"";$("soDGateHits").hidden=true}});
-$("soDCancel").addEventListener("click",()=>{$("soDelForm").hidden=true});
+  $("soDDate").innerHTML=dateSelect("",d?.date||todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=false;
+  if(d)$("soDGate").value=d.gate||"";
+  else{let last=null;for(const x of vos)if(x.custId&&x.custId===v.custId)for(const g of x.deliveries||[])if(g.gate&&(!last||(g.at||"")>(last.at||"")))last=g;$("soDGate").value=last?.gate||""}
+  $("soDGateHits").hidden=true;if(d)$("soDelForm").scrollIntoView({block:"nearest"})}
+$("soDelivBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(v)soDelOpen(v,null)});
+$("soDCancel").addEventListener("click",()=>{$("soDelForm").hidden=true;soDEdit=null});
 /* "ပေးရန်ကျန်": what is still to give after this delivery (ကျန် − ယခုပေး), kept up to date while typing */
 $("soDelRows").addEventListener("input",e=>{const inp=e.target.closest("[data-so-dq]");if(!inp)return;const c=$("soDelRows").querySelector(`[data-so-drem="${inp.dataset.soDq}"]`);
   if(c){const left=Number(inp.max)||0,q=Math.min(left,Math.max(0,Number(inp.value)||0));c.textContent=poNum(left-q);c.classList.toggle("on",left-q>0)}});
-$("soDSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const left=soLeftArr(v),lines={};
+$("soDSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const ei=soDEdit,old=ei!=null?(v.deliveries||[])[ei]:null;
+  if(ei!=null&&(!old||!soDelEditable(v,old)))return;const left=soDelLeft(v,old?ei:null),lines={};
   for(const inp of $("soDelRows").querySelectorAll("[data-so-dq]")){const i=Number(inp.dataset.soDq),q=Math.min(left[i],Math.max(0,Number(inp.value)||0));if(q>0)lines[i]=q}
   if(!Object.keys(lines).length){toast("ပေးမယ့် အရေအတွက် ထည့်ပါ");return}
-  const now=new Date().toISOString(),n={...v,pre:true,deliveries:[...(v.deliveries||[]),{date:readDate($("soDDate").querySelector(".dp"))||todayISO(),lines,...($("soDGate").value.trim()?{gate:$("soDGate").value.trim()}:{}),at:now,by:me.id||null}],updatedAt:now};
-  try{await saveSo(n);$("soDelForm").hidden=true;renderSoView(n);toast(soDelivered(n)?"✓ Delivered — အကုန်ပေးပြီး":"✓ Delivered — ကျန်တာ နောက်မှ ပေးရန်")}catch(x){toast("သိမ်းမရပါ")}});
+  const now=new Date().toISOString(),gate=$("soDGate").value.trim(),date=readDate($("soDDate").querySelector(".dp"))||old?.date||todayISO();
+  let ds;if(old){const nd={...old,date,lines,editedAt:now,editedBy:me.id||null};if(gate)nd.gate=gate;else delete nd.gate;ds=v.deliveries.map((x,k)=>k===ei?nd:x)}
+  else ds=[...(v.deliveries||[]),{date,lines,...(gate?{gate}:{}),at:now,by:me.id||null}];
+  const n={...v,pre:true,deliveries:ds,updatedAt:now};
+  try{await saveSo(n);$("soDelForm").hidden=true;soDEdit=null;renderSoView(n);toast(old?"✓ Delivered ပြင်ပြီး":soDelivered(n)?"✓ Delivered — အကုန်ပေးပြီး":"✓ Delivered — ကျန်တာ နောက်မှ ပေးရန်")}catch(x){toast("သိမ်းမရပါ")}});
+$("soPays").addEventListener("click",e=>{const b=e.target.closest("[data-so-ded]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  const i=Number(b.dataset.soDed),d=(v.deliveries||[])[i];if(d&&soDelEditable(v,d))soDelOpen(v,i)});
 $("soPays").addEventListener("click",async e=>{const b=e.target.closest("[data-so-drm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const i=Number(b.dataset.soDrm),d=(v.deliveries||[])[i];if(!d||!await askConfirm("Remove this delivery?",soDate(d.date),"Remove"))return;
   const n={...v,deliveries:v.deliveries.filter((_,k)=>k!==i),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
