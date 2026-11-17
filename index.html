@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794917226"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794917341"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4137,7 +4137,10 @@ function resetForm(keepFresh){
   $("formErr").hidden=true;updateReceipt();checkNo();
   custNeed=false;custTop();   /* a fresh form: Customer back at the top, even while the view is still hidden */
   setKind("cake");setCups([]);syncDcWho();syncResetBtn();
+  /* how an empty new order reads, so Cancel can tell whether anything was written */
+  blankSig=null;setTimeout(()=>{if(!editingId&&!draftId)blankSig=formSig()},60);
 }
+var blankSig=null;
 const custNm=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ");
 async function renameSameCust(prev,o){
   if(!custNm(prev.name))return;
@@ -4332,6 +4335,10 @@ $("resetBtn").addEventListener("click",async()=>{
   if(draftId){const d=drafts.find(x=>x.id===draftId),f=d?.form||{};
     if(!await askConfirm("Delete this draft?",[f.name,f.phone].filter(Boolean).join(" · ")||"","Delete"))return;
     const id=draftId;draftId=null;try{await dropDraft(id);toast("Draft ဖျက်ပြီး")}catch(x){toast("Draft ဖျက်မရပါ")}}
+  /* an order being edited with changes: Save / Don't save / Keep editing */
+  else if(editingId){if(guardLeave(()=>showTab("list")))return}
+  /* a new order with something written in it: ask before it is cleared */
+  else if(blankSig!==null&&formSig()!==blankSig&&!await askConfirm("မသိမ်းဘဲ ထွက်မှာလား?","ရေးထားတာတွေ မသိမ်းရသေးပါ။ ထွက်ရင် ပျက်သွားပါမယ်။","ထွက်မည်"))return;
   resetForm();showTab("list")});
 /* scroll to the first field that still needs filling (top of the form first), flash it and put the cursor there */
 function goToField(els){
