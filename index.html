@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794983111"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794990030"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8807,15 +8807,21 @@ function confEntries(){const out=[];
 const eOwner=e=>payOwnerOf(e.pay);
 /* the step an entry waits for: "each" (one by one) or "close" (the day's total) */
 const eStage=e=>e.mode==="own"?(pmOf(e.pay)?.confirmAt==="closing"?"close":"each"):e.mode==="cash"?"close":e.sconf?"close":"each";
+/* the closing step (the day's total) is switched off for now: it is not asked on the To-do list and does not hold a payment back.
+   Set to true to bring it back — what was confirmed stays confirmed */
+const CLOSING_ON=false;
+/* a payment's step, from the payment itself (same as eStage) */
+const payStage=(p,md)=>md==="own"?(pmOf(p.method)?.confirmAt==="closing"?"close":"each"):md==="cash"?"close":p.sconf?"close":"each";
 /* the entry waits for me: its owner; for no-owner methods the seller (first step) or Sale / Admin (closing) */
-const eMine=e=>{if(e.conf)return false;if(e.mode==="own")return sameId(eOwner(e),me.id);if(eStage(e)==="close")return isCloser();return sameId(e.seller,me.id)};
+const eMine=e=>{if(e.conf)return false;if(!CLOSING_ON&&eStage(e)==="close")return false;if(e.mode==="own")return sameId(eOwner(e),me.id);if(eStage(e)==="close")return isCloser();return sameId(e.seller,me.id)};
 const eWho=e=>e.mode==="own"?nameOf(eOwner(e)):eStage(e)==="close"?"Sale / Admin":nameOf(e.seller)||"Seller";
 /* one payment on a voucher / order: waiting for a check, or confirmed */
-const payConfNeed=p=>!!p&&!p.conf&&Number(p.amt)>0&&!!confMode(p.method,p.at);
+const payConfNeed=p=>{if(!p||p.conf||!(Number(p.amt)>0))return false;const md=confMode(p.method,p.at);return!!md&&(CLOSING_ON||payStage(p,md)!=="close")};
 const soConfPend=v=>!v?.xl&&(v?.payments||[]).some(payConfNeed);
 function payConfChip(p){const md=confMode(p?.method,p?.at);if(!md)return"";
   if(p.conf)return`<span class="conf-chip ok">✓ ${esc(nameOf(p.conf.by))} စစ်ပြီး</span>`;
   if(md==="own")return`<span class="conf-chip">⏳ ${esc(nameOf(payOwnerOf(p.method)))} စစ်ရန်</span>`;
+  if(!CLOSING_ON&&payStage(p,md)==="close")return p.sconf?`<span class="conf-chip ok">✓ ${esc(nameOf(p.sconf.by))} confirm ပြီး</span>`:"";
   if(md==="two"&&!p.sconf)return`<span class="conf-chip">⏳ ရောင်းသူ confirm ရန်</span>`;
   return`<span class="conf-chip">⏳ ညနေ total confirm ရန်</span>`}
 /* confirming: a two-step payment's first click is the seller's (sconf); every other confirm is the last one (conf) */
@@ -8831,7 +8837,7 @@ const confIc={sale:"🧾",vo:"📄",ord:"🎂"};
 const eKey=e=>`${e.k}|${e.id}|${e.i}`;
 /* the "Money to confirm" card (To-do list): the person whose step it is gets the buttons, an Admin sees who is still to confirm */
 function confCardHtml(){
-  const pend=confEntries().filter(e=>!e.conf);if(!pend.length)return"";
+  const pend=confEntries().filter(e=>!e.conf&&(CLOSING_ON||eStage(e)!=="close"));if(!pend.length)return"";
   const mine=pend.filter(eMine),admin=can("admin");if(!mine.length&&!admin)return"";
   const show=mine.length?mine:pend,canAct=!!mine.length;
   const each=show.filter(e=>eStage(e)==="each").sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));
@@ -8859,6 +8865,7 @@ $("todoConf").addEventListener("click",confClick);
 /* the small status on a sale row */
 function confChip(s){const md=confMode(s.pay,s.at,true);if(!md||!Number(s.total||0))return"";
   if(s.conf)return`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`;
+  if(!CLOSING_ON&&payStage({method:s.pay,sconf:s.sconf},md)==="close")return s.sconf?`<span class="conf-chip ok">✓ Seller confirmed</span>`:"";
   if(md==="own")return`<span class="conf-chip">⏳ ${esc(nameOf(saleOwner(s)))} to confirm</span>`;
   return`<span class="conf-chip">⏳ ${md==="two"&&!s.sconf?"Seller":"Closing"} to confirm</span>`}
 /* a payment method's line opens its detail: the POS sales and cake order payments taken that way on the day */
