@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794982048"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794983111"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1214,7 +1214,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #itCode.bad{border-color:var(--accent)}
 /* customers to register */
 .nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
-.nc-list{display:grid;gap:8px}
+.nc-list{display:grid;gap:8px}.it-meta .it-last{flex-basis:100%;color:var(--accent)}
 #itSaleDlg,#itMgDlg{z-index:45}.is-panel{width:min(720px,100%)}
 .is-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:10px}.is-bar label{display:grid;gap:2px;font-size:12px;color:var(--muted)}.is-bar label:has(input[type=date]){flex:1 1 120px;max-width:170px;min-width:0}.is-bar input[type=date]{width:100%;min-width:0;box-sizing:border-box}
 .is-bar #isQ{flex:1 1 200px;min-width:0}.is-bar .is-pre{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.is-pre input{width:auto;margin:0}
@@ -1875,7 +1875,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
-      <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button><button type="button" class="chip" id="itSalesBtn" hidden>📊 အရောင်း</button>
+      <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button><button type="button" class="chip" id="itLastBtn" aria-pressed="false" title="JS voucher မှာ နောက်ဆုံး ရောင်းခဲ့တဲ့ item ကနေ စီပြရန်">🕒 နောက်ဆုံးရောင်း</button><button type="button" class="chip" id="itSalesBtn" hidden>📊 အရောင်း</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden><button type="button" class="chip" id="itClearAll" hidden title="Raw Material အားလုံးကို ဖျက်ရန် (Excel ကနေ ပြန် import မလုပ်ခင်)">🗑 အားလုံးဖျက်</button>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
@@ -9061,7 +9061,10 @@ $("goItems").addEventListener("click",()=>go("items"));
 $("goSaleRep").addEventListener("click",()=>{if(!can("sales.report"))return;posTab="report";posRepDate=posRepTo=todayISO();posRepPay=posRepProd=posRepRet=null;go("pos")});
 /* ---------- Items: the raw items list (collection "items", one doc per Short Code), brought in from the Items Excel by an Admin.
    Loaded the first time Sale, POS or Items is opened. ---------- */
-var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false,itOk="";
+var items=[],itCol=null,itLoaded=false,itQ="",itCat="",itJs=false,itOk="",itLast=false;
+/* when each raw material was last sold on a JS voucher: {date, no} (latest first when "🕒 နောက်ဆုံးရောင်း" is on) */
+function itLastSold(){const m=new Map();for(const v of vos){if(vBrand(v)!=="js")continue;const k=(v.date||"")+"|"+(v.at||"");
+    for(const l of v.lines||[]){if(!l.pid||!(Number(l.qty)>0))continue;const o=m.get(l.pid);if(!o||k>o.k)m.set(l.pid,{k,date:v.date||"",no:v.no||""})}}return m}
 function initItems(){
   if(!db){if(!itLoaded){try{items=JSON.parse(localStorage.getItem("cakeItems")||"[]")}catch(e){items=[]}itLoaded=true}return}
   if(itCol)return;itCol=db.collection("items");
@@ -9169,11 +9172,13 @@ function renderItems(){
   const nOk=inQ0.filter(i=>i.unitOk).length;
   $("itOkTodo").innerHTML=`⏳ မစစ်ရသေး <small>${inQ0.length-nOk}</small>`;$("itOkDone").innerHTML=`✓ စစ်ပြီး <small>${nOk}</small>`;
   $("itOkTodo").setAttribute("aria-pressed",itOk==="todo");$("itOkDone").setAttribute("aria-pressed",itOk==="done");
-  const inQ=inQ0.filter(i=>!itOk||(itOk==="done")===!!i.unitOk);
+  const ls=itLast?itLastSold():null;$("itLastBtn").setAttribute("aria-pressed",itLast);
+  const inQ=inQ0.filter(i=>(!itOk||(itOk==="done")===!!i.unitOk)&&(!ls||ls.has(i.id)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
     +cats.map(c=>`<button type="button" class="chip" data-itcat="${esc(c)}" aria-pressed="${itCat===c}">${esc(c)} <small>${inQ.filter(i=>(i.cat||"Other")===c).length}</small></button>`).join("");
-  const list=inQ.filter(i=>!itCat||(i.cat||"Other")===itCat).sort((a,b)=>String(a.cat).localeCompare(String(b.cat))||String(a.sub||"").localeCompare(String(b.sub||""))||String(a.name).localeCompare(String(b.name)));
+  const list=inQ.filter(i=>!itCat||(i.cat||"Other")===itCat).sort(ls?(a,b)=>ls.get(b.id).k.localeCompare(ls.get(a.id).k)||String(a.name).localeCompare(String(b.name))
+    :(a,b)=>String(a.cat).localeCompare(String(b.cat))||String(a.sub||"").localeCompare(String(b.sub||""))||String(a.name).localeCompare(String(b.name)));
   const MAX=300,shown=list.slice(0,MAX),byCode=new Map(items.map(i=>[pdNorm(i.code),i]));
   $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
     `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
@@ -9182,7 +9187,7 @@ function renderItems(){
     return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><span class="it-pic">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="it-noph"></span>`}</span>
       <span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}${i.unitOk?`<span class="it-okb" title="Unit နဲ့ ဈေး စစ်ပြီး">✓</span>`:""}</span>
       <span class="it-pr">${[[i.price,i.whPrice>0||i.mbPrice>0?"JS":""],[i.whPrice,"Wholesale"],[i.mbPrice,"Mr.Bee"]].filter(([p])=>p>0).map(([p,l])=>`${l?`<small class="it-pl">${l}</small> `:""}${fmt(p)}`).join("<br>")}</span>
-      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small></span></div>`}).join("");
+      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small>${ls?`<small class="it-last">🕒 ${esc(soDate(ls.get(i.id).date))} · ${esc(ls.get(i.id).no)}</small>`:""}</span></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 /* tapping an item (Admin) opens its photo and prices */
@@ -9496,6 +9501,7 @@ $("itCats").addEventListener("click",e=>{const b=e.target.closest("[data-itcat]"
 $("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
 $("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";renderItems()});
 $("itOkDone").addEventListener("click",()=>{itOk=itOk==="done"?"":"done";renderItems()});
+$("itLastBtn").addEventListener("click",()=>{itLast=!itLast;if(itLast)initSo();renderItems()});
 $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
 $("itCode").addEventListener("input",itCodeSync);
 $("itCodeHint").addEventListener("click",e=>{const b=e.target.closest("[data-it-next]");if(!b)return;e.preventDefault();$("itCode").value=b.dataset.itNext;itCodeSync();$("itCode").focus()});
@@ -9608,7 +9614,7 @@ const soTierPrice=(pp,t)=>t==="w"&&pp.w>0?pp.w:t==="f"&&pp.f>0?pp.f:pp.r;
 function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
-  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="home")renderHome();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
+  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="items"&&itLast)renderItems();if(view==="home")renderHome();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
     if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}
     if(poOpen&&!$("poView").hidden){const p=pos.find(x=>x.id===poOpen);if(p)renderPoView(p)}},()=>{soCol=null});
 }
