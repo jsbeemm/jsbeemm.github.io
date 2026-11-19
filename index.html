@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795063171"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795063890"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1215,7 +1215,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 /* customers to register */
 .nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
 .nc-list{display:grid;gap:8px}.it-meta .it-last{flex-basis:100%;color:var(--accent)}
-#itSaleDlg,#itMgDlg{z-index:45}.is-panel{width:min(720px,100%)}
+#itSaleDlg,#itMgDlg,#othDlg{z-index:45}#posRepBody .oth-tbl .ex-c{width:52px;padding-right:6px}#posRepBody .oth-tbl .ex-r{width:96px}#posRepBody .oth-tbl td.ex-v{width:48px;padding-left:6px}.oth-tbl td:first-child{width:100%;overflow-wrap:anywhere}.oth-tbl td:not(:first-child){white-space:nowrap}.is-panel{width:min(720px,100%)}
 .is-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:10px}.is-bar label{display:grid;gap:2px;font-size:12px;color:var(--muted)}.is-bar label:has(input[type=date]){flex:1 1 120px;max-width:170px;min-width:0}.is-bar input[type=date]{width:100%;min-width:0;box-sizing:border-box}
 .is-bar #isQ{flex:1 1 200px;min-width:0}.is-bar .is-pre{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.is-pre input{width:auto;margin:0}
 .is-list{display:grid;gap:6px}.is-row{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}.is-row.on{border-color:var(--accent)}
@@ -2443,6 +2443,16 @@ span.star-ic{cursor:default}
       <div id="itMgUnits"></div>
       <p class="nc-help" id="itMgSum"></p>
       <div class="cfm-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="button" class="btn" id="itMgGo" disabled>ပေါင်းပြီး ဖျက်မည်</button></div>
+    </div>
+  </div>
+</div>
+<div class="editor" id="othDlg" hidden role="dialog" aria-modal="true" aria-labelledby="othT">
+  <div class="ed-panel side-panel nc-panel">
+    <div class="ed-tools pv-head"><b id="othT">🔗 Raw material နဲ့ ချိတ်ရန်</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
+    <div class="side-body"><p class="nc-help"><b id="othName"></b> — <span id="othN"></span></p>
+      <input type="search" id="othQ" placeholder="Raw material ရှာပါ (name / short code)" aria-label="Raw material" autocomplete="off">
+      <div class="is-list mg-hits" id="othHits"></div>
+      <div class="cfm-btns"><button type="button" class="btn ghost" id="othNew">➕ Raw material အသစ်အဖြစ် ထည့်</button></div>
     </div>
   </div>
 </div>
@@ -8890,6 +8900,8 @@ function renderPosRep(){
   const cakeSum=cake.reduce((s,x)=>s+Number(x.p.amt),0);cake.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   /* JS: money received on vouchers in the period (each payment by its own date) */
   const vop=vos.filter(soMine).flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no)));
+  /* JS: lines typed with "+ Other line" (not a raw material) on the period's vouchers, added up by what they say — an Admin can link them to a raw material later */
+  const oth=saleBrand!=="js"?[]:othGroups(vos.filter(v=>soMine(v)&&inRng(v.date)));
   const voSum=vop.reduce((s,x)=>s+Number(x.p.amt),0);vop.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   const cakeTbl=(list,total)=>`<table class="ex-tbl"><tbody>${list.map(x=>`<tr class="cake-pay" data-cake-o="${esc(x.o.id)}" tabindex="0" role="button" title="Order detail"><td><b>${esc(x.o.no||"")}</b> <span data-t="${esc(x.o.name||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${x.i?"Paid":"Deposit"} · ${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}
       <tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(total)}</b></td></tr></tbody></table>`;
@@ -8941,6 +8953,8 @@ function renderPosRep(){
     <div class="ex-card ex-big"><small>${dayLbl} · total received</small><b>${fmt(net+cakeSum+voSum)}</b>
       <small>POS ${fmt(net)} (${day.length} sale${day.length===1?"":"s"}${disc?` · discount − ${fmt(disc)}`:""}${retSum?` · returns − ${fmt(retSum)}`:""})${saleBrand==="js"?"":` · Cake orders ${fmt(cakeSum)} (${cake.length} payment${cake.length===1?"":"s"})`} · Vouchers ${fmt(voSum)} (${vop.length} payment${vop.length===1?"":"s"})</small></div>
     ${true?`<div class="ex-card"><p class="ac-h">📄 Voucher payments</p>${vop.length?`<table class="ex-tbl"><tbody>${vop.map(x=>`<tr class="cake-pay" data-so-open="${esc(x.v.id)}" tabindex="0" role="button"><td><b>${esc(x.v.no)}</b> <span data-t="${esc(x.v.customer||"")}"></span><br><small class="ex-c">${multi?esc(fmtDate(x.p.date))+" · ":""}${esc(pmLabel(x.p.method||"Cash"))}</small></td><td class="ex-r">${fmt(x.p.amt)}</td></tr>`).join("")}<tr><td><b>Total</b></td><td class="ex-r"><b>${fmt(voSum)}</b></td></tr></tbody></table>`:`<p class="side-help">No voucher payments in this period.</p>`}</div>`:""}
+    ${saleBrand==="js"?`<div class="ex-card"><p class="ac-h">📝 Other lines <small class="ex-c">(raw material နဲ့ မချိတ်ရသေး)</small></p>${oth.length?`<table class="ex-tbl oth-tbl"><tbody>${oth.map(g=>`<tr><td><span data-t="${esc(g.name)}"></span><br><small class="ex-c">${esc(g.refs.map(r=>r.no).filter((x,i,a)=>a.indexOf(x)===i).slice(0,6).join(", "))}${g.refs.length>6?" …":""}</small></td><td class="ex-c">× ${esc(poNum(g.qty))}</td><td class="ex-r">${fmt(g.amt)}</td><td class="ex-v">${admin?`<button type="button" class="o-ic" data-oth-link="${esc(g.key)}" aria-label="Raw material နဲ့ ချိတ်ရန်" title="Raw material နဲ့ ချိတ်ရန်">🔗</button>`:""}</td></tr>`).join("")}
+      <tr><td><b>Total</b></td><td></td><td class="ex-r"><b>${fmt(oth.reduce((a,g)=>a+g.amt,0))}</b></td><td></td></tr></tbody></table>`:`<p class="side-help">ဒီကာလမှာ Other line မရှိပါ။</p>`}</div>`:""}
     <div class="ex-card"><p class="ac-h">By payment method</p>${Object.keys(byPay).length?`<table class="ex-tbl"><tbody>${Object.entries(byPay).map(([p,a])=>`<tr class="cake-pay" data-rep-pay="${esc(p)}" tabindex="0" role="button" title="Detail"><td>${esc(pmLabel(p))}</td><td class="ex-r">${fmt(a)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
     ${saleBrand==="js"?"":`<div class="ex-card"><p class="ac-h">🎂 Cake order payments</p>${cake.length?cakeTbl(cake,cakeSum):`<p class="side-help">No cake order payments in this period.</p>`}</div>`}
     <div class="ex-card"><p class="ac-h">POS · by product</p>${prods.length?`<table class="ex-tbl"><tbody>${prods.map(p=>`<tr class="cake-pay" data-rep-prod="${esc(p.k)}" tabindex="0" role="button" title="Detail"><td class="pd-n" data-t="${esc(p.name)}"></td><td class="ex-c">× ${p.qty}</td><td class="ex-r">${fmt(p.amt)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
@@ -8949,6 +8963,30 @@ function renderPosRep(){
   </div>`;
   $("posRepBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
+/* an "Other" line: typed on a voucher with no raw material behind it (Delivery and the old Excel's Discount lines are not counted) */
+const isOtherLine=l=>!l.pid&&!!String(l.name||"").trim()&&!/^delivery$/i.test(String(l.name).trim())&&!xlIsDisc(l)&&Number(l.qty)>0;
+function othGroups(vs){const m=new Map();for(const v of vs)(v.lines||[]).forEach((l,i)=>{if(!isOtherLine(l))return;const key=pdNorm(l.name);
+    const g=m.get(key)||(m.set(key,{key,name:String(l.name).trim(),qty:0,amt:0,refs:[]}),m.get(key));g.qty+=Number(l.qty)||0;g.amt+=Math.round((Number(l.qty)||0)*(Number(l.price)||0));g.refs.push({id:v.id,i,no:v.no||""})});
+  return[...m.values()].sort((a,b)=>b.amt-a.amt)}
+let othKey=null;
+/* every Other line with this description, on any of this shop's vouchers */
+const othAll=key=>vos.filter(soMine).flatMap(v=>(v.lines||[]).map((l,i)=>({v,l,i}))).filter(x=>isOtherLine(x.l)&&pdNorm(x.l.name)===key);
+function renderOth(){const q=pdNorm($("othQ").value),hits=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).sort((a,b)=>String(a.name).localeCompare(String(b.name))).slice(0,q?30:12);
+  $("othHits").innerHTML=hits.map(i=>`<button type="button" class="is-head mg-hit" data-oth-to="${esc(i.id)}"><span class="is-nm"><span data-t="${esc(i.name)}"></span> <code>${esc(i.code||"")}</code></span></button>`).join("")||`<p class="side-help">မတွေ့ပါ — အောက်က "➕ Raw material အသစ်အဖြစ် ထည့်" နဲ့ ထည့်ပါ</p>`;
+  $("othHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+/* link: every such line gets the raw material (its code too); description, qty and price stay as they were */
+async function othLink(key,it){const list=othAll(key);if(!list.length){toast("ချိတ်စရာ line မရှိတော့ပါ");return}
+  const by=new Map();list.forEach(x=>{if(!by.has(x.v.id))by.set(x.v.id,{v:x.v,ix:new Set()});by.get(x.v.id).ix.add(x.i)});
+  if(!await askConfirm(`“${list[0].l.name}” ကို “${it.name}” နဲ့ ချိတ်မလား?`,`Voucher ${by.size} စောင်ထဲက line ${list.length} ကြောင်းကို ${it.name} (${it.code||"—"}) အဖြစ် မှတ်ပါမယ်။ Description၊ Qty၊ ဈေးကတော့ မပြောင်းပါ။`,"ချိတ်မယ်",true))return;
+  const now=new Date().toISOString();let done=0;
+  for(const{v,ix}of by.values()){try{await saveSo({...v,lines:v.lines.map((l,i)=>ix.has(i)?{...l,pid:it.id,code:it.code||""}:l),updatedAt:now,updatedBy:me.id||null});done++}catch(x){}}
+  $("othDlg").hidden=true;othKey=null;toast(`✓ Voucher ${done} စောင် ချိတ်ပြီး`,4000);renderPosRep()}
+$("othQ").addEventListener("input",renderOth);
+$("othDlg").addEventListener("click",e=>{const b=e.target.closest("[data-oth-to]");if(!b||!othKey)return;const it=items.find(x=>x.id===b.dataset.othTo);if(it)othLink(othKey,it)});
+/* a new raw material: the item form opens with the line's description and price; once saved, the lines are linked to it */
+$("othNew").addEventListener("click",()=>{const key=othKey,x=othAll(key)[0];if(!x)return;$("othDlg").hidden=true;openItForm(null);
+  $("itName").value=String(x.l.name||"").trim();if(Number(x.l.price)>0&&$("itBP"))$("itBP").value=Math.round(Number(x.l.price));
+  itAfterSave=it=>othLink(key,it)});
 $("posRepDateBox").addEventListener("change",()=>{posRepDate=readDate($("posRepDateBox").querySelector(".dp"))||todayISO();if(posRepTo<posRepDate)posRepTo=posRepDate;posRepPay=posRepProd=posRepRet=null;renderPosRep()});
 $("posRepToBox").addEventListener("change",()=>{posRepTo=readDate($("posRepToBox").querySelector(".dp"))||posRepDate;if(posRepTo<posRepDate)posRepTo=posRepDate;posRepPay=posRepProd=posRepRet=null;renderPosRep()});
 /* ---- Cake order report: orders due in the period (by order date), and money received in it (by payment date) ---- */
@@ -9054,6 +9092,8 @@ $("saleDetDel").addEventListener("click",async()=>{const s=saleDet;if(!s||!can("
 $("posRepBody").addEventListener("keydown",e=>{if(e.key!=="Enter")return;if(e.target.matches("[data-sale]"))openSaleDet(sales.find(s=>s.id===e.target.dataset.sale));else if(e.target.matches("[data-cake-o],[data-rep-pay],[data-rep-prod],[data-rep-ret]"))e.target.click()});
 $("posRepBody").addEventListener("click",async e=>{
   const rt=e.target.closest("[data-rep-ret]");if(rt){posRepRet=rt.dataset.repRet;posRepPay=posRepProd=null;renderPosRep();scrollTo({top:0});return}
+  const ol=e.target.closest("[data-oth-link]");if(ol){if(!can("admin"))return;initItems();othKey=ol.dataset.othLink;const all=othAll(othKey);if(!all.length)return;
+    $("othName").textContent=all[0].l.name;$("othN").textContent=`Voucher line ${all.length} ကြောင်း (ကာလ အားလုံး)`;$("othQ").value=String(all[0].l.name||"").split(/\s+/)[0]||"";$("othDlg").hidden=false;renderOth();$("othQ").focus();return}
   const rd=e.target.closest("[data-rep-prod]");if(rd){posRepProd=rd.dataset.repProd;posRepPay=null;posRepRet=null;renderPosRep();scrollTo({top:0});return}
   if(e.target.closest("[data-rep-back]")){posRepPay=posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
   const rp=e.target.closest("[data-rep-pay]");if(rp){posRepPay=rp.dataset.repPay;posRepProd=posRepRet=null;renderPosRep();scrollTo({top:0});return}
@@ -9240,7 +9280,8 @@ function itCodeSync(){const h=$("itCodeHint"),c=$("itCode").value.trim(),k=pdNor
     +(after&&pdNorm(after)!==pdNorm(nx)?`<span class="ic-next">${esc(hit.code)} နောက်ကပ်: <button type="button" class="link" data-it-next="${esc(after)}">${esc(after)} သုံးမယ်</button></span>`:"")
     +(nx&&pdNorm(nx)!==k?`<span class="ic-next">${after&&pdNorm(after)!==pdNorm(nx)?"နောက်ဆုံး code နောက်":"နောက်ထပ်လွတ်တဲ့ code"}: <button type="button" class="link" data-it-next="${esc(nx)}">${esc(nx)} သုံးမယ်</button></span>`:"");
   h.querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);h.hidden=!h.innerHTML}
-function openItForm(i){if(!can("admin"))return;itEditing=i||null;$("itDlgT").textContent=i?i.name:"New raw material";
+var itAfterSave=null;
+function openItForm(i){if(!can("admin"))return;itEditing=i||null;itAfterSave=null;$("itDlgT").textContent=i?i.name:"New raw material";
   itPhoto=i?.photo?{id:i.photo,url:photoUrl(i.photo)}:null;itRenderPhoto();
   const uniq=f=>[...new Set(items.map(f).filter(Boolean))].sort();
   itFillCats(i?i.cat:itCat);itFillSubs(i?.sub||"");$("itDel").hidden=!i;$("itMerge").hidden=!i||!can("admin");
@@ -9482,7 +9523,7 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
     for(const[k,v]of[["price",r0.p],["whPrice",r0.w],["mbPrice",mb]]){if(v>0)d[k]=v;else delete d[k]}d.sale=d.price>0}
   try{if(db)await db.collection("items").doc(id).set(d);
     else{const k=items.findIndex(x=>x.id===id);if(k>=0)items[k]={...d,id};else items.push({...d,id});items=items.slice();try{localStorage.setItem("cakeItems",JSON.stringify(items))}catch(x){}renderItems()}
-    $("itDlg").hidden=true;itEditing=null;toast("သိမ်းပြီး")}
+    $("itDlg").hidden=true;itEditing=null;toast("သိမ်းပြီး");if(typeof itAfterSave==="function"){const f=itAfterSave;itAfterSave=null;f({...d,id})}}
   catch(x){toast("သိမ်းမရပါ — Admin (Editor) သာ ပြင်နိုင်သည်")}});
 /* many photos at once: each file's name (without .jpg) is matched to an item's Short Code first, then to its Name.
    Characters a file name cannot hold (/ \ : * ? " < > |), spaces, "_" "-" "." and capitals are ignored, so "d0011_1.jpg" finds d0011/1. */
