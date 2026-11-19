@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795065367"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795066068"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4642,7 +4642,7 @@ async function buildPreviewCanvas(o){
     y+=14;if(paint){ctx.fillStyle=C.ink;ctx.fillRect(P,y,LW,3)}y+=2;
     row("Total",o.total,{bold:true,size:32});
     /* the flavor's slip note (e.g. "Jam ထည့်ရန်"), right under the total on the right; "no money to collect" first */
-    [...(o.noCollect?["💸 ငွေကောက်ရန်မလို"]:[]),...orderNotes(o)].forEach(t=>{font(24,700);wrapLines(ctx,t,LW).forEach(l=>{y+=34;text(l,P+LW,y,24,{align:"right",weight:700,color:C.accent})})});   /* long notes wrap inside the card */
+    [...(o.noCollect?["ငွေကောက်ရန်မလို"]:[]),...orderNotes(o)].forEach(t=>{font(24,700);wrapLines(ctx,t,LW).forEach(l=>{y+=34;text(l,P+LW,y,24,{align:"right",weight:700,color:C.accent})})});   /* long notes wrap inside the card */
     const pays=orderPayments(o);
     pays.forEach((p,i)=>row(i?"Paid":"Deposit",p.amt,{color:C.muted,info:[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · ")}));
     const bal=Math.max(0,(o.total||0)-(o.deposit||0));
@@ -5087,7 +5087,7 @@ function slipHTML(o,live=false){
     ${/* cupcakes: one line each with its price (price of one × how many), instead of a single Cake line */
       isBak(o)?"":o.cupItems?.length?o.cupItems.map(l=>row(cupLbl(l),Math.round(Number(l.qty||0)*Number(l.price||0)),"pr-item",`${money(l.price)} × ${l.qty}`)).join("")
       :row("Cake",o.basePrice,"pr-item",o.count>1?`${money(o.basePrice/o.count)} × ${o.count}`:"")}${orderCharges(o).map(ch=>{const u=ch.photo&&photoUrl(ch.photo);return u?`<div class="pr-row pr-item"><span class="pr-chw"><img class="pr-chimg" src="${esc(u)}" alt="">${esc(ch.note||"Additional")}${ch.qty>1?` <small>${esc(chQty(ch))}</small>`:""}</span><span>${money(ch.amt)}</span></div>`:row(ch.note||"Additional",ch.amt,"pr-item",chQty(ch))}).join("")}${deli?row("Delivery",o.delivAmt,"pr-item"):""}${o.discount?row("Discount",-o.discount,"pr-item"):""}
-    ${row("Total",o.total,"pr-tot")}${o.noCollect?`<div class="pr-fnote">💸 ငွေကောက်ရန်မလို</div>`:""}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
+    ${row("Total",o.total,"pr-tot")}${o.noCollect?`<div class="pr-fnote">ငွေကောက်ရန်မလို</div>`:""}${orderNotes(o).map(t=>`<div class="pr-fnote">${esc(t)}</div>`).join("")}
     ${pays.map((p,i)=>row(i?"Paid":"Deposit",p.amt,"",[p.method,p.date?fmtDate(p.date):""].filter(Boolean).join(" · "))).join("")}
     ${pays.length?(bal?row("Balance",bal,"pr-bal"):`<div class="pr-bal pr-paid">✓ Paid in full</div>`):""}
     ${(()=>{
