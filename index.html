@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1794990030"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795062412"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1770,6 +1770,8 @@ span.star-ic{cursor:default}
               <div class="bak-pop" id="bakPop" hidden><input type="search" id="bakPopQ" placeholder="Customer ရှာရန်" autocomplete="off"><div class="bak-popl" id="bakPopL"></div></div></div>
             <label class="f"><span>ဖုန်းနံပါတ် <b>*</b></span><input id="fPhone" type="tel" inputmode="tel" placeholder="09xxxxxxxxx" required><button type="button" class="ph-add" data-ph-add="fPhone">+ ဖုန်း နောက်တစ်လုံး</button></label>
           </div>
+          <!-- no money to collect from the customer for this order (it is settled some other way) -->
+          <label class="check call-early"><input type="checkbox" id="fNoCollect"> 💸 ငွေကောက်ရန်မလို</label>
         </fieldset>
 
         <fieldset id="delivSet" hidden>   <!-- only for Delivery: a pickup at the shop needs no delivery info -->
@@ -3295,7 +3297,7 @@ function readForm(){
     charges,discount:num("fDiscount"),delivAmt:delivery==="delivery"?num("fDelivAmt"):0,
     date:$("fDate").value,time:getTime(),
     delivery:(document.querySelector('input[name="fDeliv"]:checked')?.value||""),
-    callEarly:delivery==="pickup"&&$("fCallEarly").checked,sendPhoto:!!delivery&&$("fSendPhoto").checked,withVoucher:!!delivery&&$("fWithVoucher").checked,
+    callEarly:delivery==="pickup"&&$("fCallEarly").checked,sendPhoto:!!delivery&&$("fSendPhoto").checked,withVoucher:!!delivery&&$("fWithVoucher").checked,noCollect:$("fNoCollect").checked,
     recvSame:$("fRecvSame").checked,recvName:$("fRecvName").value.trim(),recvPhone:$("fRecvPhone").value.trim(),
     addr:$("fAddr").value.trim(),
     /* deposit = everything paid so far; pay = the latest method (older views read these) */
@@ -4204,7 +4206,7 @@ function fillForm(o){
   /* a typed price (unlisted flavor, customized size, Wedding Cake) is per cake: an order of several holds price × count */
   $("fPrice").value=o.cakeType==="wedding"||o.decoType==="mixed"||manualPrice(fk,sz)||(o.decoType==="mini"&&(o.miniDeco==="fondant"||o.miniDeco==="mixed"))?(o.basePrice?o.basePrice/(o.count>1?o.count:1):""):"";
   syncTierBox();
-  document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;$("fWithVoucher").checked=!!o.withVoucher;
+  document.querySelectorAll(`input[name="fDeliv"]`).forEach(i=>i.checked=i.value===(o.delivery||"pickup"));$("fCallEarly").checked=!!o.callEarly;$("fSendPhoto").checked=!!o.sendPhoto;$("fWithVoucher").checked=!!o.withVoucher;$("fNoCollect").checked=!!o.noCollect;
   $("rTitle").textContent="အော်ဒါ ပြင်ဆင်ရန်";noTouched=false;$("fNo").value=o.no||"";$("noField").hidden=!o.no;$("saveBtn").textContent="ပြင်ဆင်ချက် သိမ်းမည်";
   $("draftBtn").hidden=true;   /* drafts are for new orders only */
   editSnap=null;setTimeout(()=>{if(editingId===o.id)editSnap=formSig()},60);
@@ -4550,7 +4552,7 @@ async function buildPreviewCanvas(o){
 
     /* ── header, one row like the printed slip: customer · order number · date + time ── */
     const deli=o.delivery==="delivery",y0=y,dateS=fmtDate(o.date).slice(0,6),timeS=fmtTimeShort(o.time);   /* Delivery is marked under the time, on the right */
-    const notes=[o.delivery==="later"?"🕓 Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်":"",!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":"",o.withVoucher?"🧾 ဘောက်ချာထည့်ရန်":""].filter(Boolean);
+    const notes=[o.delivery==="later"?"🕓 Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်":"",!deli&&o.callEarly?"📞 စောရလျှင် ဖုန်းဆက်ပေးရန်":"",o.sendPhoto?"📷 ဓာတ်ပုံပို့ပေးရန်":"",o.withVoucher?"🧾 ဘောက်ချာထည့်ရန်":"",o.noCollect?"💸 ငွေကောက်ရန်မလို":""].filter(Boolean);
     /* right: date, the time pill under it (delivery marked "Deli"), then the shop notes */
     const rW=Math.max(width(dateS,40,700),width(timeS,22,700)+32);
     text(dateS,P+LW,y0+40,40,{align:"right",weight:700});
@@ -5057,7 +5059,7 @@ function slipHTML(o,live=false){
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
       <div class="pr-no">${esc(o.no||"")}</div>
       <div class="pr-when"><b>${fmtDate(o.date).slice(0,6)}</b>${deli?`<span class="pr-deli">Deli</span>`:""}${timeWord(o.time)?"":fmtTimeShort(o.time)}</div>
-      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||timeWord(o.time)||o.delivery==="later"?`<div class="pr-notes">${timeWord(o.time)?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[o.delivery==="later"?`<span class="pr-call">Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:"",!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
+      ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||o.noCollect||timeWord(o.time)||o.delivery==="later"?`<div class="pr-notes">${timeWord(o.time)?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[o.delivery==="later"?`<span class="pr-call">Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:"",!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:"",o.noCollect?`<span class="pr-call">ငွေကောက်ရန်မလို</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
     <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
@@ -5294,7 +5296,7 @@ function render(){
         <!-- the date and time, with Delivery / call if early / send a photo right under it -->
         <div class="o-when"><div class="cal ${dd===0&&isOpen(o)?"today":""} ${dd<0&&isOpen(o)?"late":""}"><span class="dm">${String(d.getDate()).padStart(2,"0")} <small>${MONTHS[d.getMonth()]}</small></span><span class="t">${fmtTime(o.time)}</span></div></div></div>
         <!-- Delivery / call if early / send a photo: one line each, as wide as their words, on the right under the number and date -->
-        ${o.delivery==="delivery"||o.delivery==="later"||o.callEarly||o.sendPhoto||o.withVoucher||grp.length>1||o.noPending?`<div class="o-modes">${o.noPending?`<span class="mode call" title="Offline ဖြစ်နေတုန်း သိမ်းထားလို့ Internet ပြန်ရမှ အတည်ပြုပါမယ်">📴 No. အတည်မပြုရသေး</span>`:""}${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.delivery==="later"?`<span class="mode call" title="Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်">🕓 Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.withVoucher?`<span class="mode call" title="ဘောက်ချာထည့်ရန်">🧾 ဘောက်ချာထည့်ရန်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
+        ${o.delivery==="delivery"||o.delivery==="later"||o.callEarly||o.sendPhoto||o.withVoucher||o.noCollect||grp.length>1||o.noPending?`<div class="o-modes">${o.noPending?`<span class="mode call" title="Offline ဖြစ်နေတုန်း သိမ်းထားလို့ Internet ပြန်ရမှ အတည်ပြုပါမယ်">📴 No. အတည်မပြုရသေး</span>`:""}${o.delivery==="delivery"?`<span class="mode deli">🚚 Delivery</span>`:o.delivery==="later"?`<span class="mode call" title="Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်">🕓 Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:o.callEarly?`<span class="mode call" title="စောရလျှင် ဖုန်းဆက်ပေးပါ">📞 စောရလျှင် ဖုန်းဆက်</span>`:""}${o.withVoucher?`<span class="mode call" title="ဘောက်ချာထည့်ရန်">🧾 ဘောက်ချာထည့်ရန်</span>`:""}${o.sendPhoto?`<span class="mode call" title="ဓာတ်ပုံပို့ပေးရန်">📷 ဓာတ်ပုံပို့ရန်</span>`:""}${o.noCollect?`<span class="mode call" title="ဝယ်သူဆီက ငွေကောက်ရန်မလို">💸 ငွေကောက်ရန်မလို</span>`:""}${grp.length>1?`<span class="mode grp" title="Same customer, same day, time and place">${esc(grpText(grp))}</span>`:""}</div>`:""}
         ${isBak(o)?bakCard(o):""}<p class="o-cake"${isBak(o)?" hidden":""}><b class="o-flv">${(()=>{const sk=shapeKey(o.shape),show=o.shape||o.decoType!=="cupcake",inside=show?shapeSizeIcon(sk,sz):"";
           return`<span class="o-shape" title="${esc(shapeName(o))}">${show?(inside||shapeIcon(sk,"shp-ic"))+(sk==="custom"?esc(shapeName(o)):""):""}</span>${inside?"":` <span class="nw">${sz}</span>`}`})()} ${esc(fl)}</b>${[dcLabel(o)?`<span class="dc">${esc(dcLabel(o))}</span>`:"",ctOf(o)!=="std"?`<b>${ctLbl(o)}</b>`:o.tiers>1?`${o.tiers} ထပ်`:""].filter(Boolean).join(" · ")}</p>
         ${(()=>{/* everything about the cake's design sits right under the design code */
