@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795264978"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795265237"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -963,7 +963,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soVBody[data-vtab="vo"] #soDelForm,#soVBody[data-vtab="vo"] #soDelList,#soVBody[data-vtab="vo"] #soPayForm,#soVBody[data-vtab="vo"] #soPayList,
 #soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPayList,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview,
 #soVBody[data-vtab="pay"] #soDelForm,#soVBody[data-vtab="pay"] #soDelList,#soVBody[data-vtab="pay"] #soPays,#soVBody[data-vtab="pay"] .so-preview{display:none!important}
-#soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}
+#soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}.so-pfrow td{padding:2px 0 0}#soPFormCell #soPayForm{margin:0 0 6px}.so-padd{margin:10px 0 0;text-align:right}
 .so-vtabs{margin:0 0 10px}.so-pm-open{margin-top:10px}.so-pm{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:8px 12px}.so-pm .ac-h{display:flex;justify-content:space-between;align-items:center}
 .so-pmr{display:flex;gap:6px;align-items:center;cursor:pointer}.so-pmr input{width:auto;margin:0}.so-ptbl .so-pnet td,.so-ptbl .so-ppaid td{color:var(--muted)}.so-ptbl .so-ppaid td,.so-ptbl .so-pbal td{border-top:1px solid var(--line)}.so-paysum{margin:8px 0 0;display:grid;grid-template-columns:1fr auto;gap:4px 16px;justify-items:end;font-size:14px;font-variant-numeric:tabular-nums}.so-paysum b:first-of-type{border-top:1px solid var(--line);padding-top:4px;justify-self:stretch;text-align:right}.so-paysum b:last-of-type{border-top:1px solid var(--line);padding-top:4px;justify-self:stretch;text-align:right}
 /* the paper, print, share, picture and payment tools belong to the Voucher tab: out of sight on Delivered */
@@ -9931,7 +9931,7 @@ function soDelListHtml(v){const all=v.deliveries||[],rows=(v.lines||[]).map((l,i
 /* the voucher view's two tabs */
 var soVTab="vo";
 function soVTabSet(t){soVTab=t;const v=vos.find(x=>x.id===soOpen),mb=v&&vBrand(v)==="mb";$("soVBody").dataset.vtab=mb?"mb":t;$("soView").classList.toggle("vt-other",!mb&&t!=="vo");$("soVTabs").querySelectorAll("[data-vtab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.vtab===t));if(t==="vo")requestAnimationFrame(soFit)}
-$("soVTabs").addEventListener("click",e=>{const b=e.target.closest("[data-vtab]");if(!b)return;soVTabSet(b.dataset.vtab);const v=vos.find(x=>x.id===soOpen);if(b.dataset.vtab==="del"&&v&&soDEdit==null)soDelOpen(v,null);if(b.dataset.vtab==="pay"&&v&&soPEdit==null)soPayOpen(v)});
+$("soVTabs").addEventListener("click",e=>{const b=e.target.closest("[data-vtab]");if(!b)return;soVTabSet(b.dataset.vtab);const v=vos.find(x=>x.id===soOpen);if(b.dataset.vtab==="del"&&v&&soDEdit==null)soDelOpen(v,null);if(b.dataset.vtab==="pay"&&v&&soPEdit==null&&!soPayMulti)$("soPayForm").hidden=true});
 /* 🚚 Delivered: how many of each item are given now (everything left, unless lowered) */
 /* a delivery can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
 var soDEdit=null;
@@ -10542,7 +10542,9 @@ function openSoView(v){soOpen=v.id;soVTab="vo";soDEdit=null;soPayMulti=null;$("s
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
-  $("soPayList").innerHTML=!ps.length?(vBrand(v)==="mb"?"":`<p class="side-help">Payment မရှိသေးပါ။</p>`):`<p class="ac-h">💵 Payments</p><table class="ex-tbl so-ptbl"><tbody>${vBrand(v)!=="mb"?`<tr class="so-pnet"><td>Net Amount</td><td class="ex-r">${fmt(v.net)}</td><td></td></tr>`:""}${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}${p.grp?`<br><small class="ex-c">👥 ${esc(p.note||"ပေါင်းရှင်း")}</small>`:""}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}${vBrand(v)!=="mb"?`${ps.length>1?`<tr class="so-ppaid"><td>Paid Amount</td><td class="ex-r">${fmt(soPaid(v))}</td><td></td></tr>`:""}<tr class="so-pbal"><td><b>Balance</b></td><td class="ex-r"><b>${fmt(soBal(v))}</b></td><td></td></tr>`:""}</tbody></table>`;
+  $("soPayList").after($("soPayForm"));   /* take the form out before the list is drawn again */
+  $("soPayList").innerHTML=!ps.length&&vBrand(v)==="mb"?"":`<p class="ac-h">💵 Payments</p><table class="ex-tbl so-ptbl"><tbody>${vBrand(v)!=="mb"?`<tr class="so-pnet"><td>Net Amount</td><td class="ex-r">${fmt(v.net)}</td><td></td></tr>`:""}${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}${p.grp?`<br><small class="ex-c">👥 ${esc(p.note||"ပေါင်းရှင်း")}</small>`:""}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}${vBrand(v)!=="mb"?`${ps.length>1?`<tr class="so-ppaid"><td>Paid Amount</td><td class="ex-r">${fmt(soPaid(v))}</td><td></td></tr>`:""}<tr class="so-pfrow" hidden><td colspan="3" id="soPFormCell"></td></tr><tr class="so-pbal"><td><b>Balance</b></td><td class="ex-r"><b>${fmt(soBal(v))}</b></td><td></td></tr>`:""}</tbody></table>${vBrand(v)!=="mb"&&soBal(v)>0?`<p class="so-padd"><button type="button" class="btn ghost" data-so-padd>+ Add new payment</button></p>`:""}`;
+  soPayPlace();
   $("soPays").innerHTML=soStatusHtml(v);
     if(vBrand(v)!=="mb"&&soBal(v)<=0&&soPEdit==null&&!soPayMulti)$("soPayForm").hidden=true;
   if(vBrand(v)!=="mb")$("soPayList").insertAdjacentHTML("beforeend",soPayMultiHtml(v));
@@ -10566,6 +10568,9 @@ $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOp
 /* a voucher payment can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
 var soPEdit=null;
 const soPayEditable=(v,p)=>!v.xl&&(can("admin")||(sameId(p.by,me.id)&&String(p.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
+function soPayPlace(){const f=$("soPayForm"),c=$("soPFormCell");if(c&&f.parentNode!==c)c.append(f);
+  if(c)c.parentNode.hidden=f.hidden;const b=$("soPayList").querySelector(".so-padd");if(b)b.hidden=!f.hidden}
+new MutationObserver(soPayPlace).observe($("soPayForm"),{attributes:true,attributeFilter:["hidden"]});
 function soPayFormSet(edit){soPEdit=edit;$("soPSave").textContent=edit==null?"Save payment":"Save changes"}
 /* paying several of a customer's vouchers at once: the vouchers of this customer still owing (Preorders left out, as on the debt list) */
 var soPayMulti=null;   /* null, or the ids of the vouchers ticked to be paid together */
@@ -10578,20 +10583,25 @@ function soPayMultiHtml(v){const ms=soPayMates(v);if(ms.length<2||ms.every(x=>x.
     <table class="ex-tbl"><tbody>${ms.map(x=>`<tr><td><label class="so-pmr"><input type="checkbox" data-so-pmv="${esc(x.id)}" ${soPayMulti.has(x.id)?"checked":""}> <b>${esc(x.no)}</b> · ${esc(soDate(x.date))}${x.id===v.id?" <small>(ယခု voucher)</small>":""}</label></td><td class="ex-r">${fmt(soBal(x))}</td></tr>`).join("")}
     <tr><td><b>ရွေးထားတာ စုစုပေါင်း</b></td><td class="ex-r"><b>${fmt(soPayMultiSum())}</b></td></tr></tbody></table>
     <p class="side-help">ပေးငွေကို ရက်စွဲ အစောဆုံး voucher ကနေ စပြီး ခွဲထည့်ပါမယ်။</p></div>`}
-function soPayOpen(v,focus){soPayFormSet(null);if(soPayMulti){$("soPAmt").value=soPayMultiSum();$("soPayForm").hidden=!soPayMultiSum();return}if(soBal(v)<=0){$("soPayForm").hidden=true;return}
-  $("soPAmt").value=soBal(v);$("soPMethod").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
-  $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=false;if(focus)$("soPAmt").focus()}
-$("soPCancel").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(v&&vBrand(v)!=="mb")soPayOpen(v);else{$("soPayForm").hidden=true;soPayFormSet(null)}});
+function soPayOpen(v,focus){const fresh=$("soPayForm").hidden||soPEdit!=null;soPayFormSet(null);
+  const amt=soPayMulti?soPayMultiSum():soBal(v);if(amt<=0){$("soPayForm").hidden=true;return}$("soPAmt").value=amt;
+  if(fresh||!$("soPMethod").options.length){$("soPMethod").innerHTML=`<option value="">— Method ရွေးပါ —</option>`+pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");$("soPMethod").value="";
+    $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO())}
+  $("soPayForm").hidden=false;if(focus)$("soPMethod").focus()}
+/* closing the form (JS vouchers): back to the "+ Add new payment" button */
+function soPayClose(v){soPayFormSet(null);$("soPayForm").hidden=true;if(soPayMulti){soPayMulti=null;if(v)renderSoView(v)}}
+$("soPCancel").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(v&&vBrand(v)!=="mb")soPayClose(v);else{$("soPayForm").hidden=true;soPayFormSet(null)}});
 $("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soPayOpen(v,true)});
 $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const amt=Math.round(Number($("soPAmt").value)||0);
   if(!(amt>0)){toast("ပေးငွေ ထည့်ပါ");return}
+  if(!$("soPMethod").value){toast("Method ရွေးပါ");$("soPMethod").focus();return}
   if(soPayMulti&&soPEdit==null){const list=vos.filter(x=>soPayMulti.has(x.id)&&soBal(x)>0).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.no).localeCompare(String(b.no)));
     const tot=list.reduce((a,x)=>a+soBal(x),0);if(!list.length){toast("Voucher ရွေးပါ");return}if(amt>tot){toast(`ရွေးထားတဲ့ ကျန်ငွေ ${fmt(tot)} ထက် များနေပါတယ်`);return}
     const now=new Date().toISOString(),method=$("soPMethod").value||"Cash",date=readDate($("soPDate").querySelector(".dp"))||todayISO(),grp="pg"+Date.now().toString(36),nos=list.map(x=>x.no).join(", ");
     let left=amt,done=0;$("soPSave").disabled=true;
     try{for(const x of list){if(left<=0)break;const give=Math.min(left,soBal(x));left-=give;
         await saveSo({...x,payments:[...(x.payments||[]),{amt:give,method,date,at:now,by:me.id||null,grp,note:`ပေါင်းရှင်း · ${nos}`}],updatedAt:now});done++}
-      soPayMulti=null;const n=vos.find(x=>x.id===v.id)||v;await renderSoView(n);soPayOpen(n);toast(`✓ Voucher ${done} စောင် ပေါင်းရှင်းပြီး · ${fmt(amt)}`,5000)}
+      soPayMulti=null;const n=vos.find(x=>x.id===v.id)||v;$("soPayForm").hidden=true;await renderSoView(n);toast(`✓ Voucher ${done} စောင် ပေါင်းရှင်းပြီး · ${fmt(amt)}`,5000)}
     catch(x){toast("သိမ်းမရပါ")}finally{$("soPSave").disabled=false}return}
   /* editing one payment: it keeps when / by whom it was taken; a changed method or amount has to be checked again */
   if(soPEdit!=null){const i=soPEdit,old=(v.payments||[])[i];if(!old||!soPayEditable(v,old))return;const room=soBal(v)+Number(old.amt||0);
@@ -10599,13 +10609,14 @@ $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpe
     const nw={...old,amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||old.date||todayISO()};
     if(nw.method!==old.method||nw.amt!==Number(old.amt)){delete nw.conf;delete nw.sconf}
     const now=new Date().toISOString(),n={...v,payments:v.payments.map((p,k)=>k===i?nw:p),updatedAt:now,updatedBy:me.id||null};
-    try{await saveSo(n);soPayFormSet(null);await renderSoView(n);if(vBrand(n)!=="mb")soPayOpen(n);else $("soPayForm").hidden=true;toast("✓ Payment ပြင်ပြီး")}catch(x){toast("သိမ်းမရပါ")}return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
+    try{await saveSo(n);soPayFormSet(null);$("soPayForm").hidden=true;await renderSoView(n);toast("✓ Payment ပြင်ပြီး")}catch(x){toast("သိမ်းမရပါ")}return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
   const now=new Date().toISOString(),n={...v,payments:[...(v.payments||[]),{amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||todayISO(),at:now,by:me.id||null}],updatedAt:now};
-  try{await saveSo(n);await renderSoView(n);if(vBrand(n)!=="mb")soPayOpen(n);else $("soPayForm").hidden=true;toast("✓ Payment သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}});
+  try{await saveSo(n);$("soPayForm").hidden=true;await renderSoView(n);toast("✓ Payment သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}});
 /* turning "pay together" on / off, ticking vouchers: the amount follows what is ticked */
 $("soPayList").addEventListener("click",e=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
   if(e.target.closest("[data-so-pmulti]")){soPayMulti=new Set(soPayMates(v).map(x=>x.id));renderSoView(v).then(()=>soPayOpen(v,true));return}
-  if(e.target.closest("[data-so-pmoff]")){soPayMulti=null;renderSoView(v).then(()=>soPayOpen(v))}});
+  if(e.target.closest("[data-so-pmoff]")){soPayClose(v)}
+  if(e.target.closest("[data-so-padd]"))soPayOpen(v,true)});
 $("soPayList").addEventListener("change",e=>{const c=e.target.closest("[data-so-pmv]");if(!c||!soPayMulti)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   if(c.checked)soPayMulti.add(c.dataset.soPmv);else soPayMulti.delete(c.dataset.soPmv);renderSoView(v).then(()=>soPayOpen(v))});
 $("soPayList").addEventListener("click",e=>{const b=e.target.closest("[data-so-ped]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
