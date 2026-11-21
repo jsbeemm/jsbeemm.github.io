@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795261103"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795261351"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10090,7 +10090,7 @@ function openSoForm(v,mode="so"){if(v&&!soCanEdit(v))return;soB=v?vBrand(v):mode
   for(const[id,k]of[["soPhone","phone"],["soNote","note"]])$(id).value=v?.[k]||"";$("soChannel").textContent=v?.channel||"";
   $("soDeliv").value=soDelivOf(v);soFillAddrs(pts.find(p=>p.id===v?.custId));soDlSet(!!soDelivOf(v));requestAnimationFrame(soGrow);
   $("soDate").innerHTML=dateSelect("",v?.date||todayISO(),"","",false,"");
-  soLines=(v?.lines||[]).map(l=>({...l}));
+  soLines=(v?.lines||[]).map((l,i)=>({...l,_o:i}));   /* _o: its place in the saved voucher (deliveries are kept by place) */
   /* "Paid Amount" is entered on a new voucher; later money goes in as a payment on the voucher */
   $("soPaid").value="";$("soPay").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPaidW").classList.toggle("ro",!!v);$("soPaid").hidden=$("soPay").hidden=!!v;
@@ -10212,6 +10212,15 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   if(!$("soCust").value){if(await askConfirm(`“${name}” ကို Customer စာရင်းထဲ မတွေ့ပါ`,"ဘောက်ချာ မသိမ်းခင် Customer အဖြစ် Register လုပ်ပါ။","Register"))soRegister();return}
   const lines=soLines.map(l=>({...l,name:String(l.name||"").trim(),qty:Number(l.qty)||0,price:Math.round(Number(l.price)||0),note:String(l.note||"").trim()})).filter(l=>l.name&&l.qty>0);
   lines.forEach(l=>{if(!l.note)delete l.note});
+  /* a voucher with deliveries: an item cannot go below what was already given, nor be taken off; the deliveries follow the lines */
+  let dMove=null;
+  if(v0&&soMode!=="po"&&(v0.deliveries||[]).length){const given={};for(const d of v0.deliveries)for(const[k,q]of Object.entries(d.lines||{}))given[k]=(given[k]||0)+Number(q||0);
+    const low=lines.find(l=>l._o!=null&&given[l._o]>l.qty);if(low){toast(`${low.name} — ပေးပြီးသား ${poNum(given[low._o])} ထက် မနည်းရပါ`,5000);return}
+    const gone=Object.keys(given).filter(k=>given[k]>0&&!lines.some(l=>l._o===Number(k)));
+    if(gone.length){toast(`${(v0.lines||[])[gone[0]]?.name||"Item"} — ပေးပြီးသား ပစ္စည်းမို့ ဖျက်လို့ မရပါ (ပေးပြီး ${poNum(given[gone[0]])})`,5000);return}
+    const to={};lines.forEach((l,i)=>{if(l._o!=null)to[l._o]=i});
+    dMove=v0.deliveries.map(d=>({...d,lines:Object.fromEntries(Object.entries(d.lines||{}).filter(([k])=>to[k]!=null).map(([k,q])=>[to[k],q]))}))}
+  lines.forEach(l=>delete l._o);
   if(!lines.length){toast("Item အနည်းဆုံး ၁ ခု ထည့်ပါ");return}
   /* a preorder: quantities and prices only; an item cannot go below what is already given */
   if(soMode==="po"){const bad=lines.find(l=>Number(l.given||0)>l.qty);if(bad){toast(`${bad.name} — ပေးပြီးသား ${bad.given} ထက် မနည်းရပါ`,4000);return}
@@ -10226,7 +10235,7 @@ $("soForm").addEventListener("submit",async e=>{e.preventDefault();const v0=soEd
   const paid=v0?0:Math.max(0,Math.round(Number($("soPaid").value)||0));if(paid>net){toast("ပေးငွေက Net Amount ထက် များနေပါတယ်");return}
   const v={...(v0||{id:"so"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),no:soNo(date,soB),at:now,by:me.id||null,byName:me.name||"",payments:[],...(soB==="mb"?{brand:"mb"}:{})}),
     date,custId:$("soCust").value||null,customer:name,phone:$("soPhone").value.trim()||null,channel:$("soChannel").textContent.trim()||null,
-    deliv:(soDlOn()?$("soDeliv").value.trim():"")||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{})};
+    deliv:(soDlOn()?$("soDeliv").value.trim():"")||null,note:$("soNote").value.trim()||null,lines,net,...(v0?{updatedAt:now,updatedBy:me.id||null}:{}),...(dMove?{deliveries:dMove}:{})};
   delete v.dName;delete v.dPhone;delete v.dAddr;
   if(!v0&&soFromPo){v.poId=soFromPo.id;v.poNo=pos.find(x=>x.id===soFromPo.id)?.no||""}
   if(!v0&&!soFromPo&&vBrand(v)!=="mb")v.pre=true;
