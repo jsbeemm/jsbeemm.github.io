@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795260926"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795261103"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -962,6 +962,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-pact{white-space:nowrap}.so-pact .o-ic+.o-ic{margin-left:6px}
 #soVBody[data-vtab="vo"] #soDelForm,#soVBody[data-vtab="vo"] #soDelList,#soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview{display:none!important}
 .so-vtabs{margin:0 0 10px}
+/* the paper, print, share, picture and payment tools belong to the Voucher tab: out of sight on Delivered */
+#soView.vt-del .so-sel,#soView.vt-del #soPayBtn,#soView.vt-del #soPrintBtn,#soView.vt-del #soShareBtn,#soView.vt-del #soImgBtn{display:none!important}
 .so-dtw{overflow-x:auto;-webkit-overflow-scrolling:touch}.so-dtbl{min-width:100%;width:auto}.so-dtbl th,.so-dtbl td{white-space:nowrap;vertical-align:top}
 .so-dtbl td:first-child,.so-dtbl th:first-child{white-space:normal;min-width:110px}
 .so-dtbl th{text-align:left;vertical-align:top}.so-dtbl tfoot td{border:0;padding-top:4px}.so-dtbl .r{text-align:right}.so-dtbl td{padding-top:8px;padding-bottom:8px}
@@ -9908,7 +9910,7 @@ function soDelListHtml(v){const all=v.deliveries||[],rows=(v.lines||[]).map((l,i
     ${!all.length?`<p class="side-help">${old?"အရင်ကတည်းက အကုန်ပေးပြီးသား voucher ပါ။":"ပစ္စည်း မပေးရသေးပါ။ \"ယခုပေး\" မှာ အရေအတွက် ရိုက်ပြီး Save နှိပ်ပါ။"}</p>`:""}`}
 /* the voucher view's two tabs */
 var soVTab="vo";
-function soVTabSet(t){soVTab=t;$("soVBody").dataset.vtab=t;$("soVTabs").querySelectorAll("[data-vtab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.vtab===t));if(t==="vo")requestAnimationFrame(soFit)}
+function soVTabSet(t){soVTab=t;$("soVBody").dataset.vtab=t;$("soView").classList.toggle("vt-del",t==="del");$("soVTabs").querySelectorAll("[data-vtab]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.vtab===t));if(t==="vo")requestAnimationFrame(soFit)}
 $("soVTabs").addEventListener("click",e=>{const b=e.target.closest("[data-vtab]");if(!b)return;soVTabSet(b.dataset.vtab);const v=vos.find(x=>x.id===soOpen);if(b.dataset.vtab==="del"&&v&&soDEdit==null)soDelOpen(v,null)});
 /* 🚚 Delivered: how many of each item are given now (everything left, unless lowered) */
 /* a delivery can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
