@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795261615"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795261846"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -999,6 +999,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .vo-edit{min-width:0}.vo-edit .vo-cust b.req{display:inline}.vo-edit .vo-top h1{font-size:clamp(18px,3.4vw,30px)}
 .so-tbl{table-layout:fixed;width:100%}.so-tbl th:nth-child(1){width:30px}.so-tbl th:nth-child(2){width:52px}.so-tbl th:nth-child(4){width:96px}.so-lqw{display:flex;align-items:center;gap:4px}.so-lqw .so-lq{flex:1;min-width:0}.so-lq.bad{border-color:var(--accent);outline:2px solid var(--accent-soft);color:var(--accent)}
 .so-lqu{flex:none;min-width:32px;white-space:nowrap;text-align:left;font-size:12px;color:var(--muted)}.so-tbl th:nth-child(5){width:132px}.so-pw{position:relative;display:block}.so-pw .so-lp{width:100%}#soLines .so-pw .so-lp{padding-right:30px}.so-pdd{position:absolute;top:1px;right:1px;bottom:1px;width:28px;display:flex;align-items:center;justify-content:center;color:var(--muted);border-radius:0 8px 8px 0}.so-pdd svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}.so-pdd:hover{color:var(--accent);background:var(--accent-soft)}#soLines .so-pdd .so-lt{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;padding:0;border:0;font-size:14px}
+.so-tbl:not(.has-gv) .so-gvc{display:none}.so-tbl th.so-gvc{width:64px}.so-tbl td.so-gvc b{color:var(--accent)}
 .so-tbl th:nth-child(6){width:100px}.so-tbl th:nth-child(7){width:13%}.so-tbl th:nth-child(8){width:78px}
 .so-tbl td input{padding:5px 6px;width:100%;min-width:0}
 /* every box on an item row is the same height; remove is a plain icon */
@@ -1026,11 +1027,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 @media (max-width:700px){.vo-edit .vo-meta{grid-template-columns:1fr}.vo-edit .vo-no{justify-content:start}
   /* on a phone each line is a small card: No · picture · name · ✕ / Qty · price · amount / note */
   .so-tbl thead{display:none}.so-tbl,.so-tbl tbody#soLines{display:block;width:100%}.so-tbl tbody#soLines tr{display:grid;width:100%;grid-template-columns:22px 44px minmax(0,.6fr) minmax(0,1.4fr) auto;
-    grid-template-areas:"no pic desc desc end" "qty qty qty price amt" "note note note note note";gap:6px;align-items:center;border-bottom:1px solid #c98b6a;padding:8px 0}
+    grid-template-areas:"no pic desc desc end" "qty qty qty price amt" "note note note note gv";gap:6px;align-items:center;border-bottom:1px solid #c98b6a;padding:8px 0}
   #soLines td{border:0;padding:0;width:auto;min-width:0}
   #soLines td:nth-child(1){grid-area:no;align-self:start;padding-top:7px;line-height:1.35}#soLines td:nth-child(2){grid-area:pic;align-self:start}#soLines td:nth-child(3){grid-area:desc;align-self:start}
   #soLines td:nth-child(4){grid-area:qty}#soLines td:nth-child(5){grid-area:price}#soLines td:nth-child(6){grid-area:amt;min-width:64px}
-  #soLines td:nth-child(7){grid-area:note}#soLines td:nth-child(8){grid-area:end;align-self:start}
+  #soLines td:nth-child(7){grid-area:note}#soLines td:nth-child(9){grid-area:gv;font-size:13px;white-space:nowrap}#soLines td:nth-child(9)::before{content:"ပေးပြီး ";color:var(--muted)}
+  .so-tbl:not(.has-gv) tbody#soLines tr{grid-template-areas:"no pic desc desc end" "qty qty qty price amt" "note note note note note"}#soLines td:nth-child(8){grid-area:end;align-self:start}
   #soLines td.so-empty{grid-column:1/-1}.so-tbl tbody#soLines tr:has(.so-empty){display:block}#soLines td.so-empty{display:block}
   .vo-edit .vo-top h1{font-size:20px}}
 .so-hits{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
@@ -2621,14 +2623,14 @@ span.star-ic{cursor:default}
             <span class="k">Channel#</span><span id="soChannel" class="cap" title="Customer ရဲ့ Channel"></span>
             <span class="k">Date</span><span id="soDate" class="cap"></span></div>
         </div>
-        <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th></tr></thead>
+        <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th><th class="r so-gvc">ပေးပြီး</th></tr></thead>
           <tbody id="soLines"></tbody>
           <!-- the totals sit in the Amount column, so every amount lines up -->
           <tbody class="so-add"><tr><td colspan="8"><div class="so-addbtns"><button type="button" class="btn" id="soAddItem">+ Add item</button><button type="button" class="chip" id="soAddDeli">+ Delivery</button><button type="button" class="chip" id="soAddOther">+ Other line</button></div></td></tr></tbody>
           <tfoot class="vo-tot">
-            <tr><td colspan="5" class="r k">Net Amount</td><td class="r v" id="soNet">0</td><td class="c">MMK</td><td></td></tr>
-            <tr class="so-money"><td colspan="5" class="r k"><span id="soPaidW"><select id="soPay" aria-label="Payment method"></select></span>Paid Amount</td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td></tr>
-            <tr class="ln so-money"><td colspan="5" class="r k">Balance</td><td class="r v" id="soBalTxt">0</td><td class="c">MMK</td><td></td></tr>
+            <tr><td colspan="5" class="r k">Net Amount</td><td class="r v" id="soNet">0</td><td class="c">MMK</td><td></td><td class="so-gvc"></td></tr>
+            <tr class="so-money"><td colspan="5" class="r k"><span id="soPaidW"><select id="soPay" aria-label="Payment method"></select></span>Paid Amount</td><td class="r v"><span id="soPaidRo" hidden></span><input id="soPaid" type="number" min="0" step="1" placeholder="0" aria-label="Paid amount"></td><td class="c">MMK</td><td></td><td class="so-gvc"></td></tr>
+            <tr class="ln so-money"><td colspan="5" class="r k">Balance</td><td class="r v" id="soBalTxt">0</td><td class="c">MMK</td><td></td><td class="so-gvc"></td></tr>
           </tfoot></table>
         <div class="vo-note"><input id="soNote" autocomplete="off" placeholder="Note" aria-label="Note"></div>
       </div>
@@ -10110,6 +10112,8 @@ function soSyncTot(){const net=soNetOf(soLines),paid=soEditing?soPaid(soEditing)
   $("soNet").textContent=Number(net).toLocaleString("en-US");$("soPaidRo").hidden=!soEditing;$("soPaidRo").textContent=paid?Number(paid).toLocaleString("en-US"):"-";
   $("soBalTxt").textContent=Math.max(0,net-paid).toLocaleString("en-US")}
 async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPhoto(soLinePhoto(l)))),fm=soFamMap();
+  /* the "ပေးပြီး" column shows only while a voucher with deliveries is being edited */
+  $("soLines").closest("table").classList.toggle("has-gv",!!(soEditing&&soMode!=="po"&&(soEditing.deliveries||[]).length));
   $("soLines").innerHTML=soLines.length?soLines.map((l,i)=>`<tr data-i="${i}"><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td>
       <td><div class="so-ldw">${l.pid?(()=>{const it=soItem(l.pid),fam=it&&fm.get(soFamKey(it)),many=fam&&fam.length>1;
         /* the name and its pencil stay on one line; the size / unit list opens under them */
@@ -10120,8 +10124,8 @@ async function renderSoLines(){const pics=await Promise.all(soLines.map(l=>soPho
         /* Retail / Wholesale (/ Food Panda at Mr.Bee): a small arrow inside the price box (only when the item has another price) */
         return`<span class="so-pw${dd?" dd":""}"><input class="so-lp" type="number" min="0" step="1" value="${esc(String(l.price??""))}" aria-label="Price">${dd?`<span class="so-pdd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><select class="so-lt" aria-label="Price type" title="${pp.f>0?"Retail / Wholesale / Food Panda":"Retail / Wholesale"}"><option value="r">Retail · ${fmt(pp.r)}</option>${pp.w>0?`<option value="w" ${l.tier==="w"?"selected":""}>Wholesale · ${fmt(pp.w)}</option>`:""}${pp.f>0?`<option value="f" ${l.tier==="f"?"selected":""}>Food Panda · ${fmt(pp.f)}</option>`:""}</select></span>`:""}</span>`})()}</td>
       <td class="r so-la">${Math.round(Number(l.qty||0)*Number(l.price||0)).toLocaleString("en-US")}</td>
-      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw">${soB==="mb"?"":`<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label>`}<button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td></tr>`).join("")
-    :`<tr><td colspan="8" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
+      <td><input class="so-ln" value="${esc(l.note||"")}" aria-label="Note"></td><td><div class="so-endw">${soB==="mb"?"":`<label class="so-buy" title="Stock မရှိ — supplier ဆီ မှာရန်"><input type="checkbox" class="so-lb" ${l.buy?"checked":""}> မှာရန်</label>`}<button type="button" class="o-ic danger" data-so-rm aria-label="Remove">✕</button></div></td><td class="r so-gvc">${(g=>g?`<b>${esc(poNum(g))}</b>`:"–")(soLineGiven(l))}</td></tr>`).join("")
+    :`<tr><td colspan="9" class="so-empty">“+ Add item” နဲ့ ပစ္စည်း ထည့်ပါ</td></tr>`;
   soSyncTot()}
 /* how many of a line were already delivered (editing a voucher with deliveries) */
 function soLineGiven(l){if(!soEditing||soMode==="po"||l?._o==null)return 0;let n=0;for(const d of soEditing.deliveries||[])n+=Number(d.lines?.[l._o]||0);return n}
