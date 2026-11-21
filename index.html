@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795262491"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795262836"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -964,7 +964,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPayList,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview,
 #soVBody[data-vtab="pay"] #soDelForm,#soVBody[data-vtab="pay"] #soDelList,#soVBody[data-vtab="pay"] #soPays,#soVBody[data-vtab="pay"] .so-preview{display:none!important}
 #soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}
-.so-vtabs{margin:0 0 10px}.so-paysum{margin:6px 0 0;text-align:right;font-size:14px}
+.so-vtabs{margin:0 0 10px}.so-pm-open{margin-top:10px}.so-pm{margin-top:10px;border:1px solid var(--line);border-radius:12px;padding:8px 12px}.so-pm .ac-h{display:flex;justify-content:space-between;align-items:center}
+.so-pmr{display:flex;gap:6px;align-items:center;cursor:pointer}.so-pmr input{width:auto;margin:0}.so-paysum{margin:6px 0 0;text-align:right;font-size:14px}
 /* the paper, print, share, picture and payment tools belong to the Voucher tab: out of sight on Delivered */
 #soView.vt-other .so-sel,#soView.vt-other #soPayBtn,#soView.vt-other #soPrintBtn,#soView.vt-other #soShareBtn,#soView.vt-other #soImgBtn{display:none!important}
 .so-dtw{overflow-x:auto;-webkit-overflow-scrolling:touch}.so-dtbl{min-width:100%;width:auto}.so-dtbl th,.so-dtbl td{white-space:nowrap;vertical-align:top}
@@ -10527,15 +10528,16 @@ $("soOrient").addEventListener("change",e=>{try{localStorage.setItem("cakeSoOrie
 /* the preview follows the paper: the full voucher, or the receipt */
 $("soPaper").addEventListener("change",()=>{const p=$("soPaper").value;if(p==="LN")$("soOrient").value="L";else if(p==="LC")$("soOrient").value="P";soSyncOrient();const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
 /* every voucher opens on A5; A4 / Receipt is picked for that one voucher */
-function openSoView(v){soOpen=v.id;soVTab="vo";soDEdit=null;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+function openSoView(v){soOpen=v.id;soVTab="vo";soDEdit=null;soPayMulti=null;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
 async function renderSoView(v){$("soViewT").textContent=v.no;
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
-  $("soPayList").innerHTML=!ps.length?(vBrand(v)==="mb"?"":`<p class="side-help">Payment မရှိသေးပါ။</p>`):`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
+  $("soPayList").innerHTML=!ps.length?(vBrand(v)==="mb"?"":`<p class="side-help">Payment မရှိသေးပါ။</p>`):`<p class="ac-h">💵 Payments</p><table class="ex-tbl"><tbody>${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}${p.grp?`<br><small class="ex-c">👥 ${esc(p.note||"ပေါင်းရှင်း")}</small>`:""}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}</tbody></table>`;
   $("soPays").innerHTML=soStatusHtml(v);
   /* the money line under the list: what the voucher comes to, what was paid and what is still to get */
   if(vBrand(v)!=="mb"&&ps.length)$("soPayList").insertAdjacentHTML("beforeend",`<p class="so-paysum">Net ${fmt(v.net)} · Paid ${fmt(soPaid(v))} · <b>Balance ${fmt(soBal(v))}</b></p>`);
-  if(vBrand(v)!=="mb"&&soBal(v)<=0&&soPEdit==null)$("soPayForm").hidden=true;
+  if(vBrand(v)!=="mb"&&soBal(v)<=0&&soPEdit==null&&!soPayMulti)$("soPayForm").hidden=true;
+  if(vBrand(v)!=="mb")$("soPayList").insertAdjacentHTML("beforeend",soPayMultiHtml(v));
   {const js=vBrand(v)!=="mb",n=(v.deliveries||[]).length;if(!js)soVTab="vo";
    $("soVTabs").innerHTML=js?`<button type="button" class="chip" data-vtab="vo">📄 Voucher</button><button type="button" class="chip" data-vtab="pay">💵 Payment <small>${(v.payments||[]).length}</small></button><button type="button" class="chip" data-vtab="del">🚚 Delivered <small>${n}</small></button>`:"";
    $("soDelList").innerHTML=js?soDelListHtml(v):"";if(js&&!soDelEntry(v))$("soDelForm").hidden=true;$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);soVTabSet(soVTab)}
@@ -10557,13 +10559,32 @@ $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOp
 var soPEdit=null;
 const soPayEditable=(v,p)=>!v.xl&&(can("admin")||(sameId(p.by,me.id)&&String(p.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
 function soPayFormSet(edit){soPEdit=edit;$("soPSave").textContent=edit==null?"Save payment":"Save changes"}
-function soPayOpen(v,focus){soPayFormSet(null);if(soBal(v)<=0){$("soPayForm").hidden=true;return}
+/* paying several of a customer's vouchers at once: the vouchers of this customer still owing (Preorders left out, as on the debt list) */
+var soPayMulti=null;   /* null, or the ids of the vouchers ticked to be paid together */
+const soPayMates=v=>!v?.custId?[]:vos.filter(x=>soMine(x)&&x.custId===v.custId&&soBal(x)>0&&(x.id===v.id||soStage(x)!=="pre")).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.no).localeCompare(String(b.no)));
+const soPayMultiSum=()=>soPayMulti?vos.filter(x=>soPayMulti.has(x.id)).reduce((a,x)=>a+soBal(x),0):0;
+function soPayMultiHtml(v){const ms=soPayMates(v);if(ms.length<2||ms.every(x=>x.id===v.id))return"";
+  const all=ms.reduce((a,x)=>a+soBal(x),0);
+  if(!soPayMulti)return`<button type="button" class="chip so-pm-open" data-so-pmulti>👥 ဒီ Customer ရဲ့ ကျန်ငွေ ပေါင်းရှင်းရန် · voucher ${ms.length} စောင် · ${fmt(all)}</button>`;
+  return`<div class="so-pm"><p class="ac-h">👥 ပေါင်းရှင်းမည့် voucher များ <button type="button" class="so-dall" data-so-pmoff>ပေါင်းမရှင်းတော့ပါ</button></p>
+    <table class="ex-tbl"><tbody>${ms.map(x=>`<tr><td><label class="so-pmr"><input type="checkbox" data-so-pmv="${esc(x.id)}" ${soPayMulti.has(x.id)?"checked":""}> <b>${esc(x.no)}</b> · ${esc(soDate(x.date))}${x.id===v.id?" <small>(ဒီ voucher)</small>":""}</label></td><td class="ex-r">${fmt(soBal(x))}</td></tr>`).join("")}
+    <tr><td><b>ရွေးထားတာ စုစုပေါင်း</b></td><td class="ex-r"><b>${fmt(soPayMultiSum())}</b></td></tr></tbody></table>
+    <p class="side-help">ပေးငွေကို ရက်စွဲ အစောဆုံး voucher ကနေ စပြီး ခွဲထည့်ပါမယ်။</p></div>`}
+function soPayOpen(v,focus){soPayFormSet(null);if(soPayMulti){$("soPAmt").value=soPayMultiSum();$("soPayForm").hidden=!soPayMultiSum();return}if(soBal(v)<=0){$("soPayForm").hidden=true;return}
   $("soPAmt").value=soBal(v);$("soPMethod").innerHTML=pmFor("sale").map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("");
   $("soPDate").innerHTML=dateSelect("",todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=false;if(focus)$("soPAmt").focus()}
 $("soPCancel").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(v&&vBrand(v)!=="mb")soPayOpen(v);else{$("soPayForm").hidden=true;soPayFormSet(null)}});
 $("soPayBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soPayOpen(v,true)});
 $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const amt=Math.round(Number($("soPAmt").value)||0);
   if(!(amt>0)){toast("ပေးငွေ ထည့်ပါ");return}
+  if(soPayMulti&&soPEdit==null){const list=vos.filter(x=>soPayMulti.has(x.id)&&soBal(x)>0).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.no).localeCompare(String(b.no)));
+    const tot=list.reduce((a,x)=>a+soBal(x),0);if(!list.length){toast("Voucher ရွေးပါ");return}if(amt>tot){toast(`ရွေးထားတဲ့ ကျန်ငွေ ${fmt(tot)} ထက် များနေပါတယ်`);return}
+    const now=new Date().toISOString(),method=$("soPMethod").value||"Cash",date=readDate($("soPDate").querySelector(".dp"))||todayISO(),grp="pg"+Date.now().toString(36),nos=list.map(x=>x.no).join(", ");
+    let left=amt,done=0;$("soPSave").disabled=true;
+    try{for(const x of list){if(left<=0)break;const give=Math.min(left,soBal(x));left-=give;
+        await saveSo({...x,payments:[...(x.payments||[]),{amt:give,method,date,at:now,by:me.id||null,grp,note:`ပေါင်းရှင်း · ${nos}`}],updatedAt:now});done++}
+      soPayMulti=null;const n=vos.find(x=>x.id===v.id)||v;await renderSoView(n);soPayOpen(n);toast(`✓ Voucher ${done} စောင် ပေါင်းရှင်းပြီး · ${fmt(amt)}`,5000)}
+    catch(x){toast("သိမ်းမရပါ")}finally{$("soPSave").disabled=false}return}
   /* editing one payment: it keeps when / by whom it was taken; a changed method or amount has to be checked again */
   if(soPEdit!=null){const i=soPEdit,old=(v.payments||[])[i];if(!old||!soPayEditable(v,old))return;const room=soBal(v)+Number(old.amt||0);
     if(amt>room){toast(`ကျန်ငွေ ${fmt(room)} ထက် များနေပါတယ်`);return}
@@ -10573,6 +10594,12 @@ $("soPSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpe
     try{await saveSo(n);soPayFormSet(null);await renderSoView(n);if(vBrand(n)!=="mb")soPayOpen(n);else $("soPayForm").hidden=true;toast("✓ Payment ပြင်ပြီး")}catch(x){toast("သိမ်းမရပါ")}return}if(amt>soBal(v)){toast(`ကျန်ငွေ ${fmt(soBal(v))} ထက် များနေပါတယ်`);return}
   const now=new Date().toISOString(),n={...v,payments:[...(v.payments||[]),{amt,method:$("soPMethod").value||"Cash",date:readDate($("soPDate").querySelector(".dp"))||todayISO(),at:now,by:me.id||null}],updatedAt:now};
   try{await saveSo(n);await renderSoView(n);if(vBrand(n)!=="mb")soPayOpen(n);else $("soPayForm").hidden=true;toast("✓ Payment သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}});
+/* turning "pay together" on / off, ticking vouchers: the amount follows what is ticked */
+$("soPayList").addEventListener("click",e=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  if(e.target.closest("[data-so-pmulti]")){soPayMulti=new Set(soPayMates(v).map(x=>x.id));renderSoView(v).then(()=>soPayOpen(v,true));return}
+  if(e.target.closest("[data-so-pmoff]")){soPayMulti=null;renderSoView(v).then(()=>soPayOpen(v))}});
+$("soPayList").addEventListener("change",e=>{const c=e.target.closest("[data-so-pmv]");if(!c||!soPayMulti)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
+  if(c.checked)soPayMulti.add(c.dataset.soPmv);else soPayMulti.delete(c.dataset.soPmv);renderSoView(v).then(()=>soPayOpen(v))});
 $("soPayList").addEventListener("click",e=>{const b=e.target.closest("[data-so-ped]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const i=Number(b.dataset.soPed),p=(v.payments||[])[i];if(!p||!soPayEditable(v,p))return;soPayFormSet(i);
   const ms=pmFor("sale");if(p.method&&!ms.includes(p.method))ms.push(p.method);
