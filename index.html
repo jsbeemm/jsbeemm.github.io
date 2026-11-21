@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795265777"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795265952"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -959,6 +959,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .po-fin{opacity:.75}.po-buy .lnk{color:var(--accent);cursor:pointer;text-decoration:underline}
 .so-stage{margin:0 0 8px}.so-delform{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}.so-deltbl{width:100%}.so-deltbl th,.so-deltbl td{padding:5px 8px;text-align:left}.so-deltbl .r{text-align:right}
 .so-deltbl input{width:90px;text-align:right}.so-drem{color:var(--muted)}.so-drem.on{color:var(--accent);font-weight:700}
+.so-vt{display:flex;gap:5px;align-items:baseline;min-width:0;white-space:nowrap}.so-vtc{overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .so-pact{white-space:nowrap}.so-pact .o-ic+.o-ic{margin-left:6px}
 #soVBody[data-vtab="vo"] #soDelForm,#soVBody[data-vtab="vo"] #soDelList,#soVBody[data-vtab="vo"] #soPayForm,#soVBody[data-vtab="vo"] #soPayList,
 #soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPayList,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview,
@@ -1053,6 +1054,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soView .pv-head{flex-wrap:nowrap;gap:10px}#soView .pv-head>b{white-space:nowrap}.pv-head .so-foot{flex:1;border:0;padding:0;gap:6px}.pv-head .so-foot select{width:auto;padding:6px 8px}
 .pv-head .so-foot .btn.pv-ic,.pv-head .so-foot .btn.pv-del{min-height:40px;min-width:42px;padding-inline:10px}.pv-head .so-foot .btn{padding-block:8px}
 @media (max-width:700px){#soView .pv-head,#poView .pv-head{flex-wrap:wrap}.pv-head .so-foot{order:3;flex-basis:100%}}
+@media (max-width:700px){#soView .pv-head>b.so-vt{flex:1 1 0}}   /* the title shrinks (customer cut with …) so ✕ stays on its row */
 @media (max-width:1240px){.pv-head .so-foot .so-pl{display:none}}
 /* on a phone the tools fit one row: no spacer, short labels */
 @media (max-width:600px){.pv-head .so-foot .ed-count,.pv-head .so-foot .so-pl{display:none}.pv-head .so-foot{gap:4px}#soView .pv-head .so-foot select{padding:0 2px;height:38px;min-height:0;max-width:86px}#soView .pv-head .so-foot #soOrient{max-width:98px}
@@ -2671,7 +2673,7 @@ span.star-ic{cursor:default}
 <!-- JS voucher: view, print, payments -->
 <div class="editor" id="soView" hidden role="dialog" aria-modal="true" aria-label="Voucher">
   <div class="ed-panel side-panel so-panel">
-    <div class="ed-tools pv-head"><b>📄 <span id="soViewT">Voucher</span></b>
+    <div class="ed-tools pv-head"><b class="so-vt">📄 <span id="soViewT">Voucher</span><span class="so-vtc" id="soViewC"></span></b>
     <!-- the tools sit on the voucher number's row, so the voucher gets the whole height -->
     <div class="ed-foot so-foot">
       <button type="button" class="btn ghost pv-ic" id="soEditBtn" aria-label="Edit voucher" title="Edit voucher"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></svg></button>
@@ -10540,7 +10542,7 @@ $("soOrient").addEventListener("change",e=>{try{localStorage.setItem("cakeSoOrie
 $("soPaper").addEventListener("change",()=>{const p=$("soPaper").value;if(p==="LN")$("soOrient").value="L";else if(p==="LC")$("soOrient").value="P";soSyncOrient();const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)});
 /* every voucher opens on A5; A4 / Receipt is picked for that one voucher */
 function openSoView(v){soOpen=v.id;soVTab="vo";soDEdit=null;soPayMulti=null;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
-async function renderSoView(v){$("soViewT").textContent=v.no;
+async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soViewC").title=v.customer||"";
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
   $("soPayList").after($("soPayForm"));   /* take the form out before the list is drawn again */
