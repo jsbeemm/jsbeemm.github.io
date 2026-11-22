@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795330377"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795332293"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7104,7 +7104,7 @@ function openPurForm(p){if(!canPur())return;
   $("purDlgT").textContent=p?"Edit purchase":"New purchase";$("purDlgNo").textContent=p?.no||"—";
   $("purDateBox").innerHTML=dateSelect("purD",p?.date||todayISO(),"Date","",false,todayISO());
   $("purSup").value=p?.supplier||"";$("purGate").value=p?.gate||"";$("purNote").value=p?.note||"";
-  $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}">`).join("");
+  $("purSupList").innerHTML=pts.filter(x=>x.type==="supplier").map(x=>`<option value="${esc(x.name)}"${x.short?` label="${esc(x.short)} · ${esc(x.name)}"`:""}>${x.short?esc(x.short):""}</option>`).join("");
   $("purGateHits").hidden=true;
   renderPurLines();$("purDlg").hidden=false}
 const purLinePhoto=l=>items.find(x=>x.id===l.iid)?.photo||l.photo||"";
@@ -7158,6 +7158,10 @@ function purPickPut(i,u){const o=purOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,un:pu
 $("purNewIt").addEventListener("click",()=>{if(!can("admin"))return;const nm=$("purPickQ").value.trim();openItForm(null);if(nm)$("itName").value=nm;
   itAfterSave=it=>{const i=items.find(x=>x.id===it.id)||it;purPickPut(i,(purOptsOf(i)[0]||{k:-1}).k)}});
 $("purPickQ").addEventListener("input",renderPurPick);
+$("purSup").addEventListener("change",()=>{const t=$("purSup").value.trim().toLowerCase();if(!t)return;
+  const sp=pts.filter(x=>x.type==="supplier");if(sp.some(x=>String(x.name||"").toLowerCase()===t))return;
+  const m=sp.find(x=>String(x.short||"").toLowerCase()===t);if(m)$("purSup").value=m.name});
+$("purSup").placeholder="Supplier name / short code";
 $("purPickQ").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("purHits").querySelector("[data-pur-it]")?.click()}});
 $("purPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-pupc]");if(b){purPickCat=b.dataset.pupc;renderPurPick()}});
 $("purHits").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".pur-one")){e.preventDefault();e.target.click()}});
