@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795335270"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795335349"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7085,7 +7085,6 @@ function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("adm
       <label class="prf"><span>Amount (Ks)</span><input id="prA" type="number" inputmode="numeric" min="0" step="1" value="${purReqWith.size?amt+purs.filter(x=>purReqWith.has(x.id)).reduce((a,x)=>a+purTot(x),0):(r?.st==="no"&&r.amt)||amt}" ${purReqWith.size?"readonly":""}></label></div>
       
       <label class="prf"><span>Note</span><input id="prN" autocomplete="off"></label>
-      <p class="pur-mu">Method ရဲ့ account ပိုင်ရှင်ဆီ To-do list မှာ request ရောက်ပြီး သူက ငွေလွှဲပေးပါမယ်။</p>
       <div class="pur-btns"><button type="button" class="btn ghost" data-pa="cancel" ${dk}>Cancel</button><button type="button" class="btn" data-pa="reqsend" ${dk}>💸 Request ပို့မည်</button></div>`}
   if(purAct==="pay:"+k&&!d&&purPayer(r)){const ms=r?.method?[r.method]:ms0;
     return`<div class="ex-row2"><div class="prf"><span>ငွေလွှဲသည့်နေ့</span>${dateSelect("paD",todayISO(),"ငွေလွှဲသည့်နေ့","",false,todayISO())}</div>
@@ -7217,8 +7216,7 @@ function openPurView(id){purOpen=id;purAct=null;purVTab="vo";$("purView").hidden
 /* the purchase as a voucher paper (the JS letterhead; the supplier where a customer would be) */
 function purVoHtml(p){const m=n=>Number(n||0).toLocaleString("en-US"),sh=SO_SHOP.js,tot=purTot(p),fr=Number(p.freight||0),paid=Number(p.paid?.amt||0)+Number(p.frPaid?.amt||0),sup=pts.find(x=>x.id===p.supId);
   return`<div class="vo">
-    ${sh.head?`<div class="vo-top"><div class="vo-hbox"><img class="vo-head" src="${sh.head}" alt="${esc(sh.name)}"><p>${sh.ph}</p></div></div>`:`<div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>`}
-    <div class="vo-meta">
+    <div class="vo-meta" style="margin-top:0">
       <div class="vo-cust"><h3>Supplier</h3><b>${esc(p.supplier||"")}</b>${sup?.phone?`<div>${esc(sup.phone)}</div>`:""}</div>
       <div class="vo-dl">${p.gate?`<h3>Gate / Logistic</h3><div>${esc(p.gate)}</div>`:""}</div>
       <div class="vo-no"><span class="k">PO No#</span><span>${esc(p.no||"")}</span><span class="k">Date</span><span>${esc(soDate(p.date))}</span>${p.arrived?`<span class="k">Arrived</span><span>${esc(soDate(p.arrived.date))}</span>`:""}</div>
