@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795335349"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795336021"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7053,7 +7053,9 @@ const purPayer=r=>r?.owner?sameId(r.owner,me.id):can("admin");
 const purSameSup=(a,b)=>a.id!==b.id&&(a.supId&&b.supId?a.supId===b.supId:String(a.supplier||"").trim().toLowerCase()===String(b.supplier||"").trim().toLowerCase());
 /* the same supplier's other purchases whose goods are not paid and not asked for */
 const purMates=p=>purs.filter(x=>purSameSup(x,p)&&!x.paid&&x.payReq?.st!=="wait"&&purTot(x)>0).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
-const purGrp=(p,k)=>{const r=p[PUR_K[k].req];return k==="g"&&r?.grp?purs.filter(x=>x.payReq?.grp===r.grp&&!x.paid&&x.payReq.st==="wait"):[p]};
+const purMatesF=p=>!p.arrived?[]:purs.filter(x=>x.id!==p.id&&x.arrived&&x.arrived.date===p.arrived.date&&Number(x.freight)>0&&!x.frPaid&&x.frReq?.st!=="wait").sort((a,b)=>String(a.no||"").localeCompare(String(b.no||"")));
+const purMatesK=(p,k)=>k==="g"?purMates(p):purMatesF(p);
+const purGrp=(p,k)=>{const K=PUR_K[k],r=p[K.req];return r?.grp?purs.filter(x=>x[K.req]?.grp===r.grp&&!x[K.paid]&&x[K.req].st==="wait"):[p]};
 var purReqWith=new Set();   /* ids ticked to be asked for together with the open purchase */
 const purPayerName=r=>r?.owner?nameOf(r.owner):"Admin";
 /* the payments waiting for me to transfer: [{p,k,r}] */
@@ -7078,18 +7080,19 @@ async function purUpShot(f){const b=await shrinkImage(f);return await storePhoto
 function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("admin"),amt=K.amt(p),dk=`data-k="${k}"`,ms0=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
   /* asking: the method (whose account the money goes out of) and the amount */
   if(purAct==="req:"+k&&!d&&canPur()){const ms=ms0;
-    return`${k==="g"&&purMates(p).length?`<div class="pur-grp"><p class="ac-h">👥 ဒီ Supplier ရဲ့ မလွှဲရသေးတဲ့ Purchase တွေနဲ့ ပေါင်းပြီး request လုပ်ရန်</p>
-      <label class="so-pmr"><input type="checkbox" checked disabled> <b>${esc(p.no||"")}</b> · ${esc(soDate(p.date))} <small>(current voucher)</small><span class="pur-grpa">${esc(fmt(purTot(p)))}</span></label>
-      ${purMates(p).map(x=>`<label class="so-pmr"><input type="checkbox" data-pr-with="${esc(x.id)}" ${purReqWith.has(x.id)?"checked":""}> <b>${esc(x.no||"")}</b> · ${esc(soDate(x.date))} <span class="pur-grpa">${esc(fmt(purTot(x)))}</span></label>`).join("")}
-      <div class="so-pmr pur-grpt"><b>ရွေးထားတာ စုစုပေါင်း</b><span class="pur-grpa">${esc(fmt(purTot(p)+purs.filter(x=>purReqWith.has(x.id)).reduce((a,x)=>a+purTot(x),0)))}</span></div></div>`:""}<div class="ex-row2"><label class="prf"><span>Payment method</span><select id="prM"><option value="">— Method ရွေးပါ —</option>${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}${payOwnerOf(m)?` · ${esc(nameOf(payOwnerOf(m)))}`:""}</option>`).join("")}</select></label>
-      <label class="prf"><span>Amount (Ks)</span><input id="prA" type="number" inputmode="numeric" min="0" step="1" value="${purReqWith.size?amt+purs.filter(x=>purReqWith.has(x.id)).reduce((a,x)=>a+purTot(x),0):(r?.st==="no"&&r.amt)||amt}" ${purReqWith.size?"readonly":""}></label></div>
+    const KA=K.amt,sp=x=>k==="f"?` · <span data-t="${esc(x.supplier||"")}"></span>`:"";
+    return`${purMatesK(p,k).length?`<div class="pur-grp"><p class="ac-h">${k==="g"?"👥 ဒီ Supplier ရဲ့ မလွှဲရသေးတဲ့ Purchase တွေနဲ့ ပေါင်းပြီး request လုပ်ရန်":"👥 တစ်နေ့တည်း ရောက်တဲ့ Purchase တွေရဲ့ ကားခ ပေါင်းပြီး request လုပ်ရန်"}</p>
+      <label class="so-pmr"><input type="checkbox" checked disabled> <b>${esc(p.no||"")}</b> · ${esc(soDate(p.date))}${sp(p)} <small>(current voucher)</small><span class="pur-grpa">${esc(fmt(KA(p)))}</span></label>
+      ${purMatesK(p,k).map(x=>`<label class="so-pmr"><input type="checkbox" data-pr-with="${esc(x.id)}" ${purReqWith.has(x.id)?"checked":""}> <b>${esc(x.no||"")}</b> · ${esc(soDate(x.date))}${sp(x)}<span class="pur-grpa">${esc(fmt(KA(x)))}</span></label>`).join("")}
+      <div class="so-pmr pur-grpt"><b>ရွေးထားတာ စုစုပေါင်း</b><span class="pur-grpa">${esc(fmt(KA(p)+purs.filter(x=>purReqWith.has(x.id)).reduce((a,x)=>a+KA(x),0)))}</span></div></div>`:""}<div class="ex-row2"><label class="prf"><span>Payment method</span><select id="prM"><option value="">— Method ရွေးပါ —</option>${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}${payOwnerOf(m)?` · ${esc(nameOf(payOwnerOf(m)))}`:""}</option>`).join("")}</select></label>
+      <label class="prf"><span>Amount (Ks)</span><input id="prA" type="number" inputmode="numeric" min="0" step="1" value="${purReqWith.size?amt+purs.filter(x=>purReqWith.has(x.id)).reduce((a,x)=>a+K.amt(x),0):(r?.st==="no"&&r.amt)||amt}" ${purReqWith.size?"readonly":""}></label></div>
       
       <label class="prf"><span>Note</span><input id="prN" autocomplete="off"></label>
       <div class="pur-btns"><button type="button" class="btn ghost" data-pa="cancel" ${dk}>Cancel</button><button type="button" class="btn" data-pa="reqsend" ${dk}>💸 Request ပို့မည်</button></div>`}
   if(purAct==="pay:"+k&&!d&&purPayer(r)){const ms=r?.method?[r.method]:ms0;
     return`<div class="ex-row2"><div class="prf"><span>ငွေလွှဲသည့်နေ့</span>${dateSelect("paD",todayISO(),"ငွေလွှဲသည့်နေ့","",false,todayISO())}</div>
       <label class="prf"><span>Payment method</span><select id="paM">${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select></label></div>
-      <div class="ex-row2"><label class="prf"><span>Amount (Ks)</span><input id="paA" type="number" inputmode="numeric" min="0" step="1" value="${r?.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x.payReq.amt)||purTot(x)),0):r?.amt||amt}" ${r?.grp&&purGrp(p,k).length>1?"readonly":""}></label>
+      <div class="ex-row2"><label class="prf"><span>Amount (Ks)</span><input id="paA" type="number" inputmode="numeric" min="0" step="1" value="${r?.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x[K.req].amt)||K.amt(x)),0):r?.amt||amt}" ${r?.grp&&purGrp(p,k).length>1?"readonly":""}></label>
       <label class="prf"><span>Note</span><input id="paN" autocomplete="off"></label></div>
       <div class="prf prq-pics"><span>ငွေလွှဲ Screenshot</span><div class="prq-phs" id="paPhs">${purPaPhs()}</div>
         ${canStore()?`<div class="prq-ph-btns" id="paPhBtns"${purPayPh.length>=3?" hidden":""}><label class="chip">${PUR_SHOT_IC}<span>Screenshot ထည့်ရန်</span><input type="file" id="paPick" accept="image/*" multiple hidden></label></div>`:""}</div>
@@ -7100,7 +7103,7 @@ function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("adm
       ${admin?`<div class="pur-btns">${canStore()&&ph.length<3?`<label class="chip pa-addw">${PUR_SHOT_IC}<span>Screenshot ထည့်ရန်</span><input type="file" class="pa-add" ${dk} accept="image/*" multiple hidden></label>`:""}<button type="button" class="link danger" data-pa="unpay" ${dk}>ငွေလွှဲမှု ပြန်ဖျက်ရန်</button></div>`:""}`}
   if(r?.st==="wait"){const payer=purPayer(r);
     return`<p>💸 <b>${esc(nameOf(r.by))}</b> က ${K.nm} ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ် · ${esc(rcvWhen(r.at))}</p>`
-      +(r.grp&&purGrp(p,k).length>1?`<p>👥 ပေါင်းပြီး request · ${esc(purGrp(p,k).map(x=>x.no).join(", "))} · စုစုပေါင်း <b>${esc(fmt(purGrp(p,k).reduce((a,x)=>a+(Number(x.payReq.amt)||0),0)))}</b></p>`:"")
+      +(r.grp&&purGrp(p,k).length>1?`<p>👥 ပေါင်းပြီး request · ${esc(purGrp(p,k).map(x=>x.no).join(", "))} · စုစုပေါင်း <b>${esc(fmt(purGrp(p,k).reduce((a,x)=>a+(Number(x[K.req].amt)||0),0)))}</b></p>`:"")
       +(r.method?`<p>${esc(pmLabel(r.method))}${r.amt?` · <b>${esc(fmt(r.amt))}</b>`:""} · လွှဲပေးရမည့်သူ <b>${esc(purPayerName(r))}</b>${r.note?` · <span data-t="${esc(r.note)}"></span>`:""}</p>`:"")
       +(payer?`<div class="pur-btns"><button type="button" class="btn ghost" data-pa="refuse" ${dk}>ခွင့်မပြုပါ</button><button type="button" class="btn" data-pa="pay" ${dk}>ငွေလွှဲမည်</button></div>`
       :sameId(r.by,me.id)||admin?`<div class="pur-btns">${admin&&!sameId(r.by,me.id)?`<button type="button" class="link" data-pa="refuse" ${dk}>ခွင့်မပြုပါ</button>`:`<button type="button" class="link" data-pa="unreq" ${dk}>Request ပြန်ရုပ်ရန်</button>`}</div>`:"")}
@@ -7278,7 +7281,7 @@ function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView"
       +(ed||del?`<div class="prq-actions">${del?`<button type="button" class="btn ghost" data-pa="del">Delete</button>`:""}${ed?`<button type="button" class="btn" data-pa="edit">Edit</button>`:""}</div>`:"");
     $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);requestAnimationFrame(purFit);
     $("purPrev").querySelectorAll("img").forEach(im=>{if(!im.complete)im.addEventListener("load",purFit,{once:true})});purPrepShare(p);return}
-  if(vt==="pay"){const grpOn=purAct==="req:g"&&purMates(p).length>0;$("purBody").innerHTML=tabs+`<div class="pur-sum"${grpOn?" hidden":""}><span>ပစ္စည်းဖိုး</span><b>${esc(fmt(tot))}</b>${fr?`<span>ကားခ</span><b>${esc(fmt(fr))}</b><span class="gt">စုစုပေါင်း</span><b class="gt">${esc(fmt(tot+fr))}</b>`:""}</div>
+  if(vt==="pay"){const grpOn=(purAct==="req:g"||purAct==="req:f")&&purMatesK(p,purAct.slice(4)).length>0;$("purBody").innerHTML=tabs+`<div class="pur-sum"${grpOn?" hidden":""}><span>ပစ္စည်းဖိုး</span><b>${esc(fmt(tot))}</b>${fr?`<span>ကားခ</span><b>${esc(fmt(fr))}</b><span class="gt">စုစုပေါင်း</span><b class="gt">${esc(fmt(tot+fr))}</b>`:""}</div>
       <section class="pur-sec"><h4>💸 ငွေလွှဲ · ပစ္စည်းဖိုး</h4>${pay}</section>${frPay?`<section class="pur-sec"><h4>🚚 ငွေလွှဲ · ကားခ</h4>${frPay}</section>`:p.arrived?"":`<p class="pur-mu">ကားခ ငွေလွှဲက ပစ္စည်းရောက်ပြီး ကားခ ထည့်မှ ပေါ်ပါမယ်။</p>`}`;
     $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);return}
   if(vt==="arr"){$("purBody").innerHTML=tabs+`<section class="pur-sec"><h4>📦 ပစ္စည်းရောက် · ကားခ</h4>${arr}</section>`;
@@ -7343,9 +7346,9 @@ $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purO
   if(a==="edit"){$("purView").hidden=true;openPurForm(p);return}
   try{
     if(a==="reqsend"){const method=$("prM").value,amt=Math.round(Number($("prA").value)||0);if(!method){toast("Method ရွေးပါ");$("prM").focus();return}if(!(amt>0)){toast("Amount ထည့်ပါ");$("prA").focus();return}
-      const owner=payOwnerOf(method)||null,note=$("prN").value.trim(),with_=k==="g"?purs.filter(x=>purReqWith.has(x.id)&&!x.paid&&x.payReq?.st!=="wait"):[];purAct=null;purReqWith=new Set();
-      if(with_.length){const all=[p,...with_].sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))),grp="rg"+Date.now().toString(36),ids=all.map(x=>x.id),nos=all.map(x=>x.no).join(", "),gAmt=all.reduce((a,x)=>a+purTot(x),0);
-        for(const x of all)await patchPur(x.id,{payReq:{st:"wait",by:me.id||null,at:now,method,amt:purTot(x),owner,grp,grpIds:ids,grpNos:nos,grpAmt:gAmt,...(note?{note}:{})}})}
+      const owner=payOwnerOf(method)||null,note=$("prN").value.trim(),with_=purs.filter(x=>purReqWith.has(x.id)&&!x[K.paid]&&x[K.req]?.st!=="wait");purAct=null;purReqWith=new Set();
+      if(with_.length){const all=[p,...with_].sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))),grp="rg"+Date.now().toString(36),ids=all.map(x=>x.id),nos=all.map(x=>x.no).join(", "),gAmt=all.reduce((a,x)=>a+K.amt(x),0);
+        for(const x of all)await patchPur(x.id,{[K.req]:{st:"wait",by:me.id||null,at:now,method,amt:K.amt(x),owner,grp,grpIds:ids,grpNos:nos,grpAmt:gAmt,...(note?{note}:{})}})}
       else await patchPur(p.id,{[K.req]:{st:"wait",by:me.id||null,at:now,method,amt,owner,...(note?{note}:{})}});
       toast(`${owner?nameOf(owner):"Admin"} ဆီ ${K.nm} ငွေလွှဲ request ပို့ပြီး`)}
     else if(a==="unreq"){for(const x of purGrp(p,k))await patchPur(x.id,{[K.req]:null});toast("Request ပြန်ရုပ်ပြီး")}
@@ -7354,7 +7357,7 @@ $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purO
       if(purPayPh.some(x=>!x.id)){toast("Screenshot တင်နေဆဲပါ");return}
       const date=readDate($("purBody").querySelector(".paD"))||todayISO(),method=$("paM").value,photos=purPayPh.map(x=>x.id);purAct=null;purPayPh=[];
       const G=purGrp(p,k);
-      if(G.length>1){const r0=p[K.req],nt=$("paN").value.trim();for(const x of G)await patchPur(x.id,{[K.paid]:{date,method,cur:pmCur(method),amt:Number(x[K.req].amt)||purTot(x),note:nt||`ပေါင်းလွှဲ · ${r0.grpNos||""}`,grp:r0.grp,grpNos:r0.grpNos||"",grpAmt:r0.grpAmt||amt,...(photos.length?{photos}:{}),at:now,by:me.id||null},
+      if(G.length>1){const r0=p[K.req],nt=$("paN").value.trim();for(const x of G)await patchPur(x.id,{[K.paid]:{date,method,cur:pmCur(method),amt:Number(x[K.req].amt)||K.amt(x),note:nt||`ပေါင်းလွှဲ · ${r0.grpNos||""}`,grp:r0.grp,grpNos:r0.grpNos||"",grpAmt:r0.grpAmt||amt,...(photos.length?{photos}:{}),at:now,by:me.id||null},
           [K.req]:{...x[K.req],st:"ok",ansBy:me.id||null,ansAt:now}});toast(`ငွေလွှဲပြီး မှတ်ပြီး · Purchase ${G.length} ခု`)}
       else{await patchPur(p.id,{[K.paid]:{date,method,cur:pmCur(method),amt,note:$("paN").value.trim(),...(photos.length?{photos}:{}),at:now,by:me.id||null},
         [K.req]:p[K.req]?{...p[K.req],st:"ok",ansBy:me.id||null,ansAt:now}:null});toast("ငွေလွှဲပြီး မှတ်ပြီး")}}
@@ -9009,7 +9012,7 @@ function confCardHtml(){
       <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-e="${esc(eKey(e))}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
   </div>`}
 function purPayCardHtml(){const seen=new Set(),L=purMyPays().filter(({r})=>!r.grp||(!seen.has(r.grp)&&seen.add(r.grp)));if(!L.length)return"";
-  return`<div class="ex-card conf-card"><p class="ac-h">💸 ငွေလွှဲရန် (Purchase)</p><table class="ex-tbl"><tbody>${L.map(({p,k,r})=>`<tr><td><b>${esc(r.grp&&purGrp(p,k).length>1?"👥 "+purGrp(p,k).map(x=>x.no).join(" + "):p.no||"")}</b> · <span data-t="${esc(p.supplier||"")}"></span><br><small class="ex-c">${PUR_K[k].nm} · ${esc(pmLabel(r.method||""))} · ${esc(nameOf(r.by))} · ${esc(rcvWhen(r.at))}</small></td><td class="ex-r">${fmt(r.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x.payReq.amt)||0),0):r.amt||PUR_K[k].amt(p))}</td>
+  return`<div class="ex-card conf-card"><p class="ac-h">💸 ငွေလွှဲရန် (Purchase)</p><table class="ex-tbl"><tbody>${L.map(({p,k,r})=>`<tr><td><b>${esc(r.grp&&purGrp(p,k).length>1?"👥 "+purGrp(p,k).map(x=>x.no).join(" + "):p.no||"")}</b> · <span data-t="${esc([...new Set(purGrp(p,k).map(x=>x.supplier||""))].join(", "))}"></span><br><small class="ex-c">${PUR_K[k].nm} · ${esc(pmLabel(r.method||""))} · ${esc(nameOf(r.by))} · ${esc(rcvWhen(r.at))}</small></td><td class="ex-r">${fmt(r.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x[PUR_K[k].req].amt)||0),0):r.amt||PUR_K[k].amt(p))}</td>
     <td class="ex-v"><button type="button" class="btn conf-btn" data-pur-open="${esc(p.id)}">ငွေလွှဲမည်</button></td></tr>`).join("")}</tbody></table></div>`}
 function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=purPayCardHtml()+confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 /* Confirm / Confirm closing: true when the click was one of them */
