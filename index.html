@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795323253"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795325728"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9717,7 +9717,7 @@ async function removeSo(id){if(db){await db.collection("jsSales").doc(id).delete
 const XL_PAY="Excel";
 /* the old Excel is in (16-Nov-2026): its import and undo are put away (their code stays); Excel export stays */
 const soConfAllList=()=>vos.filter(soMine).filter(v=>soDelivered(v)&&soBal(v)<=0&&soConfPend(v));
-function soXlSync(){const ok=can("admin")&&saleBrand==="js";{const n=can("admin")?soConfAllList().length:0;$("soConfAll").hidden=!n;$("soConfAll").querySelector("b").textContent=n}$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true;soNoCustSync()}
+function soXlSync(){const ok=can("admin")&&saleBrand==="js";$("soConfAll").hidden=true;   /* paid-in-full vouchers waiting to be checked are under 💵 Receivable now */$("soXpBtn").hidden=!ok;$("soXlBtn").hidden=$("soXlDel").hidden=true;soNoCustSync()}
 const xlDate=v=>{if(v==null||v==="")return"";if(typeof v==="number"&&v>20000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*864e5).toISOString().slice(0,10);
   if(v instanceof Date)return v.toISOString().slice(0,10);const d=new Date(String(v));return isNaN(d)?"":d.toISOString().slice(0,10)};
 const xlStr=v=>v==null?"":String(v).replace(/\r/g,"").trim();
@@ -9910,7 +9910,7 @@ function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Nu
   /* only what is still owed shows: goods still to give, money still to get */
   return(left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"")
     +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")
-    +(soConfPend(v)?`<span class="conf-chip">⏳ ငွေစစ်ရန်</span>`:"")}
+    +(soConfPend(v)?`<span class="conf-chip">⏳ Waiting for approval</span>`:"")}
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
   const lbl={pre:"📋 Preorder",unf:"⏳ Unfinished",fin:"✓ Finished"}[st];
@@ -9979,7 +9979,7 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   /* Mr.Bee: only "money still to get" and All; JS keeps Preorder / Unfinished / Finished / to buy */
   if(!js&&soTab!=="all")soTab="owe";
   /* money still to get: JS leaves out Preorder vouchers (nothing given yet), as the debt list on a voucher does */
-  const owes=v=>soBal(v)>0&&(!js||soStage(v)!=="pre");
+  const owes=v=>(soBal(v)>0||(js&&soConfPend(v)))&&(!js||soStage(v)!=="pre");
   /* Goods payable (the "unf" tab): started vouchers with goods still to give; one given in full but not paid in full is under Receivable only */
   const gp=v=>soStage(v)==="unf"&&!soDelivered(v);
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>{const st=soStage(v);if(st!=="unf"||gp(v))n[st]++});ps.forEach(p=>n[poStage(p)]++);
