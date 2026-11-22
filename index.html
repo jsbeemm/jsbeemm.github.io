@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795328885"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795329219"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10011,7 +10011,9 @@ $("soDelList").addEventListener("click",e=>{const b=e.target.closest("[data-so-d
   const i=Number(b.dataset.soDed),d=(v.deliveries||[])[i];if(d&&soDelEditable(v,d))soDelOpen(v,i)});
 $("soDelList").addEventListener("click",async e=>{const b=e.target.closest("[data-so-drm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const i=Number(b.dataset.soDrm),d=(v.deliveries||[])[i];if(!d||!await askConfirm("Remove this delivery?",soDate(d.date),"Remove"))return;
-  const n={...v,deliveries:v.deliveries.filter((_,k)=>k!==i),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
+  const n={...v,deliveries:v.deliveries.filter((_,k)=>k!==i),updatedAt:new Date().toISOString()};
+  /* after a delivery is removed, what it gave is to give again: the "ယခုပေး" boxes and the form (date, gate, staff, photos) come back */
+  try{await saveSo(n);soDEdit=null;await renderSoView(n);soDelOpen(n,null)}catch(x){toast("ဖျက်မရပါ")}});
 /* the list: Preorder / Unfinished / Finished, what to buy, and every voucher. Orders made with the earlier Order screen
    still show here by their own stage. */
 const poStage=p=>{const s=poState(p);return s==="done"?"fin":s==="todo"&&!poMade(p).length?"pre":"unf"};
