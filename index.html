@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795338740"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795338995"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1338,6 +1338,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .prq-cr{border:1px dashed #E8A317;background:#FFF8E6;border-radius:12px;padding:8px 12px}.prq-cr p{margin:0 0 4px}
 .par-list{display:grid;gap:8px}.par-v{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface)}.par-v.on{border-color:var(--accent)}
 .par-vh{display:flex;align-items:center;gap:8px;justify-content:space-between}.par-vh small{color:var(--muted)}.par-vfr{display:inline-flex;align-items:center;gap:6px;font-size:13px}.par-vfr input{width:110px;margin:0;text-align:right}
+.par-pick{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:12px}.par-vl,.par-il{border:1px solid var(--line);border-radius:12px;padding:8px;max-height:340px;overflow:auto;background:var(--surface);display:grid;gap:6px;align-content:start}
+.par-vb{display:block;width:100%;text-align:left;font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:8px 10px;cursor:pointer}.par-vb.on{border-color:var(--accent);background:var(--accent-soft)}.par-vb small{display:block;color:var(--muted)}.par-in{color:var(--mint)}
+.par-il .ac-h{margin:0}.par-allck{padding-bottom:6px;border-bottom:1px solid var(--line)}.par-it small{color:var(--muted)}.par-vact{display:inline-flex;align-items:center;gap:8px}.par-addh{margin:4px 0 0}
+@media (max-width:700px){.par-pick{grid-template-columns:1fr}.par-vl,.par-il{max-height:260px}}
 .par-tw{overflow-x:auto;margin-top:8px;max-width:100%}.pur-dlg .side-body>*,.par-list>*{min-width:0}.par-tbl{min-width:560px;width:100%;font-size:14px}.par-tbl th{font-size:12px;color:var(--muted);font-weight:600;padding:4px 6px;text-align:left}.par-tbl th.r{text-align:right}.par-tbl td{padding:6px;vertical-align:middle}.par-tbl td small{color:var(--muted)}.par-tbl input{width:90px;height:36px;margin:0;text-align:right;box-sizing:border-box}.par-tbl tfoot td{border-top:2px solid var(--line)}
 .par-lines{display:grid;gap:6px;margin-top:8px}.par-ln{display:grid;grid-template-columns:minmax(0,1fr) auto 90px 100px;gap:6px 8px;align-items:center}.par-ln input{width:100%;margin:0;text-align:right;height:38px;box-sizing:border-box}
 .par-nm{font-size:14px;overflow-wrap:anywhere}.par-of,.par-sh,.par-cu{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}.par-cu{grid-column:1/-1}
@@ -7524,7 +7528,7 @@ $("purReqBody").addEventListener("click",async e=>{const m=e.target.closest("[da
 /* ---------- 📦 Arrived / transport (from the list): the vouchers that came on one trip, how much of each line, and the charge ---------- */
 let par={sel:new Set(),q:{},mode:"auto",basis:"amt",vou:{},item:{},fr:0,req:false};
 const parCands=()=>purs.filter(p=>purArrState(p)!=="full"&&!p.short).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
-function openPurArr(){if(!canPur())return;par={sel:new Set(),q:{},mode:"auto",basis:"amt",vou:{},item:{},fr:0,req:false,date:todayISO(),gate:"",find:""};renderPurArr();$("purArrDlg").hidden=false}
+function openPurArr(){if(!canPur())return;par={sel:new Set(),q:{},mode:"auto",basis:"amt",vou:{},item:{},fr:0,req:false,date:todayISO(),gate:"",find:"",focus:parCands()[0]?.id||null};renderPurArr();$("purArrDlg").hidden=false}
 /* each line's share of the transport charge: {pid:{line:Ks}} */
 const purPer=l=>{const it=items.find(x=>x.id===l.iid),u=l.u!=null?it?.units?.[l.u]:null;return u&&Number(u.c)>0?`${poNum(Number(u.c))} ${u.of||""}`.trim():""};
 function parShares(){const out={},sel=parCands().filter(p=>par.sel.has(p.id)),qOf=(p,i)=>Number(par.q[p.id]?.[i])||0;
@@ -7535,24 +7539,33 @@ function parShares(){const out={},sel=parCands().filter(p=>par.sel.has(p.id)),qO
   else if(par.mode==="vou"){for(const p of sel){const L=lines(p),sh=split(L,Number(par.vou[p.id])||0);L.forEach((x,k)=>{(out[p.id]??={})[x.i]=sh[k]})}}
   else for(const p of sel)for(const x of lines(p))(out[p.id]??={})[x.i]=Math.round((Number(par.item[p.id]?.[x.i])||0)*x.qty);
   return out}
-function renderPurArr(){const C=parCands(),f=String(par.find||"").trim().toLowerCase(),rows=C.filter(p=>par.sel.has(p.id)||!f||[p.no,p.supplier,p.gate].join(" ").toLowerCase().includes(f));
+function renderPurArr(){par.sel=new Set(Object.keys(par.q).filter(id=>Object.keys(par.q[id]||{}).length));
+  const C=parCands(),f=String(par.find||"").trim().toLowerCase(),rows=C.filter(p=>p.id===par.focus||!f||[p.no,p.supplier,p.gate].join(" ").toLowerCase().includes(f)),sel=C.filter(p=>par.sel.has(p.id));
   const sh=parShares(),tot=Object.values(sh).reduce((a,o)=>a+Object.values(o).reduce((x,y)=>x+y,0),0),ms=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
   const keep={m:$("parM")?.value||""};
   $("purArrBody").innerHTML=`<div class="ex-row2"><div class="prf"><span>ရောက်သည့်နေ့</span>${dateSelect("parD",par.date,"ရောက်သည့်နေ့","",false,todayISO())}</div>
       <label class="prf"><span>🚌 ဂိတ် / Logistic</span><input id="parG" list="parGates" value="${esc(par.gate)}" autocomplete="off"><datalist id="parGates">${[...new Set(purs.map(x=>x.gate).filter(Boolean))].map(g=>`<option value="${esc(g)}">`).join("")}</datalist></label></div>
-    <input type="search" id="parQ" placeholder="ဘောက်ချာ / Supplier / ဂိတ် ရှာပါ" value="${esc(par.find||"")}" autocomplete="off">
-    <div class="par-list">${rows.length?rows.map(p=>{const on=par.sel.has(p.id);return`<div class="par-v${on?" on":""}"><div class="par-vh"><label class="so-pmr"><input type="checkbox" data-par-p="${esc(p.id)}" ${on?"checked":""}> <span><b>${esc(p.no||"")}</b> · <span data-t="${esc(p.supplier||"")}"></span> <small>· ${esc(soDate(p.date))}${p.gate?` · 🚌 <span data-t="${esc(p.gate)}"></span>`:""}</small></span></label>
-        ${on&&par.mode==="vou"?`<label class="par-vfr">ကားခ <input type="number" inputmode="numeric" min="0" step="1" data-par-vfr="${esc(p.id)}" value="${esc(String(par.vou[p.id]??""))}"></label>`:""}</div>
-      ${on?(()=>{const L=(p.lines||[]).map((l,i)=>({l,i,left:purLeftQ(p,i)})).filter(x=>x.left>0),vsum=L.reduce((a,x)=>a+(sh[p.id]?.[x.i]||0),0);
-        return`<div class="par-tw"><table class="ex-tbl par-tbl"><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">ယခုရောက်</th><th class="r">1Qty ပါဝင်မှု</th><th class="r">ကားခ (1Qty)</th><th class="r">ကားခ စုစုပေါင်း</th></tr></thead><tbody>
+    <div class="par-pick"><div class="par-vl"><input type="search" id="parQ" placeholder="ဘောက်ချာ / Supplier / ဂိတ် ရှာပါ" value="${esc(par.find||"")}" autocomplete="off">
+      ${rows.length?rows.map(p=>{const n=Object.keys(par.q[p.id]||{}).length,left=(p.lines||[]).filter((l,i)=>purLeftQ(p,i)>0).length;
+        return`<button type="button" class="par-vb${par.focus===p.id?" on":""}" data-par-f="${esc(p.id)}"><b>${esc(p.no||"")}</b> · <span data-t="${esc(p.supplier||"")}"></span><small>${esc(soDate(p.date))} · item ${left}${n?` · <b class="par-in">✓ ${n} ထည့်ပြီး</b>`:""}</small></button>`}).join("")
+        :`<p class="pur-mu">မရောက်သေးတဲ့ ဘောက်ချာ မရှိပါ</p>`}</div>
+      <div class="par-il">${(()=>{const fp=C.find(x=>x.id===par.focus);if(!fp)return`<p class="pur-mu">ဘယ်ဘက်က ဘောက်ချာ ရွေးပါ</p>`;
+        const L=(fp.lines||[]).map((l,i)=>({l,i,left:purLeftQ(fp,i)})).filter(x=>x.left>0),all=L.every(x=>par.q[fp.id]?.[x.i]!=null);
+        return`<p class="ac-h">${esc(fp.no||"")} · <span data-t="${esc(fp.supplier||"")}"></span></p>
+          <label class="so-pmr par-allck"><input type="checkbox" data-par-all="${esc(fp.id)}" ${all?"checked":""}> <b>Item အကုန် ရောက်</b></label>
+          ${L.map(({l,i,left})=>`<label class="so-pmr par-it"><input type="checkbox" data-par-it="${esc(fp.id)}|${i}" ${par.q[fp.id]?.[i]!=null?"checked":""}> <span><span data-t="${esc(l.name||"")}"></span> <small>· ကျန် ${esc(poNum(left))}${l.unit?" "+esc(l.unit):""}</small></span></label>`).join("")}`})()}</div></div>
+    ${sel.length?`<p class="ac-h par-addh">📦 ရောက်တဲ့ ပစ္စည်း</p>`:""}
+    <div class="par-list">${sel.map(p=>{const L=(p.lines||[]).map((l,i)=>({l,i,left:purLeftQ(p,i)})).filter(x=>par.q[p.id]?.[x.i]!=null),vsum=L.reduce((a,x)=>a+(sh[p.id]?.[x.i]||0),0);
+      return`<div class="par-v on"><div class="par-vh"><span><b>${esc(p.no||"")}</b> · <span data-t="${esc(p.supplier||"")}"></span> <small>· ${esc(soDate(p.date))}</small></span>
+        <span class="par-vact">${par.mode==="vou"?`<label class="par-vfr">ကားခ <input type="number" inputmode="numeric" min="0" step="1" data-par-vfr="${esc(p.id)}" value="${esc(String(par.vou[p.id]??""))}"></label>`:""}<button type="button" class="o-ic danger" data-par-vrm="${esc(p.id)}" aria-label="ဖယ်ရန်" title="ဖယ်ရန်">${TRASH_IC}</button></span></div>
+        <div class="par-tw"><table class="ex-tbl par-tbl"><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">ယခုရောက်</th><th class="r">1Qty ပါဝင်မှု</th><th class="r">ကားခ (1Qty)</th><th class="r">ကားခ စုစုပေါင်း</th><th></th></tr></thead><tbody>
         ${L.map(({l,i,left})=>{const s1=sh[p.id]?.[i]||0,q=Number(par.q[p.id]?.[i])||0;
           return`<tr title="${q>0?`1${l.unit?" "+esc(l.unit):""} = ${esc(fmt(Math.round(Number(l.price||0)+s1/q)))} (ကားခ ပါ)`:""}"><td data-t="${esc(l.name||"")}"></td><td class="r">${esc(poNum(l.qty))}${l.unit?` <small>${esc(l.unit)}</small>`:""}${purGotQ(p,i)?`<br><small>ရောက်ပြီး ${esc(poNum(purGotQ(p,i)))}</small>`:""}</td>
             <td class="r"><input type="number" inputmode="decimal" min="0" max="${left}" step="any" data-par-q="${esc(p.id)}|${i}" value="${esc(String(par.q[p.id]?.[i]??left))}" aria-label="ရောက်တဲ့ အရေအတွက်"></td>
             <td class="r">${esc(purPer(l))}</td>
             <td class="r">${par.mode==="item"?`<input type="number" inputmode="numeric" min="0" step="1" data-par-ifr="${esc(p.id)}|${i}" value="${esc(String(par.item[p.id]?.[i]??""))}" placeholder="0" aria-label="ကားခ (1Qty)">`:`<span data-par-r1="${esc(p.id)}|${i}">${q>0&&s1?esc(fmt(Math.round(s1/q))):"–"}</span>`}</td>
-            <td class="r" data-par-rt="${esc(p.id)}|${i}">${s1?esc(fmt(s1)):"–"}</td></tr>`}).join("")}</tbody>
-        <tfoot><tr><td colspan="5" class="r"><b>ကားခများ</b></td><td class="r"><b data-par-vt="${esc(p.id)}">${esc(fmt(vsum))}</b></td></tr></tfoot></table></div>`})():""}</div>`}).join("")
-      :`<p class="pur-mu">မရောက်သေးတဲ့ ဘောက်ချာ မရှိပါ</p>`}</div>
+            <td class="r" data-par-rt="${esc(p.id)}|${i}">${s1?esc(fmt(s1)):"–"}</td><td class="r"><button type="button" class="o-ic danger" data-par-rm="${esc(p.id)}|${i}" aria-label="ဖယ်ရန်">✕</button></td></tr>`}).join("")}</tbody>
+        <tfoot><tr><td colspan="5" class="r"><b>ကားခများ</b></td><td class="r"><b data-par-vt="${esc(p.id)}">${esc(fmt(vsum))}</b></td><td></td></tr></tfoot></table></div></div>`}).join("")}</div>
     <div class="prf"><span>ကားခ ခွဲပုံ</span><div class="chips"><button type="button" class="chip" data-par-mode="auto" aria-pressed="${par.mode==="auto"}">(က) စုစုပေါင်း · အလိုလိုခွဲ</button><button type="button" class="chip" data-par-mode="vou" aria-pressed="${par.mode==="vou"}">(ခ) ဘောက်ချာ တစ်ခုချင်း</button><button type="button" class="chip" data-par-mode="item" aria-pressed="${par.mode==="item"}">(ဂ) Item တစ်ခုချင်း (1Qty ကားခ)</button></div></div>
     ${par.mode!=="item"?`<div class="prf"><span>အလိုလို ခွဲတာ</span><div class="chips"><button type="button" class="chip" data-par-basis="amt" aria-pressed="${par.basis==="amt"}">ပစ္စည်းတန်ဖိုးအလိုက်</button><button type="button" class="chip" data-par-basis="qty" aria-pressed="${par.basis==="qty"}">အရေအတွက်အလိုက်</button></div></div>`:""}
     ${par.mode==="auto"?`<label class="prf"><span>ကားခ စုစုပေါင်း (Ks)</span><input id="parFr" type="number" inputmode="numeric" min="0" step="1" value="${par.fr||""}"></label>`:""}
@@ -7578,6 +7591,15 @@ $("purArrBody").addEventListener("input",e=>{const t=e.target;
   if(t.dataset.parIfr){const[id,i]=t.dataset.parIfr.split("|");(par.item[id]??={})[i]=t.value;redo();return}
   if(t.dataset.parVfr){par.vou[t.dataset.parVfr]=t.value;redo();return}
   if(t.id==="parFr"){par.fr=Math.round(Number(t.value)||0);redo()}});
+$("purArrBody").addEventListener("click",e=>{const t=e.target;
+  const fb=t.closest("[data-par-f]");if(fb){parKeep();par.focus=fb.dataset.parF;renderPurArr();return}
+  const rm=t.closest("[data-par-rm]");if(rm){parKeep();const[id,i]=rm.dataset.parRm.split("|");if(par.q[id]){delete par.q[id][i];if(!Object.keys(par.q[id]).length)delete par.q[id]}renderPurArr();return}
+  const vr=t.closest("[data-par-vrm]");if(vr){parKeep();delete par.q[vr.dataset.parVrm];renderPurArr()}});
+$("purArrBody").addEventListener("change",e=>{const t=e.target;
+  if(t.matches("[data-par-all]")){parKeep();const p=purs.find(x=>x.id===t.dataset.parAll);if(!p)return;
+    if(t.checked){par.q[p.id]??={};(p.lines||[]).forEach((l,i)=>{const left=purLeftQ(p,i);if(left>0&&par.q[p.id][i]==null)par.q[p.id][i]=left})}else delete par.q[p.id];renderPurArr();return}
+  if(t.matches("[data-par-it]")){parKeep();const[id,i]=t.dataset.parIt.split("|"),p=purs.find(x=>x.id===id);if(!p)return;
+    if(t.checked)(par.q[id]??={})[i]=purLeftQ(p,Number(i));else if(par.q[id]){delete par.q[id][i];if(!Object.keys(par.q[id]).length)delete par.q[id]}renderPurArr()}});
 $("purArrBody").addEventListener("click",async e=>{const m=e.target.closest("[data-par-mode]");if(m){parKeep();par.mode=m.dataset.parMode;renderPurArr();return}
   const bs=e.target.closest("[data-par-basis]");if(bs){parKeep();par.basis=bs.dataset.parBasis;renderPurArr();return}
   if(!e.target.closest('[data-par="save"]'))return;parKeep();
