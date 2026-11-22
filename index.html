@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795327778"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795327971"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1251,7 +1251,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .nc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-act .btn{height:38px;padding:0 12px;margin:0}
 .nc-link{display:flex;gap:6px;flex:1 1 220px;min-width:0}.nc-link select{flex:1;min-width:0;height:38px;margin:0;padding-top:0;padding-bottom:0;line-height:36px}.nc-act .btn{flex:none;width:auto}
 .so-xl{margin:0 0 8px}
-.so-dmeta{display:flex;justify-content:flex-end;align-items:end;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dmeta .prf{margin:0}.so-dsr{display:flex;gap:4px}.so-dstaff select{width:auto;min-width:120px;height:42px;margin:0}.so-dstaff input[type=time]{width:104px;height:42px;margin:0;box-sizing:border-box}
+.so-dmeta{display:flex;justify-content:flex-end;align-items:end;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dmeta .prf{margin:0}.so-dsr{display:flex;gap:4px}.so-dphw{display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dphl{font-size:13px;color:var(--muted)}.so-dphs{display:flex;gap:8px;flex-wrap:wrap}.so-dphs .rcv-ph{width:72px;height:72px}
+.so-dphe{position:absolute;left:3px;bottom:3px;width:26px;height:26px;border:0;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;padding:0;cursor:pointer}.so-dphe svg{width:14px;height:14px}
+.so-dthumbs{display:flex;gap:4px;justify-content:flex-end;margin-top:4px}.so-dthumbs .rcv-th{width:44px;height:44px;margin:0}.so-dstaff select{width:auto;min-width:120px;height:42px;margin:0}.so-dstaff input[type=time]{width:104px;height:42px;margin:0;box-sizing:border-box}
 .so-dinfo{display:block;margin:2px 0 0 auto;border:0;background:none;padding:2px 0;font:inherit;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}.so-dstw small{white-space:nowrap}.so-dcol small.so-dst{color:var(--muted);font-weight:500}
 @media (max-width:700px){.so-dmeta.so-dstaff{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.so-dstaff select{min-width:0;width:100%}.so-dsr{flex-direction:column}.so-dstaff input[type=time]{width:100%}}
 .so-dgate{flex:1 1 140px;max-width:260px}.so-dgate .so-pick{position:relative;margin:0}
@@ -2703,6 +2705,7 @@ span.star-ic{cursor:default}
       <div class="so-delform" id="soDelForm" hidden>
         <!-- the date and the gate on one row, at the right; Cancel / Save under them -->
         <div class="so-dmeta"><div class="prf"><span>Date</span><div id="soDDate"></div></div><div class="prf so-dgate"><span>🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် / logistic (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div></div>
+        <div class="so-dphw"><span class="so-dphl">🧾 ဂိတ်ဘောက်ချာ ပုံ</span><div class="so-dphs" id="soDPhs"></div></div>
         <div class="so-dmeta so-dstaff"><div class="prf"><span>ချ</span><div class="so-dsr"><select id="soDPick" aria-label="ချ staff"></select><input type="time" id="soDPickT" aria-label="ချ time"></div></div><div class="prf"><span>စစ်</span><div class="so-dsr"><select id="soDCheck" aria-label="စစ် staff"></select><input type="time" id="soDCheckT" aria-label="စစ် time"></div></div><div class="prf"><span>ထည့်</span><div class="so-dsr"><select id="soDPack" aria-label="ထည့် staff"></select><input type="time" id="soDPackT" aria-label="ထည့် time"></div></div><div class="prf"><span>ပို့</span><div class="so-dsr"><select id="soDSend" aria-label="ပို့ staff"></select><input type="time" id="soDSendT" aria-label="ပို့ time"></div></div></div>
         <div class="so-delbar"><button type="button" class="btn ghost" id="soDCancel">Cancel</button><button type="button" class="btn" id="soDSave">Save</button></div></div>
       <div class="so-preview"><div id="soPrev"></div></div>
@@ -9930,7 +9933,7 @@ function soDelListHtml(v){const all=v.deliveries||[],rows=(v.lines||[]).map((l,i
   const ed=soDEdit!=null?all[soDEdit]:null,entry=soDelEntry(v),left=entry?soDelLeft(v,soDEdit):soLeftArr(v);
   const ds=all.map((d,k)=>({d,k})).filter(x=>x.k!==soDEdit),q=n=>n?esc(poNum(n)):"–",now=i=>ed?Number(ed.lines?.[i]||0):0;
   const old=!all.length&&soDelivered(v);
-  return`<div class="so-dtw"><table class="ex-tbl so-dtbl"><thead><tr><th>Description</th><th class="r">Voucher</th>${ds.map(({d})=>`<th class="r so-dcol"><b>${esc(soDate(d.date).slice(0,6))}</b>${d.gate?`<small>🚌 ${esc(d.gate)}</small>`:""}${(L=>L.length?`<button type="button" class="so-dinfo" data-so-dinfo>👷 Detail</button><span class="so-dstw" hidden>${L.map(t=>`<small class="so-dst">${esc(t)}</small>`).join("")}${d.at?`<small class="so-dst">🕒 သိမ်း ${esc(fmtTime(soAtHM(d.at)))}</small>`:""}</span>`:"")(soDStaffTxt(d))}</th>`).join("")}${entry?`<th class="r so-dnow"><b>${ed?`✎ ${esc(soDate(ed.date).slice(0,6))}`:"ယခုပေး"}</b><button type="button" class="so-dall" data-so-dall>အကုန်</button></th>`:""}<th class="r so-dleft">ကျန်</th></tr></thead>
+  return`<div class="so-dtw"><table class="ex-tbl so-dtbl"><thead><tr><th>Description</th><th class="r">Voucher</th>${ds.map(({d})=>`<th class="r so-dcol"><b>${esc(soDate(d.date).slice(0,6))}</b>${d.gate?`<small>🚌 ${esc(d.gate)}</small>`:""}${(L=>L.length||(d.photos||[]).length?`<button type="button" class="so-dinfo" data-so-dinfo>👷 Detail${(d.photos||[]).length?" · 🧾":""}</button><span class="so-dstw" hidden>${L.map(t=>`<small class="so-dst">${esc(t)}</small>`).join("")}${(d.photos||[]).length?`<span class="so-dthumbs">${d.photos.map(id=>`<button type="button" class="rcv-th" data-sodz="${esc(id)}" aria-label="ဂိတ်ဘောက်ချာ ပုံ"><img src="${esc(photoUrl(id))}" alt="" loading="lazy"></button>`).join("")}</span>`:""}${d.at?`<small class="so-dst">🕒 သိမ်း ${esc(fmtTime(soAtHM(d.at)))}</small>`:""}</span>`:"")(soDStaffTxt(d))}</th>`).join("")}${entry?`<th class="r so-dnow"><b>${ed?`✎ ${esc(soDate(ed.date).slice(0,6))}`:"ယခုပေး"}</b><button type="button" class="so-dall" data-so-dall>အကုန်</button></th>`:""}<th class="r so-dleft">ကျန်</th></tr></thead>
     <tbody>${rows.map(({l,i})=>{const u=soVoUnit(v,l),r=left[i]-now(i);return`<tr><td data-t="${esc(l.name||"")}"></td><td class="r">${q(Number(l.qty))}${u?` <small>${esc(u)}</small>`:""}</td>${ds.map(({d})=>`<td class="r so-dcol">${q(Number(d.lines?.[i]||0))}</td>`).join("")}${entry?`<td class="r so-dnow">${left[i]>0?`<input type="number" inputmode="decimal" min="0" max="${left[i]}" step="any" value="${now(i)||""}" placeholder="0" data-so-dq="${i}" aria-label="Qty given now">`:"–"}</td>`:""}<td class="r so-dleft${r>0?" on":""}" data-so-drem="${i}">${esc(poNum(r))}</td></tr>`}).join("")}</tbody>
     ${ds.some(({d})=>soDelEditable(v,d))||(can("admin")&&ds.length)?`<tfoot><tr><td></td><td></td>${ds.map(({d,k})=>`<td class="r so-dcol"><span class="so-pact">${soDelEditable(v,d)?`<button type="button" class="o-ic" data-so-ded="${k}" aria-label="Edit delivery" title="Edit delivery">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${k}" aria-label="Remove delivery" title="Remove delivery">${TRASH_IC}</button>`:""}</span></td>`).join("")}${entry?`<td></td>`:""}<td class="so-dleft"></td></tr></tfoot>`:""}</table></div>
     ${!all.length?`<p class="side-help">${old?"အရင်ကတည်းက အကုန်ပေးပြီးသား voucher ပါ။":"ပစ္စည်း မပေးရသေးပါ။ \"ယခုပေး\" မှာ အရေအတွက် ရိုက်ပြီး Save နှိပ်ပါ။"}</p>`:""}`}
@@ -9944,6 +9947,13 @@ var soDEdit=null;
 const soDelEditable=(v,d)=>!v.xl&&(can("admin")||(sameId(d.by,me.id)&&String(d.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
 /* what is left of each line, not counting delivery ei (the one being edited) */
 function soDelLeft(v,ei){const left=soLeftArr(v).slice(),d=ei!=null?(v.deliveries||[])[ei]:null;if(d)for(const[k,q]of Object.entries(d.lines||{}))left[k]=(left[k]||0)+Number(q||0);return left}
+var soDPhotos=[];const SO_DPH_MAX=3;
+function soDPhRender(){$("soDPhs").innerHTML=soDPhotos.map((p,i)=>`<span class="rcv-ph">${p.url?`<img src="${esc(p.url)}" alt="ဂိတ်ဘောက်ချာ ${i+1}">`:""}${p.busy?`<i class="rcv-busy">…</i>`:""}${p.busy?"":`<button type="button" class="so-dphe" data-sodphe="${i}" aria-label="ပုံပြင်ရန်" title="ပုံပြင်ရန် (crop / rotate)">${PENCIL}</button>`}<button type="button" class="rcv-phx" data-sodphx="${i}" aria-label="Remove photo">×</button></span>`).join("")
+  +(soDPhotos.length<SO_DPH_MAX&&canStore()?`<label class="rcv-ph rcv-add"><input type="file" accept="image/*" data-sodphadd multiple hidden><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><small>+ ပုံထည့်</small></label>`:"")}
+/* a picture from the editor: shrunk, stored, and put in place of the one edited (or added) */
+async function soDPhUpload(blob,i){const p={id:null,url:"",busy:true};if(i==null)soDPhotos.push(p);else soDPhotos[i]=p;soDPhRender();
+  try{const b=await shrinkImage(blob,1600);p.url=await blobToData(b);soDPhRender();const r=await storePhoto(b);p.id=r.id;p.url=r.url;p.busy=false}
+  catch(x){soDPhotos.splice(soDPhotos.indexOf(p),1);toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}soDPhRender()}
 const SO_DSTAFF=[["pick","soDPick"],["check","soDCheck"],["pack","soDPack"],["send","soDSend"]];
 function soStaffOpts(cur){const all=[...new Set(Object.values(accounts||{}).filter(a=>a&&a.status==="approved"&&a.name).map(a=>a.name))].sort((a,b)=>a.localeCompare(b));
   if(cur&&!all.includes(cur))all.push(cur);return`<option value="">— Staff —</option>`+all.map(n=>`<option value="${esc(n)}" ${n===cur?"selected":""}>${esc(n)}</option>`).join("")}
@@ -9953,6 +9963,7 @@ const soNowHM=()=>{const n=new Date();return String(n.getHours()).padStart(2,"0"
 const soAtHM=at=>{if(!at)return"";const n=new Date(at);return isNaN(n)?"":String(n.getHours()).padStart(2,"0")+":"+String(n.getMinutes()).padStart(2,"0")};
 function soDelOpen(v,ei){soDEdit=ei;const d=ei!=null?(v.deliveries||[])[ei]:null;
   for(const[k,id]of SO_DSTAFF){$(id).innerHTML=soStaffOpts(d?.staff?.[k]||"");$(id+"T").value=d?.stime?.[k]||""}
+  soDPhotos=(d?.photos||[]).map(id=>({id,url:photoUrl(id),busy:false}));soDPhRender();
   $("soDSave").textContent=d?"Save changes":"Save";
   $("soDelList").innerHTML=soDelListHtml(v);$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
   $("soDDate").innerHTML=dateSelect("",d?.date||todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=!soDelEntry(v);
@@ -9961,10 +9972,16 @@ function soDelOpen(v,ei){soDEdit=ei;const d=ei!=null?(v.deliveries||[])[ei]:null
   $("soDGateHits").hidden=true}
 $("soDelivBtn").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;soVTabSet("del");soDelOpen(v,null);$("soDelList").querySelector("[data-so-dq]")?.focus()});
 /* Cancel: an edit goes back to a new delivery; a new one is cleared */
+$("soDelForm").addEventListener("change",e=>{const inp=e.target.closest("[data-sodphadd]");if(!inp)return;const fs=[...(inp.files||[])].slice(0,SO_DPH_MAX-soDPhotos.length);inp.value="";
+  if(fs.length)openEditor(fs.map(f=>({src:f,index:null,onSave:b=>soDPhUpload(b,null)})))});
+$("soDelForm").addEventListener("click",e=>{const x=e.target.closest("[data-sodphx]"),ed=e.target.closest("[data-sodphe]");
+  if(x){soDPhotos.splice(Number(x.dataset.sodphx),1);soDPhRender();return}
+  if(ed){const i=Number(ed.dataset.sodphe),p=soDPhotos[i];if(p?.url&&!p.busy)openEditor([{src:p.url,index:null,onSave:b=>soDPhUpload(b,i)}])}});
 $("soDelForm").addEventListener("change",e=>{const sel=e.target.closest(".so-dsr select");if(!sel)return;const t=$(sel.id+"T");if(sel.value&&!t.value)t.value=soNowHM();if(!sel.value)t.value=""});
 $("soDCancel").addEventListener("click",()=>{const v=vos.find(x=>x.id===soOpen);if(v)soDelOpen(v,null)});
 /* "ပေးရန်ကျန်": what is still to give after this delivery (ကျန် − ယခုပေး), kept up to date while typing */
 const soDRem=inp=>{const c=$("soDelList").querySelector(`[data-so-drem="${inp.dataset.soDq}"]`);if(!c)return;const left=Number(inp.max)||0,q=Math.min(left,Math.max(0,Number(inp.value)||0));c.textContent=poNum(left-q);c.classList.toggle("on",left-q>0)};
+$("soDelList").addEventListener("click",e=>{const z=e.target.closest("[data-sodz]");if(z)zoomPhoto(z.dataset.sodz)});
 $("soDelList").addEventListener("click",e=>{const b=e.target.closest("[data-so-dinfo]");if(!b)return;const w=b.nextElementSibling;w.hidden=!w.hidden;b.textContent=w.hidden?"👷 Detail":"▴ Hide"});
 $("soDelList").addEventListener("input",e=>{const inp=e.target.closest("[data-so-dq]");if(inp)soDRem(inp)});
 $("soDelList").addEventListener("click",e=>{if(!e.target.closest("[data-so-dall]"))return;$("soDelList").querySelectorAll("[data-so-dq]").forEach(inp=>{inp.value=inp.max;soDRem(inp)})});
@@ -9973,9 +9990,11 @@ $("soDSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpe
   for(const inp of $("soDelList").querySelectorAll("[data-so-dq]")){const i=Number(inp.dataset.soDq),q=Math.min(left[i],Math.max(0,Number(inp.value)||0));if(q>0)lines[i]=q}
   if(!Object.keys(lines).length){toast("ပေးမယ့် အရေအတွက် ထည့်ပါ");return}
   const now=new Date().toISOString(),gate=$("soDGate").value.trim(),date=readDate($("soDDate").querySelector(".dp"))||old?.date||todayISO();
+  if(soDPhotos.some(p=>p.busy)){toast("ပုံတင်နေဆဲပါ ခဏစောင့်ပါ");return}
+  const photos=soDPhotos.filter(p=>p.id).map(p=>p.id);
   const staff={},stime={};for(const[k,id]of SO_DSTAFF){if($(id).value)staff[k]=$(id).value;if($(id+"T").value)stime[k]=$(id+"T").value}const hasSt=Object.keys(staff).length>0,hasTm=Object.keys(stime).length>0;
-  let ds;if(old){const nd={...old,date,lines,editedAt:now,editedBy:me.id||null};if(gate)nd.gate=gate;else delete nd.gate;if(hasSt)nd.staff=staff;else delete nd.staff;if(hasTm)nd.stime=stime;else delete nd.stime;ds=v.deliveries.map((x,k)=>k===ei?nd:x)}
-  else ds=[...(v.deliveries||[]),{date,lines,...(gate?{gate}:{}),...(hasSt?{staff}:{}),...(hasTm?{stime}:{}),at:now,by:me.id||null}];
+  let ds;if(old){const nd={...old,date,lines,editedAt:now,editedBy:me.id||null};if(gate)nd.gate=gate;else delete nd.gate;if(hasSt)nd.staff=staff;else delete nd.staff;if(hasTm)nd.stime=stime;else delete nd.stime;if(photos.length)nd.photos=photos;else delete nd.photos;ds=v.deliveries.map((x,k)=>k===ei?nd:x)}
+  else ds=[...(v.deliveries||[]),{date,lines,...(gate?{gate}:{}),...(hasSt?{staff}:{}),...(hasTm?{stime}:{}),...(photos.length?{photos}:{}),at:now,by:me.id||null}];
   const n={...v,pre:true,deliveries:ds,updatedAt:now};
   try{await saveSo(n);soDEdit=null;await renderSoView(n);soDelOpen(n,null);toast(old?"✓ Delivered ပြင်ပြီး":soDelivered(n)?"✓ Delivered — အကုန်ပေးပြီး":"✓ Delivered — ကျန်တာ နောက်မှ ပေးရန်")}catch(x){toast("သိမ်းမရပါ")}});
 $("soDelList").addEventListener("click",e=>{const b=e.target.closest("[data-so-ded]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
