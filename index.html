@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795332293"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795333544"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7035,7 +7035,7 @@ function purLocalSave(){try{localStorage.setItem("cakePurchases",JSON.stringify(
 async function savePur(p){if(purCol){await purCol.doc(p.id).set(p);return}const i=purs.findIndex(x=>x.id===p.id);if(i>=0)purs[i]=p;else purs.push(p);purLocalSave();purRefresh()}
 async function patchPur(id,patch){if(purCol){await purCol.doc(id).update(patch);return}const p=purs.find(x=>x.id===id);if(p)Object.assign(p,patch);purLocalSave();purRefresh()}
 async function removePur(id){if(purCol){await purCol.doc(id).delete();return}purs=purs.filter(x=>x.id!==id);purLocalSave();purRefresh()}
-function initPur(){if(!db){if(!purs.length)purs=purLocalLoad();return}if(purCol||!canPur())return;purCol=db.collection("purchases");
+function initPur(){if(!db){if(!purs.length)purs=purLocalLoad();return}if(purCol||!(canPur()||pmList().some(m=>m.owner&&sameId(m.owner,me.id))))return;purCol=db.collection("purchases");
   purCol.onSnapshot(s=>{purs=s.docs.map(d=>({...d.data(),id:d.id}));purRefresh()},()=>{purCol=null})}
 function purRefresh(){renderPur();if(!$("purView").hidden)renderPurView();if(view==="home"||view==="pe")renderHome();purWatch()}
 /* an Admin hears of a new request to pay; whoever asked hears the answer (only fresh ones, not those from before the app opened) */
@@ -7045,10 +7045,14 @@ const purSeen=new Set();
 const PUR_K={g:{req:"payReq",paid:"paid",nm:"ပစ္စည်းဖိုး",amt:p=>purTot(p)},f:{req:"frReq",paid:"frPaid",nm:"ကားခ",amt:p=>Number(p.freight||0)}};
 const purWaitK=(p,k)=>!p[PUR_K[k].paid]&&p[PUR_K[k].req]?.st==="wait";
 const purWaitAny=p=>purWaitK(p,"g")||purWaitK(p,"f");
+const purPayer=r=>r?.owner?sameId(r.owner,me.id):can("admin");
+const purPayerName=r=>r?.owner?nameOf(r.owner):"Admin";
+/* the payments waiting for me to transfer: [{p,k,r}] */
+const purMyPays=()=>purs.flatMap(p=>["g","f"].filter(k=>purWaitK(p,k)&&purPayer(p[PUR_K[k].req])).map(k=>({p,k,r:p[PUR_K[k].req]})));
 let purPayPh=[];
 function purWatch(){if(!db)return;const fresh=t=>!!t&&Date.now()-Date.parse(t)<5*60e3;
   for(const p of purs)for(const k of["g","f"]){const r=p[PUR_K[k].req],nm=PUR_K[k].nm;if(!r)continue;
-    if(r.st==="wait"&&can("admin")&&!sameId(r.by,me.id)){const key=p.id+k+"w"+r.at;if(!purSeen.has(key)){purSeen.add(key);if(fresh(r.at))toast(`💸 ${nameOf(r.by)} က ${p.no} (${p.supplier||""}) ${nm} ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ်`,6000)}}
+    if(r.st==="wait"&&purPayer(r)&&!sameId(r.by,me.id)){const key=p.id+k+"w"+r.at;if(!purSeen.has(key)){purSeen.add(key);if(fresh(r.at))toast(`💸 ${nameOf(r.by)} က ${p.no} (${p.supplier||""}) ${nm} ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ်`,6000)}}
     if((r.st==="ok"||r.st==="no")&&r.ansAt&&sameId(r.by,me.id)){const key=p.id+k+"a"+r.ansAt;if(!purSeen.has(key)){purSeen.add(key);
       if(fresh(r.ansAt))toast(r.st==="ok"?`✓ ${p.no} · ${nameOf(r.ansBy)} က ${nm} ငွေလွှဲပြီးပါပြီ`:`${p.no} · ${nameOf(r.ansBy)} က ${nm} ငွေလွှဲ request ကို ခွင့်မပြုပါ`,6000)}}}}
 function purPills(p){const out=[],pill=(k,ok,wt,no)=>{const r=p[PUR_K[k].req];
@@ -7062,11 +7066,18 @@ const purPaPhs=()=>purPayPh.map((x,i)=>`<div class="ph ${x.id?"":"busy"}"><img s
 const PUR_SHOT_IC=`<svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m21 16-5.5-5.5L5 20"/></svg>`;
 async function purUpShot(f){const b=await shrinkImage(f);return await storePhoto(b)}
 /* one payment block: asking, answering, recording (with screenshots), and what was paid */
-function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("admin"),amt=K.amt(p),dk=`data-k="${k}"`;
-  if(purAct==="pay:"+k&&admin&&!d){const ms=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
+function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("admin"),amt=K.amt(p),dk=`data-k="${k}"`,ms0=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
+  /* asking: the method (whose account the money goes out of) and the amount */
+  if(purAct==="req:"+k&&!d&&canPur()){const ms=ms0;
+    return`<div class="ex-row2"><label class="prf"><span>Payment method</span><select id="prM"><option value="">— Method ရွေးပါ —</option>${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}${payOwnerOf(m)?` · ${esc(nameOf(payOwnerOf(m)))}`:""}</option>`).join("")}</select></label>
+      <label class="prf"><span>Amount (Ks)</span><input id="prA" type="number" inputmode="numeric" min="0" step="1" value="${(r?.st==="no"&&r.amt)||amt}"></label></div>
+      <label class="prf"><span>Note</span><input id="prN" autocomplete="off"></label>
+      <p class="pur-mu">Method ရဲ့ account ပိုင်ရှင်ဆီ To-do list မှာ request ရောက်ပြီး သူက ငွေလွှဲပေးပါမယ်။</p>
+      <div class="pur-btns"><button type="button" class="btn ghost" data-pa="cancel" ${dk}>Cancel</button><button type="button" class="btn" data-pa="reqsend" ${dk}>💸 Request ပို့မည်</button></div>`}
+  if(purAct==="pay:"+k&&!d&&purPayer(r)){const ms=r?.method?[r.method]:ms0;
     return`<div class="ex-row2"><div class="prf"><span>ငွေလွှဲသည့်နေ့</span>${dateSelect("paD",todayISO(),"ငွေလွှဲသည့်နေ့","",false,todayISO())}</div>
       <label class="prf"><span>Payment method</span><select id="paM">${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select></label></div>
-      <div class="ex-row2"><label class="prf"><span>Amount (Ks)</span><input id="paA" type="number" inputmode="numeric" min="0" step="1" value="${amt}"></label>
+      <div class="ex-row2"><label class="prf"><span>Amount (Ks)</span><input id="paA" type="number" inputmode="numeric" min="0" step="1" value="${r?.amt||amt}"></label>
       <label class="prf"><span>Note</span><input id="paN" autocomplete="off"></label></div>
       <div class="prf prq-pics"><span>ငွေလွှဲ Screenshot</span><div class="prq-phs" id="paPhs">${purPaPhs()}</div>
         ${canStore()?`<div class="prq-ph-btns" id="paPhBtns"${purPayPh.length>=3?" hidden":""}><label class="chip">${PUR_SHOT_IC}<span>Screenshot ထည့်ရန်</span><input type="file" id="paPick" accept="image/*" multiple hidden></label></div>`:""}</div>
@@ -7075,12 +7086,13 @@ function purPayBlock(p,k){const K=PUR_K[k],r=p[K.req],d=p[K.paid],admin=can("adm
     return`<p>✓ <b>${esc(fmt(d.amt))}</b> · ${esc(pmLabel(d.method||""))} · ${esc(fmtDate(d.date))}</p><p class="pur-mu">${esc(nameOf(d.by))}${d.note?` · <span data-t="${esc(d.note)}"></span>`:""}</p>
       ${ph.length?`<div class="rcv-thumbs">${thumbs(ph)}</div>`:admin?"":`<p class="pur-mu">Screenshot မပါသေးပါ</p>`}
       ${admin?`<div class="pur-btns">${canStore()&&ph.length<3?`<label class="chip pa-addw">${PUR_SHOT_IC}<span>Screenshot ထည့်ရန်</span><input type="file" class="pa-add" ${dk} accept="image/*" multiple hidden></label>`:""}<button type="button" class="link danger" data-pa="unpay" ${dk}>ငွေလွှဲမှု ပြန်ဖျက်ရန်</button></div>`:""}`}
-  if(r?.st==="wait")
+  if(r?.st==="wait"){const payer=purPayer(r);
     return`<p>💸 <b>${esc(nameOf(r.by))}</b> က ${K.nm} ငွေလွှဲပေးဖို့ request လုပ်ထားပါတယ် · ${esc(rcvWhen(r.at))}</p>`
-      +(admin?`<div class="pur-btns"><button type="button" class="btn ghost" data-pa="refuse" ${dk}>ခွင့်မပြုပါ</button><button type="button" class="btn" data-pa="pay" ${dk}>ငွေလွှဲမည်</button></div>`
-      :sameId(r.by,me.id)?`<div class="pur-btns"><button type="button" class="link" data-pa="unreq" ${dk}>Request ပြန်ရုပ်ရန်</button></div>`:"");
+      +(r.method?`<p>${esc(pmLabel(r.method))}${r.amt?` · <b>${esc(fmt(r.amt))}</b>`:""} · လွှဲပေးရမည့်သူ <b>${esc(purPayerName(r))}</b>${r.note?` · <span data-t="${esc(r.note)}"></span>`:""}</p>`:"")
+      +(payer?`<div class="pur-btns"><button type="button" class="btn ghost" data-pa="refuse" ${dk}>ခွင့်မပြုပါ</button><button type="button" class="btn" data-pa="pay" ${dk}>ငွေလွှဲမည်</button></div>`
+      :sameId(r.by,me.id)||admin?`<div class="pur-btns">${admin&&!sameId(r.by,me.id)?`<button type="button" class="link" data-pa="refuse" ${dk}>ခွင့်မပြုပါ</button>`:`<button type="button" class="link" data-pa="unreq" ${dk}>Request ပြန်ရုပ်ရန်</button>`}</div>`:"")}
   return(r?.st==="no"?`<p class="pa-err">${esc(nameOf(r.ansBy))} က ${K.nm} ငွေလွှဲ request ကို ခွင့်မပြုပါ</p>`:`<p class="pur-mu">${K.nm} ငွေ မလွှဲရသေးပါ</p>`)
-    +`<div class="pur-btns">${admin?`<button type="button" class="btn" data-pa="pay" ${dk}>ငွေလွှဲပြီး မှတ်ရန်</button>`:canPur()?`<button type="button" class="btn" data-pa="req" ${dk}>💸 Admin ဆီ ${K.nm} ငွေလွှဲ request</button>`:""}</div>`}
+    +`<div class="pur-btns">${canPur()?`<button type="button" class="btn" data-pa="req" ${dk}>💸 ${K.nm} ငွေလွှဲ request</button>`:""}</div>`}
 function renderPur(){if($("viewPur").hidden)return;
   const q=purQ.trim().toLowerCase(),hit=p=>!q||[p.no,p.supplier,p.gate,p.note,...(p.lines||[]).flatMap(l=>[l.name,l.note])].join(" ").toLowerCase().includes(q);
   $("purTabs").innerHTML=PUR_TABS.map(([k,n,f])=>`<button type="button" class="chip" data-purtab="${k}" aria-pressed="${purTab===k}">${n} <small>${purs.filter(p=>hit(p)&&f(p)).length}</small></button>`).join("");
@@ -7248,14 +7260,18 @@ $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purO
   const rm=e.target.closest("[data-parm]");if(rm){const [x]=purPayPh.splice(Number(rm.dataset.parm),1);if(x?.fresh&&x.id)deletePhoto(x.id);purPaSync();return}
   const b=e.target.closest("[data-pa]");if(!b)return;const a=b.dataset.pa,now=new Date().toISOString(),k=b.dataset.k||"g",K=PUR_K[k];
   if(a==="cancel"){purPayClear();purAct=null;renderPurView();return}
-  if(a==="pay"){if(!can("admin"))return;purPayClear();purAct="pay:"+k;renderPurView();$("paA")?.focus();return}
+  if(a==="pay"){if(!purPayer(p[K.req]))return;purPayClear();purAct="pay:"+k;renderPurView();$("paA")?.focus();return}
+  if(a==="req"){if(!canPur())return;purAct="req:"+k;renderPurView();$("prM")?.focus();return}
   if(a==="arr"){purAct="arr";purArr={date:p.arrived?.date||todayISO(),fr:p.freight||0,mode:p.frMode||"amt",hand:(p.lines||[]).map(l=>l.fr??"")};renderPurView();$("paFr")?.focus();return}
   if(a==="edit"){$("purView").hidden=true;openPurForm(p);return}
   try{
-    if(a==="req"){await patchPur(p.id,{[K.req]:{st:"wait",by:me.id||null,at:now}});toast(`Admin ဆီ ${K.nm} ငွေလွှဲ request ပို့ပြီး`)}
+    if(a==="reqsend"){const method=$("prM").value,amt=Math.round(Number($("prA").value)||0);if(!method){toast("Method ရွေးပါ");$("prM").focus();return}if(!(amt>0)){toast("Amount ထည့်ပါ");$("prA").focus();return}
+      const owner=payOwnerOf(method)||null;purAct=null;
+      await patchPur(p.id,{[K.req]:{st:"wait",by:me.id||null,at:now,method,amt,owner,...($("prN").value.trim()?{note:$("prN").value.trim()}:{})}});
+      toast(`${owner?nameOf(owner):"Admin"} ဆီ ${K.nm} ငွေလွှဲ request ပို့ပြီး`)}
     else if(a==="unreq"){await patchPur(p.id,{[K.req]:null});toast("Request ပြန်ရုပ်ပြီး")}
-    else if(a==="refuse"){if(!can("admin"))return;await patchPur(p.id,{[K.req]:{...p[K.req],st:"no",ansBy:me.id||null,ansAt:now}})}
-    else if(a==="paid"){if(!can("admin"))return;const amt=Math.round(Number($("paA").value)||0);if(!(amt>0)){toast("Amount ထည့်ပါ");$("paA").focus();return}
+    else if(a==="refuse"){if(!can("admin")&&!purPayer(p[K.req]))return;await patchPur(p.id,{[K.req]:{...p[K.req],st:"no",ansBy:me.id||null,ansAt:now}})}
+    else if(a==="paid"){if(!purPayer(p[K.req]))return;const amt=Math.round(Number($("paA").value)||0);if(!(amt>0)){toast("Amount ထည့်ပါ");$("paA").focus();return}
       if(purPayPh.some(x=>!x.id)){toast("Screenshot တင်နေဆဲပါ");return}
       const date=readDate($("purBody").querySelector(".paD"))||todayISO(),method=$("paM").value,photos=purPayPh.map(x=>x.id);purAct=null;purPayPh=[];
       await patchPur(p.id,{[K.paid]:{date,method,cur:pmCur(method),amt,note:$("paN").value.trim(),...(photos.length?{photos}:{}),at:now,by:me.id||null},
@@ -7275,7 +7291,10 @@ $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purO
 function purHome(){$("goPur").hidden=!canPur();
   const w=purs.filter(purWaitAny).length,open=purs.filter(p=>!p.arrived).length;
   $("homePurN").textContent=open?`${open} မရောက်သေး`:purs.length?`${purs.length} purchase${purs.length===1?"":"s"}`:"";
-  for(const t of["goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(w&&can("admin"))el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${w} ငွေလွှဲရန်</span>`)}}
+  const mineN=purMyPays().length;
+  for(const t of["goPur"]){const el=$(t);el.querySelector(".pur-b")?.remove();if(mineN)el.insertAdjacentHTML("beforeend",`<span class="ht-badge pur-b">💸 ${mineN} ငွေလွှဲရန်</span>`)}
+  {const t=$("goTodo");t.querySelector(".purpay-b")?.remove();if(mineN){t.classList.add("glow");t.insertAdjacentHTML("beforeend",`<span class="ht-badge purpay-b">💸 ${mineN} ငွေလွှဲရန်</span>`)}}
+  if(view==="todo")renderTodoConf()}
 
 /* ---------- Inventory: the opening stock of each raw material at each location (Admins).
    Locations are a shared list (meta/invLocs), managed like the cities / gates of Goods Received.
@@ -8907,7 +8926,10 @@ function confCardHtml(){
     ${each.length?`<p class="conf-sub">Each payment</p><table class="ex-tbl"><tbody>${each.map(e=>`<tr><td><b>${confIc[e.k]} ${esc(e.no)}</b> · ${esc(pmLabel(e.pay))}<br><small class="ex-c">${e.date===todayISO()?"Today":fmtDate(e.date)}${e.who?` · <span data-t="${esc(e.who)}"></span>`:""}${canAct?"":` · ${esc(eWho(e))}`}</small></td><td class="ex-r">${eAmt(e)}</td>
       <td class="ex-v">${canAct?`<button type="button" class="btn conf-btn" data-conf-e="${esc(eKey(e))}">Confirm</button>`:""}</td></tr>`).join("")}</tbody></table>`:""}
   </div>`}
-function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+function purPayCardHtml(){const L=purMyPays();if(!L.length)return"";
+  return`<div class="ex-card conf-card"><p class="ac-h">💸 ငွေလွှဲရန် (Purchase)</p><table class="ex-tbl"><tbody>${L.map(({p,k,r})=>`<tr><td><b>${esc(p.no||"")}</b> · <span data-t="${esc(p.supplier||"")}"></span><br><small class="ex-c">${PUR_K[k].nm} · ${esc(pmLabel(r.method||""))} · ${esc(nameOf(r.by))} · ${esc(rcvWhen(r.at))}</small></td><td class="ex-r">${fmt(r.amt||PUR_K[k].amt(p))}</td>
+    <td class="ex-v"><button type="button" class="btn conf-btn" data-pur-open="${esc(p.id)}">ငွေလွှဲမည်</button></td></tr>`).join("")}</tbody></table></div>`}
+function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=purPayCardHtml()+confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 /* Confirm / Confirm closing: true when the click was one of them */
 async function confClick(e){
   const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)&&eStage(en)==="each"){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
@@ -8917,6 +8939,7 @@ async function confClick(e){
     cc.disabled=true;try{await confirmEntries(list,true);toast(`${pmLabel(pay)} closing confirmed · ${fmt(amt)}`)}catch(x){toast("သိမ်းမရပါ")}renderTodoConf();renderHome();return true}
   return false}
 $("todoConf").addEventListener("click",confClick);
+$("todoConf").addEventListener("click",e=>{const b=e.target.closest("[data-pur-open]");if(b){initPur();openPurView(b.dataset.purOpen)}});
 /* the small status on a sale row */
 function confChip(s){const md=confMode(s.pay,s.at,true);if(!md||!Number(s.total||0))return"";
   if(s.conf)return`<span class="conf-chip ok">✓ Confirmed${s.conf.closing?" (closing)":""}</span>`;
