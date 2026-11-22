@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795326114"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795326834"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1251,7 +1251,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .nc-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.nc-act .btn{height:38px;padding:0 12px;margin:0}
 .nc-link{display:flex;gap:6px;flex:1 1 220px;min-width:0}.nc-link select{flex:1;min-width:0;height:38px;margin:0;padding-top:0;padding-bottom:0;line-height:36px}.nc-act .btn{flex:none;width:auto}
 .so-xl{margin:0 0 8px}
-.so-dmeta{display:flex;justify-content:flex-end;align-items:end;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dmeta .prf{margin:0}
+.so-dmeta{display:flex;justify-content:flex-end;align-items:end;gap:10px;flex-wrap:wrap;margin-top:10px}.so-dmeta .prf{margin:0}.so-dstaff select{width:auto;min-width:120px;height:42px;margin:0}.so-dcol small.so-dst{color:var(--muted);font-weight:500}
+@media (max-width:700px){.so-dmeta.so-dstaff{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.so-dstaff select{min-width:0;width:100%}}
 .so-dgate{flex:1 1 140px;max-width:260px}.so-dgate .so-pick{position:relative;margin:0}
 .so-dmeta .dp,.so-dmeta #soDGate{height:42px;box-sizing:border-box;margin:0}.so-xl:not(:has(.chip:not([hidden]))){display:none}
 /* Home: a cake still being decorated */
@@ -2701,6 +2702,7 @@ span.star-ic{cursor:default}
       <div class="so-delform" id="soDelForm" hidden>
         <!-- the date and the gate on one row, at the right; Cancel / Save under them -->
         <div class="so-dmeta"><div class="prf"><span>Date</span><div id="soDDate"></div></div><div class="prf so-dgate"><span>🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် / logistic (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div></div>
+        <div class="so-dmeta so-dstaff"><label class="prf"><span>ချ</span><select id="soDPick"></select></label><label class="prf"><span>စစ်</span><select id="soDCheck"></select></label><label class="prf"><span>ထည့်</span><select id="soDPack"></select></label></div>
         <div class="so-delbar"><button type="button" class="btn ghost" id="soDCancel">Cancel</button><button type="button" class="btn" id="soDSave">Save</button></div></div>
       <div class="so-preview"><div id="soPrev"></div></div>
     </div>
@@ -9927,7 +9929,7 @@ function soDelListHtml(v){const all=v.deliveries||[],rows=(v.lines||[]).map((l,i
   const ed=soDEdit!=null?all[soDEdit]:null,entry=soDelEntry(v),left=entry?soDelLeft(v,soDEdit):soLeftArr(v);
   const ds=all.map((d,k)=>({d,k})).filter(x=>x.k!==soDEdit),q=n=>n?esc(poNum(n)):"–",now=i=>ed?Number(ed.lines?.[i]||0):0;
   const old=!all.length&&soDelivered(v);
-  return`<div class="so-dtw"><table class="ex-tbl so-dtbl"><thead><tr><th>Description</th><th class="r">Voucher</th>${ds.map(({d})=>`<th class="r so-dcol"><b>${esc(soDate(d.date).slice(0,6))}</b>${d.gate?`<small>🚌 ${esc(d.gate)}</small>`:""}</th>`).join("")}${entry?`<th class="r so-dnow"><b>${ed?`✎ ${esc(soDate(ed.date).slice(0,6))}`:"ယခုပေး"}</b><button type="button" class="so-dall" data-so-dall>အကုန်</button></th>`:""}<th class="r so-dleft">ကျန်</th></tr></thead>
+  return`<div class="so-dtw"><table class="ex-tbl so-dtbl"><thead><tr><th>Description</th><th class="r">Voucher</th>${ds.map(({d})=>`<th class="r so-dcol"><b>${esc(soDate(d.date).slice(0,6))}</b>${d.gate?`<small>🚌 ${esc(d.gate)}</small>`:""}${soDStaffTxt(d).map(t=>`<small class="so-dst">${esc(t)}</small>`).join("")}</th>`).join("")}${entry?`<th class="r so-dnow"><b>${ed?`✎ ${esc(soDate(ed.date).slice(0,6))}`:"ယခုပေး"}</b><button type="button" class="so-dall" data-so-dall>အကုန်</button></th>`:""}<th class="r so-dleft">ကျန်</th></tr></thead>
     <tbody>${rows.map(({l,i})=>{const u=soVoUnit(v,l),r=left[i]-now(i);return`<tr><td data-t="${esc(l.name||"")}"></td><td class="r">${q(Number(l.qty))}${u?` <small>${esc(u)}</small>`:""}</td>${ds.map(({d})=>`<td class="r so-dcol">${q(Number(d.lines?.[i]||0))}</td>`).join("")}${entry?`<td class="r so-dnow">${left[i]>0?`<input type="number" inputmode="decimal" min="0" max="${left[i]}" step="any" value="${now(i)||""}" placeholder="0" data-so-dq="${i}" aria-label="Qty given now">`:"–"}</td>`:""}<td class="r so-dleft${r>0?" on":""}" data-so-drem="${i}">${esc(poNum(r))}</td></tr>`}).join("")}</tbody>
     ${ds.some(({d})=>soDelEditable(v,d))||(can("admin")&&ds.length)?`<tfoot><tr><td></td><td></td>${ds.map(({d,k})=>`<td class="r so-dcol"><span class="so-pact">${soDelEditable(v,d)?`<button type="button" class="o-ic" data-so-ded="${k}" aria-label="Edit delivery" title="Edit delivery">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-drm="${k}" aria-label="Remove delivery" title="Remove delivery">${TRASH_IC}</button>`:""}</span></td>`).join("")}${entry?`<td></td>`:""}<td class="so-dleft"></td></tr></tfoot>`:""}</table></div>
     ${!all.length?`<p class="side-help">${old?"အရင်ကတည်းက အကုန်ပေးပြီးသား voucher ပါ။":"ပစ္စည်း မပေးရသေးပါ။ \"ယခုပေး\" မှာ အရေအတွက် ရိုက်ပြီး Save နှိပ်ပါ။"}</p>`:""}`}
@@ -9941,7 +9943,12 @@ var soDEdit=null;
 const soDelEditable=(v,d)=>!v.xl&&(can("admin")||(sameId(d.by,me.id)&&String(d.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
 /* what is left of each line, not counting delivery ei (the one being edited) */
 function soDelLeft(v,ei){const left=soLeftArr(v).slice(),d=ei!=null?(v.deliveries||[])[ei]:null;if(d)for(const[k,q]of Object.entries(d.lines||{}))left[k]=(left[k]||0)+Number(q||0);return left}
+const SO_DSTAFF=[["pick","soDPick"],["check","soDCheck"],["pack","soDPack"]];
+function soStaffOpts(cur){const all=[...new Set(Object.values(accounts||{}).filter(a=>a&&a.status==="approved"&&a.name).map(a=>a.name))].sort((a,b)=>a.localeCompare(b));
+  if(cur&&!all.includes(cur))all.push(cur);return`<option value="">— Staff —</option>`+all.map(n=>`<option value="${esc(n)}" ${n===cur?"selected":""}>${esc(n)}</option>`).join("")}
+const soDStaffTxt=d=>{const k={pick:"ချ",check:"စစ်",pack:"ထည့်"},st=d?.staff||{};return Object.keys(k).filter(x=>st[x]).map(x=>`${k[x]} ${st[x]}`)};
 function soDelOpen(v,ei){soDEdit=ei;const d=ei!=null?(v.deliveries||[])[ei]:null;
+  for(const[k,id]of SO_DSTAFF)$(id).innerHTML=soStaffOpts(d?.staff?.[k]||"");
   $("soDSave").textContent=d?"Save changes":"Save";
   $("soDelList").innerHTML=soDelListHtml(v);$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
   $("soDDate").innerHTML=dateSelect("",d?.date||todayISO(),"Date","",false,todayISO());$("soPayForm").hidden=true;$("soDelForm").hidden=!soDelEntry(v);
@@ -9960,8 +9967,9 @@ $("soDSave").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOpe
   for(const inp of $("soDelList").querySelectorAll("[data-so-dq]")){const i=Number(inp.dataset.soDq),q=Math.min(left[i],Math.max(0,Number(inp.value)||0));if(q>0)lines[i]=q}
   if(!Object.keys(lines).length){toast("ပေးမယ့် အရေအတွက် ထည့်ပါ");return}
   const now=new Date().toISOString(),gate=$("soDGate").value.trim(),date=readDate($("soDDate").querySelector(".dp"))||old?.date||todayISO();
-  let ds;if(old){const nd={...old,date,lines,editedAt:now,editedBy:me.id||null};if(gate)nd.gate=gate;else delete nd.gate;ds=v.deliveries.map((x,k)=>k===ei?nd:x)}
-  else ds=[...(v.deliveries||[]),{date,lines,...(gate?{gate}:{}),at:now,by:me.id||null}];
+  const staff={};for(const[k,id]of SO_DSTAFF)if($(id).value)staff[k]=$(id).value;const hasSt=Object.keys(staff).length>0;
+  let ds;if(old){const nd={...old,date,lines,editedAt:now,editedBy:me.id||null};if(gate)nd.gate=gate;else delete nd.gate;if(hasSt)nd.staff=staff;else delete nd.staff;ds=v.deliveries.map((x,k)=>k===ei?nd:x)}
+  else ds=[...(v.deliveries||[]),{date,lines,...(gate?{gate}:{}),...(hasSt?{staff}:{}),at:now,by:me.id||null}];
   const n={...v,pre:true,deliveries:ds,updatedAt:now};
   try{await saveSo(n);soDEdit=null;await renderSoView(n);soDelOpen(n,null);toast(old?"✓ Delivered ပြင်ပြီး":soDelivered(n)?"✓ Delivered — အကုန်ပေးပြီး":"✓ Delivered — ကျန်တာ နောက်မှ ပေးရန်")}catch(x){toast("သိမ်းမရပါ")}});
 $("soDelList").addEventListener("click",e=>{const b=e.target.closest("[data-so-ded]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
