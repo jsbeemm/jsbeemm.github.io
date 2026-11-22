@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795337632"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795337832"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1334,7 +1334,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purView{padding:0;place-items:stretch}#purView .side-panel{width:100%;max-width:none;height:100%;max-height:none;border-radius:0;grid-template-rows:auto minmax(0,1fr)}#purView .side-body{width:min(100%,1000px);margin:0 auto;box-sizing:border-box}
 .pur-vtabs{align-items:center}
 .pur-acts{margin:0 0 8px}.pur-dlg .side-body{display:grid;gap:10px;align-content:start}.pur-dlg .pur-grp{margin:0}
-.prq-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;align-items:center}.prq-row small{color:var(--muted)}.prq-amt{width:100%;margin:0;text-align:right}.prq-amt:disabled{opacity:.45}
+.prq-all{padding-bottom:6px;border-bottom:1px solid var(--line)}.prq-row{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;align-items:center}.prq-row small{color:var(--muted)}.prq-amt{width:100%;margin:0;text-align:right}.prq-amt:disabled{opacity:.45}
 .prq-cr{border:1px dashed #E8A317;background:#FFF8E6;border-radius:12px;padding:8px 12px}.prq-cr p{margin:0 0 4px}
 .par-list{display:grid;gap:8px}.par-v{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface)}.par-v.on{border-color:var(--accent)}
 .par-vh{display:flex;align-items:center;gap:8px;justify-content:space-between}.par-vh small{color:var(--muted)}.par-vfr{display:inline-flex;align-items:center;gap:6px;font-size:13px}.par-vfr input{width:110px;margin:0;text-align:right}
@@ -7474,7 +7474,7 @@ function renderPurReq(){const S=prqSups(),C=prqCands(),keep={m:$("prqM")?.value|
   $("purReqBody").innerHTML=`<div class="chips"><button type="button" class="chip" data-prq-mode="sup" aria-pressed="${prq.mode==="sup"}">Supplier အလိုက်</button><button type="button" class="chip" data-prq-mode="pick" aria-pressed="${prq.mode==="pick"}">ဘောက်ချာ ရွေး</button></div>
     ${prq.mode==="sup"?`<label class="prf"><span>Supplier</span><select id="prqSup"><option value="">— Supplier ရွေးပါ —</option>${S.map(s=>`<option value="${esc(s.k)}" ${s.k===prq.sup?"selected":""}>${esc(s.name)}${s.n?` · ${s.n} စောင် · ${fmt(s.sum)}`:""}${s.credit?` · ပိုငွေ ${fmt(s.credit)}`:""}</option>`).join("")}</select></label>`
       :`<input type="search" id="prqQ" placeholder="ဘောက်ချာ / Supplier ရှာပါ" value="${esc(prq.q)}" autocomplete="off">`}
-    ${rows.length?`<div class="pur-grp prq-list">${rows.map(p=>{const on=prq.sel.has(p.id);return`<div class="prq-row"><label class="so-pmr"><input type="checkbox" data-prq-p="${esc(p.id)}" ${on?"checked":""}> <span><b>${esc(p.no||"")}</b> · ${esc(soDate(p.date))}${prq.mode==="pick"?` · <span data-t="${esc(p.supplier||"")}"></span>`:""}<small> · ${stx(p)}${purPaidG(p)>0?` · လွှဲပြီး ${esc(fmt(purPaidG(p)))}`:""}</small></span></label>
+    ${rows.length?`<div class="pur-grp prq-list"><label class="so-pmr prq-all"><input type="checkbox" data-prq-all ${rows.every(p=>prq.sel.has(p.id))?"checked":""}> <b>Select all</b> <small>(${rows.length})</small></label>${rows.map(p=>{const on=prq.sel.has(p.id);return`<div class="prq-row"><label class="so-pmr"><input type="checkbox" data-prq-p="${esc(p.id)}" ${on?"checked":""}> <span><b>${esc(p.no||"")}</b> · ${esc(soDate(p.date))}${prq.mode==="pick"?` · <span data-t="${esc(p.supplier||"")}"></span>`:""}<small> · ${stx(p)}${purPaidG(p)>0?` · လွှဲပြီး ${esc(fmt(purPaidG(p)))}`:""}</small></span></label>
       <input class="prq-amt" type="number" inputmode="numeric" min="0" step="1" data-prq-a="${esc(p.id)}" value="${on?prq.sel.get(p.id):purBal(p)}" ${on?"":"disabled"} aria-label="Amount"></div>`}).join("")}</div>`
       :`<p class="pur-mu">${prq.mode==="sup"&&!prq.sup?"Supplier ရွေးပါ":"ငွေလွှဲရန် ဘောက်ချာ မရှိပါ"}</p>`}
     ${prq.mode==="sup"&&sup?.credit?`<div class="prq-cr"><p>ပိုငွေ (credit) <b>${esc(fmt(sup.credit))}</b> · ယခင် ဘောက်ချာမှာ ပိုလွှဲထားတာ</p>
@@ -7491,7 +7491,9 @@ $("purReqBody").addEventListener("change",e=>{const t=e.target;
   if(t.id==="prqSup"){prq.sup=t.value;prq.sel=new Map(prqCands().filter(p=>purSupKey(p)===prq.sup).map(p=>[p.id,purBal(p)]));prq.credit=false;prq.refund=false;renderPurReq();return}
   if(t.matches("[data-prq-p]")){const p=purs.find(x=>x.id===t.dataset.prqP);if(!p)return;if(t.checked)prq.sel.set(p.id,purBal(p));else prq.sel.delete(p.id);renderPurReq();return}
   if(t.matches("[data-prq-a]")){const v=Math.max(0,Math.round(Number(t.value)||0));prq.sel.set(t.dataset.prqA,v);renderPurReq();return}
-  if(t.id==="prqCr"){prq.credit=t.checked;renderPurReq()}});
+  if(t.id==="prqCr"){prq.credit=t.checked;renderPurReq();return}
+  if(t.matches("[data-prq-all]")){const vis=[...$("purReqBody").querySelectorAll("[data-prq-p]")].map(c=>purs.find(x=>x.id===c.dataset.prqP)).filter(Boolean);
+    for(const p of vis){if(t.checked){if(!prq.sel.has(p.id))prq.sel.set(p.id,purBal(p))}else prq.sel.delete(p.id)}renderPurReq()}});
 $("purReqBody").addEventListener("input",e=>{if(e.target.id==="prqQ"){prq.q=e.target.value;renderPurReq();const q=$("prqQ");q.focus();q.setSelectionRange(q.value.length,q.value.length)}});
 $("purReqBody").addEventListener("click",async e=>{const m=e.target.closest("[data-prq-mode]");if(m){prq.mode=m.dataset.prqMode;prq.sel=new Map();prq.credit=false;prq.refund=false;renderPurReq();return}
   const b=e.target.closest("[data-prq]");if(!b)return;const a=b.dataset.prq,now=new Date().toISOString();
