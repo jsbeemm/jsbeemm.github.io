@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795266038"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795323253"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1899,7 +1899,7 @@ span.star-ic{cursor:default}
     <div class="prq-bar pd-bar"><input type="search" id="itQ" placeholder="Search name or short code" aria-label="Search raw material" autocomplete="off">
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
-      <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button><button type="button" class="chip" id="itLastBtn" aria-pressed="false" title="JS voucher မှာ နောက်ဆုံး ရောင်းခဲ့တဲ့ item ကနေ စီပြရန်">🕒 နောက်ဆုံးရောင်း</button><button type="button" class="chip" id="itSalesBtn" hidden>📊 အရောင်း</button>
+      <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button><button type="button" class="chip" id="itLastBtn" aria-pressed="false" hidden title="JS voucher မှာ နောက်ဆုံး ရောင်းခဲ့တဲ့ item တွေကို အပေါ်ဆုံးမှာ စီပြရန်">↕ Sort: 🕒 နောက်ဆုံးရောင်းတာ အပေါ်ဆုံး</button><button type="button" class="chip" id="itSalesBtn" hidden>📊 အရောင်း</button>
       <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden><button type="button" class="chip" id="itClearAll" hidden title="Raw Material အားလုံးကို ဖျက်ရန် (Excel ကနေ ပြန် import မလုပ်ခင်)">🗑 အားလုံးဖျက်</button>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
@@ -9252,13 +9252,13 @@ function renderItems(){
   const nOk=inQ0.filter(i=>i.unitOk).length;
   $("itOkTodo").innerHTML=`⏳ မစစ်ရသေး <small>${inQ0.length-nOk}</small>`;$("itOkDone").innerHTML=`✓ စစ်ပြီး <small>${nOk}</small>`;
   $("itOkTodo").setAttribute("aria-pressed",itOk==="todo");$("itOkDone").setAttribute("aria-pressed",itOk==="done");
-  const ls=itLast?itLastSold():null;$("itLastBtn").setAttribute("aria-pressed",itLast);
-  const inQ=inQ0.filter(i=>(!itOk||(itOk==="done")===!!i.unitOk)&&(!ls||ls.has(i.id)));
+  const ls=itLast&&itOk==="todo"?itLastSold():null;$("itLastBtn").setAttribute("aria-pressed",itLast);$("itLastBtn").hidden=itOk!=="todo";
+  const inQ=inQ0.filter(i=>!itOk||(itOk==="done")===!!i.unitOk);
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(itCat&&!cats.includes(itCat))itCat="";
   $("itCats").innerHTML=`<button type="button" class="chip" data-itcat="" aria-pressed="${!itCat}">All <small>${inQ.length}</small></button>`
     +cats.map(c=>`<button type="button" class="chip" data-itcat="${esc(c)}" aria-pressed="${itCat===c}">${esc(c)} <small>${inQ.filter(i=>(i.cat||"Other")===c).length}</small></button>`).join("");
-  const list=inQ.filter(i=>!itCat||(i.cat||"Other")===itCat).sort(ls?(a,b)=>ls.get(b.id).k.localeCompare(ls.get(a.id).k)||String(a.name).localeCompare(String(b.name))
-    :(a,b)=>String(a.cat).localeCompare(String(b.cat))||String(a.sub||"").localeCompare(String(b.sub||""))||String(a.name).localeCompare(String(b.name)));
+  const list=inQ.filter(i=>!itCat||(i.cat||"Other")===itCat).sort((a,b)=>{if(ls){const A=ls.get(a.id),B=ls.get(b.id);if(A&&B)return B.k.localeCompare(A.k)||String(a.name).localeCompare(String(b.name));if(A||B)return A?-1:1}
+    return String(a.cat).localeCompare(String(b.cat))||String(a.sub||"").localeCompare(String(b.sub||""))||String(a.name).localeCompare(String(b.name))});
   const MAX=300,shown=list.slice(0,MAX),byCode=new Map(items.map(i=>[pdNorm(i.code),i]));
   $("itCount").textContent=!itLoaded?"Loading…":!items.length?(admin?"Items မရှိသေးပါ — 📥 Import Excel နဲ့ Items Excel ကို ထည့်ပါ":"Items မရှိသေးပါ"):
     `${list.length} item${list.length===1?"":"s"}${list.length>MAX?` · showing the first ${MAX} — search or pick a category to narrow`:""}`;
@@ -9267,7 +9267,7 @@ function renderItems(){
     return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><span class="it-pic">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="it-noph"></span>`}</span>
       <span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}${i.unitOk?`<span class="it-okb" title="Unit နဲ့ ဈေး စစ်ပြီး">✓</span>`:""}</span>
       <span class="it-pr">${[[i.price,i.whPrice>0||i.mbPrice>0?"JS":""],[i.whPrice,"Wholesale"],[i.mbPrice,"Mr.Bee"]].filter(([p])=>p>0).map(([p,l])=>`${l?`<small class="it-pl">${l}</small> `:""}${fmt(p)}`).join("<br>")}</span>
-      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small>${ls?`<small class="it-last">🕒 ${esc(soDate(ls.get(i.id).date))} · ${esc(ls.get(i.id).no)}</small>`:""}</span></div>`}).join("");
+      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small>${ls?(x=>x?`<small class="it-last">🕒 ${esc(soDate(x.date))} · ${esc(x.no)}</small>`:`<small class="it-last">🕒 JS voucher မှာ မရောင်းရသေး</small>`)(ls.get(i.id)):""}</span></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 /* tapping an item (Admin) opens its photo and prices */
@@ -9586,7 +9586,7 @@ $("itPhFiles").addEventListener("change",async e=>{const fs=[...e.target.files];
 $("itQ").addEventListener("input",e=>{itQ=e.target.value;renderItems()});
 $("itCats").addEventListener("click",e=>{const b=e.target.closest("[data-itcat]");if(b){itCat=b.dataset.itcat;renderItems()}});
 $("itJsOnly").addEventListener("click",()=>{itJs=!itJs;renderItems()});
-$("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";renderItems()});
+$("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";if(itOk&&itLast)initSo();renderItems()});
 $("itOkDone").addEventListener("click",()=>{itOk=itOk==="done"?"":"done";renderItems()});
 $("itLastBtn").addEventListener("click",()=>{itLast=!itLast;if(itLast)initSo();renderItems()});
 $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
@@ -9701,7 +9701,7 @@ const soTierPrice=(pp,t)=>t==="w"&&pp.w>0?pp.w:t==="f"&&pp.f>0?pp.f:pp.r;
 function initSo(){initSoDrafts();initPo();
   if(!db){if(!soLoaded){try{vos=JSON.parse(localStorage.getItem("cakeJsSales")||"[]")}catch(e){vos=[]}soLoaded=true}return}
   if(soCol)return;soCol=db.collection("jsSales");
-  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="items"&&itLast)renderItems();if(view==="home")renderHome();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
+  soCol.onSnapshot(s=>{vos=s.docs.map(d=>({...d.data(),id:d.id}));soLoaded=true;if(view==="so")renderSo();if(view==="items"&&itLast&&itOk==="todo")renderItems();if(view==="home")renderHome();if(view==="sale")syncSaleBrand();if(view==="pos"&&posTab==="report")renderPos();
     if(soOpen&&!$("soView").hidden){const v=vos.find(x=>x.id===soOpen);if(v)renderSoView(v)}
     if(poOpen&&!$("poView").hidden){const p=pos.find(x=>x.id===poOpen);if(p)renderPoView(p)}},()=>{soCol=null});
 }
