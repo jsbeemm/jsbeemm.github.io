@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795328428"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795328611"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1307,7 +1307,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purLines .so-lue:hover{color:var(--accent);background:var(--accent-soft)}#purLines .so-lue:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 #purLines .pur-lu{width:100%;margin-top:4px;font-size:12px;padding:4px 6px}#purLines .pur-lu[hidden]{display:none!important}.pur-add .btn{width:auto}
 #purPickDlg .side-panel{height:min(88vh,760px);max-height:none}#purPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
+#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}.pur-pqrow{display:flex;gap:8px;align-items:center;flex:none}#purPickDlg .pur-pqrow #purPickQ{flex:1 1 0;width:auto;min-width:0;margin:0}@media (max-width:700px){.pur-pqrow .pur-nl{display:none}}.pur-pqrow .btn{flex:none;width:auto;white-space:nowrap;margin:0;align-self:stretch;min-height:0;padding-block:0;padding-inline:14px}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
 #purPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .pur-one{cursor:pointer}.pur-fn{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px}
 .pur-ied{display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border:0;border-radius:14px;background:none;color:var(--muted);cursor:pointer;font:inherit}
@@ -2289,7 +2289,7 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b>📦 Add raw material</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <div class="side-body">
-      <input type="search" id="purPickQ" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" autocomplete="off" aria-label="Search raw material">
+      <div class="pur-pqrow"><input type="search" id="purPickQ" placeholder="Raw Material ရှာပါ (နာမည် / Short code)" autocomplete="off" aria-label="Search raw material"><button type="button" class="btn ghost" id="purNewIt" hidden aria-label="New raw material">+ New<span class="pur-nl"> raw material</span></button></div>
       <div class="chips pd-cats so-pcats" id="purPickCats"></div>
       <div class="so-plist" id="purHits"></div>
     </div>
@@ -7150,16 +7150,20 @@ function renderPurPick(){const q=pdNorm($("purPickQ").value),inQ=items.filter(i=
       <span><span class="pur-fn"><span data-t="${esc(o.it.name||"")}"></span>${purEdBtn(o.it,false)}</span><code>${esc(o.it.code||"")}</code>${o.label||o.un?` <small class="so-pu">${esc(o.label||o.un)}</small>`:""}</span><b>${lp!==""?fmt(lp):""}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</div>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
   $("purHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
-$("purAddItem").addEventListener("click",()=>{initItems();purPickCat="";$("purPickQ").value="";renderPurPick();$("purPickDlg").hidden=false;$("purPickQ").focus()});
+$("purAddItem").addEventListener("click",()=>{initItems();purPickCat="";$("purPickQ").value="";$("purNewIt").hidden=!can("admin");renderPurPick();$("purPickDlg").hidden=false;$("purPickQ").focus()});
+/* a picked raw material goes on the purchase as a line (or the line it already has), and its quantity box is focused */
+function purPickPut(i,u){const o=purOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,un:purUnitOf(i)};
+  let k=purLines.findIndex(l=>purOptOn(o,l));if(k<0){const l={qty:"",price:""};purSetOpt(l,o);purLines.push(l);k=purLines.length-1}
+  $("purPickDlg").hidden=true;renderPurLines();const q=$("purLines").querySelector(`tr[data-i="${k}"] .pur-q`);if(q){q.focus();q.select()}}
+$("purNewIt").addEventListener("click",()=>{if(!can("admin"))return;const nm=$("purPickQ").value.trim();openItForm(null);if(nm)$("itName").value=nm;
+  itAfterSave=it=>{const i=items.find(x=>x.id===it.id)||it;purPickPut(i,(purOptsOf(i)[0]||{k:-1}).k)}});
 $("purPickQ").addEventListener("input",renderPurPick);
 $("purPickQ").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("purHits").querySelector("[data-pur-it]")?.click()}});
 $("purPickCats").addEventListener("click",e=>{const b=e.target.closest("[data-pupc]");if(b){purPickCat=b.dataset.pupc;renderPurPick()}});
 $("purHits").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches(".pur-one")){e.preventDefault();e.target.click()}});
 $("purHits").addEventListener("click",e=>{const ed=e.target.closest("[data-pur-ed]");if(ed){e.stopPropagation();const it=items.find(x=>x.id===ed.dataset.purEd);if(it)openItForm(it);return}
   const b=e.target.closest("[data-pur-it]");if(!b)return;const i=items.find(x=>x.id===b.dataset.purIt);if(!i)return;
-  const u=Number(b.dataset.purU??-1),o=purOptsOf(i).find(x=>x.k===u)||{it:i,k:-1,un:purUnitOf(i)};
-  let k=purLines.findIndex(l=>purOptOn(o,l));if(k<0){const l={qty:"",price:""};purSetOpt(l,o);purLines.push(l);k=purLines.length-1}
-  $("purPickDlg").hidden=true;renderPurLines();const q=$("purLines").querySelector(`tr[data-i="${k}"] .pur-q`);if(q){q.focus();q.select()}});
+  purPickPut(i,Number(b.dataset.purU??-1))});
 $("purForm").addEventListener("submit",async e=>{e.preventDefault();if(!canPur())return;
   const date=readDate($("purDateBox").querySelector(".dp")),supplier=$("purSup").value.trim(),gate=$("purGate").value.trim();
   if(!date){toast("Date ထည့်ပါ");return}
