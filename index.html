@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795338559"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795338740"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7549,27 +7549,31 @@ function renderPurArr(){const C=parCands(),f=String(par.find||"").trim().toLower
           return`<tr title="${q>0?`1${l.unit?" "+esc(l.unit):""} = ${esc(fmt(Math.round(Number(l.price||0)+s1/q)))} (ကားခ ပါ)`:""}"><td data-t="${esc(l.name||"")}"></td><td class="r">${esc(poNum(l.qty))}${l.unit?` <small>${esc(l.unit)}</small>`:""}${purGotQ(p,i)?`<br><small>ရောက်ပြီး ${esc(poNum(purGotQ(p,i)))}</small>`:""}</td>
             <td class="r"><input type="number" inputmode="decimal" min="0" max="${left}" step="any" data-par-q="${esc(p.id)}|${i}" value="${esc(String(par.q[p.id]?.[i]??left))}" aria-label="ရောက်တဲ့ အရေအတွက်"></td>
             <td class="r">${esc(purPer(l))}</td>
-            <td class="r">${par.mode==="item"?`<input type="number" inputmode="numeric" min="0" step="1" data-par-ifr="${esc(p.id)}|${i}" value="${esc(String(par.item[p.id]?.[i]??""))}" placeholder="0" aria-label="ကားခ (1Qty)">`:q>0&&s1?esc(fmt(Math.round(s1/q))):"–"}</td>
-            <td class="r">${s1?esc(fmt(s1)):"–"}</td></tr>`}).join("")}</tbody>
-        <tfoot><tr><td colspan="5" class="r"><b>ကားခများ</b></td><td class="r"><b>${esc(fmt(vsum))}</b></td></tr></tfoot></table></div>`})():""}</div>`}).join("")
+            <td class="r">${par.mode==="item"?`<input type="number" inputmode="numeric" min="0" step="1" data-par-ifr="${esc(p.id)}|${i}" value="${esc(String(par.item[p.id]?.[i]??""))}" placeholder="0" aria-label="ကားခ (1Qty)">`:`<span data-par-r1="${esc(p.id)}|${i}">${q>0&&s1?esc(fmt(Math.round(s1/q))):"–"}</span>`}</td>
+            <td class="r" data-par-rt="${esc(p.id)}|${i}">${s1?esc(fmt(s1)):"–"}</td></tr>`}).join("")}</tbody>
+        <tfoot><tr><td colspan="5" class="r"><b>ကားခများ</b></td><td class="r"><b data-par-vt="${esc(p.id)}">${esc(fmt(vsum))}</b></td></tr></tfoot></table></div>`})():""}</div>`}).join("")
       :`<p class="pur-mu">မရောက်သေးတဲ့ ဘောက်ချာ မရှိပါ</p>`}</div>
     <div class="prf"><span>ကားခ ခွဲပုံ</span><div class="chips"><button type="button" class="chip" data-par-mode="auto" aria-pressed="${par.mode==="auto"}">(က) စုစုပေါင်း · အလိုလိုခွဲ</button><button type="button" class="chip" data-par-mode="vou" aria-pressed="${par.mode==="vou"}">(ခ) ဘောက်ချာ တစ်ခုချင်း</button><button type="button" class="chip" data-par-mode="item" aria-pressed="${par.mode==="item"}">(ဂ) Item တစ်ခုချင်း (1Qty ကားခ)</button></div></div>
     ${par.mode!=="item"?`<div class="prf"><span>အလိုလို ခွဲတာ</span><div class="chips"><button type="button" class="chip" data-par-basis="amt" aria-pressed="${par.basis==="amt"}">ပစ္စည်းတန်ဖိုးအလိုက်</button><button type="button" class="chip" data-par-basis="qty" aria-pressed="${par.basis==="qty"}">အရေအတွက်အလိုက်</button></div></div>`:""}
     ${par.mode==="auto"?`<label class="prf"><span>ကားခ စုစုပေါင်း (Ks)</span><input id="parFr" type="number" inputmode="numeric" min="0" step="1" value="${par.fr||""}"></label>`:""}
-    <div class="so-pmr pur-grpt"><b>ကားခ စုစုပေါင်း</b><span class="pur-grpa">${esc(fmt(tot))}</span></div>
+    <div class="so-pmr pur-grpt"><b>ကားခ စုစုပေါင်း</b><span class="pur-grpa" id="parTot">${esc(fmt(tot))}</span></div>
     <label class="so-pmr"><input type="checkbox" id="parReq" ${par.req?"checked":""}> 🚚 ကားခ ငွေလွှဲ request ပါ ပို့မည်</label>
     ${par.req?`<label class="prf"><span>Payment method</span><select id="parM"><option value="">— Method ရွေးပါ —</option>${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}${payOwnerOf(m)?` · ${esc(nameOf(payOwnerOf(m)))}`:""}</option>`).join("")}</select></label>`:""}
     <div class="pur-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="button" class="btn" data-par="save">📦 ရောက်ပြီ သိမ်းမည်</button></div>`;
   $("purArrBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);if(keep.m&&$("parM"))$("parM").value=keep.m}
+/* the worked-out figures only (per 1 Qty, per line, per voucher, total) */
+function parFigures(){const sh=parShares(),B=$("purArrBody");let tot=0;
+  B.querySelectorAll("[data-par-rt]").forEach(td=>{const[id,i]=td.dataset.parRt.split("|"),v=sh[id]?.[i]||0;td.textContent=v?fmt(v):"–"});
+  B.querySelectorAll("[data-par-r1]").forEach(el=>{const[id,i]=el.dataset.parR1.split("|"),v=sh[id]?.[i]||0,q=Number(par.q[id]?.[i])||0;el.textContent=q>0&&v?fmt(Math.round(v/q)):"–"});
+  B.querySelectorAll("[data-par-vt]").forEach(el=>{const v=Object.values(sh[el.dataset.parVt]||{}).reduce((a,b)=>a+b,0);el.textContent=fmt(v)});
+  for(const o of Object.values(sh))for(const v of Object.values(o))tot+=v;if($("parTot"))$("parTot").textContent=fmt(tot)}
 const parKeep=()=>{par.date=readDate($("purArrBody").querySelector(".parD"))||par.date;par.gate=$("parG")?.value??par.gate};
 $("purArrBody").addEventListener("change",e=>{const t=e.target;parKeep();
   if(t.matches("[data-par-p]")){const p=purs.find(x=>x.id===t.dataset.parP);if(!p)return;if(t.checked){par.sel.add(p.id);par.q[p.id]=Object.fromEntries((p.lines||[]).map((l,i)=>[i,purLeftQ(p,i)]))}else par.sel.delete(p.id);renderPurArr();return}
   if(t.id==="parReq"){par.req=t.checked;renderPurArr();return}});
 $("purArrBody").addEventListener("input",e=>{const t=e.target;
   if(t.id==="parQ"){par.find=t.value;parKeep();renderPurArr();const q=$("parQ");q.focus();q.setSelectionRange(q.value.length,q.value.length);return}
-  const redo=()=>{const id=t.dataset.parQ||t.dataset.parIfr||t.dataset.parVfr||t.id,pos=t.selectionStart;parKeep();renderPurArr();
-    const el=t.dataset.parQ?$("purArrBody").querySelector(`[data-par-q="${id}"]`):t.dataset.parIfr?$("purArrBody").querySelector(`[data-par-ifr="${id}"]`):t.dataset.parVfr?$("purArrBody").querySelector(`[data-par-vfr="${id}"]`):$(id);
-    if(el){el.focus();try{el.setSelectionRange(pos,pos)}catch(x){}}};
+  const redo=parFigures;
   if(t.dataset.parQ){const[id,i]=t.dataset.parQ.split("|"),p=purs.find(x=>x.id===id);(par.q[id]??={})[i]=Math.min(purLeftQ(p,Number(i)),Math.max(0,Number(t.value)||0));redo();return}
   if(t.dataset.parIfr){const[id,i]=t.dataset.parIfr.split("|");(par.item[id]??={})[i]=t.value;redo();return}
   if(t.dataset.parVfr){par.vou[t.dataset.parVfr]=t.value;redo();return}
