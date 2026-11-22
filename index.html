@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795333544"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795334112"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1331,6 +1331,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pur-sum{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:6px 10px 0;margin-bottom:14px;font-size:14px}.pur-sum b{text-align:right;white-space:nowrap}
 .pur-sum .gt{font-size:16px;border-top:1px solid var(--line);padding-top:6px;margin-top:2px}
 .pur-sec{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;background:var(--surface)}
+.pur-vtabs{align-items:center}.pur-vtools{margin-left:auto;display:inline-flex;gap:6px}.pur-vtools .btn{width:auto;min-height:0;height:34px;padding:0 12px;margin:0;font-size:13px}.pur-vpills{margin:0 0 10px}
+.pur-prevw{margin-bottom:12px}#purPrev{width:812px;padding:40px;transform-origin:0 0;background:#fff;box-sizing:border-box;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.pur-tl{display:none}.pur-vtools .btn{width:38px;padding:0;justify-content:center;font-size:16px}
 .pur-sec h4{margin:0 0 6px;font-size:14.5px}.pur-sec p{margin:4px 0;font-size:13.5px}
 .pur-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center;margin-top:8px}
 .pur-btns .pa-addw{margin-right:auto;cursor:pointer}#paPhs:empty{display:none}
@@ -7198,7 +7201,45 @@ $("purForm").addEventListener("submit",async e=>{e.preventDefault();if(!canPur()
   try{await savePur(p);$("purDlg").hidden=true;toast("သိမ်းပြီး");openPurView(p.id)}catch(x){toast("သိမ်းမရပါ")}});
 
 /* one purchase: its lines, then asking for / recording the payment, then the arrival with its transport charge */
-function openPurView(id){purOpen=id;purAct=null;renderPurView();$("purView").hidden=false}
+var purVTab="vo";
+function openPurView(id){purOpen=id;purAct=null;purVTab="vo";$("purView").hidden=false;renderPurView()}
+/* the purchase as a voucher paper (the JS letterhead; the supplier where a customer would be) */
+function purVoHtml(p){const m=n=>Number(n||0).toLocaleString("en-US"),sh=SO_SHOP.js,tot=purTot(p),fr=Number(p.freight||0),paid=Number(p.paid?.amt||0)+Number(p.frPaid?.amt||0),sup=pts.find(x=>x.id===p.supId);
+  return`<div class="vo">
+    ${sh.head?`<div class="vo-top"><div class="vo-hbox"><img class="vo-head" src="${sh.head}" alt="${esc(sh.name)}"><p>${sh.ph}</p></div></div>`:`<div class="vo-top"><img src="${sh.img}" alt=""><div class="vo-shop"><h1>${sh.name}</h1><p>${sh.ph}</p></div></div>`}
+    <div class="vo-meta">
+      <div class="vo-cust"><h3>Supplier</h3><b>${esc(p.supplier||"")}</b>${sup?.phone?`<div>${esc(sup.phone)}</div>`:""}</div>
+      <div class="vo-dl">${p.gate?`<h3>Gate / Logistic</h3><div>${esc(p.gate)}</div>`:""}</div>
+      <div class="vo-no"><span class="k">PO No#</span><span>${esc(p.no||"")}</span><span class="k">Date</span><span>${esc(soDate(p.date))}</span>${p.arrived?`<span class="k">Arrived</span><span>${esc(soDate(p.arrived.date))}</span>`:""}</div>
+    </div>
+    <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
+      ${(p.lines||[]).map((l,i)=>{const ph=purLinePhoto(l);return`<tr><td>${i+1}</td><td class="pic">${ph?`<img src="${esc(photoUrl(ph))}" alt="">`:""}</td><td>${esc(l.name||"")}</td><td class="r">${m(l.qty)}${l.unit?` <span class="vo-u">${esc(l.unit)}</span>`:""}</td><td class="r">${m(l.price)}</td><td class="r">${m(purAmt(l))}</td><td>${esc(l.note||"")}</td></tr>`}).join("")}
+    </tbody><tfoot class="vo-tot">
+      <tr><td colspan="5" class="r k">${fr?"Goods Amount":"Net Amount"}</td><td class="r v">${m(tot)}</td><td class="c">MMK</td></tr>
+      ${fr?`<tr><td colspan="5" class="r k">Transport (ကားခ)</td><td class="r v">${m(fr)}</td><td class="c">MMK</td></tr><tr><td colspan="5" class="r k">Net Amount</td><td class="r v">${m(tot+fr)}</td><td class="c">MMK</td></tr>`:""}
+      <tr><td colspan="5" class="r k">Paid Amount</td><td class="r v">${paid?m(paid):"-"}</td><td class="c">MMK</td></tr>
+      <tr class="ln"><td colspan="5" class="r k">Balance</td><td class="r v">${m(Math.max(0,tot+fr-paid))}</td><td class="c">MMK</td></tr></tfoot></table>
+    ${p.note?`<div class="vo-note">Note: ${esc(p.note)}</div>`:""}</div>`}
+function purFit(){const pv=$("purPrev");if(!pv||$("purView").hidden)return;const box=pv.parentElement,W=pv.offsetWidth||812,k=Math.min(1,(box.clientWidth-28)/W);
+  pv.style.transform=`scale(${k})`;pv.style.marginLeft=Math.max(0,(box.clientWidth-28-W*k)/2)+"px";box.style.height=Math.ceil(pv.scrollHeight*k+28)+"px"}
+addEventListener("resize",purFit);
+/* Print (A5 portrait), Save image and Share: the same way as a voucher's */
+async function purPrint(p){const px=x=>Math.round(x*96/25.4),f=document.createElement("iframe");f.style.cssText=`position:fixed;left:-20000px;top:0;width:${px(132)}px;height:2000px;border:0`;document.body.appendChild(f);
+  const d=f.contentDocument;d.open();d.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(p.no||"")}</title><base href="${esc(location.href)}"><style>@page{size:A5 portrait;margin:8mm}.vo .vo-tot{display:table-row-group}body{margin:0}${SO_CSS}</style></head><body>${purVoHtml(p)}</body></html>`);d.close();
+  await new Promise(r=>{const ims=[...d.images];let n=ims.length;if(!n)return r();const one=()=>{if(--n<=0)r()};ims.forEach(im=>{if(im.complete)one();else{im.onload=im.onerror=one}});setTimeout(r,5000)});
+  try{f.contentWindow.focus();f.contentWindow.print()}catch(x){toast("Print မရပါ — Save image နဲ့ ပုံထုတ်ပြီး print လုပ်ပါ",5000)}setTimeout(()=>f.remove(),60000)}
+function purMakeImage(p){const job=soImgBusy.then(async()=>{await loadLib("lib/html2canvas-1.4.1.min.js");
+    const box=$("soShot");box.style.width="760px";box.style.padding="0";box.innerHTML=purVoHtml(p);
+    await Promise.all([...box.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;setTimeout(r,4000)})));
+    try{const shot=await html2canvas(box,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      const W=1748,H=2480,pad=Math.round(W*.05),k=Math.min((W-2*pad)/shot.width,(H-2*pad)/shot.height),PH=Math.round(shot.height*k)+2*pad,page=document.createElement("canvas");page.width=W;page.height=PH;
+      const g=page.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,W,PH);g.drawImage(shot,pad,pad,shot.width*k,shot.height*k);
+      const blob=await new Promise(r=>page.toBlob(r,"image/jpeg",.92));return{blob,name:`${p.no||"Purchase"} ${p.supplier||""}`.trim()+".jpg"}}
+    finally{box.innerHTML=""}});
+  soImgBusy=job.catch(()=>{});return job}
+let purShare=null;
+function purPrepShare(p){const key=[p.id,p.updatedAt||p.at,JSON.stringify(p.paid?.amt||0),JSON.stringify(p.frPaid?.amt||0),p.freight||0].join("|");if(purShare?.key===key)return;
+  purShare={key,ready:purMakeImage(p).then(r=>{if(purShare?.key===key)purShare.img=r;return r}).catch(()=>null)}}
 function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView").hidden=true;return}
   const tot=purTot(p),fr=Number(p.freight||0),sh=p.arrived&&fr?(p.lines||[]).map(l=>Number(l.fr||0)):null,admin=can("admin"),r=p.payReq;
   $("purViewNo").textContent=p.no||"";
@@ -7219,6 +7260,20 @@ function renderPurView(){const p=purs.find(x=>x.id===purOpen);if(!p){$("purView"
       ${canPur()&&(admin||!p.frPaid)?`<div class="pur-btns"><button type="button" class="link" data-pa="arr">ကားခ ပြင်ရန်</button></div>`:""}`;
   else arr=`<p class="pur-mu">ပစ္စည်း မရောက်သေးပါ</p>${canPur()?`<div class="pur-btns"><button type="button" class="btn" data-pa="arr">📦 ပစ္စည်းရောက်ပြီ</button></div>`:""}`;
   const ed=purCanEdit(p),del=purCanDel(p);
+  /* recording a payment / asking keeps the Payment tab; the arrival form keeps its tab */
+  if(String(purAct||"").startsWith("pay:")||String(purAct||"").startsWith("req:"))purVTab="pay";else if(purAct==="arr")purVTab="arr";
+  const vt=purVTab,tb=(k,t)=>`<button type="button" class="chip" data-pvt="${k}" aria-pressed="${vt===k}">${t}</button>`;
+  const tabs=`<div class="chips so-vtabs pur-vtabs">${tb("vo","📄 Purchase")}${tb("pay","💸 Payment")}${tb("arr","📦 ရောက်ပြီ · ကားခ")}
+    ${vt==="vo"?`<span class="pur-vtools"><button type="button" class="btn ghost" data-pvx="print" title="Print">🖨<span class="pur-tl"> Print</span></button><button type="button" class="btn ghost" data-pvx="img" title="Save image">⬇<span class="pur-tl"> Save</span></button><button type="button" class="btn ghost" data-pvx="share" title="Share">↗<span class="pur-tl"> Share</span></button></span>`:""}</div>`;
+  if(vt==="vo"){$("purBody").innerHTML=tabs+`<div class="pur-pills pur-vpills">${purPills(p)}</div><div class="so-preview pur-prevw"><div id="purPrev">${purVoHtml(p)}</div></div>`
+      +(ed||del?`<div class="prq-actions">${del?`<button type="button" class="btn ghost" data-pa="del">Delete</button>`:""}${ed?`<button type="button" class="btn" data-pa="edit">Edit</button>`:""}</div>`:"");
+    $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);requestAnimationFrame(purFit);
+    $("purPrev").querySelectorAll("img").forEach(im=>{if(!im.complete)im.addEventListener("load",purFit,{once:true})});purPrepShare(p);return}
+  if(vt==="pay"){$("purBody").innerHTML=tabs+`<div class="pur-sum"><span>ပစ္စည်းဖိုး</span><b>${esc(fmt(tot))}</b>${fr?`<span>ကားခ</span><b>${esc(fmt(fr))}</b><span class="gt">စုစုပေါင်း</span><b class="gt">${esc(fmt(tot+fr))}</b>`:""}</div>
+      <section class="pur-sec"><h4>💸 ငွေလွှဲ · ပစ္စည်းဖိုး</h4>${pay}</section>${frPay?`<section class="pur-sec"><h4>🚚 ငွေလွှဲ · ကားခ</h4>${frPay}</section>`:p.arrived?"":`<p class="pur-mu">ကားခ ငွေလွှဲက ပစ္စည်းရောက်ပြီး ကားခ ထည့်မှ ပေါ်ပါမယ်။</p>`}`;
+    $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);return}
+  if(vt==="arr"){$("purBody").innerHTML=tabs+`<section class="pur-sec"><h4>📦 ပစ္စည်းရောက် · ကားခ</h4>${arr}</section>`;
+    $("purBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);if(purAct==="arr")purArrSync();return}
   $("purBody").innerHTML=`<div class="pur-h"><h3 data-t="${esc(p.supplier||"")}"></h3><p>${esc(fmtDate(p.date))}${p.gate?` · 🚌 <span data-t="${esc(p.gate)}"></span>`:""} · ${esc(nameOf(p.by))}</p>
       <div class="pur-pills">${purPills(p)}</div>${p.note?`<p class="rcv-note" data-t="${esc(p.note)}"></p>`:""}</div>
     <div class="pur-dl">${lines}</div>
@@ -7251,6 +7306,18 @@ $("purBody").addEventListener("change",async e=>{const t=e.target;
     try{const ids=[];for(const f of fs.slice(0,3-(d.photos||[]).length))ids.push((await purUpShot(f)).id);
       const cur=purs.find(x=>x.id===purOpen)?.[K.paid]||d;await patchPur(p.id,{[K.paid]:{...cur,photos:[...(cur.photos||[]),...ids]}});toast("Screenshot ထည့်ပြီး");renderPurView()}
     catch(err){toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ")}}});
+$("purBody").addEventListener("click",async e=>{const t=e.target.closest("[data-pvt]");if(t){if(purAct&&t.dataset.pvt!==purVTab){purPayClear();purAct=null}purVTab=t.dataset.pvt;renderPurView();return}
+  const x=e.target.closest("[data-pvx]");if(!x)return;const p=purs.find(y=>y.id===purOpen);if(!p)return;const w=x.dataset.pvx;
+  if(w==="print"){purPrint(p);return}
+  if(w==="img"){toast("ပုံ ပြင်ဆင်နေသည်…",8000);try{const{blob,name}=await purMakeImage(p);if(isPhone()){showToSave(blob,"ပုံကို ဖိထားပြီး “Save to Photos” (သို့) “Save Image” ကို ရွေးပါ",name);return}await saveFile(blob,name,"JPEG")}
+    catch(err){if(err?.code!=="declined")toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}return}
+  if(w==="share"){purPrepShare(p);let r=purShare.img;if(!r){toast("ပုံ ပြင်ဆင်နေသည်…",8000);r=await purShare.ready}if(!r){toast("ပုံ မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000);return}
+    const file=new File([r.blob],r.name,{type:r.blob.type||"image/jpeg"});
+    if(navigator.canShare?.({files:[file]})){try{await navigator.share({files:[file]});return}catch(err){if(err?.name==="AbortError")return}}
+    if(isPhone()&&innerWidth<=600){showToSave(r.blob,"ပုံကို ဖိထားပြီး “Share” ကို ရွေးပါ → Telegram / Viber / Messenger",r.name);return}
+    if(isPhone()){saveFile(r.blob,r.name,"ပုံ");return}
+    try{await navigator.clipboard.write([new ClipboardItem({"image/png":r.blob})]);toast("ပုံ copy ကူးပြီး — Viber / Telegram / Messenger ထဲမှာ Paste လုပ်ပါ",4000);return}catch(err){}
+    toast("ဒီနေရာမှ တိုက်ရိုက် Share မရပါ — Save နှိပ်ပြီး ပုံကို ပို့ပါ",5000)}});
 $("purBody").addEventListener("click",async e=>{const p=purs.find(x=>x.id===purOpen);if(!p)return;
   const m=e.target.closest("[data-pa-mode]");
   if(m){purArrSync();purArr.date=readDate($("purBody").querySelector(".paAD"))||purArr.date;
