@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679710"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795680139"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1247,7 +1247,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #itCode.bad{border-color:var(--accent)}
 /* customers to register */
 .nc-panel{width:min(560px,100%)}.nc-help{margin:0 0 10px;font-size:13px;color:var(--muted)}#soNoCustN{color:var(--ink);font-weight:600}
-.nc-list{display:grid;gap:8px}.inv-qws{display:grid;gap:6px;justify-items:end}.it-meta .it-last{flex-basis:100%;color:var(--accent)}
+.nc-list{display:grid;gap:8px}.inv-qws{display:grid;gap:6px;justify-items:end}.inv-pn{font-size:13px;color:var(--ink);white-space:nowrap}.inv-pn small{color:var(--muted)}.inv-sell{display:block;color:var(--mint)}.inv-sellb{color:var(--accent)}
+.it-prow{display:flex;gap:8px;align-items:center;margin-bottom:6px}.it-prow .it-pn{flex:1 1 0;min-width:0;margin:0}.it-prow .it-pq{width:70px;flex:none;margin:0;text-align:right}.it-px{color:var(--muted)}.it-partsw small{color:var(--muted);font-weight:400}.it-partl{display:block;color:var(--ink)}#itPartAdd{width:auto;justify-self:start;align-self:start}.it-meta .it-last{flex-basis:100%;color:var(--accent)}
 #itSaleDlg,#itMgDlg,#othDlg{z-index:45}.oth-all{margin-left:8px;padding:3px 10px;font-size:12px;vertical-align:middle}#posRepBody .oth-tbl .ex-c{width:52px;padding-right:6px}#posRepBody .oth-tbl .ex-r{width:96px}#posRepBody .oth-tbl td.ex-v{width:48px;padding-left:6px}.oth-tbl td:first-child{width:100%;overflow-wrap:anywhere}.oth-tbl td:not(:first-child){white-space:nowrap}.is-panel{width:min(720px,100%)}
 .is-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-bottom:10px}.is-bar label{display:grid;gap:2px;font-size:12px;color:var(--muted)}.is-bar label:has(input[type=date]){flex:1 1 120px;max-width:170px;min-width:0}.is-bar input[type=date]{width:100%;min-width:0;box-sizing:border-box}
 .is-bar #isQ{flex:1 1 200px;min-width:0}.is-bar .is-pre{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}.is-pre input{width:auto;margin:0}
@@ -2651,6 +2652,7 @@ span.star-ic{cursor:default}
         <label class="prf it-oldp"><span>Selling Price · JS (Ks)</span><input id="itPrice" type="number" min="0" step="1" placeholder="—"></label>
         <label class="prf it-oldp"><span>Selling Price · Wholesale (Ks)</span><input id="itWhPrice" type="number" min="0" step="1" placeholder="—"></label>
         <label class="prf it-oldp"><span>Selling Price · Mr.Bee (Ks)</span><input id="itMbPrice" type="number" min="0" step="1" placeholder="—"></label>
+        <div class="prf it-wide it-partsw"><span>📦 အစိတ်အပိုင်း <small>— ဥပမာ ဘူး + အောက်ခံ။ Stock ကို တစ်ခုချင်း စစ်ပြီး ဈေးကတော့ တစ်ခုတည်း</small></span><div id="itParts"></div><button type="button" class="chip" id="itPartAdd">+ အစိတ်အပိုင်း ထည့်ရန်</button></div>
         <label class="prf it-wide"><span>Note</span><input id="itNote" autocomplete="off"></label>
       </div>
       <p class="side-help">JS ရောင်းဈေး ထည့်ထားရင် JS Bakery Supply မှာ ရောင်းပါမယ်။</p>
@@ -6519,7 +6521,7 @@ function go(v){
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
-  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items")renderItems();if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();if(v==="pur"){initItems();initPur();initPt();renderPur()}if(v==="inv"){initItems();initInv();renderInv()}
+  if(v==="home"||v==="pe"||v==="todo"||v==="sale")renderHome();if(v==="pos")renderPos();if(v==="mytodo")renderTd();if(v==="pr")renderPR();if(v==="ex"||v==="biz")renderEx();if(v==="prod")renderPd();if(v==="pt")renderPt();if(v==="rcv")renderRcv();if(v==="items"||v==="sale"||v==="pos"||v==="so")initItems();if(v==="items"){if(can("admin"))initInv();renderItems()}if(v==="so"||v==="sale"||v==="pos")initSo();if(v==="so")renderSo();if(v==="pur"){initItems();initPur();initPt();renderPur()}if(v==="inv"){initItems();initInv();renderInv()}
   syncNewBtns();scrollTo({top:0});placeHome();requestAnimationFrame(placeHome);
 }
 function renderHome(){
@@ -7739,7 +7741,7 @@ async function removeInv(id){if(invCol){await invCol.doc(id).delete();return}inv
 function initInv(){if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!can("admin"))return;invCol=db.collection("inventory");
   invCol.onSnapshot(s=>{invs=s.docs.map(d=>({...d.data(),id:d.id}));invRefresh()},()=>{invCol=null})}
 /* while a quantity is being typed the list is not redrawn (only the count line), so the box keeps its place */
-function invRefresh(){if($("viewInv").hidden)return;if(document.activeElement?.matches?.("#invList .inv-q"))invMetaSync();else renderInv()}
+function invRefresh(){if(view==="items"&&items.some(i=>(i.parts||[]).length))renderItems();if($("viewInv").hidden)return;if(document.activeElement?.matches?.("#invList .inv-q"))invMetaSync();else renderInv()}
 const invPickLoc=v=>{if(v&&v!=="__new")invLocCur=v;renderInv()};
 const fmtQ=n=>Number(n).toLocaleString("en-US",{maximumFractionDigits:3});
 function invMetaSync(){const n=invs.filter(r=>r.loc===invLocCur).length;
@@ -7757,14 +7759,20 @@ function renderInv(){if($("viewInv").hidden)return;
   if(invMode==="open"){
     if(!invLocCur){$("invList").innerHTML=`<div class="prq-empty">Location ရွေးပါ — မရှိသေးရင် "+ Add location…" နဲ့ ထည့်ပါ</div>`;return}
     $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=r?.unit||invUnitPick[i.id]||invUnitOf(i),us=invUnitsOf(i);if(u&&!us.includes(u))us.push(u);
-      const mu=invMulti(i);
+      const mu=invMulti(i),P=i.parts||[];
+      if(P.length){const Q=P.map(p=>{const rx=invs.find(y=>y.iid===i.id&&y.loc===invLocCur&&y.part===p.n);return{...p,rx}}),all=Q.every(x=>x.rx),sell=all?Math.min(...Q.map(x=>Math.floor((Number(x.rx.qty)||0)/(Number(x.q)||1)))):null;
+        return`<div class="inv-row${Q.some(x=>x.rx)?" on":""}" data-iid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><small>${i.code?`<code>${esc(i.code)}</code> · `:""}${esc(i.cat||"")}</small>${sell!=null?`<small class="inv-sell">ရောင်းရ <b>${fmtQ(Math.max(0,sell))}</b></small>`:""}</span>
+        <span class="inv-qws">${Q.map(x=>`<span class="inv-qw"><span class="inv-pn">${esc(x.n)}${x.q>1?` <small>×${x.q}</small>`:""}</span><input class="inv-q" data-part="${esc(x.n)}" type="number" inputmode="decimal" min="0" step="any" value="${x.rx?esc(String(x.rx.qty)):""}" aria-label="Opening qty ${esc(x.n)}"></span>`).join("")}</span></div>`}
       if(mu)return`<div class="inv-row${r?" on":""}" data-iid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><small>${i.code?`<code>${esc(i.code)}</code> · `:""}${esc(i.cat||"")}</small></span>
         <span class="inv-qws">${mu.map(x=>{const rx=invs.find(y=>y.iid===i.id&&y.loc===invLocCur&&y.unit===x);return`<span class="inv-qw"><input class="inv-q" data-u="${esc(x)}" type="number" inputmode="decimal" min="0" step="any" value="${rx?esc(String(rx.qty)):""}" aria-label="Opening qty ${esc(x)}"><span class="inv-u" title="${esc(x)}">${esc(x)}</span></span>`}).join("")}</span></div>`;
       return`<div class="inv-row${r?" on":""}" data-iid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><small>${i.code?`<code>${esc(i.code)}</code> · `:""}${esc(i.cat||"")}</small></span>
         <span class="inv-qw"><input class="inv-q" type="number" inputmode="decimal" min="0" step="any" value="${r?esc(String(r.qty)):""}" aria-label="Opening qty">${us.length>1?`<select class="inv-us" aria-label="Unit">${us.map(x=>`<option ${x===u?"selected":""}>${esc(x)}</option>`).join("")}</select>`:`<span class="inv-u" title="${esc(u)}">${esc(u)}</span>`}</span></div>`}).join("")
       :`<div class="prq-empty">${q?"No match.":"Raw Material မရှိသေးပါ"}</div>`}
   else{const has=list.filter(i=>invs.some(r=>r.iid===i.id));
-    $("invList").innerHTML=has.length?has.map(i=>{const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>r.unit||invUnitOf(i),one=new Set(rs.map(uOf)).size===1,tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
+    $("invList").innerHTML=has.length?has.map(i=>{if((i.parts||[]).length){const st=itPartStock(i),locs=[...new Set(invs.filter(r=>r.iid===i.id&&r.part).map(r=>r.loc))].sort();
+        return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${locs.map(l=>`<span class="pur-pill">${esc(l)} ${i.parts.map(p=>{const r=invs.find(x=>x.iid===i.id&&x.loc===l&&x.part===p.n);return`${esc(p.n)} <b>${r?fmtQ(r.qty):"–"}</b>`}).join(" · ")}</span>`).join("")}</span></span>
+        <span class="inv-tot">${st&&st.sell!=null?st.P.map(p=>`<small>${esc(p.n)}</small> <b>${fmtQ(p.have)}</b>`).join("<br>")+`<br><small>ရောင်းရ</small> <b class="inv-sellb">${fmtQ(Math.max(0,st.sell))}</b>`:""}</span></div>`}
+      const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>r.unit||invUnitOf(i),one=new Set(rs.map(uOf)).size===1,tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
       return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(r.qty)}</b>${one?"":` ${esc(uOf(r))}`}</span>`).join("")}</span></span>
         <span class="inv-tot">${one?`<b>${fmtQ(tot)}</b> <small>${esc(uOf(rs[0]))}</small>`:(()=>{const by={};rs.forEach(r=>{const k=uOf(r);by[k]=(by[k]||0)+(Number(r.qty)||0)});return Object.entries(by).map(([k,q])=>`<b>${fmtQ(q)}</b> <small>${esc(k)}</small>`).join("<br>")})()}</span></div>`}).join("")
       :`<div class="prq-empty">${q||invCat?"No match.":"Opening မထည့်ရသေးပါ"}</div>`}
@@ -7778,10 +7786,10 @@ $("goInv").addEventListener("click",()=>go("inv"));
 $("invList").addEventListener("change",async e=>{if(e.target.matches(".inv-us")){const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,u=e.target.value;invUnitPick[iid]=u;
     const rec=invs.find(r=>r.iid===iid&&r.loc===invLocCur);if(rec&&rec.unit!==u&&can("admin")){try{await saveInv({...rec,unit:u,updatedAt:new Date().toISOString(),updatedBy:me.id||null})}catch(x){toast("သိမ်းမရပါ")}}return}
   if(!e.target.matches(".inv-q")||!can("admin"))return;const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,it=items.find(x=>x.id===iid),loc=invLocCur;
-  const du=e.target.dataset.u||null,v=e.target.value.trim(),rec=invs.find(r=>r.iid===iid&&r.loc===loc&&(!du||r.unit===du)),now=new Date().toISOString();
+  const du=e.target.dataset.u||null,dp=e.target.dataset.part||null,v=e.target.value.trim(),rec=invs.find(r=>r.iid===iid&&r.loc===loc&&(!du||r.unit===du)&&(dp?r.part===dp:!r.part)),now=new Date().toISOString();
   try{if(v===""){if(rec)await removeInv(rec.id);if(!invs.some(r=>r.iid===iid&&r.loc===loc&&r.id!==rec?.id))row.classList.remove("on")}
     else{const q=Number(v);if(!(q>=0)){toast("Qty မှားနေပါတယ်");e.target.focus();return}if(rec&&Number(rec.qty)===q)return;
-      await saveInv({...(rec||{id:"iv"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),at:now,by:me.id||null}),iid,code:it?.code||"",name:it?.name||"",loc,qty:q,unit:du||row.querySelector(".inv-us")?.value||rec?.unit||invUnitOf(it),
+      await saveInv({...(rec||{id:"iv"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),at:now,by:me.id||null}),iid,code:it?.code||"",name:it?.name||"",loc,qty:q,...(dp?{part:dp}:{}),unit:du||row.querySelector(".inv-us")?.value||rec?.unit||invUnitOf(it),
         ...(rec?{updatedAt:now,updatedBy:me.id||null}:{})});row.classList.add("on")}
     invMetaSync()}catch(x){toast("သိမ်းမရပါ")}});
 $("invList").addEventListener("keydown",e=>{if(e.key!=="Enter"||!e.target.matches(".inv-q"))return;e.preventDefault();
@@ -9746,7 +9754,7 @@ function renderItems(){
     return`<div class="it-row"${admin?` data-it="${esc(i.id)}" role="button" tabindex="0" title="ဈေး ပြင်ရန်"`:""}><span class="it-pic">${i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="it-noph"></span>`}</span>
       <span class="it-nm"><span data-t="${esc(i.name)}"></span>${i.price>0?`<span class="it-js" title="Sold at JS Bakery Supply">JS</span>`:""}${i.unitOk?`<span class="it-okb" title="Unit နဲ့ ဈေး စစ်ပြီး">✓</span>`:""}</span>
       <span class="it-pr">${[[i.price,i.whPrice>0||i.mbPrice>0?"JS":""],[i.whPrice,"Wholesale"],[i.mbPrice,"Mr.Bee"]].filter(([p])=>p>0).map(([p,l])=>`${l?`<small class="it-pl">${l}</small> `:""}${fmt(p)}`).join("<br>")}</span>
-      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small>${ls?(x=>x?`<small class="it-last">🕒 ${esc(soDate(x.date))} · ${esc(x.no)}</small>`:`<small class="it-last">🕒 JS voucher မှာ မရောင်းရသေး</small>`)(ls.get(i.id)):""}</span></div>`}).join("");
+      <span class="it-meta"><code>${esc(i.code||"")}</code><small>${esc([i.cat,i.sub].filter(Boolean).join(" › "))}${i.ref?` · Ref: ${esc(i.ref)}${r&&r.code!==i.ref?"":r?` (<span data-t="${esc(r.name)}"></span>)`:""}`:""}${i.note?` · ${esc(i.note)}`:""}</small>${(i.parts||[]).length?`<small class="it-partl">📦 ${itPartLine(i)}</small>`:""}${ls?(x=>x?`<small class="it-last">🕒 ${esc(soDate(x.date))} · ${esc(x.no)}</small>`:`<small class="it-last">🕒 JS voucher မှာ မရောင်းရသေး</small>`)(ls.get(i.id)):""}</span></div>`}).join("");
   $("itList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
 }
 /* tapping an item (Admin) opens its photo and prices */
@@ -9801,6 +9809,7 @@ function openItForm(i){if(!can("admin"))return;itEditing=i||null;itAfterSave=nul
   $("itStockList").value=(i?.stockUnits?.length?i.stockUnits:[i?.stockUnit].filter(Boolean)).join("|");   /* every unit stock is counted in */
   itRefName();$("itRefHits").hidden=true;itCodeSync();
   itUnitsFill(i);
+  $("itParts").innerHTML=(i?.parts||[]).map(itPartRow).join("");
   /* the old Selling Price boxes are gone: a price that is only in them is put on its unit row now (and saved with the item);
      only a price that can't go on a row as it is (⏸ in the price-move report) still shows the old boxes, to fix by hand */
   const mv=i&&prMovePlan(i),hold=!!mv&&prMoveHold(i,mv);if(mv&&!hold)itUnitsFill({...i,units:mv});itOldShow=hold;
@@ -9882,6 +9891,13 @@ $("itForm").addEventListener("click",e=>{if(!e.target.matches(".it-scb"))return;
   if(e.target.checked&&!n){e.preventDefault();toast("Unit အရင်ထည့်ပါ");return}
   const L=$("itStockList"),sl=L.value.split("|").filter(Boolean).filter(x=>!uSame(x,n));if(e.target.checked)sl.push(n);L.value=sl.join("|");
   sel.dataset.v=sl[0]||"";sel.value="";itUnitsCalc()},true);
+const itPartRow=p=>`<div class="it-prow"><input class="it-pn" autocomplete="off" placeholder="ဥပမာ ဘူး" value="${esc(p?.n||"")}" aria-label="အစိတ်အပိုင်း နာမည်"><span class="it-px">×</span><input class="it-pq" type="number" inputmode="numeric" min="1" step="1" value="${esc(String(p?.q||1))}" title="1 ခု ရောင်းရင် ပါတဲ့ အရေအတွက်" aria-label="1 ခုမှာ ပါတဲ့ အရေအတွက်"><button type="button" class="o-ic danger" data-it-prm aria-label="ဖယ်ရန်" title="ဖယ်ရန်">${TRASH_IC}</button></div>`;
+$("itPartAdd").addEventListener("click",()=>{const P=$("itParts");if(!P.children.length)P.insertAdjacentHTML("beforeend",itPartRow({}));P.insertAdjacentHTML("beforeend",itPartRow({}));[...P.querySelectorAll(".it-pn")].find(x=>!x.value)?.focus()});
+$("itParts").addEventListener("click",e=>{const b=e.target.closest("[data-it-prm]");if(b)b.closest(".it-prow").remove()});
+/* the parts' stock (all locations of Inventory) and how many can be sold: the smallest whole number of sets */
+function itPartStock(i){const P=i?.parts||[];if(!P.length)return null;const rs=invs.filter(r=>r.iid===i.id&&r.part);if(!rs.length)return{P:P.map(p=>({...p,have:null})),sell:null};
+  const Q=P.map(p=>({...p,have:rs.filter(r=>r.part===p.n).reduce((a,r)=>a+(Number(r.qty)||0),0)}));return{P:Q,sell:Math.min(...Q.map(p=>Math.floor(p.have/(Number(p.q)||1))))}}
+const itPartLine=i=>{const st=itPartStock(i);if(!st)return"";return st.sell==null?st.P.map(p=>esc(p.n)+(p.q>1?" ×"+p.q:"")).join(" + "):st.P.map(p=>`${esc(p.n)} ${fmtQ(p.have)}`).join(" · ")+` → <b>ရောင်းရ ${fmtQ(Math.max(0,st.sell))}</b>`};
 $("itUnitAdd").addEventListener("click",()=>{$("itUnits").insertAdjacentHTML("beforeend",itUnitRow({}));$("itUnits").lastElementChild.querySelector(".it-un").focus();itUnitsCalc()});
 $("itUnits").addEventListener("click",e=>{const b=e.target.closest(".it-urm");if(!b)return;b.closest(".it-urow").remove();itUnitsCalc()});
 document.querySelector("#itForm .it-baserow").addEventListener("input",itUnitsCalc);
@@ -10034,6 +10050,8 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
   {const sl=[...new Set($("itStockList").value.split("|").map(x=>x.trim()).filter(Boolean))];if(sl[0])d.stockUnit=sl[0];else delete d.stockUnit;if(sl.length>1)d.stockUnits=sl;else delete d.stockUnits}
   if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;if(whPrice>0)d.whPrice=whPrice;else delete d.whPrice;
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
+  {const seen=new Set(),P=[];for(const r of $("itParts").querySelectorAll(".it-prow")){const n=r.querySelector(".it-pn").value.trim().replace(/s+/g," "),q=Math.max(1,Math.round(Number(r.querySelector(".it-pq").value)||1));if(!n)continue;if(seen.has(pdNorm(n))){toast(`အစိတ်အပိုင်း "${n}" နှစ်ခါ ပါနေပါတယ်`);return}seen.add(pdNorm(n));P.push({n,q})}
+   if(P.length===1){toast("အစိတ်အပိုင်း ၂ ခု အနည်းဆုံး ထည့်ပါ (ဒါမှမဟုတ် ဖယ်ပါ)");return}if(P.length)d.parts=P;else delete d.parts}
   /* the unit rows; the first is also the item's Purchase Unit / Conversion (as before, and in Excel) */
   {itUnitsCalc();const lost=$("itUnits").querySelector(".it-uof.it-need");if(lost){toast("Quantity ဘေးက Unit ကို ပြန်ရွေးပါ — ရွေးထားတဲ့ unit မရှိတော့ပါ",5000);lost.focus();return}}
   {const need=itUnitNeed([...$("itUnits").querySelectorAll(".it-urow")]);if(need.length){toast("1 Unit တူတာ နှစ်ခုရှိနေပါတယ် — Unit name (ဥပမာ ct24, ct48) ထည့်ပါ",5000);need[0].querySelector(".it-un").focus();return}}
