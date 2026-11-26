@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674575"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674651"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6494,7 +6494,7 @@ var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
   prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
-  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],inv:["<span>Inventory</span>","Opening လက်ကျန် · Location"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>","JS Bakery Supply"]};
+  biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],inv:["<span>Inventory</span>","Opening လက်ကျန် · Location"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>",""]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
@@ -6508,7 +6508,7 @@ function go(v){
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
   if(v==="orders"&&db&&myRole()==="decoration"){dateF="today";statusF="new"}
   if(v==="orders")showTab("list");else{autoDraft();$("viewList").hidden=true;$("viewNew").hidden=true}
-  $("pageTitle").innerHTML=PAGES[v][0];$("pageSub").textContent=v==="so"?BRAND_N[saleBrand]:PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("notiHBtn").hidden=v!=="home";$("notiPop").hidden=true;$("backBtn").hidden=v==="home";
+  $("pageTitle").innerHTML=v==="so"?`${saleBrand==="js"?"JS":"Mr.Bee"} <span>Voucher</span>`:PAGES[v][0];$("pageSub").textContent=PAGES[v][1];$("pageSub").hidden=!PAGES[v][1];$("homeBtn").hidden=v==="home";$("notiHBtn").hidden=v!=="home";$("notiPop").hidden=true;$("backBtn").hidden=v==="home";
   document.body.classList.toggle("off-home",v!=="home");
   $("posMode").hidden=true;   /* POS shows its Sell / Return switch again when it draws */
   $("headRight").hidden=v!=="home";$("settingsPanel").hidden=true;   /* Settings and the shared-data status live on Home only */
