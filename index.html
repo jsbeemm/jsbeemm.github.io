@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795684975"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795685329"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7491,21 +7491,19 @@ function purPills(p){const out=[],b=purBal(p),st=purArrState(p);
   return out.join("")}
 
 /* ---------- 💸 Payment request (from the list): by supplier, or picking vouchers ---------- */
-let prq={mode:"sup",sup:"",sel:new Map(),q:"",credit:false,refund:false};
+let prq={mode:"pick",sup:"",sel:new Map(),q:"",credit:false,refund:false};
 const prqCands=()=>purs.filter(p=>purBal(p)>0&&!purGReq(p)).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))||String(a.no||"").localeCompare(String(b.no||"")));
 function prqSups(){const m=new Map();for(const p of purs){const k=purSupKey(p);if(!m.has(k))m.set(k,{k,name:p.supplier||"",n:0,sum:0,credit:0});}
   for(const p of prqCands()){const s=m.get(purSupKey(p));s.n++;s.sum+=purBal(p)}for(const s of m.values())s.credit=purCredit(s.k);
   return[...m.values()].filter(s=>s.n||s.credit).sort((a,b)=>a.name.localeCompare(b.name))}
-function openPurReq(){if(!canPur())return;prq={mode:"sup",sup:"",sel:new Map(),q:"",credit:false,refund:false};renderPurReq();$("purReqDlg").hidden=false}
+function openPurReq(){if(!canPur())return;prq={mode:"pick",sup:"",sel:new Map(),q:"",credit:false,refund:false};renderPurReq();$("purReqDlg").hidden=false}
 function renderPurReq(){const S=prqSups(),C=prqCands(),keep={m:$("prqM")?.value||"",n:$("prqN")?.value||""};
   const rows=prq.mode==="sup"?C.filter(p=>purSupKey(p)===prq.sup):C.filter(p=>{const q=prq.q.trim().toLowerCase();return!q||[p.no,p.supplier].join(" ").toLowerCase().includes(q)});
   const stx=p=>({none:"မရောက်သေး",part:"တစ်စိတ်ရောက်",full:"ရောက်ပြီ"})[purArrState(p)];
   const selSups=[...new Set([...prq.sel.keys()].map(id=>purSupKey(purs.find(x=>x.id===id)||{})))],cr=selSups.reduce((a,k)=>a+purCredit(k),0);
   const sum=[...prq.sel.values()].reduce((a,x)=>a+x,0),use=prq.credit?Math.min(cr,sum):0;
   const sup=S.find(s=>s.k===prq.sup),ms=pmFor("purchase").length?pmFor("purchase"):pmFor("expense");
-  $("purReqBody").innerHTML=`<div class="chips"><button type="button" class="chip" data-prq-mode="sup" aria-pressed="${prq.mode==="sup"}">Supplier အလိုက်</button><button type="button" class="chip" data-prq-mode="pick" aria-pressed="${prq.mode==="pick"}">ဘောက်ချာ ရွေး</button></div>
-    ${prq.mode==="sup"?`<label class="prf"><span>Supplier</span><select id="prqSup"><option value="">— Supplier ရွေးပါ —</option>${S.map(s=>`<option value="${esc(s.k)}" ${s.k===prq.sup?"selected":""}>${esc(s.name)}${s.n?` · ${s.n} စောင် · ${fmt(s.sum)}`:""}${s.credit?` · ပိုငွေ ${fmt(s.credit)}`:""}</option>`).join("")}</select></label>`
-      :`<input type="search" id="prqQ" placeholder="ဘောက်ချာ / Supplier ရှာပါ" value="${esc(prq.q)}" autocomplete="off">`}
+  $("purReqBody").innerHTML=`${true?`<label class="prf"><span>Supplier</span><select id="prqSup"><option value="">📄 Show all</option>${S.map(s=>`<option value="${esc(s.k)}" ${s.k===prq.sup?"selected":""}>${esc(s.name)}${s.n?` · ${s.n} စောင် · ${fmt(s.sum)}`:""}${s.credit?` · ပိုငွေ ${fmt(s.credit)}`:""}</option>`).join("")}</select></label>`:""}
     ${rows.length?`<div class="pur-grp prq-list"><label class="so-pmr prq-all"><input type="checkbox" data-prq-all ${rows.every(p=>prq.sel.has(p.id))?"checked":""}> <b>Select all</b> <small>(${rows.filter(p=>prq.sel.has(p.id)).length} / ${rows.length} စောင်)</small></label>${rows.map(p=>{const on=prq.sel.has(p.id);return`<div class="prq-row"><label class="so-pmr"><input type="checkbox" data-prq-p="${esc(p.id)}" ${on?"checked":""}> <span><b>${esc(p.no||"")}</b> · ${esc(soDate(p.date))}${prq.mode==="pick"?` · <span data-t="${esc(p.supplier||"")}"></span>`:""}<small> · ${stx(p)}${purPaidG(p)>0?` · လွှဲပြီး ${esc(fmt(purPaidG(p)))}`:""}</small></span></label>
       <input class="prq-amt" type="number" inputmode="numeric" min="0" step="1" data-prq-a="${esc(p.id)}" value="${on?prq.sel.get(p.id):purBal(p)}" ${on?"":"disabled"} aria-label="Amount"></div>`}).join("")}</div>`
       :`<p class="pur-mu">${prq.mode==="sup"&&!prq.sup?"Supplier ရွေးပါ":"ငွေလွှဲရန် ဘောက်ချာ မရှိပါ"}</p>`}
@@ -7520,7 +7518,7 @@ function renderPurReq(){const S=prqSups(),C=prqCands(),keep={m:$("prqM")?.value|
     <div class="pur-btns"><button type="button" class="btn ghost" data-close-dlg>Cancel</button><button type="button" class="btn" data-prq="send">💸 Request ပို့မည်</button></div>`;
   $("purReqBody").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);if(keep.m)$("prqM").value=keep.m;$("prqN").value=keep.n}
 $("purReqBody").addEventListener("change",e=>{const t=e.target;
-  if(t.id==="prqSup"){prq.sup=t.value;prq.sel=new Map(prqCands().filter(p=>purSupKey(p)===prq.sup).map(p=>[p.id,purBal(p)]));prq.credit=false;prq.refund=false;renderPurReq();return}
+  if(t.id==="prqSup"){prq.sup=t.value;prq.mode=prq.sup?"sup":"pick";prq.q="";prq.sel=prq.sup?new Map(prqCands().filter(p=>purSupKey(p)===prq.sup).map(p=>[p.id,purBal(p)])):new Map();prq.credit=false;prq.refund=false;renderPurReq();return}
   if(t.matches("[data-prq-p]")){const p=purs.find(x=>x.id===t.dataset.prqP);if(!p)return;if(t.checked)prq.sel.set(p.id,purBal(p));else prq.sel.delete(p.id);renderPurReq();return}
   if(t.matches("[data-prq-a]")){const v=Math.max(0,Math.round(Number(t.value)||0));prq.sel.set(t.dataset.prqA,v);renderPurReq();return}
   if(t.id==="prqCr"){prq.credit=t.checked;renderPurReq();return}
