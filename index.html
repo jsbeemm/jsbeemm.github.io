@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795676981"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677187"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1157,7 +1157,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .pos-szn{font-size:11.5px;color:var(--muted);margin-top:-2px}.pc-only{justify-content:center!important;padding:5px 8px!important}.pos-szrow .pos-ln b{font-size:15px}
 .pc-ret{background:#B3261E;color:#fff}.pc-sell{background:var(--mint);color:#fff}
 .conf-card{border-color:#E8A317;background:#FFF8E6}.conf-sub{margin:8px 0 2px;font-size:12.5px;font-weight:700;color:#8A5A00}.conf-btn{width:auto;margin:0;padding:6px 12px;font-size:13px;white-space:nowrap}#posRepBody .conf-card td.ex-v{width:150px}
-.conf-chip{display:block;font-size:11.5px;font-weight:600;color:#8A5A00;text-align:right}.conf-chip.ok{color:var(--mint)}.sale-amt{display:grid;justify-items:end;text-align:right}.so-rdc{display:block;color:var(--ink)}.pm-owner{display:block;font-size:11.5px;font-weight:500;color:var(--muted)}
+.conf-chip{display:block;font-size:11.5px;font-weight:600;color:#8A5A00;text-align:right}.conf-chip.ok{color:var(--mint)}.sale-amt{display:grid;justify-items:end;text-align:right}.so-rdc{display:block;color:var(--ink)}
+.ex-item.so-r{display:block}.so-r1{color:var(--ink);overflow-wrap:anywhere}.so-r1 small{color:var(--muted);font-size:13px}.so-r2{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:4px}.so-rno{color:var(--muted);font-size:13px}.so-r3{display:flex;justify-content:flex-end;margin-top:4px}.pm-owner{display:block;font-size:11.5px;font-weight:500;color:var(--muted)}
 .sd-ret{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.sd-ret .pos-qty .o-ic:disabled{opacity:.35;cursor:not-allowed}
 .pos-sec{margin:4px 0 6px}#posRetLines .pos-lt{color:#B3261E}.pos-reason select{width:auto}
 .pos-why{grid-column:1/-1;justify-self:start;width:auto;padding:4px 8px;font-size:13px;margin-top:-2px}
@@ -10906,9 +10907,10 @@ function poChips(p){const left=poLeftAll(p),all=poQtyAll(p),m=poMade(p),paid=m.r
   const c=due>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(due)}</span>`:"";
   return g+c}
 function soRow(v){const b=soBal(v);
-  return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)}</b>
-      <small class="so-rdc">${esc(soDate(v.date))} · <span data-t="${esc(v.customer||"")}"></span>${v.poNo?` · 📋 ${esc(v.poNo)}`:""}</small></div>
-      <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b><span class="po-chips">${soChips(v)}</span></span></div></div>`}
+  return`<div class="ex-item sale-row so-r" data-so-open="${esc(v.id)}" tabindex="0" role="button">
+      <div class="so-r1"><small>${esc(soDate(v.date))}</small> · <b data-t="${esc(v.customer||"")}"></b>${v.poNo?` <small>· 📋 ${esc(v.poNo)}</small>`:""}</div>
+      <div class="so-r2"><span class="so-rno">${esc(v.no)}</span><b class="ex-amt">${fmt(v.net||0)}</b></div>
+      ${soChips(v)?`<div class="po-chips so-r3">${soChips(v)}</div>`:""}</div>`}
 function poRow(p){const n=(p.lines||[]).length,st=poState(p);
   return`<div class="ex-item sale-row${st==="done"?" po-fin":""}" data-po-open="${esc(p.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(p.no)} · <span data-t="${esc(p.customer||"")}"></span></b>
       <small>${esc(soDate(p.date))}${p.phone?` · ${esc(p.phone)}`:""} · ${n} item${n===1?"":"s"} · ${fmt(poValue(p))}</small></div>
