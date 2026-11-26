@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679273"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679327"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10496,7 +10496,7 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   /* Goods payable (the "unf" tab): started vouchers with goods still to give; one given in full but not paid in full is under Receivable only */
   const gp=v=>soStage(v)==="unf"&&!soDelivered(v);
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>{const st=soStage(v);if(st!=="unf"||gp(v))n[st]++});ps.forEach(p=>n[poStage(p)]++);
-  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unfin","⏳ Unfinished",vs.filter(v=>gp(v)||owes(v)).length+ps.filter(p=>poStage(p)==="unf").length],["unf","　└ 📦 Goods payable",n.unf],["owe","　└ 💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
+  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unfin","⏳ Unfinished",vs.filter(v=>gp(v)||owes(v)).length+ps.filter(p=>poStage(p)==="unf").length],["unf","　　📦 Goods payable",n.unf],["owe","　　💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
       :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
     .map(([k,t,c])=>`<option value="${k}"${soTab===k?" selected":""}>${t} (${c})</option>`).join("");
   if(soTab==="buy")renderBuyList(q);
