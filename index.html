@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795690702"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795691888"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11095,7 +11095,7 @@ document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
 const soLinePhoto=l=>(l.pid&&(items.find(i=>i.id===l.pid)||pds.find(p=>p.id===l.pid))?.photo)||l.photo||"";
-async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await Promise.race([fbPhotoGet(id).then(d=>d||""),new Promise(r=>setTimeout(()=>r(photoUrl(id)),2500))]);}catch(x){return""}return photoUrl(id)}
+async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await Promise.race([fbPhotoGet(id).then(d=>d||""),new Promise(r=>setTimeout(()=>r(photoUrl(id)),1200))]);}catch(x){return""}return photoUrl(id)}
 async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   /* an order voucher: each order's cake design photos under the items (with its order number when there are several) */
@@ -11147,7 +11147,9 @@ var soShowOwe=false;   /* off each time a voucher is opened */
 const soOweOn=v=>vBrand(v)==="mb"||soShowOwe;
 const soOweCount=v=>v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre").length:0;
 function openSoView(v){if(soOpen!==v.id||$("soView").hidden){const p=$("soPrev");p.innerHTML=`<p class="so-ld">⏳ ${esc(v.no||"")} ဖွင့်နေပါတယ်…</p>`;p.style.transform="";p.style.marginLeft="";p.style.width="";p.style.padding="";if(p.parentElement)p.parentElement.style.height=""}
-  soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+  soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;
+  $("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soView").hidden=false;soViewSeq++;
+  requestAnimationFrame(()=>setTimeout(()=>{if(soOpen===v.id&&!$("soView").hidden)renderSoView(vos.find(x=>x.id===v.id)||v)},0))}
 async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soViewC").title=v.customer||"";
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
