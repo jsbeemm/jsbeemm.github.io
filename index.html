@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795676340"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795676789"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1317,7 +1317,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purLines .so-lue:hover{color:var(--accent);background:var(--accent-soft)}#purLines .so-lue:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 #purLines .pur-lu{width:100%;margin-top:4px;font-size:12px;padding:4px 6px}#purLines .pur-lu[hidden]{display:none!important}.pur-add .btn{width:auto}
 #purPickDlg .side-panel{height:min(88vh,760px);max-height:none}#purPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}.pur-pqrow{display:flex;gap:8px;align-items:center;flex:none}#purPickDlg .pur-pqrow #purPickQ{flex:1 1 0;width:auto;min-width:0;margin:0}@media (max-width:700px){.pur-pqrow .pur-nl{display:none}}.pur-pqrow .btn{flex:none;width:auto;white-space:nowrap;margin:0;align-self:stretch;min-height:0;padding-block:0;padding-inline:14px}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
+#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}.pur-pqrow{display:flex;gap:8px;align-items:center;flex:none}.ch-new{display:flex;gap:8px;align-items:center;margin-top:8px}.ch-new input{flex:1 1 0;min-width:0;margin:0}.ch-new .btn{width:auto;flex:none;margin:0}#purPickDlg .pur-pqrow #purPickQ{flex:1 1 0;width:auto;min-width:0;margin:0}@media (max-width:700px){.pur-pqrow .pur-nl{display:none}}.pur-pqrow .btn{flex:none;width:auto;white-space:nowrap;margin:0;align-self:stretch;min-height:0;padding-block:0;padding-inline:14px}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
 #purPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .pur-one{cursor:pointer}.pur-fn{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px}
 .pur-ied{display:inline-flex;align-items:center;gap:3px;height:28px;min-width:28px;padding:0 6px;border:0;border-radius:14px;background:none;color:var(--muted);cursor:pointer;font:inherit}
@@ -2427,7 +2427,8 @@ span.star-ic{cursor:default}
         <label class="prf"><span>Other name</span><input id="ptOther" autocomplete="off"></label>
         <label class="prf"><span>Account name</span><input id="ptAcct" autocomplete="off"></label>
       </div>
-      <label class="prf"><span>Channel</span><select id="ptChannel"></select></label>
+      <div class="prf"><span>Channel</span><select id="ptChannel" aria-label="Channel"></select>
+        <div class="ch-new" id="ptChNew" hidden><input id="ptChNewIn" autocomplete="off" placeholder="Channel အသစ် နာမည်" aria-label="Channel အသစ်"><button type="button" class="btn" id="ptChNewAdd">Add</button><button type="button" class="btn ghost" id="ptChNewX">Cancel</button></div></div>
       <!-- as many phone numbers and addresses as needed; one address is the default -->
       <div class="prf"><span>Phone</span><div class="pt-multi" id="ptPhones"></div><button type="button" class="chip pt-add" id="ptPhoneAdd">+ Add phone</button></div>
       <datalist id="ptChList"><option>Walk in</option><option>Viber</option><option>Facebook</option><option>Tik Tok</option><option>WeChat</option></datalist>
@@ -8456,7 +8457,19 @@ document.addEventListener("input",e=>{if(e.target.matches?.("input[list]"))e.tar
 document.addEventListener("focusout",e=>{const el=e.target;if(!el.matches?.("input[list]")||el.dataset.dlPrev==null)return;
   if(!el.value&&!el.dataset.dlTyped)el.value=el.dataset.dlPrev;el.placeholder=el.dataset.dlPh||"";delete el.dataset.dlPrev;delete el.dataset.dlPh});
 /* Channel is picked from a short list (no typing); a value saved before that is not on the list stays offered */
-function chFill(sel,list,v){v=v||"";sel.innerHTML=`<option value="">— ရွေးပါ —</option>`+[...list,...(v&&!list.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");sel.value=v}
+function chFill(sel,list,v){v=v||"";sel.innerHTML=`<option value="">— ရွေးပါ —</option>`+[...list,...(v&&!list.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")+`<option value="__new">＋ Channel အသစ် ထည့်ရန်</option>`;sel.value=v}
+/* channels added by hand (kept in meta/channels, shared by everyone): customers' and the others' lists */
+function chExtraApply(d){if(!d)return;const put=(L,arr)=>(arr||[]).forEach(c=>{c=String(c||"").trim();if(!c||L.some(x=>x.toLowerCase()===c.toLowerCase()))return;const o=L.indexOf("Others");if(o>=0)L.splice(o,0,c);else L.push(c)});put(CHANNELS,d.cust);put(PT_CH_OTHER,d.other)}
+let chExtra=(()=>{try{return JSON.parse(localStorage.getItem("cakeChannels")||"null")}catch(e){return null}})()||{cust:[],other:[]};chExtraApply(chExtra);
+$("ptChannel").addEventListener("change",e=>{if(e.target.value!=="__new")return;e.target.value="";$("ptChNew").hidden=false;$("ptChNewIn").value="";$("ptChNewIn").focus()});
+$("ptChNewX").addEventListener("click",()=>{$("ptChNew").hidden=true});
+$("ptChNewIn").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("ptChNewAdd").click()}});
+$("ptChNewAdd").addEventListener("click",async()=>{const name=$("ptChNewIn").value.trim().replace(/\s+/g," ");if(!name){toast("Channel နာမည် ထည့်ပါ");$("ptChNewIn").focus();return}
+  const t=$("ptTypeSel").value,cust=t==="customer",L=cust?CHANNELS:PT_CH_OTHER,have=L.find(x=>x.toLowerCase()===name.toLowerCase());
+  if(!have){const k=cust?"cust":"other";chExtra={cust:[...(chExtra.cust||[])],other:[...(chExtra.other||[])]};chExtra[k].push(name);chExtraApply(chExtra);
+    try{localStorage.setItem("cakeChannels",JSON.stringify(chExtra))}catch(x){}
+    try{if(db)await db.doc("meta/channels").set({...chExtra,updatedAt:new Date().toISOString(),updatedBy:me.id||null})}catch(x){toast("Channel သိမ်းမရပါ")}}
+  ptSyncCh(t,have||name);$("ptChNew").hidden=true;toast(have?"ရှိပြီးသား Channel ကို ရွေးပေးလိုက်ပါတယ်":"Channel ထည့်ပြီး")});
 function ptSyncCh(t,v){chFill($("ptChannel"),t==="customer"?CHANNELS:PT_CH_OTHER,v??$("ptChannel").value)}
 function ptSyncType(){const t=$("ptTypeSel").value,sup=t==="supplier";$("ptSupW").hidden=!sup;$("ptChannel").closest(".prf").hidden=$("ptAcct").closest(".prf").hidden=t==="gate";ptSyncCh(t);$("ptFormTitle").textContent=(ptEditing?"Edit ":"Add ")+PT_TYPES.find(x=>x[0]===t)[2]}
 /* any number of phones and addresses (older records kept "phone" as "09…, 09…" and up to two addresses) */
@@ -11324,6 +11337,7 @@ coverConnecting(true);
   col.onSnapshot(snap=>{orders=snap.docs.map(d=>{const o={...d.data(),id:d.id};if(o.status==="baking")o.status="new";return o});if(mode!=="db")setSync("db");render();refreshNo();setTimeout(confirmPendingNos,1500)},
     ()=>{col=null;orders=localLoad();setSync("local");render()});
   db.doc("meta/payMethods").onSnapshot(s=>{payMethods=s.exists?s.data().list||null:null;render()},()=>{});
+  db.doc("meta/channels").onSnapshot(s=>{if(!s.exists)return;const d=s.data();chExtra={cust:d.cust||[],other:d.other||[]};chExtraApply(chExtra);try{localStorage.setItem("cakeChannels",JSON.stringify(chExtra))}catch(x){}},()=>{});
   db.doc("meta/units").onSnapshot(s=>{unitDoc=s.exists?s.data().list||null:null;if(!$("unitDlg").hidden)renderUnits()},()=>{});
   db.doc("meta/exPeople").onSnapshot(s=>{exPplDoc=s.exists?s.data().list||null:null;initEx();renderEx();renderHome()},()=>{});
   db.doc("meta/orderNo").onSnapshot(s=>{lastNo=s.exists?s.data().last||null:null;refreshNo()},()=>{});
