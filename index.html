@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677504"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677954"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10496,13 +10496,13 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   /* Goods payable (the "unf" tab): started vouchers with goods still to give; one given in full but not paid in full is under Receivable only */
   const gp=v=>soStage(v)==="unf"&&!soDelivered(v);
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>{const st=soStage(v);if(st!=="unf"||gp(v))n[st]++});ps.forEach(p=>n[poStage(p)]++);
-  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unf","📦 Goods payable",n.unf],["owe","💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
+  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unfin","⏳ Unfinished",vs.filter(v=>gp(v)||owes(v)).length+ps.filter(p=>poStage(p)==="unf").length],["unf","　└ 📦 Goods payable",n.unf],["owe","　└ 💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
       :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
     .map(([k,t,c])=>`<option value="${k}"${soTab===k?" selected":""}>${t} (${c})</option>`).join("");
   if(soTab==="buy")renderBuyList(q);
   else{const all=soTab==="all";
-    const list=[...vs.filter(v=>(all||(soTab==="owe"?owes(v):soTab==="unf"?gp(v):soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
-      ...(all?[]:ps.filter(p=>poStage(p)===soTab&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
+    const list=[...vs.filter(v=>(all||(soTab==="owe"?owes(v):soTab==="unf"?gp(v):soTab==="unfin"?gp(v)||owes(v):soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
+      ...(all?[]:ps.filter(p=>poStage(p)===(soTab==="unfin"?"unf":soTab)&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
       .sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
@@ -10521,7 +10521,7 @@ $("soConfAll").addEventListener("click",async()=>{if(!can("admin"))return;const 
   for(const v of list){try{await saveSo({...v,payments:(v.payments||[]).map(p=>payConfNeed(p)?{...p,conf:c}:p),updatedAt:now,updatedBy:me.id||null});done++}catch(x){}}
   toast(`✓ Voucher ${done} စောင် ငွေစစ်ပြီး မှတ်ပြီး`,5000);soXlSync();renderSo()});
 /* opening Vouchers starts on Unfinished (JS) / money still to get (Mr.Bee) */
-$("goSo").addEventListener("click",()=>{soTab=saleBrand==="js"?"unf":"owe";go("so")});
+$("goSo").addEventListener("click",()=>{soTab=saleBrand==="js"?"unfin":"owe";go("so")});
 /* ---- the form ---- */
 /* Customer: typing filters the JS customers (name, short code, phone); picking one fills the voucher. Typed text that is not
    picked from the list is a walk-in / other customer. */
