@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677954"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679273"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1008,7 +1008,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-addrw{position:relative;flex:none}.so-addrw .chip{white-space:nowrap;font-size:12px;padding:6px 10px}
 .so-addrmenu{left:0;right:auto;width:min(320px,80vw);top:calc(100% + 4px)}
 /* Channel and Date read like the printed voucher's text; tapping them still changes them */
-.vo-edit .vo-no{align-items:center}.vo-edit .so-chsel{width:auto;min-width:0;max-width:160px;margin:0;padding:2px 26px 2px 8px;min-height:30px;height:30px;font:inherit;font-size:13px}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
+.vo-edit .vo-no{align-items:center}.so-ld{margin:0;padding:40px 12px;text-align:center;color:var(--muted)}.vo-edit .so-chsel{width:auto;min-width:0;max-width:160px;margin:0;padding:2px 26px 2px 8px;min-height:30px;height:30px;font:inherit;font-size:13px}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
   -webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:right 5px center,right 1px center;background-size:4px 4px;background-repeat:no-repeat}
 .vo-edit #soDate .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #soDate .dp-ic{display:none}
 .vo-edit .so-date .dp{font-size:13px}
@@ -11061,7 +11061,8 @@ $("soPaper").addEventListener("change",()=>{const p=$("soPaper").value;if(p==="L
 var soShowOwe=false;   /* off each time a voucher is opened */
 const soOweOn=v=>vBrand(v)==="mb"||soShowOwe;
 const soOweCount=v=>v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre").length:0;
-function openSoView(v){soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+function openSoView(v){if(soOpen!==v.id||$("soView").hidden){const p=$("soPrev");p.innerHTML=`<p class="so-ld">⏳ ${esc(v.no||"")} ဖွင့်နေပါတယ်…</p>`;p.style.transform="";p.style.marginLeft="";p.style.width="";p.style.padding="";if(p.parentElement)p.parentElement.style.height=""}
+  soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
 async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soViewC").title=v.customer||"";
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
