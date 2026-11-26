@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679507"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679597"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11011,7 +11011,7 @@ document.head.insertAdjacentHTML("beforeend",`<style id="soCss">${SO_CSS}</style
 /* in the Firebase app photos are fetched first, so they are in the picture / print */
 /* a line's picture: the item's photo as it is now (or the one kept on the line) */
 const soLinePhoto=l=>(l.pid&&(items.find(i=>i.id===l.pid)||pds.find(p=>p.id===l.pid))?.photo)||l.photo||"";
-async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await fbPhotoGet(id)||"";}catch(x){return""}return photoUrl(id)}
+async function soPhoto(id){if(!id)return"";try{if(typeof fbPhotoGet==="function")return await Promise.race([fbPhotoGet(id).then(d=>d||""),new Promise(r=>setTimeout(()=>r(photoUrl(id)),2500))]);}catch(x){return""}return photoUrl(id)}
 async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=soPaid(v),bal=soBal(v);
   const pics=await Promise.all((v.lines||[]).map(l=>soPhoto(soLinePhoto(l))));
   /* an order voucher: each order's cake design photos under the items (with its order number when there are several) */
@@ -11077,7 +11077,7 @@ async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textCo
    $("soVTabs").innerHTML=js?`<button type="button" class="chip" data-vtab="vo">📄 Voucher</button><button type="button" class="chip" data-vtab="pay">💵 Payment <small>${(v.payments||[]).length}</small></button><button type="button" class="chip" data-vtab="del">🚚 Delivered <small>${n}</small></button>${soBal(v)>0?`<button type="button" class="btn ghost so-padd" data-so-padd>+ Add new payment</button>`:""}${(n=>n?`<label class="so-owechk"><input type="checkbox" id="soOweChk" ${soShowOwe?"checked":""}> Show receivable <small>${n}</small></label>`:"")(soOweCount(v))}`:"";soPayPlace();
    $("soDelList").innerHTML=js?soDelListHtml(v):"";if(js&&!soDelEntry(v))$("soDelForm").hidden=true;$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);soVTabSet(soVTab)}
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
-  const seq=++soViewSeq,rc=$("soPaper").value==="RC",html=soIsLabel()?soLabelHtml(v,$("soPaper").value):rc?soRcHtml(v):await soHtml(v);if(seq!==soViewSeq)return;
+  const seq=++soViewSeq,rc=$("soPaper").value==="RC";let html;try{html=soIsLabel()?soLabelHtml(v,$("soPaper").value):rc?soRcHtml(v):await soHtml(v)}catch(x){console.error(x);html=`<p class="so-ld">Voucher ပြလို့ မရပါ — ပြန်နှိပ်ကြည့်ပါ</p>`}if(seq!==soViewSeq)return;
   /* the preview is a sheet of the paper picked: A5 / A4 portrait or landscape (the voucher sits inside its margins), or the receipt strip */
   const land=!rc&&soLand(),p=$("soPrev"),W=rc?320:land?1150:812;
   p.style.width=W+"px";p.style.padding=rc?"10px":Math.round(W*.05)+"px";p.style.minHeight="";   /* as tall as the voucher, no empty paper below */
