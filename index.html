@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679597"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795679710"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1935,7 +1935,7 @@ span.star-ic{cursor:default}
       <button type="button" class="chip" id="itJsOnly" aria-pressed="false">🛍️ JS sale only</button>
       <button type="button" class="chip" id="itCatBtn" hidden>🏷️ Categories</button>
       <button type="button" class="chip" id="itOkTodo" aria-pressed="false">⏳ မစစ်ရသေး</button><button type="button" class="chip" id="itOkDone" aria-pressed="false">✓ စစ်ပြီး</button><button type="button" class="chip" id="itLastBtn" aria-pressed="false" hidden title="JS voucher မှာ နောက်ဆုံး ရောင်းခဲ့တဲ့ item တွေကို အပေါ်ဆုံးမှာ စီပြရန်">↕ Sort: 🕒 နောက်ဆုံးရောင်းတာ အပေါ်ဆုံး</button><button type="button" class="chip" id="itSalesBtn" hidden>📊 အရောင်း</button>
-      <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden><button type="button" class="chip" id="itClearAll" hidden title="Raw Material အားလုံးကို ဖျက်ရန် (Excel ကနေ ပြန် import မလုပ်ခင်)">🗑 အားလုံးဖျက်</button>
+      <button type="button" class="chip" id="itImport" hidden title="Items Excel ဖိုင်ကို app ထဲ ထည့်ရန် / ပြင်ရန် (ပုံတွေပါ)">📥 Import Excel</button><input type="file" id="itFile" accept=".xlsx,.xls" hidden><button type="button" class="chip" id="itExport" hidden title="Raw Material အားလုံးကို Excel ဖိုင် ထုတ်ရန် (📥 Import Excel နဲ့ ပြန်ထည့်လို့ရတဲ့ ပုံစံ)">📤 Export Excel</button><button type="button" class="chip" id="itClearAll" hidden title="Raw Material အားလုံးကို ဖျက်ရန် (Excel ကနေ ပြန် import မလုပ်ခင်)">🗑 အားလုံးဖျက်</button>
       <button type="button" class="btn prq-new fab" id="itNewBtn" hidden>+ Add raw material</button>
       <button type="button" class="chip" id="itPhotos" hidden title="ပုံဖိုင်နာမည်ကို Short Code (ဒါမှမဟုတ် Name) အတိုင်း ပေးထားရင် Item နဲ့ အလိုလို ချိတ်ပါမယ်">📷 Import photos</button><input type="file" id="itPhFiles" accept="image/png,image/jpeg,image/webp" multiple hidden></div>
     <div class="chips pd-cats" id="itCats"></div>
@@ -9724,7 +9724,7 @@ function renderItems(){
   if(typeof renderPurPick==="function"&&!$("purPickDlg").hidden)renderPurPick();
   if(typeof renderSoPick==="function"&&!$("soPickDlg").hidden)renderSoPick();
   if($("viewItems").hidden)return;const admin=can("admin"),en=LANG==="en";
-  $("itImport").hidden=!admin;$("itSalesBtn").hidden=!admin&&!can("sales.report");$("itClearAll").hidden=true;   /* delete-all is put away now the raw materials are in (its code stays) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
+  $("itImport").hidden=!admin;$("itExport").hidden=!admin;$("itSalesBtn").hidden=!admin&&!can("sales.report");$("itClearAll").hidden=true;   /* delete-all is put away now the raw materials are in (its code stays) */$("itNewBtn").hidden=!admin;$("itCatBtn").hidden=!admin;
   $("itPhotos").hidden=true;   /* retired: the Excel import brings the photos in */$("itJsOnly").setAttribute("aria-pressed",itJs);
   /* units / prices checked (✓ in the item form) or not yet: the two chips filter the list and show how many are in each */
   const q=pdNorm(itQ),inQ0=items.filter(i=>(!itJs||(i.price>0))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)||pdNorm(i.ref).includes(q)));
@@ -10075,6 +10075,22 @@ $("itOkTodo").addEventListener("click",()=>{itOk=itOk==="todo"?"":"todo";if(itOk
 $("itOkDone").addEventListener("click",()=>{itOk=itOk==="done"?"":"done";renderItems()});
 $("itLastBtn").addEventListener("click",()=>{itLast=!itLast;if(itLast)initSo();renderItems()});
 $("itImport").addEventListener("click",()=>{if(can("admin"))$("itFile").click()});
+/* Export: every raw material, in the same columns as the import (so the file can be edited and imported again);
+   a second sheet lists each item's unit rows with their prices */
+$("itExport").addEventListener("click",async()=>{if(!can("admin"))return;if(!items.length){toast("ထုတ်စရာ မရှိပါ");return}
+  toast("Excel ပြင်ဆင်နေသည်…",8000);
+  try{await loadLib("lib/xlsx-0.18.5.full.min.js");
+    const H=["Short Code","Name","Category","Sub Category","Purchase Unit","Purchase Conversion","Base Unit","Ref:","Stock Count Unit","Stock Tracked","Unit","Consumed_ID","Consumed_Name","Consumed_Qty_Per_Unit","Sales Allowed","Selling Price","Mr.Bee Price","Wholesale Price","Note","Usage","Old Name"];
+    const K=["code","name","cat","sub","purUnit","purConv","unit","ref","stockUnit","tracked","uom","consId","consName","consQty","sale","price","mbPrice","whPrice","note","usage","oldName"];
+    const list=items.slice().sort((a,b)=>String(a.code||"").localeCompare(String(b.code||""),undefined,{numeric:true}));
+    const rows=[H,...list.map(it=>K.map(k=>{const v=it[k];if(k==="tracked"||k==="sale")return v?"Yes":"No";return v??""}))];
+    const ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=H.map((h,i)=>({wch:i===1?34:Math.max(10,h.length+2)}));
+    const U=[["Short Code","Name","Unit","= How many","Of","JS Price","Wholesale","Mr.Bee Price","Auto ဈေး"]];
+    list.forEach(it=>(it.units||[]).forEach(u=>U.push([it.code||"",it.name||"",u.u||u.n||"",u.c??"",u.of||"",u.p>0?Number(u.p):"",u.w>0?Number(u.w):"",u.m>0?Number(u.m):"",u.auto?"Yes":""])));
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Items");if(U.length>1){const wu=XLSX.utils.aoa_to_sheet(U);wu["!cols"]=[{wch:12},{wch:34},{wch:12},{wch:10},{wch:10},{wch:11},{wch:11},{wch:12},{wch:9}];XLSX.utils.book_append_sheet(wb,wu,"Units")}
+    const blob=new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+    await saveFile(blob,`raw-materials-${todayISO()}.xlsx`,"Excel",false)}
+  catch(x){if(x?.code==="declined")return;toast("Excel မထုတ်နိုင်ပါ — ပြန်စမ်းကြည့်ပါ",4000)}});
 $("itCode").addEventListener("input",itCodeSync);
 $("itCodeHint").addEventListener("click",e=>{const b=e.target.closest("[data-it-next]");if(!b)return;e.preventDefault();$("itCode").value=b.dataset.itNext;itCodeSync();$("itCode").focus()});
 /* start again from the Excel: every raw material is deleted (Admins, asked twice). An item keeps the same id when it is imported
