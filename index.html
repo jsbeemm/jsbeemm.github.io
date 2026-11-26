@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795690492"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795690702"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7731,7 +7731,8 @@ function purHome(){$("goPur").hidden=!canPur();
 var invs=[],invCol=null,invLocCur="",invQ="",invCat="",invMode="open";
 const invUnitOf=i=>i?.stockUnit||i?.uom||i?.unit||purUnitOf(i)||"";
 /* the units a quantity can be counted in: the Stock Count Unit first, then the Base Unit and each unit row (ct, pk …) */
-const invUnitsOf=i=>{const seen=new Set();return[invUnitOf(i),i?.unit,i?.stockUnit,...(i?.units||[]).map(u=>u.u||u.n)].map(x=>String(x||"").trim()).filter(x=>{const k=x.toLowerCase();if(!x||seen.has(k))return false;seen.add(k);return true})};
+const invUnitsOf=i=>{const pref=[i?.unit,...(i?.units||[]).map(u=>u.u||u.n)].map(x=>String(x||"").trim()).filter(Boolean),sp=x=>pref.find(p=>p.toLowerCase()===x.toLowerCase())||x,seen=new Set();
+  return[invUnitOf(i),i?.unit,i?.stockUnit,...(i?.units||[]).map(u=>u.u||u.n)].map(x=>sp(String(x||"").trim())).filter(x=>{const k=x.toLowerCase();if(!x||seen.has(k))return false;seen.add(k);return true})};
 const invUnitFix=(i,u)=>{u=String(u||"").trim();return invUnitsOf(i).find(x=>x.toLowerCase()===u.toLowerCase())||u};
 const invUnitPick={};   /* a unit picked before its quantity is typed */
 const invMulti=i=>i?.stockUnits?.length>1?i.stockUnits:null;   /* counted in more than one unit (e.g. ct and pk) */
@@ -10082,7 +10083,8 @@ $("itForm").addEventListener("submit",async e=>{e.preventDefault();const i=itEdi
   const d={...(i||{at:now,by:me.id||null}),sale:price>0,updatedAt:now,updatedBy:me.id||null};delete d.id;
   for(const k in v){if(v[k]===""||v[k]==null||v[k]===false)delete d[k];else d[k]=v[k]}
   /* Stock count units: the first is stockUnit (as before); two or more are kept as stockUnits */
-  {const sl=[...new Set($("itStockList").value.split("|").map(x=>x.trim()).filter(Boolean))];if(sl[0])d.stockUnit=sl[0];else delete d.stockUnit;if(sl.length>1)d.stockUnits=sl;else delete d.stockUnits}
+  {const names=[d.unit,...[...$("itUnits").querySelectorAll("input[list=itUnitList],.it-un")].map(x=>x.value)].map(x=>String(x||"").trim()).filter(Boolean),sp=x=>names.find(n=>n.toLowerCase()===x.toLowerCase())||x;
+   const sl=[...new Set($("itStockList").value.split("|").map(x=>sp(x.trim())).filter(Boolean))];if(sl[0])d.stockUnit=sl[0];else delete d.stockUnit;if(sl.length>1)d.stockUnits=sl;else delete d.stockUnits}
   if(price>0)d.price=price;else delete d.price;if(mbPrice>0)d.mbPrice=mbPrice;else delete d.mbPrice;if(whPrice>0)d.whPrice=whPrice;else delete d.whPrice;
   if(itPhoto?.id)d.photo=itPhoto.id;else delete d.photo;
   {const seen=new Set(),P=[];for(const r of $("itParts").querySelectorAll(".it-prow")){const q=Math.max(1,Math.round(Number(r.querySelector(".it-pq").value)||1));
