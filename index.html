@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677187"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677404"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1008,7 +1008,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .so-addrw{position:relative;flex:none}.so-addrw .chip{white-space:nowrap;font-size:12px;padding:6px 10px}
 .so-addrmenu{left:0;right:auto;width:min(320px,80vw);top:calc(100% + 4px)}
 /* Channel and Date read like the printed voucher's text; tapping them still changes them */
-.vo-edit .vo-no{align-items:center}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
+.vo-edit .vo-no{align-items:center}.vo-edit .so-chsel{width:auto;min-width:0;max-width:160px;margin:0;padding:2px 26px 2px 8px;min-height:30px;height:30px;font:inherit;font-size:13px}.vo-edit .vo-no select.cap{border:0;background:transparent;padding:0 14px 0 0;width:auto;font:inherit;color:inherit;cursor:pointer;
   -webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:right 5px center,right 1px center;background-size:4px 4px;background-repeat:no-repeat}
 .vo-edit #soDate .dp-btn{border:0;background:none;padding:0;min-height:0;font:inherit;color:inherit;box-shadow:none;cursor:pointer}.vo-edit #soDate .dp-ic{display:none}
 .vo-edit .so-date .dp{font-size:13px}
@@ -2683,7 +2683,7 @@ span.star-ic{cursor:default}
           <div class="vo-dl" id="soDlBox"><div class="so-dlhead"><label class="so-dlck"><input type="checkbox" id="soIsDeliv"><h3>Delivery Info</h3></label><div class="so-addrw"><button type="button" class="chip" id="soAddrBtn" hidden>Change info</button><div class="so-hits so-addrmenu" id="soAddrMenu" hidden></div></div></div>
             <div class="so-dlrow"><textarea id="soDeliv" rows="3" placeholder="Name, phone, address" aria-label="Delivery info"></textarea></div></div>
           <div class="vo-no"><span class="k" id="soNoK">SO No#</span><span id="soNoTxt">—</span>
-            <span class="k">Channel#</span><span id="soChannel" class="cap" title="Customer ရဲ့ Channel"></span>
+            <span class="k">Channel#</span><select id="soChannel" class="so-chsel" title="Channel (Customer ရဲ့ Channel က default)" aria-label="Channel"></select>
             <span class="k">Date</span><span id="soDate" class="cap"></span></div>
         </div>
         <table class="so-tbl"><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th><th></th><th class="r so-gvc">ပေးပြီး</th></tr></thead>
@@ -8459,6 +8459,9 @@ document.addEventListener("input",e=>{if(e.target.matches?.("input[list]"))e.tar
 document.addEventListener("focusout",e=>{const el=e.target;if(!el.matches?.("input[list]")||el.dataset.dlPrev==null)return;
   if(!el.value&&!el.dataset.dlTyped)el.value=el.dataset.dlPrev;el.placeholder=el.dataset.dlPh||"";delete el.dataset.dlPrev;delete el.dataset.dlPh});
 /* Channel is picked from a short list (no typing); a value saved before that is not on the list stays offered */
+function soChOpts(v){const sel=$("soChannel"),L=saleBrand==="js"?PT_CH_OTHER:CHANNELS;v=v||"";
+  sel.innerHTML=`<option value="">— Channel —</option>`+[...L,...(v&&!L.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");HTMLSelectElement.prototype.__lookupSetter__("value").call(sel,v)}
+Object.defineProperty($("soChannel"),"textContent",{get(){return this.value},set(v){soChOpts(String(v??""))}});
 function chFill(sel,list,v){v=v||"";sel.innerHTML=`<option value="">— ရွေးပါ —</option>`+[...list,...(v&&!list.includes(v)?[v]:[])].map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("")+`<option value="__new">＋ Channel အသစ် ထည့်ရန်</option>`;sel.value=v}
 /* channels added by hand (kept in meta/channels, shared by everyone): customers' and the others' lists */
 function chExtraApply(d){if(!d)return;const put=(L,arr)=>(arr||[]).forEach(c=>{c=String(c||"").trim();if(!c||L.some(x=>x.toLowerCase()===c.toLowerCase()))return;const o=L.indexOf("Others");if(o>=0)L.splice(o,0,c);else L.push(c)});put(CHANNELS,d.cust);put(PT_CH_OTHER,d.other)}
