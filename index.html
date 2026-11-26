@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795669193"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674377"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10882,7 +10882,7 @@ function poChips(p){const left=poLeftAll(p),all=poQtyAll(p),m=poMade(p),paid=m.r
   return g+c}
 function soRow(v){const b=soBal(v);
   return`<div class="ex-item sale-row" data-so-open="${esc(v.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(v.no)} · <span data-t="${esc(v.customer||"")}"></span></b>
-      <small>${esc(soDate(v.date))}${v.phone?` · ${esc(v.phone)}`:""} · ${(v.lines||[]).length} line${(v.lines||[]).length===1?"":"s"}${v.poNo?` · 📋 ${esc(v.poNo)}`:""}</small></div>
+      <small>${esc(soDate(v.date))}${v.poNo?` · 📋 ${esc(v.poNo)}`:""}</small></div>
       <div class="ex-side"><span class="sale-amt"><b class="ex-amt">${fmt(v.net||0)}</b><span class="po-chips">${soChips(v)}</span></span></div></div>`}
 function poRow(p){const n=(p.lines||[]).length,st=poState(p);
   return`<div class="ex-item sale-row${st==="done"?" po-fin":""}" data-po-open="${esc(p.id)}" tabindex="0" role="button"><div class="ex-main"><b>${esc(p.no)} · <span data-t="${esc(p.customer||"")}"></span></b>
