@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674377"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674575"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -969,6 +969,8 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 @media (min-width:1000px){
   body:has(#viewSo:not([hidden])) .wrap{max-width:none}
   body:has(#viewSo:not([hidden])) #viewSo{width:calc(33.333vw - 32px)}
+  body:has(#viewSo:not([hidden])) #soList{overflow-y:auto;max-height:calc(100dvh - var(--soLT,220px) - var(--soBB,70px) - 8px);padding-right:4px;scrollbar-gutter:stable}
+  body:has(#viewSo:not([hidden])) .wrap{padding-bottom:0}
   body:has(#viewSo:not([hidden])) #soView{left:33.333vw;background:transparent;box-shadow:-6px 0 24px rgba(0,0,0,.12)}
   body:has(#viewSo:not([hidden])) #soView .side-panel.so-panel{border-left:1px solid var(--line)}
   body:has(#viewSo:not([hidden])):has(#soView[hidden]) .wrap::after{content:"👈 Voucher ကို နှိပ်ရင် ဒီမှာ ပေါ်ပါမယ်";position:fixed;left:33.333vw;right:0;top:45vh;text-align:center;color:var(--muted);font-size:15px;pointer-events:none}
@@ -10477,7 +10479,9 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
     $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
   soMarkCur();renderSoDrafts()}
-function soMarkCur(){$("soList").querySelectorAll("[data-so-open]").forEach(r=>r.classList.toggle("so-cur",r.dataset.soOpen===soOpen))}
+function soListFit(){const l=$("soList");if(!l||$("viewSo").hidden)return;const t=Math.max(0,l.getBoundingClientRect().top+window.scrollY);const bb=$("botBar"),h=bb&&!bb.hidden?bb.getBoundingClientRect().height:0,R=document.documentElement.style;R.setProperty("--soLT",Math.round(t)+"px");R.setProperty("--soBB",Math.round(h)+"px")}
+addEventListener("resize",()=>soListFit());
+function soMarkCur(){soListFit();$("soList").querySelectorAll("[data-so-open]").forEach(r=>r.classList.toggle("so-cur",r.dataset.soOpen===soOpen))}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
