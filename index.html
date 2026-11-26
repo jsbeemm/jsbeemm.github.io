@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795674795"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795676250"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1133,7 +1133,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .ex-side{display:flex;align-items:center;gap:8px}.ex-amt{font-family:var(--mono);font-size:15px;white-space:nowrap}.ex-btns{display:flex;gap:4px}
 .ex-confirm{grid-column:1/-1;justify-self:end}
 .ex-total{text-align:right;margin:12px 4px;font-size:15px}.ex-total b{font-family:var(--mono);color:var(--accent);margin-left:6px}
-.ex-row2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.ex-row2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.ex-kt{color:var(--accent);font-weight:600}
 .ex-people{display:flex;flex-wrap:wrap;gap:8px}
 .ex-person{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--ink);font-size:14px;cursor:pointer}.ex-person input{width:20px;height:20px;margin:0;padding:0;accent-color:var(--accent)}.ex-person:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 #exSplitW{margin-top:4px}.ex-split-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.ex-split-head .ex-split-lbl{margin:0}.ex-split-lbl{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}.ex-split-rows{display:grid;gap:6px}.ex-split-row{display:flex;align-items:center;gap:10px}.ex-split-name{flex:1;font-size:14px;font-weight:500;color:var(--ink)}.ex-split-amt{width:120px;text-align:right;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}.ex-split-amt.adjusted{border-color:var(--accent);background:var(--accent-soft)}.ex-split-remain{font-size:12px;color:var(--amber);margin-top:4px;display:none}.ex-split-remain.show{display:block}
@@ -2273,6 +2273,7 @@ span.star-ic{cursor:default}
   <div class="ed-panel side-panel">
     <div class="ed-tools pv-head"><b id="exFormTitle">New expense</b><button type="button" class="x-close" data-close-dlg aria-label="ပိတ်ရန်">✕</button></div>
     <form id="exForm" class="side-body" novalidate>
+      <label class="prf"><span>Expense type <b>*</b></span><select id="exKindSel"><option value="">— ရွေးပါ —</option><option value="personal">💰 Personal</option><option value="biz">🏪 Business</option></select></label>
       <div class="prf"><span>Date <b>*</b></span><span id="exDateBox"></span></div>
       <label class="prf"><span>Description <b>*</b></span><input id="exDesc" autocomplete="off"></label>
       <div class="ex-row2">
@@ -6493,16 +6494,17 @@ async function moveOwnerTodos(u){if(todosMoved||!db||!claudeId)return;todosMoved
 var view="home";
 /* Home has no line under its title */
 const PAGES={home:["<span>Home</span>",""],orders:["<span>Orders</span>",""],
-  prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["Personal <span>Expense</span>",""],
+  prod:["Bakery <span>Products</span>",""],pt:["Customers <span>&amp; Suppliers</span>",""],sale:["<span>Sale</span>",""],pos:["<span>POS</span>",""],todo:["To-do <span>list</span>",""],mytodo:["My <span>to-do list</span>",""],pr:["To Buy <span>List</span>","ဝယ်ရန် ပစ္စည်း တောင်းခံစာ"],ex:["<span>Expense</span>",""],
   biz:["Business <span>Expense</span>","Admin only"],rcv:["Goods <span>Received</span>","ပစ္စည်းရောက် · weight, ပုံ, package"],pe:["<span>Expense</span>",""],pur:["<span>Purchase</span>","Raw Material ဝယ်ယူမှု"],inv:["<span>Inventory</span>","Opening လက်ကျန် · Location"],items:["Raw <span>Material</span>",""],so:["<span>Vouchers</span>",""]};
 function go(v){
   if(view==="orders"&&guardLeave(()=>go(v)))return;
   if(v==="ex"&&!canSeeEx())v="pe";   /* Personal Expense: Admins only */
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
+  if((v==="pe"&&canSeeEx())||v==="biz")v="ex";   /* one Expense page (Personal and Business together) */
   if(v==="pur"&&!canPur())v="home";
   if(v==="inv"&&!can("admin"))v="home";   /* Inventory: Admins only */
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
-  if(v==="ex"||v==="biz"){if(exKind!==(v==="biz"?"biz":"personal")){exDetail=null;exTab="list"}exKind=v==="biz"?"biz":"personal";$("exList").innerHTML="";$("exReport").innerHTML=""}
+  if(v==="ex"||v==="biz"){if(exKind!=="all"){exDetail=null;exTab="list"}exKind="all";$("exList").innerHTML="";$("exReport").innerHTML=""}
   view=v;
   $("viewHome").hidden=v!=="home";$("viewPE").hidden=v!=="pe";$("viewPR").hidden=v!=="pr";$("viewProd").hidden=v!=="prod";$("viewPt").hidden=v!=="pt";$("viewSale").hidden=v!=="sale";$("viewPos").hidden=v!=="pos";$("viewTodo").hidden=v!=="todo";$("viewMyTodo").hidden=v!=="mytodo";$("viewRcv").hidden=v!=="rcv";$("viewItems").hidden=v!=="items";$("viewSo").hidden=v!=="so";$("viewEx").hidden=v!=="ex"&&v!=="biz";$("viewPur").hidden=v!=="pur";$("viewInv").hidden=v!=="inv";$("exFPop").hidden=true;
   /* a decorator opening Cake Orders starts on today's pending orders — the cakes to decorate now */
@@ -6597,7 +6599,7 @@ $("notiPop").addEventListener("click",async e=>{if(!e.target.closest("#notiReloa
 document.addEventListener("click",e=>{if(!$("notiPop").hidden&&!e.target.closest("#notiPop,#notiBtn,#notiHBtn"))$("notiPop").hidden=true});
 document.addEventListener("app-new",notiSync);
 /* Back goes up one level: a page inside To-do list or Purchase & Expense returns there, anything else to Home */
-const BACK_TO={pr:"todo",mytodo:"todo",ex:"pe",biz:"pe",pur:"home",orders:"sale",pos:"sale",so:"sale"};
+const BACK_TO={pr:"todo",mytodo:"todo",ex:"home",biz:"home",pur:"home",orders:"sale",pos:"sale",so:"sale"};
 /* every pop-up panel gets the same ‹ Back on the left of its title; it does what its ✕ did */
 const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
 /* (the Order preview, Print setup and the Voucher keep their ✕ on the right instead) */
@@ -6740,17 +6742,18 @@ var exUnsub=null,bxUnsub=null,exs=[],bxs=[],exCol=null,bxCol=null,exKind="person
 /* the filter: Today (first), a month, or a From – To range */
 var exF={mode:"today",month:todayISO().slice(0,7),from:todayISO().slice(0,8)+"01",to:todayISO()};
 const exBiz=()=>exKind==="biz";
-const exAll=()=>exBiz()?bxs:exs;
+const exAll=()=>exKind==="all"?exs.concat(bxs):exBiz()?bxs:exs;
+const exKindOf=r=>bxs.includes(r)?"biz":"personal";
 const exLocalKey=k=>k==="biz"?"cakeBizEx":"cakeExpenses";
 function exLocalLoad(k){try{return JSON.parse(localStorage.getItem(exLocalKey(k))||"[]")}catch(e){return[]}}
-function exLocalSave(){try{localStorage.setItem(exLocalKey(exKind),JSON.stringify(exAll()))}catch(e){}}
-async function saveEx(r){
-  const c=exBiz()?bxCol:exCol;if(c){await c.doc(r.id).set(r);return}
-  const l=exAll(),i=l.findIndex(x=>x.id===r.id);if(i>=0)l[i]=r;else l.push(r);exLocalSave();renderEx();renderHome();
+function exLocalSave(k){k=k||(exBiz()?"biz":"personal");try{localStorage.setItem(exLocalKey(k),JSON.stringify(k==="biz"?bxs:exs))}catch(e){}}
+async function saveEx(r,k){k=k||(exBiz()?"biz":"personal");
+  const c=k==="biz"?bxCol:exCol;if(c){await c.doc(r.id).set(r);return}
+  const l=k==="biz"?bxs:exs,i=l.findIndex(x=>x.id===r.id);if(i>=0)l[i]=r;else l.push(r);exLocalSave(k);renderEx();renderHome();
 }
-async function removeEx(id){
-  const c=exBiz()?bxCol:exCol;if(c){await c.doc(id).delete();return}
-  if(exBiz())bxs=bxs.filter(x=>x.id!==id);else exs=exs.filter(x=>x.id!==id);exLocalSave();renderEx();renderHome();
+async function removeEx(id,k){k=k||(exBiz()?"biz":"personal");
+  const c=k==="biz"?bxCol:exCol;if(c){await c.doc(id).delete();return}
+  if(k==="biz")bxs=bxs.filter(x=>x.id!==id);else exs=exs.filter(x=>x.id!==id);exLocalSave(k);renderEx();renderHome();
 }
 const exShare=r=>(r.shared||[]).length?Number(r.amount||0)/r.shared.length:0;
 /* a person's share: the amount set for them when the expense was split by hand, otherwise an even split */
@@ -6773,7 +6776,7 @@ function exSyncFilter(){
   if(!exF.mode||exF.mode==="range"){$("exFFrom").innerHTML=dateSelect("",exF.from,"From","",false,todayISO());$("exFTo").innerHTML=dateSelect("",exF.to,"To","",false,todayISO())}
 }
 const exItemHtml=(r,opts={})=>`<div class="ex-item">
-    <div class="ex-main"><b class="ex-desc" data-desc="${esc(r.desc||"")}"></b><small>${fmtDate(r.date)} · ${esc(r.pay||"")}${!exBiz()&&(r.shared||[]).length?` · 👥 ${r.shared.map(id=>esc(exPName(id))).join(", ")}`:""}</small>${(r.photos||[]).length?`<span class="ex-thumbs">${r.photos.map(id=>photoUrl(id)).filter(Boolean).map(u=>`<img src="${esc(u)}" data-exzoom="${esc(u)}" alt="">`).join("")}</span>`:""}</div>
+    <div class="ex-main"><b class="ex-desc" data-desc="${esc(r.desc||"")}"></b><small>${exKind==="all"&&exKindOf(r)==="biz"?`<span class="ex-kt">🏪 Business</span> · `:""}${fmtDate(r.date)} · ${esc(r.pay||"")}${!exBiz()&&(r.shared||[]).length?` · 👥 ${r.shared.map(id=>esc(exPName(id))).join(", ")}`:""}</small>${(r.photos||[]).length?`<span class="ex-thumbs">${r.photos.map(id=>photoUrl(id)).filter(Boolean).map(u=>`<img src="${esc(u)}" data-exzoom="${esc(u)}" alt="">`).join("")}</span>`:""}</div>
     <div class="ex-side"><span><b class="ex-amt">${fmtAmt(r.amount,exCur(r))}</b>${opts.share?`<span class="ex-share">share ${fmtAmt(exShareOf(r,opts.share),exCur(r))}</span>`:""}</span>
       ${opts.edit?`<span class="ex-btns"><button type="button" class="o-ic" data-exedit="${esc(r.id)}" aria-label="Edit" title="Edit">${PENCIL}</button><button type="button" class="o-ic danger" data-exdel="${esc(r.id)}" aria-label="Delete" title="Delete">${TRASH_IC}</button></span>`:""}</div>
   </div>`;
@@ -6783,7 +6786,7 @@ function renderEx(){
   if(!$("viewEx")||$("viewEx").hidden)return;
   const admin=can("admin"),mine=myPerson(),selfOnly=!admin&&!exBiz();
   $("pageTitle").innerHTML=PAGES[exBiz()?"biz":"ex"][0];
-  $("exFormTitle").textContent=exBiz()?"Business expense":"Personal expense";
+  $("exFormTitle").textContent="Expense";
   $("exNewBtn").hidden=!admin;$("exPplBtn").hidden=!admin||exBiz();$("exTabs").hidden=selfOnly;
   /* someone linked to a person (not an Admin) sees only their own detail */
   if(selfOnly){exTab="report";exDetail=mine?{t:"person",k:mine.id}:null}
@@ -6810,13 +6813,13 @@ function renderEx(){
   const total=curSums(list,r=>Number(r.amount||0));
   const vd=attr=>`<button type="button" class="ex-vd" ${attr}><span class="lg">View detail</span><span class="sm">Detail</span> ›</button>`;
   const per=exBiz()?[]:exPpl().map(p=>{const its=list.filter(r=>(r.shared||[]).includes(p.id));return{p,count:its.length,sum:curSums(its,r=>exShareOf(r,p.id))}}).filter(x=>!x.p.hidden||x.count);
-  const notShared=list.filter(r=>!(r.shared||[]).length),nsSum=curSums(notShared,r=>Number(r.amount||0));
+  const bizL=exKind==="all"?list.filter(r=>exKindOf(r)==="biz"):[],notShared=list.filter(r=>!(r.shared||[]).length&&!bizL.includes(r)),nsSum=curSums(notShared,r=>Number(r.amount||0));
   const byPay=[...new Set(list.map(r=>r.pay).filter(Boolean))].map(p=>{const its=list.filter(r=>r.pay===p);return{p,count:its.length,sum:curSums(its,r=>Number(r.amount||0))}});
   $("exReport").innerHTML=`<div class="ex-rep">
     <div class="ex-card ex-big"><small>${esc(label)} · ${list.length} expense${list.length===1?"":"s"}</small><b>${fmtSums(total)}</b>${list.length?`<button type="button" class="chip ex-xl" data-ex-xl title="ဒီ report ကို Excel ဖိုင် ထုတ်ရန်">📤 Export Excel</button>`:""}</div>
     ${exBiz()?"":`<div class="ex-card"><p class="ac-h">Shared with — each person's share</p>
       <table class="ex-tbl"><tbody>${per.map(x=>`<tr><td>${esc(x.p.name)}</td><td class="ex-c">${x.count} item${x.count===1?"":"s"}</td><td class="ex-r">${fmtSums(x.sum)}</td><td class="ex-v">${vd(`data-vd-person="${esc(x.p.id)}"`)}</td></tr>`).join("")}
-      ${notShared.length?`<tr class="ex-muted"><td>Not shared</td><td class="ex-c">${notShared.length} item${notShared.length===1?"":"s"}</td><td class="ex-r">${fmtSums(nsSum)}</td><td></td></tr>`:""}</tbody></table></div>`}
+      ${notShared.length?`<tr class="ex-muted"><td>Not shared</td><td class="ex-c">${notShared.length} item${notShared.length===1?"":"s"}</td><td class="ex-r">${fmtSums(nsSum)}</td><td></td></tr>`:""}${bizL.length?`<tr class="ex-muted"><td>🏪 Business</td><td class="ex-c">${bizL.length} item${bizL.length===1?"":"s"}</td><td class="ex-r">${fmtSums(curSums(bizL,r=>Number(r.amount||0)))}</td><td></td></tr>`:""}</tbody></table></div>`}
     <div class="ex-card"><p class="ac-h">By payment method</p>
       ${byPay.length?`<table class="ex-tbl"><tbody>${byPay.map(x=>`<tr><td>${esc(pmLabel(x.p))}</td><td class="ex-c">${x.count} item${x.count===1?"":"s"}</td><td class="ex-r">${fmtSums(x.sum)}</td><td class="ex-v">${vd(`data-vd-pay="${esc(x.p)}"`)}</td></tr>`).join("")}</tbody></table>`:`<p class="side-help">Nothing yet.</p>`}</div>
   </div>`;
@@ -6861,7 +6864,8 @@ function exPeopleChecks(sel){
 }
 function openExForm(r){
   if(!can("admin"))return;exEditing=r||null;
-  $("exFormTitle").textContent=(r?"Edit ":"New ")+(exBiz()?"business expense":"personal expense");
+  const k0=r?exKindOf(r):(exKind==="all"?"":exKind);$("exKindSel").value=k0;$("exKindSel").disabled=exKind!=="all";
+  $("exFormTitle").textContent=(r?"Edit ":"New ")+"expense";
   /* today or an earlier day — never a future date */
   $("exDateBox").innerHTML=dateSelect("ex-date",r?.date||todayISO(),"Date","",false,todayISO());
   $("exDesc").value=r?.desc||"";$("exAmt").value=r?.amount??"";
@@ -6870,8 +6874,7 @@ function openExForm(r){
   const em=pmFor("expense"),pays=em.concat(r?.pay&&!em.includes(r.pay)?[r.pay]:[]);
   $("exPay").innerHTML=`<option value="">— ရွေးပါ —</option>`+pays.map(p=>`<option value="${esc(p)}" ${p===(r?.pay||(em.includes(EX_DEFAULT_PAY)?EX_DEFAULT_PAY:""))?"selected":""}>${esc(pmLabel(p))}</option>`).join("");
   exAmtLabel();
-  $("exPeopleW").hidden=exBiz();
-  $("exPeople").innerHTML=exBiz()?"":exPeopleChecks(r?.shared||[]);
+  $("exPeople").innerHTML=exPeopleChecks(r?.shared||[]);$("exPeopleW").hidden=exFormKind()!=="personal";
   $("exSplitW").hidden=true;$("exSplitRows").innerHTML="";
   $("exDlg").hidden=false;$("exDesc").focus();
   updateExSplit();
@@ -6882,12 +6885,14 @@ $("exNewBtn").addEventListener("click",()=>openExForm(null));
 /* the amount is in the chosen method's currency */
 function exAmtLabel(){const p=$("exPay").value,c=p?pmCur(p):"MMK";$("exCurTxt").textContent=c==="MMK"?"Ks":c}
 $("exPay").addEventListener("change",exAmtLabel);
+const exFormKind=()=>$("exKindSel").value||(exKind==="all"?"":exKind);
+$("exKindSel").addEventListener("change",()=>{$("exPeopleW").hidden=exFormKind()!=="personal";updateExSplit()});
 /* --- Split preview: show per-person amount, allow adjusting one person --- */
 function updateExSplit(){
   const total=Math.round(Number($("exAmt").value)||0);
   const checked=[...$("exPeople").querySelectorAll("input:checked")].map(c=>c.value);
   const w=$("exSplitW");
-  if(exBiz()||checked.length<2||!(total>0)){w.hidden=true;$("exSave").disabled=false;return}
+  if(exFormKind()!=="personal"||checked.length<2||!(total>0)){w.hidden=true;$("exSave").disabled=false;return}
   w.hidden=false;
   const cur=pmCur($("exPay").value||"")||"MMK";
   const fmt2=n=>(cur==="MMK"?fmt(n):`${Math.round(n).toLocaleString("en-US")} ${cur}`);
@@ -6973,22 +6978,24 @@ $("exTabs").addEventListener("click",e=>{const b=e.target.closest("[data-ex-tab]
 $("exForm").addEventListener("submit",async e=>{
   e.preventDefault();if(!can("admin"))return;
   const date=readDate($("exDateBox").querySelector(".dp")),desc=$("exDesc").value.trim(),pay=$("exPay").value,amount=Math.round(Number($("exAmt").value));
+  const kind=exFormKind();if(!kind){toast("Expense type ရွေးပါ");$("exKindSel").focus();return}const biz=kind==="biz";
   if(!date){toast("Date ထည့်ပါ");return}
   if(date>todayISO()){toast("နောက်ရက် ရွေးလို့ မရပါ");return}
   if(!desc){toast("Description ထည့်ပါ");$("exDesc").focus();return}
   if(!pay){toast("Payment method ရွေးပါ");return}
   if(!(amount>0)){toast("Amount ထည့်ပါ");$("exAmt").focus();return}
-  const shared=exBiz()?[]:[...$("exPeople").querySelectorAll("input:checked")].map(c=>c.value),now=new Date().toISOString();
+  const shared=biz?[]:[...$("exPeople").querySelectorAll("input:checked")].map(c=>c.value),now=new Date().toISOString();
   /* amounts set by hand per person are kept with the expense; they must add up to the total */
-  let split=null;if(!exBiz()&&!$("exSplitW").hidden){const ins=[...$("exSplitRows").querySelectorAll(".ex-split-amt")];
+  let split=null;if(!biz&&!$("exSplitW").hidden){const ins=[...$("exSplitRows").querySelectorAll(".ex-split-amt")];
     if(ins.some(i=>i.classList.contains("adjusted"))){split={};ins.forEach(i=>split[i.dataset.splitId]=Math.round(Number(i.value)||0))}
     const sum=ins.reduce((a,i)=>a+Math.round(Number(i.value)||0),0);if(sum!==amount){toast("Total shared amount က Total amount နဲ့ မတူသေးပါ");return}}
   const r={...(exEditing||{}),id:exEditing?.id||("ex"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),date,desc,pay,cur:pmCur(pay),amount,
-    ...(exBiz()?{}:{shared}),...(exEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
+    ...(biz?{}:{shared}),...(exEditing?{updatedAt:now,updatedBy:me.id||null}:{at:now,by:me.id||null})};
   if(exPhotos.some(p=>!p.id)){toast("ပုံတင်နေဆဲပါ");return}
   if(exPhotos.length)r.photos=exPhotos.map(p=>p.id);else delete r.photos;exPhotos.forEach(p=>p.fresh=false);
-  if(split)r.split=split;else delete r.split;
-  try{await saveEx(r);$("exDlg").hidden=true;exEditing=null;
+  if(split)r.split=split;else delete r.split;if(biz)delete r.shared;
+  const was=exEditing?exKindOf(exEditing):null;
+  try{await saveEx(r,kind);if(was&&was!==kind)await removeEx(r.id,was);$("exDlg").hidden=true;exEditing=null;
     /* make sure the saved expense shows under the current filter */
     const[f,t]=exRange();if(date<f||date>t){if(date===todayISO())exF.mode="today";else{exF.mode="month";exF.month=date.slice(0,7)}}
     renderEx();toast("သိမ်းပြီး")}catch(x){toast("သိမ်းမရပါ")}
@@ -6999,7 +7006,7 @@ $("exList").addEventListener("click",async e=>{
   const del=e.target.closest("[data-exdel]");if(!del)return;
   const r=exAll().find(x=>x.id===del.dataset.exdel);if(!r)return;
   if(!await askConfirm("Delete this expense?",`${r.desc||""}\n${fmtDate(r.date)} · ${fmtAmt(r.amount,exCur(r))}`))return;
-  try{await removeEx(r.id);toast("Deleted")}catch(x){toast("ဖျက်မရပါ");renderEx()}
+  try{await removeEx(r.id,exKindOf(r));toast("Deleted")}catch(x){toast("ဖျက်မရပါ");renderEx()}
 });
 /* ---- People (Admins): add, rename, link to a user, hide / unhide ---- */
 let pplWork=[];
