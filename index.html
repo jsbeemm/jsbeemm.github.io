@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677404"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795677504"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1133,7 +1133,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .ex-side{display:flex;align-items:center;gap:8px}.ex-amt{font-family:var(--mono);font-size:15px;white-space:nowrap}.ex-btns{display:flex;gap:4px}
 .ex-confirm{grid-column:1/-1;justify-self:end}
 .ex-total{text-align:right;margin:12px 4px;font-size:15px}.ex-total b{font-family:var(--mono);color:var(--accent);margin-left:6px}
-.ex-row2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.ex-kt{color:var(--accent);font-weight:600}
+.ex-row2{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.ex-fkind{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.ex-kt{color:var(--accent);font-weight:600}
 .ex-people{display:flex;flex-wrap:wrap;gap:8px}
 .ex-person{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--ink);font-size:14px;cursor:pointer}.ex-person input{width:20px;height:20px;margin:0;padding:0;accent-color:var(--accent)}.ex-person:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 #exSplitW{margin-top:4px}.ex-split-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.ex-split-head .ex-split-lbl{margin:0}.ex-split-lbl{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}.ex-split-rows{display:grid;gap:6px}.ex-split-row{display:flex;align-items:center;gap:10px}.ex-split-name{flex:1;font-size:14px;font-weight:500;color:var(--ink)}.ex-split-amt{width:120px;text-align:right;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}.ex-split-amt.adjusted{border-color:var(--accent);background:var(--accent-soft)}.ex-split-remain{font-size:12px;color:var(--amber);margin-top:4px;display:none}.ex-split-remain.show{display:block}
@@ -1989,6 +1989,7 @@ span.star-ic{cursor:default}
       <div class="ex-tools"><button type="button" class="chip ex-fbtn" id="exFBtn" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg><span id="exFLbl">Today</span></button><button type="button" class="o-ic" id="exPplBtn" title="People" aria-label="People">👥</button><button type="button" class="btn prq-new fab" id="exNewBtn">+ New expense</button></div></div>
     <div class="ex-fpop" id="exFPop" hidden>
       <div class="chips" id="exFModes"><button type="button" class="chip" data-exf="today">Today</button><button type="button" class="chip" data-exf="month">Month</button><button type="button" class="chip" data-exf="range">From – To</button></div>
+      <div class="chips ex-fkind" id="exFKinds"><button type="button" class="chip" data-exk="">All</button><button type="button" class="chip" data-exk="personal">💰 Personal</button><button type="button" class="chip" data-exk="biz">🏪 Business</button></div>
       <label class="prf" id="exFMonthW" hidden><span>Month</span><input type="month" id="exFMonth"></label>
       <div class="ex-row2" id="exFRangeW" hidden><div class="prf"><span>From</span><span id="exFFrom"></span></div><div class="prf"><span>To</span><span id="exFTo"></span></div></div>
     </div>
@@ -6770,9 +6771,11 @@ function exRange(){const t=todayISO();
   if(exF.mode==="month"){const[y,m]=exF.month.split("-");const last=new Date(Number(y),Number(m),0).getDate();return[exF.month+"-01",exF.month+"-"+String(last).padStart(2,"0"),`${MONTHS[Number(m)-1]} ${y}`]}
   if(exF.mode==="range"){let f=exF.from||t,to=exF.to||t;if(f>to)[f,to]=[to,f];return[f,to,f===to?fmtDate(f):`${fmtDate(f)} – ${fmtDate(to)}`]}
   return[t,t,"Today"]}
-const exInRange=()=>{const[f,t]=exRange();return exAll().filter(r=>(r.date||"")>=f&&(r.date||"")<=t).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.at||"").localeCompare(a.at||""))};
+const exInRange=()=>{const[f,t]=exRange();return exAll().filter(r=>(r.date||"")>=f&&(r.date||"")<=t&&(exKind!=="all"||!exF.kind||exKindOf(r)===exF.kind)).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.at||"").localeCompare(a.at||""))};
 function exSyncFilter(){
-  $("exFLbl").textContent=exRange()[2];$("exFBtn").classList.toggle("on",exF.mode!=="today");
+  const kl=exKind==="all"&&exF.kind?(exF.kind==="biz"?" · Business":" · Personal"):"";
+  $("exFLbl").textContent=exRange()[2]+kl;$("exFBtn").classList.toggle("on",exF.mode!=="today"||!!kl);
+  $("exFKinds").hidden=exKind!=="all";document.querySelectorAll("[data-exk]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.exk===(exF.kind||"")));
   document.querySelectorAll("[data-exf]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.exf===exF.mode));
   $("exFMonthW").hidden=exF.mode!=="month";$("exFRangeW").hidden=exF.mode!=="range";
   $("exFMonth").value=exF.month;
@@ -6972,6 +6975,7 @@ $("exPeople").addEventListener("change",()=>{
 /* the filter opens under its funnel button */
 $("exFBtn").addEventListener("click",e=>{e.stopPropagation();const p=$("exFPop");p.hidden=!p.hidden;$("exFBtn").setAttribute("aria-expanded",!p.hidden)});
 document.addEventListener("click",e=>{const p=$("exFPop");if(!p.hidden&&e.target.isConnected&&!e.target.closest("#exFPop")&&!e.target.closest("#exFBtn")&&!e.target.closest(".dp-pop")){p.hidden=true;$("exFBtn").setAttribute("aria-expanded","false")}});
+$("exFKinds").addEventListener("click",e=>{const b=e.target.closest("[data-exk]");if(!b)return;exF.kind=b.dataset.exk||"";exDetail=null;renderEx()});
 $("exFModes").addEventListener("click",e=>{const b=e.target.closest("[data-exf]");if(!b)return;exF.mode=b.dataset.exf;
   if(exF.mode==="today"){$("exFPop").hidden=true;$("exFBtn").setAttribute("aria-expanded","false")}renderEx()});
 $("exFMonth").addEventListener("change",e=>{exF.month=e.target.value||todayISO().slice(0,7);renderEx()});
