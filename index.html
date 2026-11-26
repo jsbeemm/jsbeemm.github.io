@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795338995"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795669193"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -965,7 +965,15 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPayList,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview,
 #soVBody[data-vtab="pay"] #soDelForm,#soVBody[data-vtab="pay"] #soDelList,#soVBody[data-vtab="pay"] #soPays,#soVBody[data-vtab="pay"] .so-preview{display:none!important}
 #soVBody[data-vtab="vo"] #soPays{display:none!important}   /* JS: the status line is not shown */
-#soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}.so-pfrow td{padding:6px 0}#soPFormCell #soPayForm{margin:0;background:var(--accent-soft);border-radius:12px;padding:10px 12px}.so-vtabs{align-items:center}.so-vtabs .so-padd{margin:0 0 0 auto;width:auto;flex:none;min-height:0;height:32px;padding:0 14px;font-size:13px}#soVBody:not([data-vtab="pay"]) .so-padd{display:none!important}.so-owechk{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}.so-owechk input{width:18px;height:18px;margin:0}#soVBody:not([data-vtab="vo"]) .so-owechk{display:none!important}
+#soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}.so-pfrow td{padding:6px 0}#soPFormCell #soPayForm{margin:0;background:var(--accent-soft);border-radius:12px;padding:10px 12px}.so-vtabs{align-items:center}
+@media (min-width:1000px){
+  body:has(#viewSo:not([hidden])) .wrap{max-width:none}
+  body:has(#viewSo:not([hidden])) #viewSo{width:calc(33.333vw - 32px)}
+  body:has(#viewSo:not([hidden])) #soView{left:33.333vw;background:transparent;box-shadow:-6px 0 24px rgba(0,0,0,.12)}
+  body:has(#viewSo:not([hidden])) #soView .side-panel.so-panel{border-left:1px solid var(--line)}
+  body:has(#viewSo:not([hidden])):has(#soView[hidden]) .wrap::after{content:"👈 Voucher ကို နှိပ်ရင် ဒီမှာ ပေါ်ပါမယ်";position:fixed;left:33.333vw;right:0;top:45vh;text-align:center;color:var(--muted);font-size:15px;pointer-events:none}
+  body:has(#viewSo:not([hidden])) #soList .ex-item{grid-template-columns:1fr;gap:4px}body:has(#viewSo:not([hidden])) #soList .ex-side{justify-content:flex-start}body:has(#viewSo:not([hidden])) #soList .sale-amt{align-items:flex-start;text-align:left}body:has(#viewSo:not([hidden])) #soList .po-chips{justify-content:flex-start}
+  body:has(#soView:not([hidden])) #soList .so-cur{outline:2px solid var(--accent);outline-offset:-2px;background:var(--accent-soft)}}.so-vtabs .so-padd{margin:0 0 0 auto;width:auto;flex:none;min-height:0;height:32px;padding:0 14px;font-size:13px}#soVBody:not([data-vtab="pay"]) .so-padd{display:none!important}.so-owechk{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}.so-owechk input{width:18px;height:18px;margin:0}#soVBody:not([data-vtab="vo"]) .so-owechk{display:none!important}
 .so-vtabs{margin:0 0 10px}.so-pm-open{margin:0 0 10px}.so-pm{margin:0 0 10px;border:1px solid var(--line);border-radius:12px;padding:8px 12px}.so-pm .ac-h{display:flex;justify-content:space-between;align-items:center}
 .so-pmr{display:flex;gap:6px;align-items:center;cursor:pointer}.so-pmr input{width:auto;margin:0}.so-ptbl .conf-chip{text-align:left;margin-top:2px}.so-ptbl td{vertical-align:middle}.so-ptbl .so-pnet td,.so-ptbl .so-ppaid td{color:var(--muted)}.so-ptbl .so-ppaid td,.so-ptbl .so-pbal td{border-top:1px solid var(--line)}.so-paysum{margin:8px 0 0;display:grid;grid-template-columns:1fr auto;gap:4px 16px;justify-items:end;font-size:14px;font-variant-numeric:tabular-nums}.so-paysum b:first-of-type{border-top:1px solid var(--line);padding-top:4px;justify-self:stretch;text-align:right}.so-paysum b:last-of-type{border-top:1px solid var(--line);padding-top:4px;justify-self:stretch;text-align:right}
 /* the paper, print, share, picture and payment tools belong to the Voucher tab: out of sight on Delivered */
@@ -10468,7 +10476,8 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
     $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
-  renderSoDrafts()}
+  soMarkCur();renderSoDrafts()}
+function soMarkCur(){$("soList").querySelectorAll("[data-so-open]").forEach(r=>r.classList.toggle("so-cur",r.dataset.soOpen===soOpen))}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
 $("soTabs").addEventListener("click",e=>{const b=e.target.closest("[data-sotab]");if(b){soTab=b.dataset.sotab;renderSo()}});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
@@ -11018,7 +11027,7 @@ $("soPaper").addEventListener("change",()=>{const p=$("soPaper").value;if(p==="L
 var soShowOwe=false;   /* off each time a voucher is opened */
 const soOweOn=v=>vBrand(v)==="mb"||soShowOwe;
 const soOweCount=v=>v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre").length:0;
-function openSoView(v){soOpen=v.id;soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
+function openSoView(v){soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;renderSoView(v);$("soView").hidden=false}
 async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soViewC").title=v.customer||"";
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
