@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795689965"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795690323"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7731,7 +7731,8 @@ function purHome(){$("goPur").hidden=!canPur();
 var invs=[],invCol=null,invLocCur="",invQ="",invCat="",invMode="open";
 const invUnitOf=i=>i?.stockUnit||i?.uom||i?.unit||purUnitOf(i)||"";
 /* the units a quantity can be counted in: the Stock Count Unit first, then the Base Unit and each unit row (ct, pk …) */
-const invUnitsOf=i=>[...new Set([invUnitOf(i),i?.unit,i?.stockUnit,...(i?.units||[]).map(u=>u.u||u.n)].map(x=>String(x||"").trim()).filter(Boolean))];
+const invUnitsOf=i=>{const seen=new Set();return[invUnitOf(i),i?.unit,i?.stockUnit,...(i?.units||[]).map(u=>u.u||u.n)].map(x=>String(x||"").trim()).filter(x=>{const k=x.toLowerCase();if(!x||seen.has(k))return false;seen.add(k);return true})};
+const invUnitFix=(i,u)=>{u=String(u||"").trim();return invUnitsOf(i).find(x=>x.toLowerCase()===u.toLowerCase())||u};
 const invUnitPick={};   /* a unit picked before its quantity is typed */
 const invMulti=i=>i?.stockUnits?.length>1?i.stockUnits:null;   /* counted in more than one unit (e.g. ct and pk) */
 function invLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeInv")||"[]")}catch(e){return[]}}
@@ -7758,7 +7759,7 @@ function renderInv(){if($("viewInv").hidden)return;
   invMetaSync();
   if(invMode==="open"){
     if(!invLocCur){$("invList").innerHTML=`<div class="prq-empty">Location ရွေးပါ — မရှိသေးရင် "+ Add location…" နဲ့ ထည့်ပါ</div>`;return}
-    $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=r?.unit||invUnitPick[i.id]||invUnitOf(i),us=invUnitsOf(i);if(u&&!us.includes(u))us.push(u);
+    $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=invUnitFix(i,r?.unit||invUnitPick[i.id]||invUnitOf(i)),us=invUnitsOf(i);if(u&&!us.includes(u))us.push(u);
       const mu=invMulti(i),P=(i.parts||[]).filter(p=>!p.iid);   /* a shared raw material is counted under its own name */
       if(P.length){const Q=P.map(p=>{const rx=invs.find(y=>y.iid===i.id&&y.loc===invLocCur&&y.part===p.n);return{...p,rx}}),all=Q.every(x=>x.rx),sell=all?Math.min(...Q.map(x=>Math.floor((Number(x.rx.qty)||0)/(Number(x.q)||1)))):null;
         return`<div class="inv-row${Q.some(x=>x.rx)?" on":""}" data-iid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><small>${i.code?`<code>${esc(i.code)}</code> · `:""}${esc(i.cat||"")}</small>${sell!=null?`<small class="inv-sell">ရောင်းရ <b>${fmtQ(Math.max(0,sell))}</b></small>`:""}</span>
@@ -7772,7 +7773,7 @@ function renderInv(){if($("viewInv").hidden)return;
     $("invList").innerHTML=has.length?has.map(i=>{const own=(i.parts||[]).filter(p=>!p.iid);if(own.length){const st=itPartStock(i),locs=[...new Set(invs.filter(r=>r.iid===i.id&&r.part).map(r=>r.loc))].sort();
         return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${locs.map(l=>`<span class="pur-pill">${esc(l)} ${own.map(p=>{const r=invs.find(x=>x.iid===i.id&&x.loc===l&&x.part===p.n);return`${esc(p.n)} <b>${r?fmtQ(r.qty):"–"}</b>`}).join(" · ")}</span>`).join("")}</span>${st?.P.some(p=>p.link)?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
         <span class="inv-tot">${st&&st.sell!=null?st.P.map(p=>`<small>${p.link?"🔗 ":""}${esc(p.n)}</small> <b>${p.have==null?"–":fmtQ(p.have)}</b>`).join("<br>")+`<br><small>ရောင်းရ</small> <b class="inv-sellb">${fmtQ(Math.max(0,st.sell))}</b>`:""}</span></div>`}
-      const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>r.unit||invUnitOf(i),one=new Set(rs.map(uOf)).size===1,tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
+      const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>invUnitFix(i,r.unit||invUnitOf(i)),one=new Set(rs.map(uOf)).size===1,tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
       return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(r.qty)}</b>${one?"":` ${esc(uOf(r))}`}</span>`).join("")}</span>${(i.parts||[]).length?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
         <span class="inv-tot">${one?`<b>${fmtQ(tot)}</b> <small>${esc(uOf(rs[0]))}</small>`:(()=>{const by={};rs.forEach(r=>{const k=uOf(r);by[k]=(by[k]||0)+(Number(r.qty)||0)});return Object.entries(by).map(([k,q])=>`<b>${fmtQ(q)}</b> <small>${esc(k)}</small>`).join("<br>")})()}</span></div>`}).join("")
       :`<div class="prq-empty">${q||invCat?"No match.":"Opening မထည့်ရသေးပါ"}</div>`}
