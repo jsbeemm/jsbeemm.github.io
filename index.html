@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795752984"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795753610"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -7770,6 +7770,14 @@ const isMyInvTask=t=>!!t&&!t.done&&invAsgList(t).some(a=>sameId(a,me.id));
 const invTaskNow=()=>invTaskCur?invTasks.find(t=>t.id===invTaskCur)||null:null;
 const invTaskGot=t=>(t.iids||[]).filter(id=>invs.some(r=>r.iid===id&&r.loc===t.loc)).length;
 function invTaskRefresh(){if(invTasks.some(isMyInvTask))initInv();if(view==="home"||view==="todo")renderHome();if(view==="todo")renderTodoConf();if(view==="inv")renderInv()}
+function invAsgCardHtml(){const wk=new Date(Date.now()-7*864e5).toISOString(),L=invTasks.filter(t=>(can("admin")||sameId(t.by,me.id))&&(!t.done||String(t.doneAt||"")>=wk))
+    .sort((a,b)=>(!!a.done-!!b.done)||String(b.done?b.doneAt:b.at||"").localeCompare(String(a.done?a.doneAt:a.at||"")));if(!L.length)return"";
+  const open=L.filter(t=>!t.done).length;
+  return`<div class="ex-card conf-card"><p class="ac-h">👤 Assign လုပ်ထားတာ <small>· ${open} မပြီးသေး</small></p><table class="ex-tbl"><tbody>${L.map(t=>{const n=invTaskGot(t),all=(t.iids||[]).length;
+    return`<tr class="${t.done?"inv-tdone":""}"><td><b>📦 Inventory · ${esc(t.loc)}</b> · ${all} ခု<br><small class="ex-c">👤 ${esc(invAsgNames(t))} · ${t.done?`✓ စစ်ပြီး ${esc(rcvWhen(t.doneAt))}${t.doneBy?` (${esc(nameOf(t.doneBy))})`:""}`:`⏳ ထည့်ပြီး ${n} / ${all} · ${esc(rcvWhen(t.at))}`}${t.note?` · ${esc(t.note)}`:""}</small></td>
+      <td class="ex-v"><button type="button" class="btn ghost conf-btn" data-invt-view="${esc(t.id)}">ကြည့်ရန်</button></td></tr>`}).join("")}</tbody></table></div>`}
+$("todoConf").addEventListener("click",e=>{const b=e.target.closest("[data-invt-view]");if(!b)return;const t=invTasks.find(x=>x.id===b.dataset.invtView);if(!t)return;
+  if(isMyInvTask(t)&&!can("admin")){invTaskCur=t.id}else invTaskCur=null;initItems();initInv();invMode="open";invLocCur=t.loc;invQ="";invCat="";if($("invQ"))$("invQ").value="";go("inv")});
 /* To-do: the checks given to me */
 function invTaskCardHtml(){const L=invTasks.filter(isMyInvTask).sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));if(!L.length)return"";
   return`<div class="ex-card conf-card"><p class="ac-h">📦 Inventory စစ်ရန်</p><table class="ex-tbl"><tbody>${L.map(t=>{const n=invTaskGot(t);
@@ -9443,7 +9451,7 @@ function confCardHtml(){
 function purPayCardHtmlOld(){const seen=new Set(),L=purMyPays().filter(({r})=>!r.grp||(!seen.has(r.grp)&&seen.add(r.grp)));if(!L.length)return"";
   return`<div class="ex-card conf-card"><p class="ac-h">💸 ငွေလွှဲရန် (Purchase)</p><table class="ex-tbl"><tbody>${L.map(({p,k,r})=>`<tr><td><b>${esc(r.grp&&purGrp(p,k).length>1?"👥 "+purGrp(p,k).map(x=>x.no).join(" + "):p.no||"")}</b> · <span data-t="${esc([...new Set(purGrp(p,k).map(x=>x.supplier||""))].join(", "))}"></span><br><small class="ex-c">${PUR_K[k].nm} · ${esc(pmLabel(r.method||""))} · ${esc(nameOf(r.by))} · ${esc(rcvWhen(r.at))}</small></td><td class="ex-r">${fmt(r.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x[PUR_K[k].req].amt)||0),0):r.amt||PUR_K[k].amt(p))}</td>
     <td class="ex-v"><button type="button" class="btn conf-btn" data-pur-open="${esc(p.id)}">ငွေလွှဲမည်</button></td></tr>`).join("")}</tbody></table></div>`}
-function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=invTaskCardHtml()+purPayCardHtml()+confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=invTaskCardHtml()+purPayCardHtml()+confCardHtml()+invAsgCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 /* Confirm / Confirm closing: true when the click was one of them */
 async function confClick(e){
   const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)&&eStage(en)==="each"){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
