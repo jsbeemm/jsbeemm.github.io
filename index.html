@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795762266"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795762497"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -909,8 +909,7 @@ body.no-print [data-print],body.no-print #pvPrint{display:none!important}
 body.has-bot .wrap{padding-bottom:150px}
 body.has-bot:not(.bot-away) .fab,body.has-bot:not(.bot-away) .toast{bottom:calc(env(safe-area-inset-bottom,0px) + 82px)}
 body.has-bot:not(.bot-away) .to-top{bottom:calc(env(safe-area-inset-bottom,0px) + 148px)}
-.so-o-gp{background:color-mix(in srgb,#f5a623 24%,var(--surface));color:var(--ink)}.so-o-rc{background:color-mix(in srgb,#2f8fe0 20%,var(--surface));color:var(--ink)}
-#soTabs option:not([class]){background:var(--surface)}
+.ex-item.so-o-gp,.so-o-gp{background:color-mix(in srgb,#f5a623 24%,var(--surface));color:var(--ink)}.ex-item.so-o-rc,.so-o-rc{background:color-mix(in srgb,#2f8fe0 20%,var(--surface));color:var(--ink)}
 /* desktop: the bar stands as a vertical rail on the left (Home, Notification, then the signed-in name at the foot); phones keep it at the bottom */
 @media (min-width:900px){
   body.has-bot{padding-left:76px}
@@ -10696,8 +10695,7 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>{const st=soStage(v);if(st!=="unf"||gp(v))n[st]++});ps.forEach(p=>n[poStage(p)]++);
   $("soTabs").innerHTML=(js?[["unfin","⏳ Unfinished",vs.filter(uf).length+ps.filter(ufP).length],["pre","　　📋 Preorder",n.pre],["unf","　　📦 Goods payable",n.unf],["owe","　　💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
       :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
-    .map(([k,t,c])=>`<option value="${k}"${SO_TCLS[k]?` class="${SO_TCLS[k]}"`:""}${soTab===k?" selected":""}>${t} (${c})</option>`).join("");
-  $("soTabs").className=js&&SO_TCLS[soTab]||"";
+    .map(([k,t,c])=>`<option value="${k}"${soTab===k?" selected":""}>${t} (${c})</option>`).join("");
   if(soTab==="buy")renderBuyList(q);
   else{const all=soTab==="all";
     const list=[...vs.filter(v=>(all||(soTab==="owe"?owes(v):soTab==="unf"?gp(v):soTab==="unfin"?uf(v):soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
@@ -10707,8 +10705,6 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
     $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
   soMarkCur();renderSoDrafts()}
-/* Goods payable and Receivable carry their own background colour, in the list and on the box while chosen */
-const SO_TCLS={unf:"so-o-gp",owe:"so-o-rc"};
 function soListFit(){const l=$("soList");if(!l||$("viewSo").hidden)return;const t=Math.max(0,l.getBoundingClientRect().top+window.scrollY);const bb=$("botBar"),h=bb&&!bb.hidden&&!botRail()?bb.getBoundingClientRect().height:0,R=document.documentElement.style;R.setProperty("--soLT",Math.round(t)+"px");R.setProperty("--soBB",Math.round(h)+"px")}
 addEventListener("resize",()=>soListFit());
 function soMarkCur(){soListFit();$("soList").querySelectorAll("[data-so-open]").forEach(r=>r.classList.toggle("so-cur",r.dataset.soOpen===soOpen))}
@@ -11115,7 +11111,8 @@ function poChips(p){const left=poLeftAll(p),all=poQtyAll(p),m=poMade(p),paid=m.r
   const c=due>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(due)}</span>`:"";
   return g+c}
 function soRow(v){const b=soBal(v);
-  return`<div class="ex-item sale-row so-r" data-so-open="${esc(v.id)}" tabindex="0" role="button">
+  const js=saleBrand==="js",st=soStage(v),tint=!js?"":st==="unf"&&!soDelivered(v)?" so-o-gp":(b>0||soConfPend(v))&&st!=="pre"?" so-o-rc":"";
+  return`<div class="ex-item sale-row so-r${tint}" data-so-open="${esc(v.id)}" tabindex="0" role="button">
       <div class="so-r1"><small>${esc(soDate(v.date))}</small> · <b data-t="${esc(v.customer||"")}"></b>${v.poNo?` <small>· 📋 ${esc(v.poNo)}</small>`:""}</div>
       <div class="so-r2"><span class="so-rno">${esc(v.no)}</span><b class="ex-amt">${fmt(v.net||0)}</b></div>
       ${soChips(v)?`<div class="po-chips so-r3">${soChips(v)}</div>`:""}</div>`}
