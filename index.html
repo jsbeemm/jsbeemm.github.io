@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760899"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760960"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6046,10 +6046,10 @@ function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList(
   for(const k of Object.keys(ROLE_PERMS))if(k!=="admin")delete ROLE_PERMS[k];
   L.forEach(r=>ROLE_PERMS[r.k]=r.perms.filter(p=>p!=="admin"));
   acRoleFill();renderRoles();renderTeam()}
-/* the Add-a-user Role box also adds, edits and deletes roles: its last two options open the role dialog */
+/* the Add-a-user Role box keeps its choice when the role list changes (roles are added, edited and deleted in the Roles list below) */
 let roleFromSel=false;
 function acRoleFill(keep){const S=$("acNewRole");if(!S)return;const v=keep||S.dataset.prev||S.value||"staff",k=ROLES.some(x=>x.k===v)?v:"staff";
-  S.innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k===k?"selected":""}>${esc(x.n)}</option>`).join("")+(can("admin")?`<option disabled>───────</option><option value="__new">➕ Add new role</option><option value="__edit">✏️ Edit / Delete role</option>`:"");S.value=k;S.dataset.prev=k}
+  S.innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k===k?"selected":""}>${esc(x.n)}</option>`).join("");S.value=k;S.dataset.prev=k}
 async function saveRoles(list){
   list=list.map(r=>({...r,v:3}));
   if(db)await db.doc("meta/roles").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
