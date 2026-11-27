@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795766032"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795766289"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6041,7 +6041,7 @@ const ROLES=[{k:"admin",n:"Admin"},{k:"staff",n:"Sale"},{k:"baking",n:"Productio
    accounts are written only by the artifact's Owner/Editors (db rule), so nobody can approve themselves.
    Passwords are never stored — only a salted PBKDF2 hash; the signed-in user is remembered on this device. */
 const PERMS=[["orders.add","Add & edit orders"],["orders.pay","Record payments"],["orders.status","Change order status"],["orders.delete","Delete / cancel orders"],
-  ["orders.print","Print / Save JPEG"],["orders.printed","Tick “Print ပြီး” (printed)"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["po.add","Purchase raw material (ask Admin to pay)"],["admin","Approve accounts & set roles"]];
+  ["orders.print","Print / Save JPEG"],["orders.printed","Tick “Print ပြီး” (printed)"],["orders.report","View order report"],["sales.report","View sales report"],["excel","Export Excel"],["orders.decorate","Decorate (start / finish with photo)"],["js.sale","JS Bakery Supply sale (Decoration role အတွက်)"],["pr.request","Make purchase requests"],["customers.add","Add customers"],["pr.buy","Tick “Purchased” (Purchaser)"],["po.add","Purchase raw material (ask Admin to pay)"],["admin","Approve accounts & set roles"]];
 const ROLE_PERMS={admin:PERMS.map(p=>p[0]),staff:["orders.add","orders.pay","orders.status","orders.print","orders.printed","orders.report","sales.report","excel","pr.request","customers.add","po.add"],
   baking:["orders.print","pr.request"],decoration:["orders.add","orders.print","orders.decorate","pr.request"],viewer:["orders.print"]};
 const permsFor=r=>Object.fromEntries(PERMS.map(([k])=>[k,(ROLE_PERMS[r]||[]).includes(k)]));
@@ -6591,7 +6591,7 @@ function renderHome(){
   $("goSaleRep").hidden=!can("sales.report");
   ["goSale","goSaleJs","goSaleRep"].forEach(id=>{const t=$(id);t.classList.remove("glow");t.querySelector(".ht-badge")?.remove()});
   /* decorators work on cake orders only, so JS is not shown to them */
-  $("goSaleJs").hidden=!!db&&myRole()==="decoration";
+  $("goSaleJs").hidden=!!db&&myRole()==="decoration"&&!can("js.sale");   /* a decorator sees JS only when an Admin ticked it for them */
   /* decorators: the Sale tile shows only today's order count (no money), and lights up while today's cakes are not all finished */
   if(db&&myRole()==="decoration"){const t=todayISO(),gs=$("goSale"),td=orders.filter(o=>o.date===t&&isOpen(o)),left=td.filter(o=>!isBak(o)&&!o.deco?.endAt&&o.status==="new").length;
     $("homeSaleN").textContent=`Today ${td.length} order${td.length===1?"":"s"}`;
