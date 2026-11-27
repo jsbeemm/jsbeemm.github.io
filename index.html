@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795691888"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795749842"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1281,6 +1281,9 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .inv-bar .inv-locw select,.inv-bar #invQ{height:44px;box-sizing:border-box;margin:0}.inv-bar .inv-locw .o-ic{height:44px;width:44px;flex:none}
 .inv-meta{margin:6px 2px 8px;font-size:13px;color:var(--muted)}
 .inv-list{display:grid;gap:6px}
+.inv-selm .inv-row{grid-template-columns:20px 44px minmax(0,1fr) auto}.inv-ck{width:auto;margin:0}
+.inv-asg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--accent-soft)}.inv-asg select,.inv-asg input:not([type=checkbox]){width:auto;min-width:0;max-width:100%;margin:0;flex:1 1 140px}.inv-asg .btn{width:auto;margin:0;flex:none}.inv-asg .so-pmr input{margin:0}.inv-asgt{flex:1 1 200px}.inv-asgh{color:var(--muted)}
+.inv-tasks{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.inv-tdone{opacity:.6}.inv-tx{border:0;background:none;color:var(--muted);cursor:pointer;padding:0 2px;font:inherit;width:auto;min-height:0}
 .inv-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
 .inv-row img,.inv-row .so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
 .inv-row.on{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
@@ -2030,6 +2033,7 @@ span.star-ic{cursor:default}
     <div class="chips pd-cats" id="invTabs"></div>
     <div class="chips pd-cats inv-cats" id="invCats"></div>
     <p class="inv-meta" id="invMeta"></p>
+    <div class="inv-asg" id="invAsg" hidden></div><div class="inv-tasks" id="invTasks" hidden></div>
     <div class="inv-list" id="invList"></div>
   </section>
 
@@ -6491,7 +6495,7 @@ function syncAuth(){
   $("authView").hidden=!locked;
   $("authLoading").hidden=acctLoaded||!db;$("authForms").hidden=!acctLoaded&&!!db;
   if(locked&&!$("viewNew").hidden)showTab("list");
-  initEx();initTd();initPur();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin"))||(view==="pur"&&!canPur()))go("pe");if(view==="pt"&&isProdRole())go("home");
+  initEx();initTd();initPur();initInvTasks();if((view==="ex"&&!canSeeEx())||(view==="biz"&&!can("admin"))||(view==="pur"&&!canPur()))go("pe");if(view==="pt"&&isProdRole())go("home");
   renderMe();render();renderPR();renderTeam();placeHome();renderHome();
 }
 /* to-dos the owner kept before linking move to the linked account, once */
@@ -6510,7 +6514,8 @@ function go(v){
   if(v==="biz"&&!can("admin"))v="pe";   /* Business Expense: Admins only */
   if((v==="pe"&&canSeeEx())||v==="biz")v="ex";   /* one Expense page (Personal and Business together) */
   if(v==="pur"&&!canPur())v="home";
-  if(v==="inv"&&!can("admin"))v="home";   /* Inventory: Admins only */
+  if(v==="inv"&&!can("admin")&&!isMyInvTask(invTaskNow()))v="home";   /* Inventory: Admins, or someone given a check */
+  if(v!=="inv")invTaskCur=null;
   if(v!=="so"&&$("soView")&&!$("soView").hidden){$("soView").hidden=true;soOpen=null}   /* leaving the Vouchers page closes the voucher shown beside the list */
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!=="all"){exDetail=null;exTab="list"}exKind="all";$("exList").innerHTML="";$("exReport").innerHTML=""}
@@ -6541,6 +6546,7 @@ function renderHome(){
   [["goPR",mine],["goTodo",mine+tdN],["goMyTodo",tdN]].forEach(([id,k])=>{const t=$(id);t.classList.toggle("glow",k>0);t.querySelector(".ht-badge")?.remove();
     if(k)t.insertAdjacentHTML("beforeend",`<span class="ht-badge">${k} assigned to you</span>`)});
   {const t=$("goTodo"),n=myConf.length;t.querySelector(".conf-b")?.remove();if(n){t.classList.add("glow");t.insertAdjacentHTML("beforeend",`<span class="ht-badge conf-b">🔔 ${n} ငွေစစ်ရန်</span>`)}}
+  {const t=$("goTodo"),n=invTasks.filter(isMyInvTask).length;t.querySelector(".invt-b")?.remove();if(n){t.classList.add("glow");t.insertAdjacentHTML("beforeend",`<span class="ht-badge invt-b">📦 ${n} Inventory စစ်ရန်</span>`)}}
   if(view==="todo")renderTodoConf();
   /* To Buy items / tasks due today or overdue (not done yet): the tiles turn amber / red with a count */
   {const pl=prs.filter(r=>dueCls(r.due,r.done)==="due-late").length,pt=prs.filter(r=>dueCls(r.due,r.done)==="due-today").length,
@@ -6615,7 +6621,7 @@ const BACK_SVG=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6
 document.querySelectorAll(".editor .pv-head").forEach(h=>{const x=h.querySelector(".x-close");if(!x||h.closest("#preview,#slipDlg,#soView,#purPickDlg"))return;
   const b=document.createElement("button");b.type="button";b.className="back-btn dlg-back";b.setAttribute("aria-label","Back");b.title="Back";b.innerHTML=BACK_SVG;
   b.addEventListener("click",()=>x.click());h.prepend(b);x.classList.add("x-hid")});
-$("backBtn").addEventListener("click",()=>{if(view==="orders"&&!$("viewNew").hidden){showTab("list");return}go(BACK_TO[view]||"home")});
+$("backBtn").addEventListener("click",()=>{if(view==="orders"&&!$("viewNew").hidden){showTab("list");return}go(view==="inv"&&invTaskCur?"todo":BACK_TO[view]||"home")});
 /* an Admin opening Orders starts on Today · Status All */
 $("goOrders").addEventListener("click",()=>{if(db&&can("admin")){dateF="today";statusF="all";npF=false}go("orders")});
 $("goPR").addEventListener("click",()=>go("pr"));
@@ -7740,7 +7746,7 @@ function invLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeInv")||"
 function invLocalSave(){try{localStorage.setItem("cakeInv",JSON.stringify(invs))}catch(e){}}
 async function saveInv(r){if(invCol){await invCol.doc(r.id).set(r);return}const i=invs.findIndex(x=>x.id===r.id);if(i>=0)invs[i]=r;else invs.push(r);invLocalSave();invRefresh()}
 async function removeInv(id){if(invCol){await invCol.doc(id).delete();return}invs=invs.filter(x=>x.id!==id);invLocalSave();invRefresh()}
-function initInv(){if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!can("admin"))return;invCol=db.collection("inventory");
+function initInv(){if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!(can("admin")||invTasks.some(isMyInvTask)))return;invCol=db.collection("inventory");
   invCol.onSnapshot(s=>{invs=s.docs.map(d=>({...d.data(),id:d.id}));invRefresh()},()=>{invCol=null})}
 /* while a quantity is being typed the list is not redrawn (only the count line), so the box keeps its place */
 function invRefresh(){if(view==="items"&&items.some(i=>(i.parts||[]).length))renderItems();if($("viewInv").hidden)return;if(document.activeElement?.matches?.("#invList .inv-q"))invMetaSync();else renderInv()}
@@ -7748,16 +7754,59 @@ const invPickLoc=v=>{if(v&&v!=="__new")invLocCur=v;renderInv()};
 const fmtQ=n=>Number(n).toLocaleString("en-US",{maximumFractionDigits:3});
 function invMetaSync(){const n=invs.filter(r=>r.loc===invLocCur).length;
   $("invMeta").textContent=invMode==="open"&&invLocCur?`${invLocCur} · Opening ထည့်ပြီး ${n} ခု`:invMode==="sum"?`Location ${lstItems("loc").length} ခု · ပစ္စည်း ${new Set(invs.map(r=>r.iid)).size} ခု`:""}
-function renderInv(){if($("viewInv").hidden)return;
+/* ---------- Inventory checks given to staff: an Admin ticks raw materials at a location and assigns them to someone; that person
+   sees the check on To-do, counts and enters the opening of only those raw materials, and marks it done.
+   Shared "invTasks" collection: {loc, iids:[…], assignTo, note, by, at, done, doneAt, doneBy}. ---------- */
+var invTasks=[],invTaskCol=null,invTaskCur=null,invShownIds=[];const invSel=new Set();
+function initInvTasks(){if(!db){if(!invTasks.length)try{invTasks=JSON.parse(localStorage.getItem("cakeInvTasks")||"[]")}catch(e){}return}if(invTaskCol)return;invTaskCol=db.collection("invTasks");
+  invTaskCol.onSnapshot(s=>{invTasks=s.docs.map(d=>({...d.data(),id:d.id}));invTaskRefresh()},()=>{invTaskCol=null})}
+const invTaskLocalSave=()=>{try{localStorage.setItem("cakeInvTasks",JSON.stringify(invTasks))}catch(e){}};
+async function saveInvTask(t){if(invTaskCol){await invTaskCol.doc(t.id).set(t);return}const k=invTasks.findIndex(x=>x.id===t.id);if(k>=0)invTasks[k]=t;else invTasks.push(t);invTaskLocalSave();invTaskRefresh()}
+async function removeInvTask(id){if(invTaskCol){await invTaskCol.doc(id).delete();return}invTasks=invTasks.filter(x=>x.id!==id);invTaskLocalSave();invTaskRefresh()}
+const isMyInvTask=t=>!!t&&!t.done&&sameId(t.assignTo,me.id);
+const invTaskNow=()=>invTaskCur?invTasks.find(t=>t.id===invTaskCur)||null:null;
+const invTaskGot=t=>(t.iids||[]).filter(id=>invs.some(r=>r.iid===id&&r.loc===t.loc)).length;
+function invTaskRefresh(){if(invTasks.some(isMyInvTask))initInv();if(view==="home"||view==="todo")renderHome();if(view==="todo")renderTodoConf();if(view==="inv")renderInv()}
+/* To-do: the checks given to me */
+function invTaskCardHtml(){const L=invTasks.filter(isMyInvTask).sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));if(!L.length)return"";
+  return`<div class="ex-card conf-card"><p class="ac-h">📦 Inventory စစ်ရန်</p><table class="ex-tbl"><tbody>${L.map(t=>{const n=invTaskGot(t);
+    return`<tr><td><b>${esc(t.loc)}</b> · ${(t.iids||[]).length} ခု${n?` · ထည့်ပြီး ${n}`:""}<br><small class="ex-c">${esc(nameOf(t.by))} · ${esc(rcvWhen(t.at))}${t.note?` · ${esc(t.note)}`:""}</small></td>
+      <td class="ex-v"><button type="button" class="btn conf-btn" data-invtask="${esc(t.id)}">စစ်မည်</button></td></tr>`}).join("")}</tbody></table></div>`}
+$("todoConf").addEventListener("click",e=>{const b=e.target.closest("[data-invtask]");if(!b)return;const t=invTasks.find(x=>x.id===b.dataset.invtask);if(!t)return;
+  invTaskCur=t.id;initItems();initInv();invMode="open";invLocCur=t.loc;invQ="";invCat="";if($("invQ"))$("invQ").value="";go("inv")});
+/* the bar above the list: for the staff member, what was given and "done"; for an Admin, Select all and Assign, and the checks given out */
+function invAsgSync(T,admin){const A=$("invAsg"),K=$("invTasks");
+  if(T){const n=invTaskGot(T);A.hidden=false;K.hidden=true;
+    A.innerHTML=`<span class="inv-asgt">📦 <b>${esc(T.loc)}</b> · ${esc(nameOf(T.by))} ပေးထားတဲ့ ${(T.iids||[]).length} ခု · ထည့်ပြီး ${n}${T.note?`<br><small>${esc(T.note)}</small>`:""}</span><button type="button" class="btn" data-invt-done>✓ စစ်ပြီးပါပြီ</button>`;return}
+  if(!admin||invMode!=="open"||!invLocCur){A.hidden=true;K.hidden=true;return}
+  const all=invShownIds.length&&invShownIds.every(id=>invSel.has(id));
+  A.hidden=false;A.innerHTML=`<label class="so-pmr"><input type="checkbox" class="inv-ckall" ${all?"checked":""}> <b>Select all</b> <small>(${invSel.size} ခု)</small></label>
+    ${invSel.size?`<select id="invAsgTo" aria-label="Staff">${prAssignOpts("")}</select><input id="invAsgNote" autocomplete="off" placeholder="Note (မထည့်လည်းရ)" aria-label="Note"><button type="button" class="btn" data-invt-asg>👤 Assign</button>`:`<small class="inv-asgh">Staff ကို စစ်ခိုင်းချင်တဲ့ ပစ္စည်းတွေကို ✓ ရွေးပါ</small>`}`;
+  const L=invTasks.filter(t=>t.loc===invLocCur).sort((a,b)=>(!!a.done-!!b.done)||String(b.at||"").localeCompare(String(a.at||"")));
+  K.hidden=!L.length;K.innerHTML=L.map(t=>`<span class="pur-pill${t.done?" inv-tdone":""}">👤 ${esc(nameOf(t.assignTo))} · ${(t.iids||[]).length} ခု · ${t.done?`✓ စစ်ပြီး ${esc(rcvWhen(t.doneAt))}`:`⏳ ထည့်ပြီး ${invTaskGot(t)}`} <button type="button" class="inv-tx" data-invt-del="${esc(t.id)}" aria-label="ဖျက်ရန်" title="ဖျက်ရန်">✕</button></span>`).join("")}
+$("invList").addEventListener("change",e=>{if(!e.target.matches(".inv-ck"))return;const id=e.target.closest("[data-iid]").dataset.iid;if(e.target.checked)invSel.add(id);else invSel.delete(id);invAsgSync(null,can("admin"))});
+$("invAsg").addEventListener("change",e=>{if(!e.target.matches(".inv-ckall"))return;const on=e.target.checked;invShownIds.forEach(id=>on?invSel.add(id):invSel.delete(id));
+  $("invList").querySelectorAll(".inv-ck").forEach(c=>c.checked=invSel.has(c.closest("[data-iid]").dataset.iid));invAsgSync(null,can("admin"))});
+$("invAsg").addEventListener("click",async e=>{
+  if(e.target.closest("[data-invt-done]")){const T=invTaskNow();if(!T)return;const n=invTaskGot(T),left=(T.iids||[]).length-n;
+    if(left>0&&!await askConfirm("စစ်ပြီးပြီလား?",`မထည့်ရသေးတာ ${left} ခု ကျန်ပါသေးတယ်။`,"✓ ပြီးပါပြီ",true))return;
+    try{const now=new Date().toISOString();await saveInvTask({...T,done:true,doneAt:now,doneBy:me.id||null});invTaskCur=null;toast("✓ Inventory စစ်ပြီး");go("todo")}catch(x){toast("သိမ်းမရပါ")}return}
+  if(e.target.closest("[data-invt-asg]")){if(!can("admin")||!invSel.size)return;const to=$("invAsgTo").value;if(!to){toast("Staff ရွေးပါ");$("invAsgTo").focus();return}
+    const now=new Date().toISOString(),t={id:"it"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),loc:invLocCur,iids:[...invSel],assignTo:to,note:$("invAsgNote").value.trim()||null,by:me.id||null,at:now,done:false};
+    try{await saveInvTask(t);invSel.clear();toast(`✓ ${nameOf(to)} ကို ${t.iids.length} ခု စစ်ခိုင်းပြီး`);renderInv()}catch(x){toast("သိမ်းမရပါ")}}});
+$("invTasks").addEventListener("click",async e=>{const b=e.target.closest("[data-invt-del]");if(!b||!can("admin"))return;const t=invTasks.find(x=>x.id===b.dataset.invtDel);if(!t)return;
+  if(!await askConfirm("ဒီ assign ကို ဖျက်မလား?",`${nameOf(t.assignTo)} · ${t.loc} · ${(t.iids||[]).length} ခု\nထည့်ပြီးသား Opening ဂဏန်းတွေကတော့ မပျက်ပါ။`))return;
+  try{await removeInvTask(t.id)}catch(x){toast("ဖျက်မရပါ")}});
+function renderInv(){if($("viewInv").hidden)return;const T=invTaskNow(),admin=can("admin");if(T){invMode="open";invLocCur=T.loc}
   if(document.activeElement!==$("invLoc"))rcvFillList("loc",invLocCur);
   $("invTabs").innerHTML=[["open","Opening ထည့်ရန်"],["sum","စုစုပေါင်း"]].map(([k,n])=>`<button type="button" class="chip" data-invmode="${k}" aria-pressed="${invMode===k}">${n}</button>`).join("");
-  $("invLocW").hidden=invMode!=="open";
+  $("invLocW").hidden=invMode!=="open"||!!T;$("invTabs").hidden=!!T;
   const q=pdNorm(invQ),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(invCat&&!cats.includes(invCat))invCat="";
   $("invCats").innerHTML=`<button type="button" class="chip" data-invcat="" aria-pressed="${!invCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-invcat="${esc(c)}" aria-pressed="${invCat===c}">${esc(c)}</button>`).join("");
-  const list=inQ.filter(i=>!invCat||(i.cat||"Other")===invCat).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const list=inQ.filter(i=>(!invCat||(i.cat||"Other")===invCat)&&(!T||(T.iids||[]).includes(i.id))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   const pic=i=>i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`;
-  invMetaSync();
+  invMetaSync();invShownIds=list.slice(0,500).map(i=>i.id);invAsgSync(T,admin);
   if(invMode==="open"){
     if(!invLocCur){$("invList").innerHTML=`<div class="prq-empty">Location ရွေးပါ — မရှိသေးရင် "+ Add location…" နဲ့ ထည့်ပါ</div>`;return}
     $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=invUnitFix(i,r?.unit||invUnitPick[i.id]||invUnitOf(i)),us=invUnitsOf(i);if(u&&!us.includes(u))us.push(u);
@@ -7778,7 +7827,9 @@ function renderInv(){if($("viewInv").hidden)return;
       return`<div class="inv-row inv-sum">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(r.qty)}</b>${one?"":` ${esc(uOf(r))}`}</span>`).join("")}</span>${(i.parts||[]).length?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
         <span class="inv-tot">${one?`<b>${fmtQ(tot)}</b> <small>${esc(uOf(rs[0]))}</small>`:(()=>{const by={};rs.forEach(r=>{const k=uOf(r);by[k]=(by[k]||0)+(Number(r.qty)||0)});return Object.entries(by).map(([k,q])=>`<b>${fmtQ(q)}</b> <small>${esc(k)}</small>`).join("<br>")})()}</span></div>`}).join("")
       :`<div class="prq-empty">${q||invCat?"No match.":"Opening မထည့်ရသေးပါ"}</div>`}
-  $("invList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
+  $("invList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
+  const sel=invMode==="open"&&admin&&!T&&!!invLocCur;$("invList").classList.toggle("inv-selm",sel);
+  if(sel)$("invList").querySelectorAll(".inv-row[data-iid]").forEach(r=>r.insertAdjacentHTML("afterbegin",`<input type="checkbox" class="inv-ck" ${invSel.has(r.dataset.iid)?"checked":""} aria-label="ရွေးရန်">`))}
 $("invTabs").addEventListener("click",e=>{const b=e.target.closest("[data-invmode]");if(b){invMode=b.dataset.invmode;renderInv()}});
 $("invCats").addEventListener("click",e=>{const b=e.target.closest("[data-invcat]");if(b){invCat=b.dataset.invcat;renderInv()}});
 $("invQ").addEventListener("input",e=>{invQ=e.target.value;renderInv()});
@@ -7786,8 +7837,8 @@ $("invLoc").addEventListener("change",()=>{const v=$("invLoc").value;if(v!=="__n
 $("goInv").addEventListener("click",()=>go("inv"));
 /* a quantity is saved when the box is left (or Enter, which moves to the next one); an emptied box removes it */
 $("invList").addEventListener("change",async e=>{if(e.target.matches(".inv-us")){const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,u=e.target.value;invUnitPick[iid]=u;
-    const rec=invs.find(r=>r.iid===iid&&r.loc===invLocCur);if(rec&&rec.unit!==u&&can("admin")){try{await saveInv({...rec,unit:u,updatedAt:new Date().toISOString(),updatedBy:me.id||null})}catch(x){toast("သိမ်းမရပါ")}}return}
-  if(!e.target.matches(".inv-q")||!can("admin"))return;const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,it=items.find(x=>x.id===iid),loc=invLocCur;
+    const rec=invs.find(r=>r.iid===iid&&r.loc===invLocCur);if(rec&&rec.unit!==u&&(can("admin")||isMyInvTask(invTaskNow()))){try{await saveInv({...rec,unit:u,updatedAt:new Date().toISOString(),updatedBy:me.id||null})}catch(x){toast("သိမ်းမရပါ")}}return}
+  if(!e.target.matches(".inv-q"))return;{const T=invTaskNow();if(!can("admin")&&!(isMyInvTask(T)&&(T.iids||[]).includes(e.target.closest("[data-iid]")?.dataset.iid)))return}const row=e.target.closest("[data-iid]"),iid=row.dataset.iid,it=items.find(x=>x.id===iid),loc=invLocCur;
   const du=e.target.dataset.u||null,dp=e.target.dataset.part||null,v=e.target.value.trim(),rec=invs.find(r=>r.iid===iid&&r.loc===loc&&(!du||r.unit===du)&&(dp?r.part===dp:!r.part)),now=new Date().toISOString();
   try{if(v===""){if(rec)await removeInv(rec.id);if(!invs.some(r=>r.iid===iid&&r.loc===loc&&r.id!==rec?.id))row.classList.remove("on")}
     else{const q=Number(v);if(!(q>=0)){toast("Qty မှားနေပါတယ်");e.target.focus();return}if(rec&&Number(rec.qty)===q)return;
@@ -9381,7 +9432,7 @@ function confCardHtml(){
 function purPayCardHtmlOld(){const seen=new Set(),L=purMyPays().filter(({r})=>!r.grp||(!seen.has(r.grp)&&seen.add(r.grp)));if(!L.length)return"";
   return`<div class="ex-card conf-card"><p class="ac-h">💸 ငွေလွှဲရန် (Purchase)</p><table class="ex-tbl"><tbody>${L.map(({p,k,r})=>`<tr><td><b>${esc(r.grp&&purGrp(p,k).length>1?"👥 "+purGrp(p,k).map(x=>x.no).join(" + "):p.no||"")}</b> · <span data-t="${esc([...new Set(purGrp(p,k).map(x=>x.supplier||""))].join(", "))}"></span><br><small class="ex-c">${PUR_K[k].nm} · ${esc(pmLabel(r.method||""))} · ${esc(nameOf(r.by))} · ${esc(rcvWhen(r.at))}</small></td><td class="ex-r">${fmt(r.grp&&purGrp(p,k).length>1?purGrp(p,k).reduce((a,x)=>a+(Number(x[PUR_K[k].req].amt)||0),0):r.amt||PUR_K[k].amt(p))}</td>
     <td class="ex-v"><button type="button" class="btn conf-btn" data-pur-open="${esc(p.id)}">ငွေလွှဲမည်</button></td></tr>`).join("")}</tbody></table></div>`}
-function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=purPayCardHtml()+confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
+function renderTodoConf(){const el=$("todoConf");if(!el)return;el.innerHTML=invTaskCardHtml()+purPayCardHtml()+confCardHtml();el.querySelectorAll("[data-t]").forEach(x=>x.textContent=x.dataset.t)}
 /* Confirm / Confirm closing: true when the click was one of them */
 async function confClick(e){
   const ce=e.target.closest("[data-conf-e]");if(ce){const en=confEntries().find(x=>eKey(x)===ce.dataset.confE);if(en&&eMine(en)&&eStage(en)==="each"){ce.disabled=true;try{await confirmEntries([en],false);toast(`${en.no} confirmed`)}catch(x){toast("သိမ်းမရပါ")}}renderTodoConf();renderHome();return true}
