@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760960"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795761871"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10672,14 +10672,16 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
   const owes=v=>(soBal(v)>0||(js&&soConfPend(v)))&&(!js||soStage(v)!=="pre");
   /* Goods payable (the "unf" tab): started vouchers with goods still to give; one given in full but not paid in full is under Receivable only */
   const gp=v=>soStage(v)==="unf"&&!soDelivered(v);
+  /* Unfinished = Preorder + Goods payable + Receivable */
+  const uf=v=>soStage(v)==="pre"||gp(v)||owes(v),ufP=p=>poStage(p)!=="fin";
   const n={pre:0,unf:0,fin:0};vs.forEach(v=>{const st=soStage(v);if(st!=="unf"||gp(v))n[st]++});ps.forEach(p=>n[poStage(p)]++);
-  $("soTabs").innerHTML=(js?[["pre","📋 Preorder",n.pre],["unfin","⏳ Unfinished",vs.filter(v=>gp(v)||owes(v)).length+ps.filter(p=>poStage(p)==="unf").length],["unf","　　📦 Goods payable",n.unf],["owe","　　💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
+  $("soTabs").innerHTML=(js?[["unfin","⏳ Unfinished",vs.filter(uf).length+ps.filter(ufP).length],["pre","　　📋 Preorder",n.pre],["unf","　　📦 Goods payable",n.unf],["owe","　　💵 Receivable",vs.filter(owes).length],["fin","✓ Finished",n.fin],["buy","🛒 မှာရန်",poBuyRows().length],["all","📄 All",vs.length]]
       :[["owe","💵 ငွေရရန်ကျန်",vs.filter(v=>soBal(v)>0).length],["all","📄 All",vs.length]])
     .map(([k,t,c])=>`<option value="${k}"${soTab===k?" selected":""}>${t} (${c})</option>`).join("");
   if(soTab==="buy")renderBuyList(q);
   else{const all=soTab==="all";
-    const list=[...vs.filter(v=>(all||(soTab==="owe"?owes(v):soTab==="unf"?gp(v):soTab==="unfin"?gp(v)||owes(v):soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
-      ...(all?[]:ps.filter(p=>poStage(p)===(soTab==="unfin"?"unf":soTab)&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
+    const list=[...vs.filter(v=>(all||(soTab==="owe"?owes(v):soTab==="unf"?gp(v):soTab==="unfin"?uf(v):soStage(v)===soTab))&&hit(v)).map(v=>({d:v.date,no:v.no,h:soRow(v)})),
+      ...(all?[]:ps.filter(p=>(soTab==="unfin"?ufP(p):poStage(p)===soTab)&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
       .sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
       :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
