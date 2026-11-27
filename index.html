@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795755364"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760790"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6045,8 +6045,11 @@ function applyRoles(list){rolesDoc=list&&list.length?list:null;const L=roleList(
   ROLES.length=0;ROLES.push({k:"admin",n:"Admin"},...L.map(r=>({k:r.k,n:r.n})));
   for(const k of Object.keys(ROLE_PERMS))if(k!=="admin")delete ROLE_PERMS[k];
   L.forEach(r=>ROLE_PERMS[r.k]=r.perms.filter(p=>p!=="admin"));
-  $("acNewRole").innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k==="staff"?"selected":""}>${esc(x.n)}</option>`).join("");
-  renderRoles();renderTeam()}
+  acRoleFill();renderRoles();renderTeam()}
+/* the Add-a-user Role box also adds, edits and deletes roles: its last two options open the role dialog */
+let roleFromSel=false;
+function acRoleFill(keep){const S=$("acNewRole");if(!S)return;const v=keep||S.dataset.prev||S.value||"staff",k=ROLES.some(x=>x.k===v)?v:"staff";
+  S.innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k===k?"selected":""}>${esc(x.n)}</option>`).join("")+(can("admin")?`<option disabled>───────</option><option value="__new">➕ Add new role</option><option value="__edit">✏️ Edit / Delete role</option>`:"");S.value=k;S.dataset.prev=k}
 async function saveRoles(list){
   list=list.map(r=>({...r,v:3}));
   if(db)await db.doc("meta/roles").set({list,updatedAt:new Date().toISOString(),updatedBy:me.id||null});
@@ -6057,7 +6060,7 @@ function renderRoles(){const el=$("roleList");if(!el)return;
     return`<div class="rl-row" data-role="${esc(r.k)}"><b>${esc(r.n)}</b><small>${r.k==="admin"?"Everything":`${ps} permission${ps===1?"":"s"}`} · ${n} user${n===1?"":"s"}</small>
       ${r.k==="admin"?`<span class="o-ic rl-fixed" aria-hidden="true"></span>`:`<button type="button" class="o-ic" data-role-edit aria-label="Edit ${esc(r.n)}" title="Edit">${PENCIL}</button>`}</div>`}).join("")}
 let roleEditing=null;
-function openRole(k){roleEditing=k||null;const r=k?roleList().find(x=>x.k===k):null;
+function openRole(k){roleEditing=k||null;if(k)roleFromSel=false;const r=k?roleList().find(x=>x.k===k):null;
   $("roleDlgT").textContent=r?`Edit role · ${r.n}`:"Add role";$("roleName").value=r?.n||"";
   $("rolePerms").innerHTML=permBoxes(Object.fromEntries(PERMS.map(([p])=>[p,!!r?.perms.includes(p)])));
   $("rolePerms").querySelector('[data-perm="admin"]')?.closest("label")?.remove();   /* approving accounts stays with Admins */
@@ -6070,7 +6073,7 @@ $("roleForm").addEventListener("submit",async e=>{e.preventDefault();if(!can("ad
   const perms=[...$("rolePerms").querySelectorAll("[data-perm]:checked")].map(c=>c.dataset.perm);
   const list=roleList(),k=roleEditing||("r"+Date.now().toString(36)),i=list.findIndex(r=>r.k===k),r={k,n,perms};
   if(i>=0)list[i]=r;else list.push(r);
-  try{await saveRoles(list);$("roleDlg").hidden=true;
+  try{await saveRoles(list);$("roleDlg").hidden=true;if(roleFromSel&&!roleEditing)acRoleFill(k);roleFromSel=false;
     /* people who already have this role can take the new permissions too */
     const users=roleEditing?Object.entries(accounts||{}).filter(([,a])=>a.role===k):[];
     if(users.length&&await askConfirm(`Update ${users.length} user${users.length===1?"":"s"} with this role?`,`Their permissions become this role's: ${perms.length} ticked.`,"Update")){
@@ -6336,7 +6339,7 @@ function renderTeam(){
   renderRoles();
   if($("teamDlg").hidden)return;
   const reqs=Object.entries(signups).flatMap(([cid,d])=>Object.entries(d.reqs||{}).map(([u,q])=>({cid,u,...q}))).sort((a,b)=>(a.at||"").localeCompare(b.at||""));
-  $("acNewRole").innerHTML||($("acNewRole").innerHTML=ROLES.map(x=>`<option value="${x.k}" ${x.k==="staff"?"selected":""}>${x.n}</option>`).join(""));
+  $("acNewRole").innerHTML||acRoleFill();
   $("acPendH").hidden=!reqs.length;
   $("acPending").innerHTML=reqs.map(q=>`<div class="ac-row pending" data-cid="${esc(q.cid)}" data-u="${esc(q.u)}">
       <div class="ac-who"><b>${esc(q.name)}</b><small>Requested ${fmtStamp(q.at)}${accounts[q.u]||findAcct(q.name)?" · ⚠ name already used":""}</small></div>
@@ -6395,8 +6398,11 @@ $("teamDlg").addEventListener("click",async e=>{
       const salt=newSalt(),hash=await hashPw(pw,salt);await db.doc("accounts/"+u).update({salt,hash,iter:PW_ITER,updatedAt:now,updatedBy:me.id});toast("Password changed — tell them the new one");return}
   }catch(x){toast(acFail,4000)}
 });
-$("teamBtn").addEventListener("click",()=>{$("settingsPanel").hidden=true;$("teamDlg").hidden=false;renderTeam()});
-$("acNewRole").addEventListener("change",e=>e.stopPropagation());
+$("teamBtn").addEventListener("click",()=>{$("settingsPanel").hidden=true;$("teamDlg").hidden=false;acRoleFill();renderTeam()});
+$("acNewRole").addEventListener("change",e=>{e.stopPropagation();const S=e.target,v=S.value,prev=S.dataset.prev||"staff";
+  if(v==="__new"){acRoleFill(prev);if(can("admin")){roleFromSel=true;openRole(null)}return}
+  if(v==="__edit"){acRoleFill(prev);if(prev==="admin"){toast("Admin role ကို ပြင်/ဖျက်လို့ မရပါ");return}if(can("admin"))openRole(prev);return}
+  acRoleFill(v)});
 $("acAddBtn").addEventListener("click",async()=>{if(!can("admin"))return;
   const name=$("acNewName").value.trim().replace(/\s+/g," ");if(!name){toast("Name ထည့်ပါ");$("acNewName").focus();return}
   if(findAcct(name)){toast("ဒီနာမည်နဲ့ Account ရှိပြီးသားပါ");return}
