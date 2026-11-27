@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795763255"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795763964"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -896,7 +896,7 @@ body.no-print [data-print],body.no-print #pvPrint{display:none!important}
 .bot-bar[hidden]{display:none}.bot-bar.away{transform:translateY(110%)}
 .bot-in{max-width:1048px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .home-btn{display:grid;justify-items:center;gap:1px;min-width:64px;padding:4px 10px;border:0;background:none;color:var(--ink);font:inherit;font-size:11.5px;font-weight:600;border-radius:12px;cursor:pointer}.home-btn .bi-ic{width:26px;height:26px}.home-btn:hover{color:var(--accent)}.home-btn[hidden]{display:none}
-.bot-in .noti-btn{margin-right:auto}
+.bot-in .noti-btn{display:none!important}.bot-in #homeBtn{margin-right:auto}
 .noti-ic{position:relative;display:inline-flex}
 .noti-dot{position:absolute;top:0;right:-1px;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--surface)}
 .noti-pop{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);z-index:30;width:min(320px,calc(100vw - 32px));box-sizing:border-box;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:12px 14px}
@@ -2109,9 +2109,9 @@ span.star-ic{cursor:default}
       </div>
 <!-- Home and the signed-in name: a bottom bar (like the Facebook app) that slides away while scrolling down and comes back on scrolling up -->
 <nav class="bot-bar" id="botBar" hidden><div class="bot-in">
-      <button type="button" class="home-btn" id="homeBtn" hidden aria-label="Home" title="Home"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg><span>Home</span></button>
-      <!-- 🔔 Notifications beside Home: a new app version waits here (no pop-up over the page) and is refreshed from here -->
-      <button type="button" class="home-btn noti-btn" id="notiBtn" aria-label="Notifications" title="Notifications"><span class="noti-ic"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg><i class="noti-dot" id="notiDot" hidden></i></span><span>Notification</span></button>
+      <button type="button" class="home-btn" id="homeBtn" hidden aria-label="Home" title="Home"><span class="noti-ic"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg><i class="noti-dot" id="homeDot" hidden></i></span><span>Home</span></button>
+      <!-- 🔔 Notifications live on Home only (top bell); away from Home a red dot on the Home button says something is waiting -->
+      <button type="button" class="home-btn noti-btn" id="notiBtn" hidden aria-label="Notifications" title="Notifications"><span class="noti-ic"><svg class="bi-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></svg><i class="noti-dot" id="notiDot" hidden></i></span><span>Notification</span></button>
       <span class="who-tag" id="whoTag" hidden></span>   <!-- the signed-in person, at the right of the bar -->
 </div></nav>
 <div class="noti-pop" id="notiPop" hidden role="dialog" aria-label="Notifications"><p class="noti-h">Notifications</p><div id="notiBody"></div></div>
@@ -6613,7 +6613,7 @@ addEventListener("resize",placeHome);document.fonts?.ready.then(placeHome);
 $("homeBtn").addEventListener("click",()=>go("home"));
 /* 🔔 a new version of the app (found by the update check in the Firebase build) shows as a dot here instead of a pop-up,
    so it is not tapped by mistake while writing an order. Refresh keeps a half-written order as a draft first. */
-function notiSync(){$("notiDot").hidden=$("notiHDot").hidden=!window.__appNew;if(!$("notiPop").hidden)notiRender()}
+function notiSync(){$("notiDot").hidden=$("notiHDot").hidden=$("homeDot").hidden=!window.__appNew;if(!$("notiPop").hidden)notiRender()}
 function notiRender(){$("notiBody").innerHTML=window.__appNew
   ?`<div class="noti-item"><b>🔄 App အသစ် ရပါပြီ</b><span>အဆင်ပြေတဲ့အချိန် Refresh နှိပ်ပါ။ ရေးလက်စ Order ရှိရင် Draft အဖြစ် သိမ်းပြီးမှ Refresh လုပ်ပါမယ်။</span><button type="button" class="btn" id="notiReload">🔄 Refresh</button></div>`
   :`<div class="noti-item"><span class="side-help">Notification မရှိပါ</span><button type="button" class="btn ghost" id="notiReload">🔄 App refresh</button></div>`}
