@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795762979"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795763098"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1325,7 +1325,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #purLines .so-lue:hover{color:var(--accent);background:var(--accent-soft)}#purLines .so-lue:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 #purLines .pur-lu{width:100%;margin-top:4px;font-size:12px;padding:4px 6px}#purLines .pur-lu[hidden]{display:none!important}.pur-add .btn{width:auto}
 #purPickDlg .side-panel{height:min(88vh,760px);max-height:none}#purPickDlg .side-body{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}.so-tabw{margin:0 0 10px}.so-tabw.so-tabtop{margin:0 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:nowrap}.so-tabw.so-tabtop select{flex:0 1 auto;min-width:0;width:auto}.so-tabtop .chip{flex:none;white-space:nowrap}.so-tabw select{width:auto;min-width:220px;max-width:100%;margin:0;font-weight:600}
+#purPickDlg #purPickQ,#purPickDlg .cfm-btns{flex:none}.so-tabw{margin:0 0 10px}#viewSo .pd-bar #soQ{flex:1 1 0;min-width:0}#viewSo .pd-bar .so-df{flex:none;width:auto;max-width:44%;font-weight:600;align-self:stretch;height:auto;min-height:0;border-radius:999px;padding-block:0}.so-dfr{display:flex;align-items:center;gap:8px;margin:-4px 0 12px}.so-dfr input{flex:1 1 0;min-width:0;width:auto}.so-dfr[hidden]{display:none}.so-tabw.so-tabtop{margin:0 0 12px;display:flex;align-items:center;gap:10px;flex-wrap:nowrap}.so-tabw.so-tabtop select{flex:0 1 auto;min-width:0;width:auto}.so-tabtop .chip{flex:none;white-space:nowrap}.so-tabw select{width:auto;min-width:220px;max-width:100%;margin:0;font-weight:600}
 .pur-pqrow{display:flex;gap:8px;align-items:center;flex:none}.ch-new{display:flex;gap:8px;align-items:center;margin-top:8px}.ch-new input{flex:1 1 0;min-width:0;margin:0}.ch-new .btn{width:auto;flex:none;margin:0}#purPickDlg .pur-pqrow #purPickQ{flex:1 1 0;width:auto;min-width:0;margin:0}@media (max-width:700px){.pur-pqrow .pur-nl{display:none}}.pur-pqrow .btn{flex:none;width:auto;white-space:nowrap;margin:0;align-self:stretch;min-height:0;padding-block:0;padding-inline:14px}#purPickDlg .so-pcats{flex:none;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;height:46px;align-items:flex-start;box-sizing:border-box}#purPickDlg .so-pcats .chip{flex:none}
 #purPickDlg .so-plist{flex:1;min-height:0;overflow-y:auto;align-content:start}
 .pur-one{cursor:pointer}.pur-fn{display:flex;align-items:center;flex-wrap:wrap;gap:2px 6px}
@@ -1932,9 +1932,10 @@ span.star-ic{cursor:default}
   <!-- JS VOUCHERS (sales orders): a customer, the items with qty / price, delivery, paid amount and what is still owed -->
   <section id="viewSo" hidden>
     <div class="so-tabw so-tabtop"><select id="soTabs" aria-label="Voucher စာရင်း ရွေးရန်"></select><button type="button" class="chip" id="soXpBtn" hidden title="Voucher တွေကို JS Vouchers Excel format အတိုင်း ထုတ်ရန်">📤 Excel export</button></div>   <!-- the list choice sits above Search -->
-    <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off">
+    <div class="prq-bar pd-bar"><input type="search" id="soQ" placeholder="Search voucher no, customer or phone" aria-label="Search vouchers" autocomplete="off"><select id="soDF" class="so-df" aria-label="Date"><option value="">📅 All dates</option><option value="today">Today</option><option value="yday">Yesterday</option><option value="week">This week</option><option value="month">This month</option><option value="lmonth">Last month</option><option value="range">From – To</option></select>
       <button type="button" class="btn prq-new fab" id="soNewBtn">+ New voucher</button></div>
     <div class="chips so-xl"><button type="button" class="chip" id="soNoCustBtn" hidden title="JS Customer စာရင်းထဲ မရှိသေးတဲ့ voucher customer တွေ">👤 Customer မသွင်းရသေး <b>0</b></button><button type="button" class="chip" id="soConfAll" hidden title="ပစ္စည်းပေးပြီး ငွေပြည့်ပြီးသား voucher တွေကို ငွေစစ်ပြီး မှတ်ရန်">✓ ငွေစစ်ပြီး မှတ်ရန် <b>0</b></button><button type="button" class="chip" id="soXlBtn" hidden title="JS Vouchers.xlsm ထဲက ရောင်းပြီးသား voucher တွေ ထည့်ရန်">📥 Excel import</button><button type="button" class="chip" id="soXlDel" hidden title="Excel က ထည့်ထားတဲ့ voucher တွေ ဖျက်ရန်">Excel import ပြန်ဖျက်</button><input type="file" id="soXlFile" accept=".xlsx,.xlsm,.xls" hidden></div>
+    <div class="so-dfr" id="soDFR" hidden><input type="date" id="soDFrom" aria-label="From"><span>–</span><input type="date" id="soDTo" aria-label="To"></div>   <!-- From – To dates -->
     <div class="drafts" id="soDraftBar" hidden></div>   <!-- half-written vouchers kept as drafts -->
     <div class="ex-list" id="soList"></div>
   </section>
@@ -10664,7 +10665,7 @@ $("soDelList").addEventListener("click",async e=>{const b=e.target.closest("[dat
    still show here by their own stage. */
 const poStage=p=>{const s=poState(p);return s==="done"?"fin":s==="todo"&&!poMade(p).length?"pre":"unf"};
 function renderSo(){if($("viewSo").hidden)return;soXlSync();
-  const q=pdNorm(soQ),hit=x=>!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q));
+  const q=pdNorm(soQ),[dF,dT]=soDRange(),hit=x=>(!dF||((x.date||"")>=dF&&(x.date||"")<=dT))&&(!q||[x.no,x.customer,x.phone,soDelivOf(x)].some(s=>pdNorm(s).includes(q)));
   /* this shop's vouchers; the earlier Order screen and "to buy" are JS's only */
   const js=saleBrand==="js",vs=vos.filter(soMine),ps=js?pos:[];
   /* Mr.Bee: only "money still to get" and All; JS keeps Preorder / Unfinished / Finished / to buy */
@@ -10685,13 +10686,26 @@ function renderSo(){if($("viewSo").hidden)return;soXlSync();
       ...(all?[]:ps.filter(p=>(soTab==="unfin"?ufP(p):poStage(p)===soTab)&&hit(p)).map(p=>({d:p.date,no:p.no,h:poRow(p)})))]
       .sort((a,b)=>(b.d||"").localeCompare(a.d||"")||String(b.no).localeCompare(String(a.no)));
     $("soList").innerHTML=!soLoaded?`<div class="prq-empty">Loading…</div>`:list.length?list.map(x=>x.h).join("")
-      :`<div class="prq-empty">${q?"No vouchers match the search.":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
+      :`<div class="prq-empty">${q?"No vouchers match the search.":dF?"ဒီရက်အတွင်း Voucher မရှိပါ။":soTab==="pre"?"Preorder မရှိပါ။ “+ New voucher” နှိပ်ပြီး ထည့်ပါ။":soTab==="owe"?"ငွေရရန်ကျန်တဲ့ Voucher မရှိပါ။":"မရှိပါ"}</div>`;
     $("soList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
   soMarkCur();renderSoDrafts()}
 function soListFit(){const l=$("soList");if(!l||$("viewSo").hidden)return;const t=Math.max(0,l.getBoundingClientRect().top+window.scrollY);const bb=$("botBar"),h=bb&&!bb.hidden?bb.getBoundingClientRect().height:0,R=document.documentElement.style;R.setProperty("--soLT",Math.round(t)+"px");R.setProperty("--soBB",Math.round(h)+"px")}
 addEventListener("resize",()=>soListFit());
 function soMarkCur(){soListFit();$("soList").querySelectorAll("[data-so-open]").forEach(r=>r.classList.toggle("so-cur",r.dataset.soOpen===soOpen))}
 $("soQ").addEventListener("input",e=>{soQ=e.target.value;renderSo()});
+/* date filter on the voucher list: a preset, or From – To */
+const soDIso=d=>{d=new Date(d);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+function soDRange(){const m=$("soDF")?.value||"",t=new Date();t.setHours(12,0,0,0);const T=soDIso(t);
+  if(m==="today")return[T,T];
+  if(m==="yday"){const y=new Date(t);y.setDate(y.getDate()-1);const Y=soDIso(y);return[Y,Y]}
+  if(m==="week"){const w=new Date(t);w.setDate(w.getDate()-((w.getDay()+6)%7));return[soDIso(w),T]}
+  if(m==="month")return[T.slice(0,8)+"01",T];
+  if(m==="lmonth"){const a=new Date(t.getFullYear(),t.getMonth()-1,1,12),b=new Date(t.getFullYear(),t.getMonth(),0,12);return[soDIso(a),soDIso(b)]}
+  if(m==="range"){const f=$("soDFrom").value,to=$("soDTo").value;if(!f&&!to)return["",""];return[f||"0000-00-00",to||"9999-12-31"]}
+  return["",""]}
+$("soDF").addEventListener("change",e=>{const r=e.target.value==="range";$("soDFR").hidden=!r;
+  if(r&&!$("soDFrom").value){const T=todayISO();$("soDFrom").value=T.slice(0,8)+"01";$("soDTo").value=T}renderSo()});
+["soDFrom","soDTo"].forEach(id=>$(id).addEventListener("change",()=>renderSo()));
 $("soTabs").addEventListener("change",e=>{soTab=e.target.value;renderSo()});
 document.addEventListener("click",e=>{const r=e.target.closest("[data-so-open]");if(!r)return;const v=vos.find(x=>x.id===r.dataset.soOpen);if(v)openSoView(v)});
 $("soConfAll").addEventListener("click",async()=>{if(!can("admin"))return;const list=soConfAllList();if(!list.length)return;
