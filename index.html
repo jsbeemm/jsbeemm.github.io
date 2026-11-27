@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795777683"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795777845"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10003,9 +10003,9 @@ function itUnitsRead(){return[...$("itUnits").querySelectorAll(".it-urow")].map(
 function itBaseRowRead(){const b=$("itUnit").value.trim().replace(/\s+/g," "),v=id=>Math.round(Number($(id).value)||0),p=v("itBP"),w=v("itBW"),m=v("itBM");
   if(!b||!(p>0||w>0||m>0))return[];const o={u:b,n:b};if(p>0)o.p=p;if(w>0)o.w=w;if(m>0)o.m=m;return[o]}
 /* Raw Material list: the Stock Count Unit and how much of the Base Unit it is (1 ct = 2,400 g) */
-function itStockLine(i){const b=String(i.unit||"").trim(),L=(i.stockUnits?.length?i.stockUnits:[i.stockUnit]).map(x=>String(x||"").trim()).filter(Boolean);if(!L.length)return"";
+function itStockLine(i){const b=String(i.unit||"").trim(),rows=i.units?.length?i.units:i.purUnit||i.purConv?[{u:i.purUnit,c:Number(i.purConv),of:Number(i.purConv)>=100||String(i.stockUnit||"").toLowerCase()===String(i.purUnit||"").toLowerCase()?i.unit:(i.stockUnit||i.unit)}]:[],L=(i.stockUnits?.length?i.stockUnits:[invUnitOf(i)]).map(x=>String(x||"").trim()).filter(Boolean);if(!L.length)return"";
   const n=x=>Number(x.toFixed(3)).toLocaleString("en-US");
-  return`<small class="it-stk">📏 Stock count: ${L.map(u=>{const f=b?itBaseOf(u,i.units||[],b):null;return f==null||u.toLowerCase()===b.toLowerCase()?`<b>${esc(u)}</b>${u.toLowerCase()===b.toLowerCase()?" (Base Unit)":""}`:`<b>1 ${esc(u)}</b> = ${n(f)} ${esc(b)}`}).join(" · ")}</small>`}
+  return`<small class="it-stk">📏 Stock count: ${L.map(u=>{const f=b?itBaseOf(u,rows,b):null;return f==null||u.toLowerCase()===b.toLowerCase()?`<b>${esc(u)}</b>${u.toLowerCase()===b.toLowerCase()?" (Base Unit)":""}`:`<b>1 ${esc(u)}</b> = ${n(f)} ${esc(b)}`}).join(" · ")}</small>`}
 /* how much of the base unit one of a unit is: the base unit itself is 1; a unit defined on a row is its quantity × its unit */
 /* metric units the Quantity unit can always be, worked out from the Base Unit: g → kg (1,000 g), ml → L (1,000 ml) */
 const IT_STD={g:{kg:1000},gm:{kg:1000},ml:{l:1000}};
