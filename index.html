@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795753806"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795755218"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -6519,7 +6519,7 @@ function go(v){
   if((v==="pe"&&canSeeEx())||v==="biz")v="ex";   /* one Expense page (Personal and Business together) */
   if(v==="pur"&&!canPur())v="home";
   if(v==="inv"&&!can("admin")&&!isMyInvTask(invTaskNow()))v="home";   /* Inventory: Admins, or someone given a check */
-  if(v!=="inv")invTaskCur=null;
+  if(v!=="inv"){invTaskCur=null;invTaskView=null}
   if(v!=="so"&&$("soView")&&!$("soView").hidden){$("soView").hidden=true;soOpen=null}   /* leaving the Vouchers page closes the voucher shown beside the list */
   if(v==="pt"&&isProdRole())v="home";   /* Customers & Suppliers: not for Production staff */
   if(v==="ex"||v==="biz"){if(exKind!=="all"){exDetail=null;exTab="list"}exKind="all";$("exList").innerHTML="";$("exReport").innerHTML=""}
@@ -7771,6 +7771,7 @@ async function removeInvTask(id){if(invTaskCol){await invTaskCol.doc(id).delete(
 const invAsgList=t=>(Array.isArray(t?.assignTo)?t.assignTo:[t?.assignTo]).filter(Boolean),invAsgNames=t=>invAsgList(t).map(nameOf).join(", ");const invAsgPick=new Set();
 const isMyInvTask=t=>!!t&&!t.done&&invAsgList(t).some(a=>sameId(a,me.id));
 const invTaskNow=()=>invTaskCur?invTasks.find(t=>t.id===invTaskCur)||null:null;
+var invTaskView=null;const invTaskShown=()=>invTaskNow()||(invTaskView?invTasks.find(t=>t.id===invTaskView)||null:null);
 const invTaskGot=t=>(t.iids||[]).filter(id=>invs.some(r=>r.iid===id&&r.loc===t.loc)).length;
 function invTaskRefresh(){if(invTasks.some(isMyInvTask))initInv();if(view==="home"||view==="todo")renderHome();if(view==="todo")renderTodoConf();if(view==="inv")renderInv()}
 function invAsgCardHtml(){const wk=new Date(Date.now()-7*864e5).toISOString(),L=invTasks.filter(t=>(can("admin")||sameId(t.by,me.id))&&(!t.done||String(t.doneAt||"")>=wk))
@@ -7782,7 +7783,7 @@ function invAsgCardHtml(){const wk=new Date(Date.now()-7*864e5).toISOString(),L=
 const invAsgMine=()=>invTasks.filter(t=>can("admin")||sameId(t.by,me.id));
 $("goAsg").addEventListener("click",()=>{$("asgBody").innerHTML=invAsgCardHtml()||`<p class="side-help">Assign လုပ်ထားတာ မရှိပါ</p>`;$("asgDlg").hidden=false});
 $("asgBody").addEventListener("click",e=>{const b=e.target.closest("[data-invt-view]");if(!b)return;const t=invTasks.find(x=>x.id===b.dataset.invtView);if(!t)return;$("asgDlg").hidden=true;
-  if(isMyInvTask(t)&&!can("admin")){invTaskCur=t.id}else invTaskCur=null;initItems();initInv();invMode="open";invLocCur=t.loc;invQ="";invCat="";if($("invQ"))$("invQ").value="";go("inv")});
+  if(isMyInvTask(t)&&!can("admin")){invTaskCur=t.id}else invTaskCur=null;invTaskView=invTaskCur?null:t.id;initItems();initInv();invMode="open";invLocCur=t.loc;invQ="";invCat="";if($("invQ"))$("invQ").value="";go("inv")});
 /* To-do: the checks given to me */
 function invTaskCardHtml(){const L=invTasks.filter(isMyInvTask).sort((a,b)=>String(b.at||"").localeCompare(String(a.at||"")));if(!L.length)return"";
   return`<div class="ex-card conf-card"><p class="ac-h">📦 Inventory စစ်ရန်</p><table class="ex-tbl"><tbody>${L.map(t=>{const n=invTaskGot(t);
@@ -7792,6 +7793,8 @@ $("todoConf").addEventListener("click",e=>{const b=e.target.closest("[data-invta
   invTaskCur=t.id;initItems();initInv();invMode="open";invLocCur=t.loc;invQ="";invCat="";if($("invQ"))$("invQ").value="";go("inv")});
 /* the bar above the list: for the staff member, what was given and "done"; for an Admin, Select all and Assign, and the checks given out */
 function invAsgSync(T,admin){const A=$("invAsg"),K=$("invTasks");
+  if(T&&!invTaskCur){const n=invTaskGot(T),all=(T.iids||[]).length;A.hidden=false;K.hidden=true;
+    A.innerHTML=`<span class="inv-asgt">👤 <b>${esc(invAsgNames(T))}</b> · 📦 ${esc(T.loc)} · ${T.done?`✓ စစ်ပြီး ${esc(rcvWhen(T.doneAt))}`:`⏳ ထည့်ပြီး ${n} / ${all}`}${T.note?`<br><small>${esc(T.note)}</small>`:""}</span><button type="button" class="btn ghost" data-invt-all>Inventory အားလုံး ပြရန်</button>`;return}
   if(T){const n=invTaskGot(T);A.hidden=false;K.hidden=true;
     A.innerHTML=`<span class="inv-asgt">📦 <b>${esc(T.loc)}</b> · ${esc(nameOf(T.by))} ပေးထားတဲ့ ${(T.iids||[]).length} ခု · ထည့်ပြီး ${n}${T.note?`<br><small>${esc(T.note)}</small>`:""}</span><button type="button" class="btn" data-invt-done>✓ စစ်ပြီးပါပြီ</button>`;return}
   if(!admin||invMode!=="open"||!invLocCur){A.hidden=true;K.hidden=true;return}
@@ -7804,6 +7807,7 @@ $("invList").addEventListener("change",e=>{if(!e.target.matches(".inv-ck"))retur
 $("invAsg").addEventListener("change",e=>{if(e.target.matches(".inv-asgck")){if(e.target.checked)invAsgPick.add(e.target.value);else invAsgPick.delete(e.target.value);return}if(!e.target.matches(".inv-ckall"))return;const on=e.target.checked;invShownIds.forEach(id=>on?invSel.add(id):invSel.delete(id));
   $("invList").querySelectorAll(".inv-ck").forEach(c=>c.checked=invSel.has(c.closest("[data-iid]").dataset.iid));invAsgSync(null,can("admin"))});
 $("invAsg").addEventListener("click",async e=>{
+  if(e.target.closest("[data-invt-all]")){invTaskView=null;renderInv();return}
   if(e.target.closest("[data-invt-done]")){const T=invTaskNow();if(!T)return;const n=invTaskGot(T),left=(T.iids||[]).length-n;
     if(left>0&&!await askConfirm("စစ်ပြီးပြီလား?",`မထည့်ရသေးတာ ${left} ခု ကျန်ပါသေးတယ်။`,"✓ ပြီးပါပြီ",true))return;
     try{const now=new Date().toISOString();await saveInvTask({...T,done:true,doneAt:now,doneBy:me.id||null});invTaskCur=null;toast("✓ Inventory စစ်ပြီး");go("todo")}catch(x){toast("သိမ်းမရပါ")}return}
@@ -7813,11 +7817,11 @@ $("invAsg").addEventListener("click",async e=>{
 $("invTasks").addEventListener("click",async e=>{const b=e.target.closest("[data-invt-del]");if(!b||!can("admin"))return;const t=invTasks.find(x=>x.id===b.dataset.invtDel);if(!t)return;
   if(!await askConfirm("ဒီ assign ကို ဖျက်မလား?",`${invAsgNames(t)} · ${t.loc} · ${(t.iids||[]).length} ခု\nထည့်ပြီးသား Opening ဂဏန်းတွေကတော့ မပျက်ပါ။`))return;
   try{await removeInvTask(t.id)}catch(x){toast("ဖျက်မရပါ")}});
-function renderInv(){if($("viewInv").hidden)return;const T=invTaskNow(),admin=can("admin");if(T){invMode="open";invLocCur=T.loc}
+function renderInv(){if($("viewInv").hidden)return;const T=invTaskShown(),admin=can("admin");if(T){invMode="open";invLocCur=T.loc}
   if(document.activeElement!==$("invLoc"))rcvFillList("loc",invLocCur);
   $("invTabs").innerHTML=[["open","Opening ထည့်ရန်"],["sum","စုစုပေါင်း"]].map(([k,n])=>`<button type="button" class="chip" data-invmode="${k}" aria-pressed="${invMode===k}">${n}</button>`).join("");
   $("invLocW").hidden=invMode!=="open"||!!T;$("invTabs").hidden=!!T;
-  const q=pdNorm(invQ),inQ=items.filter(i=>!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q));
+  const q=pdNorm(invQ),inQ=items.filter(i=>(!T||(T.iids||[]).includes(i.id))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(invCat&&!cats.includes(invCat))invCat="";
   $("invCats").innerHTML=`<button type="button" class="chip" data-invcat="" aria-pressed="${!invCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-invcat="${esc(c)}" aria-pressed="${invCat===c}">${esc(c)}</button>`).join("");
   const list=inQ.filter(i=>(!invCat||(i.cat||"Other")===invCat)&&(!T||(T.iids||[]).includes(i.id))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
