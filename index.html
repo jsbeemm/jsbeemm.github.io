@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760790"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795760899"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8831,7 +8831,7 @@ function rcvFillList(k,cur){const L=lstOf(k),list=lstItems(k),s=$(L.sel);
 function renderLst(){const L=lstOf(lstKey);
   $("cityDlgT").textContent=L.title;$("cityColH").textContent=L.col;$("cityNew").placeholder=`New ${L.one} name`;
   $("cityCntH").textContent=lstKey==="loc"?"Items":"Arrivals";
-  {const P=$("cityParent"),isL=lstKey==="loc",cur=P.value;P.hidden=!isL;if(isL){P.innerHTML=`<option value="">➕ Add new main location</option>`+lstItems("loc").filter(c=>!locSub(c)).map(c=>`<option value="${esc(c)}">📍 ${esc(c)}</option>`).join("");P.value=[...P.options].some(o=>o.value===cur)?cur:"";$("cityNew").placeholder=P.value?`${P.value} ထဲက Sublocation နာမည်`:"Main location နာမည်"}}
+  {const P=$("cityParent"),isL=lstKey==="loc",cur=P.value;P.hidden=!isL;if(isL){P.innerHTML=`<option value="">➕ Add new main location</option>`+lstItems("loc").filter(c=>!locSub(c)).map(c=>`<option value="${esc(c)}">📍 ${esc(c)}</option>`).join("");P.value=[...P.options].some(o=>o.value===cur)?cur:"";$("cityNew").placeholder=P.value?`${P.value}'s Sublocation name`:"Main location နာမည်"}}
   $("cityRows").innerHTML=lstItems(lstKey).map((c,i)=>{const n=lstUses(lstKey,c).length;
     return c===lstEdit
       ?`<tr class="editing" data-i="${i}"><td><input type="text" class="city-name" value="${esc(lstKey==="loc"&&locSub(c)?c.split(LOC_SEP).slice(1).join(LOC_SEP):c)}" aria-label="${L.col} name"></td><td>${n}</td>
@@ -8872,7 +8872,7 @@ async function lstAddFromDlg(){const L=lstOf(lstKey);let n=lstNorm($("cityNew").
     /* opened from "+ Add …": the new name is picked and the form closes */
     if(lstPick){lstPick=false;rcvFillList(lstKey,n);$("cityDlg").hidden=true;if(lstKey==="loc")invPickLoc(n)}toast(`${n} added`)}catch(x){toast("သိမ်းမရပါ")}}
 $("cityAddBtn").addEventListener("click",lstAddFromDlg);
-$("cityParent").addEventListener("change",()=>{const p=$("cityParent").value;$("cityNew").placeholder=p?`${p} ထဲက Sublocation နာမည်`:"Main location နာမည်";$("cityNew").focus()});
+$("cityParent").addEventListener("change",()=>{const p=$("cityParent").value;$("cityNew").placeholder=p?`${p}'s Sublocation name`:"Main location နာမည်";$("cityNew").focus()});
 $("cityNew").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();lstAddFromDlg()}});
 function openLst(k,pick){lstKey=k;lstPick=!!pick;lstEdit=null;$("cityNew").value="";renderLst();$("cityDlg").hidden=false;if(pick)setTimeout(()=>$("cityNew").focus(),50)}
 Object.entries(RCV_LISTS).forEach(([k,L])=>{$(L.mng).innerHTML=PENCIL;$(L.mng).addEventListener("click",()=>openLst(k,false));
