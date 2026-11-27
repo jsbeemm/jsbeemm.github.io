@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795753712"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795753728"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8809,7 +8809,7 @@ function rcvFillList(k,cur){const L=lstOf(k),list=lstItems(k),s=$(L.sel);
 function renderLst(){const L=lstOf(lstKey);
   $("cityDlgT").textContent=L.title;$("cityColH").textContent=L.col;$("cityNew").placeholder=`New ${L.one} name`;
   $("cityCntH").textContent=lstKey==="loc"?"Items":"Arrivals";
-  {const P=$("cityParent"),isL=lstKey==="loc",cur=P.value;P.hidden=!isL;if(isL){P.innerHTML=`<option value="">➕ Add new main location</option>`+lstItems("loc").filter(c=>!locSub(c)).map(c=>`<option value="${esc(c)}">📍 ${esc(c)}</option>`).join("");P.value=[...P.options].some(o=>o.value===cur)?cur:""}}
+  {const P=$("cityParent"),isL=lstKey==="loc",cur=P.value;P.hidden=!isL;if(isL){P.innerHTML=`<option value="">➕ Add new main location</option>`+lstItems("loc").filter(c=>!locSub(c)).map(c=>`<option value="${esc(c)}">📍 ${esc(c)}</option>`).join("");P.value=[...P.options].some(o=>o.value===cur)?cur:"";$("cityNew").placeholder=P.value?`${P.value} ထဲက Sublocation နာမည်`:"Main location နာမည်"}}
   $("cityRows").innerHTML=lstItems(lstKey).map((c,i)=>{const n=lstUses(lstKey,c).length;
     return c===lstEdit
       ?`<tr class="editing" data-i="${i}"><td><input type="text" class="city-name" value="${esc(lstKey==="loc"&&locSub(c)?c.split(LOC_SEP).slice(1).join(LOC_SEP):c)}" aria-label="${L.col} name"></td><td>${n}</td>
