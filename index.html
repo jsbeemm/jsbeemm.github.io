@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795777466"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795777683"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10079,11 +10079,13 @@ $("itPartAdd").addEventListener("click",()=>{const P=$("itParts");if(!P.children
 $("itParts").addEventListener("click",e=>{const b=e.target.closest("[data-it-prm]");if(b)b.closest(".it-prow").remove()});
 /* the parts' stock (all locations of Inventory) and how many can be sold: the smallest whole number of sets */
 const invTotOf=(id,part)=>invs.filter(r=>r.iid===id&&(part?r.part===part:!r.part)).reduce((a,r)=>a+(Number(r.qty)||0),0);
+/* how many of a shared raw material there are: counted by its own parts (cup + lid), the complete sets; else its own count */
+const invHaveOf=id=>{const x=items.find(y=>y.id===id);return x&&(x.parts||[]).some(p=>!p.iid)?Math.max(0,itPartStock(x)?.sets??0):invTotOf(id)};
 /* sets: how many of this design are complete from its own parts (or its own count when it has none);
    sell: that, held back by any shared raw material */
 function itPartStock(i){const P=i?.parts||[];if(!P.length)return null;const own=P.filter(p=>!p.iid),lk=P.filter(p=>p.iid),counted=invs.some(r=>r.iid===i.id);
   const Q=own.map(p=>({...p,have:counted?invTotOf(i.id,p.n):null}));
-  const L=lk.map(p=>{const x=items.find(y=>y.id===p.iid);return{...p,n:x?.name||p.n||"?",link:1,have:invs.some(r=>r.iid===p.iid)?invTotOf(p.iid):null}});
+  const L=lk.map(p=>{const x=items.find(y=>y.id===p.iid);return{...p,n:x?.name||p.n||"?",link:1,have:invs.some(r=>r.iid===p.iid)?invHaveOf(p.iid):null}});
   if(!counted)return{P:[...Q,...L],sell:null,sets:null};
   const sets=own.length?Math.min(...Q.map(p=>Math.floor(p.have/(Number(p.q)||1)))):invTotOf(i.id);
   return{P:[...Q,...L],sets,sell:Math.min(sets,...L.map(p=>p.have==null?Infinity:Math.floor(p.have/(Number(p.q)||1))))}}
@@ -10092,7 +10094,7 @@ let itLinkSrc=null,itLinkIdx=null;
 function itLinkUsers(id){if(itLinkSrc!==items||itLinkIdx?.n!==items.length){itLinkSrc=items;itLinkIdx=new Map();itLinkIdx.n=items.length;items.forEach(x=>(x.parts||[]).forEach(p=>{if(p.iid){if(!itLinkIdx.has(p.iid))itLinkIdx.set(p.iid,[]);itLinkIdx.get(p.iid).push(x)}}))}return itLinkIdx.get(id)||[]}
 function itShareShort(sid){const users=itLinkUsers(sid);if(!users.length)return null;let need=0;
   for(const u of users){const st=itPartStock(u);if(st?.sets==null)continue;need+=Math.max(0,st.sets)*(Number(u.parts.find(p=>p.iid===sid)?.q)||1)}
-  const have=invTotOf(sid);return{users,need,have,short:need>have}}
+  const have=invHaveOf(sid);return{users,need,have,short:need>have}}
 const itPartLine=i=>{const st=itPartStock(i);if(!st)return"";const nm=p=>(p.link?"🔗 ":"")+esc(p.n);
   if(st.sell==null)return st.P.map(p=>nm(p)+(p.q>1?" ×"+p.q:"")).join(" + ");
   return(st.P.some(p=>!p.link)?"":`ဒီ design ${fmtQ(st.sets)} · `)+st.P.map(p=>`${nm(p)} ${p.have==null?"–":fmtQ(p.have)}`).join(" · ")+` → <b>ရောင်းရ ${fmtQ(Math.max(0,st.sell))}</b>`
