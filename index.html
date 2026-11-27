@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795763964"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795764335"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1285,6 +1285,12 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 .inv-selm .inv-row{grid-template-columns:20px 44px minmax(0,1fr) auto}.inv-ck{width:auto;margin:0}
 .inv-asg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--accent-soft)}.inv-asg select,.inv-asg input:not([type=checkbox]){width:auto;min-width:0;max-width:100%;margin:0;flex:1 1 140px}.inv-asg .btn{width:auto;margin:0;flex:none}.inv-asg .so-pmr input{margin:0}.inv-asgt{flex:1 1 200px}.inv-asgh{color:var(--muted)}
 .inv-asgto{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}.inv-asgp{cursor:pointer;display:inline-flex;align-items:center;gap:6px}.inv-asgp input{width:auto;margin:0}
+.inv-bal{color:var(--ink)!important}.inv-bal b{font-weight:700}.inv-bal span{color:var(--muted)}
+.inv-mvf{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:10px 12px;margin-bottom:10px}.inv-mvt{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;margin:0}.inv-mvt .chip{flex:none}.inv-mvt input{flex:0 1 180px;min-width:0;width:auto;margin:0 0 0 auto}
+.inv-mvf input,.inv-mvf select{height:44px;min-height:0;box-sizing:border-box;margin:0}
+.inv-mvr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.inv-mvr>*{min-width:0;width:100%}.inv-mvr .btn{height:44px;padding-block:0;margin:0;align-self:start}
+@media (min-width:700px){.inv-mvr{grid-template-columns:140px auto minmax(0,1fr) auto}}
+.inv-mvl{display:grid;gap:6px}.inv-mvi{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.inv-mvq{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}.inv-mvi.in .inv-mvq{color:var(--mint)}.inv-mvi.out .inv-mvq{color:var(--accent)}.inv-mvq small{font-weight:400;color:var(--muted)}
 .inv-hist{font-size:12px;color:var(--muted);margin-top:2px}.inv-hist summary{cursor:pointer;list-style:none}.inv-hist summary::-webkit-details-marker{display:none}.inv-hist ul{margin:4px 0 0;padding-left:16px}.inv-hist li{margin:2px 0}.inv-hist b{color:var(--ink);font-weight:600}
 .inv-tasks{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}.inv-tdone{opacity:.6}.inv-tx{border:0;background:none;color:var(--muted);cursor:pointer;padding:0 2px;font:inherit;width:auto;min-height:0}
 .inv-row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
@@ -7761,14 +7767,14 @@ function invLocalLoad(){try{return JSON.parse(localStorage.getItem("cakeInv")||"
 function invLocalSave(){try{localStorage.setItem("cakeInv",JSON.stringify(invs))}catch(e){}}
 async function saveInv(r){if(invCol){await invCol.doc(r.id).set(r);return}const i=invs.findIndex(x=>x.id===r.id);if(i>=0)invs[i]=r;else invs.push(r);invLocalSave();invRefresh()}
 async function removeInv(id){if(invCol){await invCol.doc(id).delete();return}invs=invs.filter(x=>x.id!==id);invLocalSave();invRefresh()}
-function initInv(){if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!(can("admin")||invTasks.some(isMyInvTask)))return;invCol=db.collection("inventory");
+function initInv(){initInvMoves();if(!db){if(!invs.length)invs=invLocalLoad();return}if(invCol||!(can("admin")||invTasks.some(isMyInvTask)))return;invCol=db.collection("inventory");
   invCol.onSnapshot(s=>{invs=s.docs.map(d=>({...d.data(),id:d.id}));invRefresh()},()=>{invCol=null})}
 /* while a quantity is being typed the list is not redrawn (only the count line), so the box keeps its place */
 function invRefresh(){if(view==="items"&&items.some(i=>(i.parts||[]).length))renderItems();if($("viewInv").hidden)return;if(document.activeElement?.matches?.("#invList .inv-q"))invMetaSync();else renderInv()}
 const invPickLoc=v=>{if(v&&v!=="__new")invLocCur=v;renderInv()};
 const fmtQ=n=>Number(n).toLocaleString("en-US",{maximumFractionDigits:3});
 function invMetaSync(){const n=invs.filter(r=>r.loc===invLocCur).length;
-  $("invMeta").textContent=invMode==="open"&&invLocCur?`${invLocCur} · Opening ထည့်ပြီး ${n} ခု`:invMode==="sum"?`Location ${lstItems("loc").length} ခု · ပစ္စည်း ${new Set(invs.map(r=>r.iid)).size} ခု`:""}
+  $("invMeta").textContent=invMode==="move"&&invLocCur?`${invLocCur} · သွင်း/ထုတ် ${invMoves.filter(m=>m.loc===invLocCur).length} ခု`:invMode==="open"&&invLocCur?`${invLocCur} · Opening ထည့်ပြီး ${n} ခု`:invMode==="sum"?`Location ${lstItems("loc").length} ခု · ပစ္စည်း ${new Set(invs.map(r=>r.iid)).size} ခု`:""}
 /* the history of an opening line (older lines without one: who added it and who last changed it) */
 function invHistOf(r){if(!r)return[];if(Array.isArray(r.hist)&&r.hist.length)return r.hist;const H=[];if(r.at)H.push({q:r.updatedAt?null:r.qty,by:r.by,at:r.at});if(r.updatedAt)H.push({q:r.qty,by:r.updatedBy,at:r.updatedAt});return H}
 function invWhoHtml(rs,showLoc){const E=[];rs.forEach(r=>invHistOf(r).forEach(h=>E.push({...h,loc:r.loc,part:r.part,unit:r.unit})));if(!E.length)return"";
@@ -7832,16 +7838,17 @@ $("invAsg").addEventListener("click",async e=>{
 $("invTasks").addEventListener("click",async e=>{const b=e.target.closest("[data-invt-del]");if(!b||!can("admin"))return;const t=invTasks.find(x=>x.id===b.dataset.invtDel);if(!t)return;
   if(!await askConfirm("ဒီ assign ကို ဖျက်မလား?",`${invAsgNames(t)} · ${t.loc} · ${(t.iids||[]).length} ခု\nထည့်ပြီးသား Opening ဂဏန်းတွေကတော့ မပျက်ပါ။`))return;
   try{await removeInvTask(t.id)}catch(x){toast("ဖျက်မရပါ")}});
-function renderInv(){if($("viewInv").hidden)return;const T=invTaskShown(),admin=can("admin");if(T){invMode="open";invLocCur=T.loc}
+function renderInv(){if($("viewInv").hidden)return;const T=invTaskShown(),admin=can("admin");if(T){invMode="open";invLocCur=T.loc}if(invMode==="move"&&!admin)invMode="open";
   if(document.activeElement!==$("invLoc"))rcvFillList("loc",invLocCur);
-  $("invTabs").innerHTML=[["open","Opening ထည့်ရန်"],["sum","စုစုပေါင်း"]].map(([k,n])=>`<button type="button" class="chip" data-invmode="${k}" aria-pressed="${invMode===k}">${n}</button>`).join("");
-  $("invLocW").hidden=invMode!=="open"||!!T;$("invTabs").hidden=!!T;
+  $("invTabs").innerHTML=[["open","Opening ထည့်ရန်"],...(admin?[["move","သွင်း / ထုတ်"]]:[]),["sum","စုစုပေါင်း"]].map(([k,n])=>`<button type="button" class="chip" data-invmode="${k}" aria-pressed="${invMode===k}">${n}</button>`).join("");
+  $("invLocW").hidden=(invMode!=="open"&&invMode!=="move")||!!T;$("invTabs").hidden=!!T;$("invQ").hidden=invMode==="move";$("invCats").hidden=invMode==="move";
   const q=pdNorm(invQ),inQ=items.filter(i=>(!T||(T.iids||[]).includes(i.id))&&(!q||pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)));
   const cats=[...new Set(inQ.map(i=>i.cat||"Other"))].sort();if(invCat&&!cats.includes(invCat))invCat="";
   $("invCats").innerHTML=`<button type="button" class="chip" data-invcat="" aria-pressed="${!invCat}">All</button>`+cats.map(c=>`<button type="button" class="chip" data-invcat="${esc(c)}" aria-pressed="${invCat===c}">${esc(c)}</button>`).join("");
   const list=inQ.filter(i=>(!invCat||(i.cat||"Other")===invCat)&&(!T||(T.iids||[]).includes(i.id))).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
   const pic=i=>i.photo?`<img src="${esc(photoUrl(i.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`;
   invMetaSync();invShownIds=list.slice(0,500).map(i=>i.id);invAsgSync(T,admin);
+  if(invMode==="move"){$("invList").classList.remove("inv-selm");$("invList").innerHTML=invMoveHtml();$("invList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);invMvUnits();return}
   if(invMode==="open"){
     if(!invLocCur){$("invList").innerHTML=`<div class="prq-empty">Location ရွေးပါ — မရှိသေးရင် "+ Add location…" နဲ့ ထည့်ပါ</div>`;return}
     $("invList").innerHTML=list.length?list.slice(0,500).map(i=>{const r=invs.find(x=>x.iid===i.id&&x.loc===invLocCur),u=invUnitFix(i,r?.unit||invUnitPick[i.id]||invUnitOf(i)),us=invUnitsOf(i);if(u&&!us.includes(u))us.push(u);
@@ -7858,15 +7865,58 @@ function renderInv(){if($("viewInv").hidden)return;const T=invTaskShown(),admin=
     $("invList").innerHTML=has.length?has.map(i=>{const own=(i.parts||[]).filter(p=>!p.iid);if(own.length){const st=itPartStock(i),locs=[...new Set(invs.filter(r=>r.iid===i.id&&r.part).map(r=>r.loc))].sort();
         return`<div class="inv-row inv-sum" data-sid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${locs.map(l=>`<span class="pur-pill">${esc(l)} ${own.map(p=>{const r=invs.find(x=>x.iid===i.id&&x.loc===l&&x.part===p.n);return`${esc(p.n)} <b>${r?fmtQ(r.qty):"–"}</b>`}).join(" · ")}</span>`).join("")}</span>${st?.P.some(p=>p.link)?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
         <span class="inv-tot">${st&&st.sell!=null?st.P.map(p=>`<small>${p.link?"🔗 ":""}${esc(p.n)}</small> <b>${p.have==null?"–":fmtQ(p.have)}</b>`).join("<br>")+`<br><small>ရောင်းရ</small> <b class="inv-sellb">${fmtQ(Math.max(0,st.sell))}</b>`:""}</span></div>`}
-      const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>invUnitFix(i,r.unit||invUnitOf(i)),one=new Set(rs.map(uOf)).size===1,tot=rs.reduce((a,r)=>a+(Number(r.qty)||0),0);
-      return`<div class="inv-row inv-sum" data-sid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(r.qty)}</b>${one?"":` ${esc(uOf(r))}`}</span>`).join("")}</span>${(i.parts||[]).length?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
-        <span class="inv-tot">${one?`<b>${fmtQ(tot)}</b> <small>${esc(uOf(rs[0]))}</small>`:(()=>{const by={};rs.forEach(r=>{const k=uOf(r);by[k]=(by[k]||0)+(Number(r.qty)||0)});return Object.entries(by).map(([k,q])=>`<b>${fmtQ(q)}</b> <small>${esc(k)}</small>`).join("<br>")})()}</span></div>`}).join("")
+      const rs=invs.filter(r=>r.iid===i.id).sort((a,b)=>String(a.loc).localeCompare(String(b.loc))),uOf=r=>invUnitFix(i,r.unit||invUnitOf(i)),one=new Set(rs.map(uOf)).size===1,bq=r=>invBalOf(r,i).bal,tot=rs.reduce((a,r)=>a+bq(r),0);
+      return`<div class="inv-row inv-sum" data-sid="${esc(i.id)}">${pic(i)}<span class="inv-nm"><b data-t="${esc(i.name||"")}"></b><span class="inv-locs">${rs.map(r=>`<span class="pur-pill">${esc(r.loc)} <b>${fmtQ(bq(r))}</b>${one?"":` ${esc(uOf(r))}`}</span>`).join("")}</span>${(i.parts||[]).length?`<small class="inv-sell">${itPartLine(i)}</small>`:""}${itShareLine(i)}</span>
+        <span class="inv-tot">${one?`<b>${fmtQ(tot)}</b> <small>${esc(uOf(rs[0]))}</small>`:(()=>{const by={};rs.forEach(r=>{const k=uOf(r);by[k]=(by[k]||0)+bq(r)});return Object.entries(by).map(([k,q])=>`<b>${fmtQ(q)}</b> <small>${esc(k)}</small>`).join("<br>")})()}</span></div>`}).join("")
       :`<div class="prq-empty">${q||invCat?"No match.":"Opening မထည့်ရသေးပါ"}</div>`}
   $("invList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);
   const sel=invMode==="open"&&admin&&!T&&!!invLocCur;$("invList").classList.toggle("inv-selm",sel);
   if(sel)$("invList").querySelectorAll(".inv-row[data-iid]").forEach(r=>r.insertAdjacentHTML("afterbegin",`<input type="checkbox" class="inv-ck" ${invSel.has(r.dataset.iid)?"checked":""} aria-label="ရွေးရန်">`));
-  $("invList").querySelectorAll(".inv-row[data-iid],.inv-row[data-sid]").forEach(row=>{const id=row.dataset.iid||row.dataset.sid,rs=invs.filter(r=>r.iid===id&&(row.dataset.sid||r.loc===invLocCur));const h=invWhoHtml(rs,!!row.dataset.sid);if(h)row.querySelector(".inv-nm")?.insertAdjacentHTML("beforeend",h)})}
+  $("invList").querySelectorAll(".inv-row[data-iid],.inv-row[data-sid]").forEach(row=>{const id=row.dataset.iid||row.dataset.sid,rs=invs.filter(r=>r.iid===id&&(row.dataset.sid||r.loc===invLocCur));const h=invWhoHtml(rs,!!row.dataset.sid);if(h)row.querySelector(".inv-nm")?.insertAdjacentHTML("beforeend",h);
+    if(row.dataset.iid){const it=items.find(x=>x.id===id),bl=rs.filter(r=>!r.part).map(r=>invBalLine(invBalOf(r,it))).join("");if(bl)row.querySelector(".inv-nm small")?.insertAdjacentHTML("afterend",bl)}})}
 $("invTabs").addEventListener("click",e=>{const b=e.target.closest("[data-invmode]");if(b){invMode=b.dataset.invmode;renderInv()}});
+/* ---------- Stock in / out entered by hand (until Purchase is linked): each move is {iid, loc, type:"in"|"out", qty, unit, date, note, by, at}
+   in the shared "invMoves" collection. Stock = Opening + in − out, counting only moves dated on or after the day the opening was last entered. ---------- */
+var invMoves=[],invMvCol=null,invMvType="in";
+const invMvLocalSave=()=>{try{localStorage.setItem("cakeInvMoves",JSON.stringify(invMoves))}catch(e){}};
+function initInvMoves(){if(!db){if(!invMoves.length)try{invMoves=JSON.parse(localStorage.getItem("cakeInvMoves")||"[]")}catch(e){}return}if(invMvCol||!can("admin"))return;invMvCol=db.collection("invMoves");
+  invMvCol.onSnapshot(s=>{invMoves=s.docs.map(d=>({...d.data(),id:d.id}));invRefresh()},()=>{invMvCol=null})}
+async function saveInvMove(m){if(invMvCol){await invMvCol.doc(m.id).set(m);return}const k=invMoves.findIndex(x=>x.id===m.id);if(k>=0)invMoves[k]=m;else invMoves.push(m);invMvLocalSave();invRefresh()}
+async function removeInvMove(id){if(invMvCol){await invMvCol.doc(id).delete();return}invMoves=invMoves.filter(x=>x.id!==id);invMvLocalSave();invRefresh()}
+/* the day an opening line was last entered: moves from that day on are added to it */
+const invOpenDay=r=>{const h=invHistOf(r),at=h.length?h[h.length-1].at:(r.updatedAt||r.at);return at?localDay(at):""};
+/* stock of one opening line: {open, inn, out, bal, ms} */
+function invBalOf(r,it){const u=String(r.unit||invUnitOf(it)||"").toLowerCase(),from=invOpenDay(r);
+  const ms=invMoves.filter(m=>m.iid===r.iid&&m.loc===r.loc&&!r.part&&String(m.unit||"").toLowerCase()===u&&(!from||String(m.date||"")>=from));
+  const inn=ms.filter(m=>m.type==="in").reduce((a,m)=>a+(Number(m.qty)||0),0),out=ms.filter(m=>m.type!=="in").reduce((a,m)=>a+(Number(m.qty)||0),0),open=Number(r.qty)||0;
+  return{open,inn,out,bal:open+inn-out,ms}}
+const invBalLine=b=>b.ms.length?`<small class="inv-bal">လက်ကျန် <b>${fmtQ(b.bal)}</b> <span>(Opening ${fmtQ(b.open)}${b.inn?` · +${fmtQ(b.inn)}`:""}${b.out?` · −${fmtQ(b.out)}`:""})</span></small>`:"";
+const invMvLabel=i=>`${i.name||""}${i.code?` · ${i.code}`:""}`;
+/* the form and this location's moves */
+function invMoveHtml(){if(!invLocCur)return`<div class="prq-empty">Location ရွေးပါ</div>`;
+  const pickable=items.filter(i=>!(i.parts||[]).some(p=>!p.iid)&&invs.some(r=>r.iid===i.id&&r.loc===invLocCur&&!r.part)).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  const ms=invMoves.filter(m=>m.loc===invLocCur).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))||String(b.at||"").localeCompare(String(a.at||"")));
+  return`<div class="inv-mvf"><div class="chips inv-mvt"><button type="button" class="chip" data-mvt="in" aria-pressed="${invMvType==="in"}">➕ သွင်း</button><button type="button" class="chip" data-mvt="out" aria-pressed="${invMvType==="out"}">➖ ထုတ်</button><input type="date" id="invMvDate" value="${todayISO()}" aria-label="Date"></div>
+    <input id="invMvItem" list="invMvList" autocomplete="off" placeholder="Raw material (Opening ထည့်ပြီးသားထဲက)" aria-label="Raw material"><datalist id="invMvList">${pickable.map(i=>`<option value="${esc(invMvLabel(i))}"></option>`).join("")}</datalist>
+    <div class="inv-mvr"><input id="invMvQty" type="number" inputmode="decimal" min="0" step="any" placeholder="Qty" aria-label="Qty"><select id="invMvUnit" aria-label="Unit"><option value="">Unit</option></select><input id="invMvNote" autocomplete="off" placeholder="Note (မထည့်လည်းရ)" aria-label="Note"><button type="button" class="btn" id="invMvSave">သိမ်းမည်</button></div></div>
+    ${ms.length?`<div class="inv-mvl">${ms.map(m=>`<div class="inv-mvi ${m.type==="in"?"in":"out"}"><span class="inv-mvq">${m.type==="in"?"+":"−"}${fmtQ(m.qty)} <small>${esc(m.unit||"")}</small></span><span class="inv-nm"><b data-t="${esc(m.name||"")}"></b><small>${esc(soDate(m.date))} · ${esc(nameOf(m.by))}${m.note?` · ${esc(m.note)}`:""}</small></span><button type="button" class="inv-tx" data-mv-del="${esc(m.id)}" aria-label="ဖျက်ရန်" title="ဖျက်ရန်">✕</button></div>`).join("")}</div>`
+      :`<div class="prq-empty">${esc(invLocCur)} မှာ သွင်း/ထုတ် မရှိသေးပါ</div>`}`}
+const invMvItemOf=()=>{const v=$("invMvItem")?.value.trim()||"";return items.find(i=>invMvLabel(i)===v)||items.find(i=>String(i.name||"").toLowerCase()===v.toLowerCase())||null};
+function invMvUnits(){const it=invMvItemOf(),S=$("invMvUnit");if(!S)return;const us=it?[...new Set(invs.filter(r=>r.iid===it.id&&r.loc===invLocCur&&!r.part).map(r=>invUnitFix(it,r.unit||invUnitOf(it))))]:[];
+  S.innerHTML=us.length?us.map(u=>`<option>${esc(u)}</option>`).join(""):`<option value="">Unit</option>`}
+$("invList").addEventListener("input",e=>{if(e.target.id==="invMvItem")invMvUnits()});
+$("invList").addEventListener("click",async e=>{
+  const t=e.target.closest("[data-mvt]");if(t){invMvType=t.dataset.mvt;$("invList").querySelectorAll("[data-mvt]").forEach(b=>b.setAttribute("aria-pressed",b===t));return}
+  const d=e.target.closest("[data-mv-del]");if(d){if(!can("admin"))return;const m=invMoves.find(x=>x.id===d.dataset.mvDel);if(!m)return;
+    if(!await askConfirm("ဒီ သွင်း/ထုတ် ကို ဖျက်မလား?",`${m.type==="in"?"+":"−"}${fmtQ(m.qty)} ${m.unit||""} · ${m.name||""} · ${soDate(m.date)}`))return;try{await removeInvMove(m.id);toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}return}
+  if(!e.target.closest("#invMvSave")||!can("admin"))return;
+  const it=invMvItemOf();if(!it){toast("Raw material ရွေးပါ");$("invMvItem").focus();return}
+  const unit=$("invMvUnit").value;if(!invs.some(r=>r.iid===it.id&&r.loc===invLocCur&&!r.part)||!unit){toast(`${invLocCur} မှာ Opening အရင်ထည့်ပါ`);return}
+  const q=Number($("invMvQty").value);if(!(q>0)){toast("Qty ထည့်ပါ");$("invMvQty").focus();return}
+  const date=$("invMvDate").value||todayISO(),now=new Date().toISOString();
+  const m={id:"mv"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),iid:it.id,code:it.code||"",name:it.name||"",loc:invLocCur,type:invMvType,qty:q,unit,date,note:$("invMvNote").value.trim()||null,by:me.id||null,at:now};
+  try{await saveInvMove(m);toast(`✓ ${m.type==="in"?"သွင်း":"ထုတ်"} ${fmtQ(q)} ${unit}`);renderInv()}catch(x){toast("သိမ်းမရပါ")}});
+
 $("invCats").addEventListener("click",e=>{const b=e.target.closest("[data-invcat]");if(b){invCat=b.dataset.invcat;renderInv()}});
 $("invQ").addEventListener("input",e=>{invQ=e.target.value;renderInv()});
 $("invLoc").addEventListener("change",()=>{const v=$("invLoc").value;if(v!=="__new")invPickLoc(v)});
