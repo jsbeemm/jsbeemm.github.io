@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844747"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844953"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -750,6 +750,8 @@ label.f > span b{color:var(--accent);font-weight:500}
 .pr-tierpic{flex:1 1 0;min-width:0;display:flex;flex-direction:column-reverse;align-items:center}   /* the tier drawing in the photo row; note comes after svg in DOM so column-reverse puts it on top */
 .pr-tierpic svg{display:block;width:auto;height:auto;max-width:100%;max-height:var(--ph,1.1in)}
 .live-slip .pr-tierpic svg{max-height:110px}.pv-shot .pr-tierpic svg{max-height:170px}
+.pr-pics.pr-tlead{flex-wrap:wrap;justify-content:center}.pr-tlead>.pr-tierpic,.pr-tlead>.pr-tierpic.big{flex:0 0 100%}.pr-tlead>.pr-tierpic svg,.pr-tlead>.pr-tierpic.big svg{max-height:calc(var(--ph,1.1in)*1.9)}.pr-tlead>.pr-pic{flex:0 0 calc((100% - 12px)/4)}.pr-tlead>.pr-pic img{max-height:calc(var(--ph,1.1in)*.75);margin:0 auto}
+.live-slip .pr-tlead>.pr-tierpic svg{max-height:200px}.live-slip .pr-tlead>.pr-pic img{max-height:64px}.pv-shot .pr-tlead>.pr-tierpic svg{max-height:300px}.pv-shot .pr-tlead>.pr-pic img{max-height:110px}
 .pr-tierpic.big{flex:2 1 0}.pr-tierpic.big svg{max-height:calc(var(--ph,1.1in)*1.8)}   /* a Wedding Cake drawing gets more room */
 /* width/height auto with max limits keeps each photo in its own ratio (html2canvas ignores object-fit) */
 .pr-pic img{display:block;width:auto;height:auto;max-width:100%;max-height:var(--ph,1.1in);opacity:var(--po,.35)}
@@ -5248,7 +5250,8 @@ function slipHTML(o,live=false){
   const picRow=(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
       const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape,false,live?undefined:printColor(o.date))}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
       const nAll=pics.length+(tb?1:0),cols=nAll<=4?nAll:Math.ceil(nAll/Math.ceil(nAll/4));
-      return pics.length||tb?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})();
+      if(tb)return`<div class="pr-pics pr-tlead">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`;   /* the cake drawing big on its own row, the design photos small under it */
+      return pics.length?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})();
   /* a tiered / wedding cake: no "1 tiers Tiered cake" title; its drawing and photos come first */
   const tierTop=hasTiers(ctOf(o));
   return`
