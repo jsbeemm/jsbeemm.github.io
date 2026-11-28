@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795846133"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795856607"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1045,7 +1045,7 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #itDlg{z-index:40}#editor{z-index:48}   /* the raw material form opens above the voucher / purchase pick lists */
 .so-one{cursor:pointer}.so-one:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .so-phit img,.so-ph{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--sunk);display:grid;place-items:center;font-size:20px}
-.so-fam{cursor:default}.so-uchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.so-uchip{font-size:13px;padding:5px 10px}.so-uchip b{margin-left:4px}.so-uchip.on{border-color:var(--accent);color:var(--accent)}
+.so-fam{cursor:default}.so-uchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.so-uchip{font-size:13px;padding:5px 10px}.so-uchip b{margin-left:4px}.so-uchip .so-per{display:block;color:var(--muted);font-size:12px;font-weight:400;text-align:left}.so-pu .so-per{white-space:nowrap}.so-uchip.on{border-color:var(--accent);color:var(--accent)}
 .so-ldw{flex-wrap:wrap}#soLines .so-lu{width:100%;flex-basis:100%;font-size:12px}#soLines .so-lu[hidden],#soLines .so-lue[hidden]{display:none!important}.so-ldn{display:flex;align-items:flex-start;gap:2px;width:100%;min-width:0}.so-ldw .so-ldn .so-ldt{flex:0 1 auto;min-width:0}
 #soLines .so-lue{flex:none;width:28px;height:28px;margin-top:1px;padding:0;border:0;border-radius:50%;background:none;box-shadow:none;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 #soLines .so-lue svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -11138,6 +11138,7 @@ const soFamKey=i=>pdNorm(i.ref||i.code||i.id)+"|"+pdNorm(soBaseName(i));
 function soOptsOf(i){const o=[];if((i.price>0||i.mb)&&!(i.units||[]).some(u=>u.p>0))o.push({it:i,k:-1,label:soUnitOf(i),price:Number(i.price)});
   (i.units||[]).forEach((u,k)=>{if((u.u||u.n)&&u.p>0)o.push({it:i,k,label:soULabel(u),price:Number(u.p)})});return o}
 /* a unit row's label: what one of it is — "1pk=1kg", "1ct=12pk"; a row with no quantity (the Base Unit) is just "1pc" */
+function soPer(o){const u=o.k>=0&&o.it.units?.[o.k],c=Number(u?.c);if(!(c>1&&u.of&&o.price>0))return"";return`1${u.of} ${fmt(Math.round(o.price/c))}`}
 function soULabel(u){const n=u.u||u.n||"";if(!n)return"";return Number(u.c)>0&&u.of?`1${n}=${Number(u.c).toLocaleString("en-US")}${u.of}`:`1${n}`}
 /* a line's retail and wholesale prices: its unit's, or the item's own */
 function soPP(it,l){const u=l.u!=null&&it.units?.[l.u];return u?{r:Number(u.p)||0,w:Number(u.w)||0,f:0}:{r:Number(it.price)||0,w:Number(it.whPrice)||0,f:Number(it.fpPrice)||0}}
@@ -11168,11 +11169,11 @@ function renderSoPick(){const q=pdNorm($("soPickQ").value),inQ=soItems().filter(
     if(fam.length>1){if(seen.has(k))return"";seen.add(k);const its=[...new Set(fam.map(o=>o.it))],ph=its.find(x=>x.photo)?.photo,on=fam.some(o=>soLines.some(l=>soOptOn(o,l)));
       return`<div class="so-hit so-phit so-fam${on?" on":""}">${ph?`<img src="${esc(photoUrl(ph))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
         <span><span class="pur-fn"><span data-t="${esc(soFamName(k,its))}"></span>${its.filter(x=>!x.mb).map(x=>purEdBtn(x,its.length>1)).join("")}</span><span class="so-uchips">${fam.map(o=>{const q=soLines.find(l=>soOptOn(o,l))?.qty;
-          return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" title="${esc(soOptName(o))} · ${esc(o.it.code||"")}">${esc(o.label)} <b>${fmt(o.price)}</b>${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
+          return`<button type="button" class="chip so-uchip${q!=null?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" title="${esc(soOptName(o))} · ${esc(o.it.code||"")}">${esc(o.label)} <b>${fmt(o.price)}</b>${soPer(o)?`<small class="so-per">${esc(soPer(o))}</small>`:""}${q?` × ${q}`:""}</button>`}).join("")}</span></span></div>`}
     /* one price only: the whole card adds it (its unit, if it is a unit row's price, shows beside the Short Code) */
     const o=fam[0],n=soLines.find(l=>soOptOn(o,l))?.qty||0;
     return`<div class="so-hit so-phit so-one${n?" on":""}" data-so-add="${esc(o.it.id)}" data-so-u="${o.k}" role="button" tabindex="0">${o.it.photo?`<img src="${esc(photoUrl(o.it.photo))}" alt="" loading="lazy">`:`<span class="so-ph">📦</span>`}
-      <span><span class="pur-fn"><span data-t="${esc(o.it.name)}"></span>${o.it.mb?"":purEdBtn(o.it,false)}</span><code>${esc(o.it.code||"")}</code>${o.k>=0&&o.label?` <small class="so-pu">${esc(o.label)}</small>`:""}</span><b>${o.price>0?fmt(o.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</div>`}).join("")
+      <span><span class="pur-fn"><span data-t="${esc(o.it.name)}"></span>${o.it.mb?"":purEdBtn(o.it,false)}</span><code>${esc(o.it.code||"")}</code>${o.k>=0&&o.label?` <small class="so-pu">${esc(o.label)}${soPer(o)?` · <span class="so-per">${esc(soPer(o))}</span>`:""}</small>`:""}</span><b>${o.price>0?fmt(o.price):"—"}</b>${n?`<span class="so-pn">× ${n}</span>`:""}</div>`}).join("")
     :`<p class="side-help">မတွေ့ပါ</p>`;
   $("soHits").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 $("soAddItem").addEventListener("click",()=>{initItems();soPickCat="";$("soPickQ").value="";renderSoPick();$("soPickDlg").hidden=false;$("soPickQ").focus()});
