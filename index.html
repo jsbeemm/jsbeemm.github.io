@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795857232"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795857594"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -250,7 +250,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-set{border:1px solid var(--line);border-radius:12px;padding:0 10px 10px;background:var(--surface);cursor:pointer}.bak-set.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
 .bak-set .bak-sethd{border-top:0}.bak-snm{font-weight:700;padding:6px 8px;min-height:0;height:36px;margin:0}
 .bak-set .bak-part{padding-left:12px}
-.bak-box{display:grid;grid-template-columns:minmax(0,1fr) 132px 92px 36px;align-items:center;gap:8px;padding-top:8px;border-top:1px dashed var(--line);margin:0}.bak-box label{font-weight:600;font-size:14px}.bak-box input{grid-column:2/4;width:100%;box-sizing:border-box;margin:0;text-align:right}@media (max-width:420px){.bak-box{grid-template-columns:minmax(0,1fr) 160px 36px}.bak-box input{grid-column:2}}.bak-set .bak-setq{border-top:1px dashed var(--line);margin-top:8px;padding-bottom:0}.bak-setq .bak-n b{font-size:14px}.bak-set>.bak-part:first-child,.bak-set>.bak-empty:first-child{border-top:0}
+.bak-box{display:grid;grid-template-columns:minmax(0,1fr) 132px 92px 36px;align-items:center;gap:8px;padding-top:8px;border-top:1px dashed var(--line);margin:0}.bak-box label{font-weight:600;font-size:14px}.bak-box input{grid-column:2/4;width:100%;box-sizing:border-box;margin:0;text-align:right}@media (max-width:420px){.bak-box{grid-template-columns:minmax(0,1fr) 160px 36px}.bak-box input{grid-column:2}}.bak-set .bak-setq{border-top:1px dashed var(--line);margin-top:8px;padding-bottom:0}.bak-setq .bak-n b{font-size:14px}.bak-xin{grid-template-columns:minmax(0,1fr) 96px;gap:6px}.bak-xin input{margin:0;min-width:0}.bak-xin .bak-xp{text-align:right}.bak-xadd{border-style:dashed;margin:8px 0 2px;font-size:13px}.bak-set>.bak-part:first-child,.bak-set>.bak-empty:first-child{border-top:0}
 .bak-setin{display:block;color:var(--muted);font-size:12px}.pr-setin{font-size:.88em;opacity:.8;margin:-1px 0 3px}.bak-rawt{color:var(--muted);font-size:11px;white-space:nowrap}
 @media (max-width:420px){.bak-line{grid-template-columns:132px minmax(0,1fr) 36px}.bak-line .bak-n{grid-column:1/-1}.bak-line .pos-qty{justify-content:flex-start}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
@@ -3368,7 +3368,8 @@ document.addEventListener("click",e=>{const p=$("bakPop");if(!p.hidden&&!e.compo
 /* a customer's price changes the price of what is already in the list */
 /* a Set box: small products packed together; the order shows only the box (its price = the products for one box + the box price) */
 var bakTgt=null;
-const bakSetCalc=l=>{l.price=(l.parts||[]).reduce((a,p)=>a+(Number(p.price)||0)*(Number(p.qty)||0),0)+(Number(l.box)||0);return l.price};
+const bakSetCalc=l=>{l.price=[...(l.parts||[]),...(l.extra||[])].reduce((a,p)=>a+(Number(p.price)||0)*(Number(p.qty)||0),0)+(Number(l.box)||0);return l.price};
+const bakSetAll=l=>[...(l.parts||[]),...(l.extra||[]).filter(x=>x.name)];
 const bakSetN=()=>bakItems.filter(l=>l.set).length;
 function bakReprice(){const t=bakTier(),rp=l=>{const p=pds.find(x=>x.id===l.pid),v=p?posPrice(p,t):null;if(v!=null)l.price=v};bakItems.forEach(l=>{if(l.set){(l.parts||[]).forEach(rp);bakSetCalc(l)}else rp(l)})}
 /* raw materials (Raw Material) that have a Mr.Bee price are sold here too, at that price */
@@ -3387,6 +3388,8 @@ function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   const setHtml=(l,i)=>{bakSetCalc(l);return`<div class="bak-set${bakTgt===i?" on":""}" data-bi="${i}">
     
     ${(l.parts||[]).map((p,j)=>`<div class="bak-line bak-part" data-bp="${j}"><span class="bak-n"><b data-t="${esc(p.name)}"></b><small>${fmt(p.price)}</small></span>${pq("data-bpq","bak-qn bak-pqn",p.qty)}<b class="bak-amt">${fmt(p.price*p.qty)}</b><button type="button" class="o-ic danger" data-bprm aria-label="Remove" title="Remove">${TRASH_IC}</button></div>`).join("")||`<p class="bak-empty">${bakTgt===i?"အပေါ်က Product ရှာပြီး ထည့်ရင် ဒီ Set ဘူးထဲ ဝင်ပါမယ်":"ဒီ Set ဘူးကို နှိပ်ပြီး Product ထည့်ပါ"}</p>`}
+    ${(l.extra||[]).map((x,j)=>`<div class="bak-line bak-xtra" data-bx="${j}"><span class="bak-n bak-xin"><input class="bak-xn" value="${esc(x.name||"")}" placeholder="Additional charge (ဥပမာ – Ribbon)" aria-label="Charge name"><input class="bak-xp" type="number" inputmode="numeric" min="0" step="100" value="${x.price||""}" placeholder="ဈေး" aria-label="Charge price"></span>${pq("data-bxq","bak-qn bak-xqn",x.qty)}<b class="bak-amt">${fmt((Number(x.price)||0)*x.qty)}</b><button type="button" class="o-ic danger" data-bxrm aria-label="Remove charge" title="Remove">${TRASH_IC}</button></div>`).join("")}
+    <button type="button" class="chip bak-xadd" data-bxadd>+ Additional charge</button>
     <div class="bak-box"><label for="bakBoxP">ဘူးဈေး</label><input class="bak-boxp" id="bakBoxP" type="number" inputmode="numeric" min="0" step="100" value="${l.box||""}" placeholder="0" aria-label="Box price"></div><div class="bak-line bak-setq"><span class="bak-n"><b>ဘယ်နှစုံ</b><small>1 set price ${fmt(l.price)}</small></span>${pq("data-bq","bak-qn",l.qty)}<b class="bak-amt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger" data-brm aria-label="Remove set" title="Set ဘူး ဖယ်ရန်">${TRASH_IC}</button></div></div>`};
   $("bakLines").innerHTML=bakItems.length?bakItems.map((l,i)=>l.set?setHtml(l,i):`<div class="bak-line" data-bi="${i}"><span class="bak-n"><b data-t="${esc(l.name)}"></b><small>${fmt(l.price)}</small></span>
     <span class="pos-qty"><button type="button" class="o-ic" data-bq="-1" aria-label="Less">−</button><input class="bak-qn" type="number" inputmode="numeric" min="1" value="${l.qty}" aria-label="Quantity"><button type="button" class="o-ic" data-bq="1" aria-label="More">+</button></span>
@@ -3397,7 +3400,7 @@ function syncKind(){const b=kindVal()==="bakery";
   $("bakSet").hidden=$("bakPickBtn").hidden=!b;   /* Additional charges (qty × price) are for bakery products orders too */if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
   if(b){if(typeof initItems==="function")initItems();renderBak()}}
 function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
-  bakItems=(items||[]).map(l=>({...l,...(l.set?{parts:(l.parts||[]).map(p=>({...p}))}:{})}));bakTgt=null;bakCustId=custId||"";$("bakQ").value="";syncKind()}
+  bakItems=(items||[]).map(l=>({...l,...(l.set?{parts:(l.parts||[]).map(p=>({...p})),extra:(l.extra||[]).map(x=>({...x}))}:{})}));bakTgt=null;bakCustId=custId||"";$("bakQ").value="";syncKind()}
 document.querySelectorAll('input[name="fKind"]').forEach(i=>i.addEventListener("change",()=>{syncKind();updateReceipt()}));
 $("bakQ").addEventListener("input",renderBak);
 $("bakRes").addEventListener("click",e=>{const rb=e.target.closest("[data-biid]");if(rb){const it=items.find(x=>x.id===rb.dataset.biid),o=it&&bakRawOpts(it).find(x=>String(x.k)===rb.dataset.bk);if(!o)return;
@@ -3413,6 +3416,8 @@ $("bakTgt").addEventListener("click",e=>{if(e.target.closest("[data-bsetadd]")){
 $("bakLines").addEventListener("click",e=>{const r=e.target.closest("[data-bi]");if(!r)return;const i=Number(r.dataset.bi),l=bakItems[i];if(!l)return;
   if(l.set){const pr=e.target.closest("[data-bp]");
     if(pr){const j=Number(pr.dataset.bp),p=l.parts[j];if(!p)return;if(e.target.closest("[data-bprm]"))l.parts.splice(j,1);else{const q=e.target.closest("[data-bpq]");if(!q)return;p.qty=Math.max(1,p.qty+Number(q.dataset.bpq))}bakSetCalc(l);renderBak();updateReceipt();return}
+    if(e.target.closest("[data-bxadd]")){(l.extra=l.extra||[]).push({name:"",price:0,qty:1});renderBak();const r=$("bakLines").querySelectorAll(".bak-xn");r[r.length-1]?.focus();return}
+    const xr=e.target.closest("[data-bx]");if(xr){const j=Number(xr.dataset.bx),x=l.extra?.[j];if(!x)return;if(e.target.closest("[data-bxrm]"))l.extra.splice(j,1);else{const q=e.target.closest("[data-bxq]");if(!q)return;x.qty=Math.max(1,x.qty+Number(q.dataset.bxq))}bakSetCalc(l);renderBak();updateReceipt();return}
     if(!e.target.closest("button,input")){if(bakTgt!==i){bakTgt=i;renderBak()}return}}
   if(e.target.closest("[data-brm]")){bakItems.splice(i,1);if(bakTgt===i)bakTgt=null;else if(bakTgt!=null&&bakTgt>i)bakTgt--}
   else{const q=e.target.closest("[data-bq]");if(!q)return;l.qty=Math.max(1,l.qty+Number(q.dataset.bq))}
@@ -3420,17 +3425,20 @@ $("bakLines").addEventListener("click",e=>{const r=e.target.closest("[data-bi]")
 $("bakLines").addEventListener("change",e=>{const S=bakItems[Number(e.target.closest("[data-bi]")?.dataset.bi)];
   if(S?.set&&e.target.matches(".bak-snm")){S.name=e.target.value.trim()||"Set ဘူး";renderBak();updateReceipt();return}
   if(S?.set&&e.target.matches(".bak-boxp")){S.box=Math.max(0,Math.round(Number(e.target.value)||0));bakSetCalc(S);renderBak();updateReceipt();return}
+  if(S?.set&&e.target.closest("[data-bx]")){const x=S.extra?.[Number(e.target.closest("[data-bx]").dataset.bx)];if(!x)return;
+    if(e.target.matches(".bak-xn"))x.name=e.target.value.trim();else if(e.target.matches(".bak-xp"))x.price=Math.max(0,Math.round(Number(e.target.value)||0));else if(e.target.matches(".bak-xqn"))x.qty=Math.max(1,parseInt(e.target.value)||1);else return;
+    bakSetCalc(S);renderBak();updateReceipt();return}
   if(S?.set&&e.target.matches(".bak-pqn")){const p=S.parts[Number(e.target.closest("[data-bp]").dataset.bp)];if(p)p.qty=Math.max(1,parseInt(e.target.value)||1);bakSetCalc(S);renderBak();updateReceipt();return}
   const inp=e.target.closest(".bak-qn");if(!inp)return;const l=bakItems[Number(inp.closest("[data-bi]").dataset.bi)];
   if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
 /* the form keeps its own fields; a bakery products order drops everything about a cake */
-function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,parts:l.parts.map(p=>({...(p.iid?{iid:p.iid,unit:p.unit||""}:{pid:p.pid}),name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({...(l.iid?{iid:l.iid,unit:l.unit||""}:{pid:l.pid}),name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
+function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,extra:(l.extra||[]).filter(x=>x.name||Number(x.price)>0).map(x=>({name:x.name||"",price:Number(x.price)||0,qty:Number(x.qty)||1})),parts:l.parts.map(p=>({...(p.iid?{iid:p.iid,unit:p.unit||""}:{pid:p.pid}),name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({...(l.iid?{iid:l.iid,unit:l.unit||""}:{pid:l.pid}),name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
   const o={...r,kind:"bakery",items,charges:r.charges||[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
-const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${l.set?"📦 ":""}${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small>${l.set?`<small class="bak-setin">${(l.parts||[]).map(p=>`${esc(p.name)} ×${p.qty}`).join("၊ ")}</small>`:""}</span>`).join("")}</div>`;
-const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>${l.set?`<div class="pr-setin">${(l.parts||[]).map(p=>`${esc(p.name)} × ${p.qty}`).join("၊ ")}</div>`:""}`).join("")}`;
-const bakSetText=l=>(l.parts||[]).map(p=>`${p.name} × ${p.qty}`).join("၊ ");
+const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${l.set?"📦 ":""}${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small>${l.set?`<small class="bak-setin">${bakSetAll(l).map(p=>`${esc(p.name)} ×${p.qty}`).join("၊ ")}</small>`:""}</span>`).join("")}</div>`;
+const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>${l.set?`<div class="pr-setin">${bakSetAll(l).map(p=>`${esc(p.name)} × ${p.qty}`).join("၊ ")}</div>`:""}`).join("")}`;
+const bakSetText=l=>bakSetAll(l).map(p=>`${p.name} × ${p.qty}`).join("၊ ");
 /* ---------- cupcakes: one row each — Cupcake · design (Cream / Fondant / Cream and fondant) · qty × price (typed, for one) ---------- */
 const CUP_DECO={cream:"Cream",fondant:"Fondant",mixed:"Cream and fondant",mixdeco:"Mixed Decoration"};
 var cupLegacy=false;   /* an older cupcake order (Cream / Fondant pieces, one typed total) keeps its old fields */
@@ -4773,7 +4781,7 @@ async function buildPreviewCanvas(o){
     rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
     /* each product: its name, the line amount on the right, and "price × qty" under the name (as on the slip) */
     if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
-      text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted});if(l.set&&(l.parts||[]).length){y-=6;para(bakSetText(l),22,400,C.muted,1.5)}})}else{
+      text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted});if(l.set&&bakSetAll(l).length){y-=6;para(bakSetText(l),22,400,C.muted,1.5)}})}else{
     if(tierPic){const k=Math.min(LW/tierPic.naturalWidth,560/tierPic.naturalHeight),dw=tierPic.naturalWidth*k,dh=tierPic.naturalHeight*k;y+=18;
       if(paint){ctx.save();rr(ctx,P,y,LW,dh,16);ctx.fillStyle=C.photoBg;ctx.fill();ctx.drawImage(tierPic,P+(LW-dw)/2,y,dw,dh);ctx.restore()}y+=dh-6}else{
     y+=48;font(36,700);
