@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795845547"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795845935"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1891,7 +1891,7 @@ span.star-ic{cursor:default}
         <fieldset id="paySet">
           <legend>ငွေပေးချေမှု</legend>
           <!-- extra charges (with quantity and photo) sit above the discount -->
-          <div id="chargeW"><!-- not for a bakery products order -->
+          <div id="chargeW">
           <p class="grp">Additional charge</p>
           <div class="charges" id="chargeList"></div>
           <button type="button" class="add-charge" id="addCharge">+ Charge ထပ်ထည့်ရန်</button>
@@ -3394,7 +3394,7 @@ function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   $("bakSet").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
 /* cake parts hide for a bakery products order, the products part shows */
 function syncKind(){const b=kindVal()==="bakery";
-  $("bakSet").hidden=$("bakPickBtn").hidden=!b;$("chargeW").hidden=b;if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
+  $("bakSet").hidden=$("bakPickBtn").hidden=!b;   /* Additional charges (qty × price) are for bakery products orders too */if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
   if(b){if(typeof initItems==="function")initItems();renderBak()}}
 function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
   bakItems=(items||[]).map(l=>({...l,...(l.set?{parts:(l.parts||[]).map(p=>({...p}))}:{})}));bakTgt=null;bakCustId=custId||"";$("bakQ").value="";syncKind()}
@@ -3425,7 +3425,7 @@ $("bakLines").addEventListener("change",e=>{const S=bakItems[Number(e.target.clo
   if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
 /* the form keeps its own fields; a bakery products order drops everything about a cake */
 function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,parts:l.parts.map(p=>({...(p.iid?{iid:p.iid,unit:p.unit||""}:{pid:p.pid}),name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({...(l.iid?{iid:l.iid,unit:l.unit||""}:{pid:l.pid}),name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
-  const o={...r,kind:"bakery",items,charges:[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
+  const o={...r,kind:"bakery",items,charges:r.charges||[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${l.set?"📦 ":""}${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small>${l.set?`<small class="bak-setin">${(l.parts||[]).map(p=>`${esc(p.name)} ×${p.qty}`).join("၊ ")}</small>`:""}</span>`).join("")}</div>`;
