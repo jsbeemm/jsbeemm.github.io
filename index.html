@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795863920"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795864020"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4780,7 +4780,10 @@ async function buildPreviewCanvas(o){
     /* ── cake ── */
     rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
     /* each product: its name, the line amount on the right, and "price × qty" under the name (as on the slip) */
-    if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
+    if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);
+      if(l.set){y+=48;const nm=l.name||"Set ဘူး";text(nm,P,y,30,{weight:700});text(`${money(l.price)} × ${l.qty}`,P+width(nm,30,700)+14,y,22,{color:C.muted});text(money(amt),P+LW,y,30,{align:"right",weight:700});
+        if(bakSetAll(l).length){y+=2;bakSetAll(l).forEach(p=>para(`${p.name} × ${p.qty}`,22,400,C.muted,1.5))}return}
+      font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
       text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted});if(l.set&&bakSetAll(l).length){y-=6;bakSetAll(l).forEach(p=>para(`${p.name} × ${p.qty}`,22,400,C.muted,1.5))}})}else{
     if(tierPic){const k=Math.min(LW/tierPic.naturalWidth,560/tierPic.naturalHeight),dw=tierPic.naturalWidth*k,dh=tierPic.naturalHeight*k;y+=18;
       if(paint){ctx.save();rr(ctx,P,y,LW,dh,16);ctx.fillStyle=C.photoBg;ctx.fill();ctx.drawImage(tierPic,P+(LW-dw)/2,y,dw,dh);ctx.restore()}y+=dh-6}else{
