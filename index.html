@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795845935"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795846026"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,7 +251,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-set .bak-sethd{border-top:0}.bak-snm{font-weight:700;padding:6px 8px;min-height:0;height:36px;margin:0}
 .bak-set .bak-part{padding-left:12px}
 .bak-box{display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px dashed var(--line);margin:0}.bak-box label{font-weight:600;font-size:14px;margin-right:auto}.bak-box input{width:132px;margin:0;text-align:right}.bak-set>.bak-part:first-child,.bak-set>.bak-empty:first-child{border-top:0}
-.bak-setin{display:block;color:var(--muted);font-size:12px}.bak-rawt{color:var(--muted);font-size:11px;white-space:nowrap}
+.bak-setin{display:block;color:var(--muted);font-size:12px}.pr-setin{font-size:.88em;opacity:.8;margin:-1px 0 3px}.bak-rawt{color:var(--muted);font-size:11px;white-space:nowrap}
 @media (max-width:420px){.bak-line{grid-template-columns:132px minmax(0,1fr) 36px}.bak-line .bak-n{grid-column:1/-1}.bak-line .pos-qty{justify-content:flex-start}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
 .photos{display:flex;flex-wrap:wrap;gap:8px}
@@ -3429,7 +3429,8 @@ function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
 const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${l.set?"📦 ":""}${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small>${l.set?`<small class="bak-setin">${(l.parts||[]).map(p=>`${esc(p.name)} ×${p.qty}`).join("၊ ")}</small>`:""}</span>`).join("")}</div>`;
-const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
+const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>${l.set?`<div class="pr-setin">${(l.parts||[]).map(p=>`${esc(p.name)} × ${p.qty}`).join("၊ ")}</div>`:""}`).join("")}`;
+const bakSetText=l=>(l.parts||[]).map(p=>`${p.name} × ${p.qty}`).join("၊ ");
 /* ---------- cupcakes: one row each — Cupcake · design (Cream / Fondant / Cream and fondant) · qty × price (typed, for one) ---------- */
 const CUP_DECO={cream:"Cream",fondant:"Fondant",mixed:"Cream and fondant",mixdeco:"Mixed Decoration"};
 var cupLegacy=false;   /* an older cupcake order (Cream / Fondant pieces, one typed total) keeps its old fields */
@@ -4772,7 +4773,7 @@ async function buildPreviewCanvas(o){
     rule();if(isBak(o))y+=6;else label("Cake");   /* a bakery products order goes straight to its list */
     /* each product: its name, the line amount on the right, and "price × qty" under the name (as on the slip) */
     if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
-      text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted})})}else{
+      text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted});if(l.set&&(l.parts||[]).length){y-=6;para(bakSetText(l),22,400,C.muted,1.5)}})}else{
     if(tierPic){const k=Math.min(LW/tierPic.naturalWidth,560/tierPic.naturalHeight),dw=tierPic.naturalWidth*k,dh=tierPic.naturalHeight*k;y+=18;
       if(paint){ctx.save();rr(ctx,P,y,LW,dh,16);ctx.fillStyle=C.photoBg;ctx.fill();ctx.drawImage(tierPic,P+(LW-dw)/2,y,dw,dh);ctx.restore()}y+=dh-6}else{
     y+=48;font(36,700);
