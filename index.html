@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795845324"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795845547"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5093,7 +5093,10 @@ $("pvAddPhotoIn").addEventListener("change",async e=>{const f=e.target.files?.[0
     const patch={deco:{...o.deco,photo:s.id,photoBy:me.id||null,photoAt:now},updatedAt:now,updatedBy:me.id||null,history:addHist(o,"deco",["Finish photo added"])};
     await patchOrder(o.id,patch);toast(`${o.no} — finish photo added`);if(!$("preview").hidden)openPreview({...o,...patch})}
   catch(x){toast("ပုံတင်မရပါ။ ပြန်ကြိုးစားပါ");syncPvAddPhoto()}});
-$("pvClose").addEventListener("click",()=>{$("preview").hidden=true;
+$("pvClose").addEventListener("click",()=>{
+  /* the preview of an order being edited: closing it asks Save / Don’t save when there are unsaved changes */
+  if(pvFormMode&&guardLeave(()=>{$("preview").hidden=true;showTab("list")}))return;
+  $("preview").hidden=true;
   /* the decorator closing the preview of the cake they are decorating pauses its timer ("Resume decorating" carries on) */
   const o=pvOrder&&orders.find(x=>x.id===pvOrder.id);
   if(o&&o.deco?.startAt&&!o.deco.endAt&&!o.deco.handedAt&&sameId(o.deco.by,me.id))decoPause(o);   /* handed over: the helper is still on it */
