@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795864704"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795864853"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4446,7 +4446,7 @@ function renderDrafts(){
 function fillDraft(d){
   resetForm();const o={...(d.form||{})};
   fillForm({...o,id:null});
-  editingId=null;draftId=d.id;$("draftBtn").hidden=false;syncResetBtn();
+  editingId=null;draftId=d.id;$("draftBtn").hidden=false;syncResetBtn();draftSnap=null;setTimeout(()=>{if(draftId===d.id)draftSnap=formSig()},60);
   /* fields left empty in the draft stay empty (the order form would otherwise pick defaults) */
   if(!o.shape)document.querySelectorAll('input[name="fShape"]').forEach(i=>i.checked=false);
   if(!o.flavor){document.querySelectorAll('input[name="fFlavor"]').forEach(i=>i.checked=false);$("fOtherName").value=""}
@@ -5899,7 +5899,7 @@ $("orders").addEventListener("click",async e=>{
 $("orders").addEventListener("change",e=>{const g=e.target.closest(".qp-g");if(!g)return;const a=g.closest(".qp").querySelector(".qp-a");a.value=g.checked?g.dataset.total:"";a.readOnly=g.checked});
 /* ---------- tabs / toast ---------- */
 /* ---------- leaving an order being edited with unsaved changes asks first: save / don't save / keep editing ---------- */
-var editSnap=null,afterSave=null,lastSavedId=null,lastSavedOrder=null;
+var editSnap=null,draftSnap=null,afterSave=null,lastSavedId=null,lastSavedOrder=null;
 /* an order is given its number when it is first printed: the next free number, claimed so no two phones get the same one
    (offline: given now and confirmed once back online, like any number given offline) */
 async function ensureNo(o){if(!o?.id)return o;const live=orders.find(x=>x.id===o.id)||o;if(live.no)return live;
@@ -5913,10 +5913,16 @@ async function ensureNo(o){if(!o?.id)return o;const live=orders.find(x=>x.id===o
   return nw}
 function formSig(){const f=readForm();return JSON.stringify({...f,payments:(f.payments||[]).map(({at,...p})=>p),no:$("fNo").value.trim().toUpperCase()})}
 function guardLeave(cont){
-  if($("viewNew").hidden||!editingId||editSnap===null||formSig()===editSnap)return false;
+  if($("viewNew").hidden)return false;
+  const fresh=!editingId;
+  if(fresh){if(!canWriteOrders()||formEmpty(readForm()))return false;const sg=formSig();if(draftId?draftSnap!==null&&sg===draftSnap:blankSig!==null&&sg===blankSig)return false}
+  else if(editSnap===null||formSig()===editSnap)return false;
+  $("leaveT").textContent=fresh?"Order ကို သိမ်းမလား?":"ပြင်ဆင်ချက်တွေ သိမ်းမလား?";
+  $("leaveDlg").querySelector("p").textContent=fresh?"ရေးထားတဲ့ Order ကို မသိမ်းရသေးပါ။ Draft အဖြစ် သိမ်းထားနိုင်ပါတယ်။":"ပြင်ထားတာတွေ မသိမ်းရသေးပါ။";
+  $("leaveSave").textContent=fresh?"Draft သိမ်းမည်":"သိမ်းမည်";
   afterSave=null;$("leaveDlg").hidden=false;$("leaveSave").focus();
   const done=()=>{$("leaveDlg").hidden=true;$("leaveSave").onclick=$("leaveDrop").onclick=$("leaveStay").onclick=$("leaveDlg").onclick=null};
-  $("leaveSave").onclick=()=>{done();afterSave={cont,at:Date.now()};$("form").requestSubmit()};
+  $("leaveSave").onclick=fresh?async()=>{done();try{await autoDraft()}catch(e){}cont()}:()=>{done();afterSave={cont,at:Date.now()};$("form").requestSubmit()};
   $("leaveDrop").onclick=()=>{done();resetForm();cont()};
   $("leaveStay").onclick=done;$("leaveDlg").onclick=e=>{if(e.target===$("leaveDlg"))done()};
   return true;
