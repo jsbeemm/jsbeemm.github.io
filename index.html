@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795867433"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795870878"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -246,7 +246,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-n small{color:var(--muted)}
 .bak-qn{width:52px;text-align:center;padding:4px}
 .bak-empty{margin:6px 0;font-size:13px;color:var(--muted)}
-.bak-tgt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.bak-tgt .chip{margin:0}.bak-tgl{font-size:12px;color:var(--muted);margin-right:2px}.bak-setadd{border-style:dashed}
+.bak-tgt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.bak-tgt .chip{margin:0}.bak-tgl{font-size:12px;color:var(--muted);margin-right:2px}
 .bak-set{border:1px solid var(--line);border-radius:12px;padding:0 10px 10px;background:var(--surface);cursor:pointer}.bak-set.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
 .bak-set .bak-sethd{border-top:0}.bak-snm{font-weight:700;padding:6px 8px;min-height:0;height:36px;margin:0}
 .bak-set .bak-part{padding-left:12px}
@@ -3390,7 +3390,7 @@ function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   $("bakRes").innerHTML=(hits.map(p=>`<button type="button" class="bak-hit" data-bpid="${esc(p.id)}"><span class="bak-hn" data-t="${esc(p.name)}"></span><small>${esc(p.code||"")}</small><b>${fmt(posPrice(p,t))}</b><i aria-hidden="true">+</i></button>`).join("")
     +raw.map(({i,o})=>`<button type="button" class="bak-hit" data-biid="${esc(i.id)}" data-bk="${o.k}"><span class="bak-hn"><span data-t="${esc(bakRawName(i,o))}"></span> <small class="bak-rawt">🧺 Raw · Mr.Bee</small></span><small>${esc(i.code||"")}</small><b>${fmt(o.price)}</b><i aria-hidden="true">+</i></button>`).join(""))||(q?`<p class="bak-empty">မတွေ့ပါ</p>`:"");
   if(bakTgt!=null&&!bakItems[bakTgt]?.set)bakTgt=null;
-  $("bakTgt").innerHTML=`<span class="bak-tgl">ထည့်မယ့်နေရာ</span><button type="button" class="chip" data-btg="" aria-pressed="${bakTgt==null}">🥐 ရိုးရိုး</button>${bakItems.map((l,i)=>l.set?`<button type="button" class="chip" data-btg="${i}" aria-pressed="${bakTgt===i}">📦 <span data-t="${esc(l.name||"Set ဘူး")}"></span></button>`:"").join("")}${bakSetN()?"":`<button type="button" class="chip bak-setadd" data-bsetadd>+ Set ဘူး</button>`}`;
+  $("bakTgt").innerHTML=`<span class="bak-tgl">ထည့်မယ့်နေရာ</span><button type="button" class="chip" data-btg="" aria-pressed="${bakTgt==null}">🥐 ရိုးရိုး</button>${bakItems.map((l,i)=>l.set?`<button type="button" class="chip" data-btg="${i}" aria-pressed="${bakTgt===i}">📦 <span data-t="${esc(l.name||"Set ဘူး")}"></span></button>`:"").join("")}${bakSetN()?"":`<button type="button" class="chip bak-setadd" data-bsetadd aria-pressed="false">📦 Set ဘူး</button>`}`;
   const pq=(a,lbl,v)=>`<span class="pos-qty"><button type="button" class="o-ic" ${a}="-1" aria-label="Less">−</button><input class="${lbl}" type="number" inputmode="numeric" min="1" value="${v}" aria-label="Quantity"><button type="button" class="o-ic" ${a}="1" aria-label="More">+</button></span>`;
   const setHtml=(l,i)=>{bakSetCalc(l);return`<div class="bak-set${bakTgt===i?" on":""}" data-bi="${i}">
     ${(l.parts||[]).length?`<div class="bak-phd"><span>Preview</span></div>`:""}
