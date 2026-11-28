@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844199"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844304"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -5231,6 +5231,12 @@ function slipHTML(o,live=false){
   const sfit=o.shape?shapeSizeFit(sk,o.sizeName):null;
   const shp=o.shape?`<svg class="${sfit?"pr-shp pr-shp-sz":"pr-shp"}" viewBox="0 0 40 40" aria-hidden="true">${SHAPES.find(x=>x.k===sk).svg.replace('class="shp"',`fill="none" stroke="${live?"currentColor":printColor(o.date)}" stroke-width="${sfit?2.6:3.5}" stroke-linejoin="round"`)}${sfit?`<text x="20" y="${sfit.cy}" dy=".36em" text-anchor="middle" font-size="${sfit.fs}" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="currentColor">${esc(sfit.L)}</text>`:""}</svg>`:"";
   const pics=(o.previewPhotos||(o.photos||[]).map(photoUrl)).filter(Boolean);   /* every photo: more than 4 go in rows */
+  const picRow=(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
+      const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape,false,live?undefined:printColor(o.date))}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
+      const nAll=pics.length+(tb?1:0),cols=nAll<=4?nAll:Math.ceil(nAll/Math.ceil(nAll/4));
+      return pics.length||tb?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})();
+  /* a tiered / wedding cake: no "1 tiers Tiered cake" title; its drawing and photos come first */
+  const tierTop=hasTiers(ctOf(o));
   return`
     <div class="pr-head">
       <div class="pr-who"><b>${esc(o.name||"")}</b>${o.channel?` <span class="${o.chOther?"":"nw"}">· ${esc(chLabel(o))}</span>`:""}<br><span class="pr-ph">${phHtml(o.phone)}</span></div>
@@ -5239,16 +5245,13 @@ function slipHTML(o,live=false){
       ${(!deli&&o.callEarly)||o.sendPhoto||o.withVoucher||timeWord(o.time)||o.delivery==="later"?`<div class="pr-notes">${timeWord(o.time)?`<span class="pr-tbc">${fmtTimeShort(o.time)}</span>`:""}${[o.delivery==="later"?`<span class="pr-call">Delivery ယူဖြစ်မယူဖြစ် ပြန်ပြောမည်</span>`:"",!deli&&o.callEarly?`<span class="pr-call">စောရလျှင် ဖုန်းဆက်ပေးရန်</span>`:"",o.sendPhoto?`<span class="pr-call">ဓာတ်ပုံပို့ပေးရန်</span>`:"",o.withVoucher?`<span class="pr-call">ဘောက်ချာထည့်ရန်</span>`:""].filter(Boolean).join(" · ")}</div>`:""}</div>
     ${(()=>{const g=custGrp(o);return g.length>1?`<div class="pr-grp">${esc(grpText(g).replace(/^📦\s*/,""))}</div>`:""})()}
     <hr class="pr-rule pr-rule-gap">
-    <div class="pr-cakebox">${isBak(o)?bakSlip(o):`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
+    ${tierTop?picRow:""}<div class="pr-cakebox">${isBak(o)?bakSlip(o):tierTop?"":`<div class="pr-cake">${shp}${esc(((sfit?String(o.flavorName||"").trim():`${o.sizeName||""} ${o.flavorName||""}`.trim())+fondTag(o)))}</div>`}
     ${dcLabel(o)||sub?`<div>${dcLabel(o)?`<span class="pr-dc">${esc(dcLabel(o))}</span>${sub?" · ":""}`:""}${esc(sub)}</div>`:""}
     ${(o.cupItems||[]).map(l=>`<div class="pl">${esc(cupLbl(l))} × ${l.qty}</div>`).join("")}
     ${o.custom?`<div class="pl">${esc(o.custom)}</div>`:""}
     ${dn?`<div class="pl">${esc(tr("Design မှတ်ချက် –"))} ${esc(dn)}</div>`:""}
     ${o.msg?`<div class="pr-msg">${esc(o.msg)}</div>`:""}</div>
-    ${(()=>{/* the tier drawing leads the photo row (first, same height as the photos), with its note under it */
-      const tb=hasTiers(ctOf(o))&&tiersOf(o).length?`<div class="pr-tierpic${ctOf(o)==="wedding"?" big":""}">${tiersSvg(tiersOf(o),o.shape,false,live?undefined:printColor(o.date))}${live?`<div class="pr-tnote">လက်တွေ့အခြေအနေတွင် ပုံတွင်ဖော်ပြထားသော အတိုင်းအတာနှင့် အနည်းငယ်ကွာခြားမှုရှိနိုင်ပါသည်။</div>`:""}</div>`:"";   /* the note is for the screen only, not the printed slip; a Wedding Cake drawing is drawn larger */
-      const nAll=pics.length+(tb?1:0),cols=nAll<=4?nAll:Math.ceil(nAll/Math.ceil(nAll/4));
-      return pics.length||tb?`<div class="pr-pics${nAll>4?" many":""}" style="--cols:${cols}">${tb}${pics.map(s=>`<div class="pr-pic"><img src="${esc(s)}" alt=""></div>`).join("")}</div>`:""})()}
+    ${tierTop?"":picRow}
     ${/* a bakery order has no Cake row, so Total's own top line follows the items; a second rule would double it */
       isBak(o)&&!orderCharges(o).length&&!deli&&!o.discount?"":`<hr class="pr-rule">`}
     ${/* cupcakes: one line each with its price (price of one × how many), instead of a single Cake line */
