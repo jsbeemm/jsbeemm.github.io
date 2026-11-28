@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795864853"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795865938"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -975,7 +975,10 @@ body:not(.off-home) header.top{flex-wrap:nowrap}body:not(.off-home) .brand{min-w
 #soVBody[data-vtab="vo"] #soDelForm,#soVBody[data-vtab="vo"] #soDelList,#soVBody[data-vtab="vo"] #soPayForm,#soVBody[data-vtab="vo"] #soPayList,
 #soVBody[data-vtab="del"] #soPayForm,#soVBody[data-vtab="del"] #soPayList,#soVBody[data-vtab="del"] #soPays,#soVBody[data-vtab="del"] .so-preview,
 #soVBody[data-vtab="pay"] #soDelForm,#soVBody[data-vtab="pay"] #soDelList,#soVBody[data-vtab="pay"] #soPays,#soVBody[data-vtab="pay"] .so-preview{display:none!important}
-#soVBody[data-vtab="vo"] #soPays{display:none!important}   /* JS: the status line is not shown */
+#soVBody[data-vtab="vo"] #soPays{display:none!important}#soVBody:not([data-vtab="ret"]) #soRetBox,#soVBody[data-vtab="ret"] #soPayForm,#soVBody[data-vtab="ret"] #soPayList,#soVBody[data-vtab="ret"] #soDelList,#soVBody[data-vtab="ret"] #soDelForm,#soVBody[data-vtab="ret"] .so-preview{display:none!important}
+.so-retbox .ac-h{margin:14px 0 6px}.so-retbox .ac-h:first-child{margin-top:0}.so-rtbl input{width:76px;margin:0;text-align:right}.so-rtbl th{font-size:12px;color:var(--muted);font-weight:600;text-align:left}.so-rtbl th.ex-r{text-align:right}
+.so-rform{display:grid;gap:8px;margin-top:10px}.so-rform .prf{margin:0}.so-rsum{margin:2px 0;display:flex;justify-content:space-between;font-size:15px}.so-rbtns{display:flex;gap:8px}.so-rbtns .btn{flex:1}
+.so-rcr{margin-top:14px;border:1px solid var(--accent);border-radius:12px;padding:10px 12px;background:var(--accent-soft)}.so-rcr>p{margin:0 0 8px}.so-rcr-b{display:flex;gap:8px;flex-wrap:wrap}.so-rcr-b .btn{flex:1;min-width:150px}.so-rcr .so-pmr{display:flex;gap:6px;align-items:center}   /* JS: the status line is not shown */
 #soVBody[data-vtab="pay"] #soPayForm{margin-top:10px}.so-pfrow td{padding:6px 0}#soPFormCell #soPayForm{margin:0;background:var(--accent-soft);border-radius:12px;padding:10px 12px}.so-vtabs{align-items:center}
 @media (min-width:1000px){
   body:has(#viewSo:not([hidden])) .wrap{max-width:none}
@@ -2821,6 +2824,7 @@ span.star-ic{cursor:default}
         <button type="button" class="btn" id="soPSave">Save payment</button><button type="button" class="btn ghost" id="soPCancel">Cancel</button></div>
       <div class="so-pays" id="soPays"></div>
       <div class="so-dellist" id="soDelList"></div>
+      <div class="so-retbox" id="soRetBox"></div>
       <div class="so-delform" id="soDelForm" hidden>
         <!-- the date and the gate on one row, at the right; Cancel / Save under them -->
         <div class="so-dmeta"><div class="prf"><span>Date</span><div id="soDDate"></div></div><div class="prf so-dgate"><span>🚌 ပို့ပေးလိုက်တဲ့ ဂိတ်</span><div class="so-pick"><input id="soDGate" autocomplete="off" placeholder="ဂိတ် / logistic (ရိုက်ပြီးရှာပါ)" aria-label="ပို့ပေးလိုက်တဲ့ ဂိတ်"><div class="so-hits" id="soDGateHits" hidden></div></div></div></div>
@@ -9757,7 +9761,7 @@ function renderPosRep(){
     .sort((a,b)=>String(a.o.no||"").localeCompare(String(b.o.no||"")));
   const cakeSum=cake.reduce((s,x)=>s+Number(x.p.amt),0);cake.forEach(x=>{const m=x.p.method||"Cash";byPay[m]=(byPay[m]||0)+Number(x.p.amt)});
   /* JS: money received on vouchers in the period (each payment by its own date) */
-  const vop=vos.filter(soMine).flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&Number(x.p.amt)>0).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no)));
+  const vop=vos.filter(soMine).flatMap(v=>(v.payments||[]).map(p=>({v,p}))).filter(x=>inRng(x.p.date)&&!x.p.credit&&(Number(x.p.amt)>0||x.p.refund)).sort((a,b)=>String(a.v.no).localeCompare(String(b.v.no)));
   /* JS: lines typed with "+ Other line" (not a raw material) on the period's vouchers, added up by what they say — an Admin can link them to a raw material later */
   /* by voucher date in the period, or ("ကာလ အားလုံး") every one still to be linked */
   const oth=saleBrand!=="js"?[]:othGroups(vos.filter(v=>soMine(v)&&(othAllTime||inRng(v.date)))),othElse=saleBrand!=="js"||othAllTime?0:othGroups(vos.filter(soMine)).reduce((a,g)=>a+g.refs.length,0)-oth.reduce((a,g)=>a+g.refs.length,0);
@@ -10596,7 +10600,13 @@ async function itExcelPhotos(ab,plan){
 var vos=[],soCol=null,soLoaded=false,soQ="",soTab="unf",soEditing=null,soLines=[],soOpen=null;
 const SO_MON=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 function soPaid(v){return(v.payments||[]).reduce((s,p)=>s+Number(p.amt||0),0)}
-function soBal(v){return Math.max(0,Number(v.net||0)-soPaid(v))}
+const soRetAmt=v=>(v.returns||[]).reduce((s,r)=>s+Number(r.amt||0),0);
+const soDue=v=>Number(v.net||0)-soRetAmt(v);
+function soBal(v){return Math.max(0,soDue(v)-soPaid(v))}
+const soCredit=v=>Math.max(0,soPaid(v)-soDue(v));
+/* the credit a customer has on their other vouchers of the same shop */
+const soCrSrc=v=>v?.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&vBrand(x)===vBrand(v)&&soCredit(x)>0).sort((a,b)=>soCredit(b)-soCredit(a)):[];
+const soRetDone=v=>{const r=(v.lines||[]).map(()=>0);for(const x of v.returns||[])for(const[i,q]of Object.entries(x.lines||{}))if(r[i]!=null)r[i]+=Number(q||0);return r};
 const soCanEdit=v=>can("admin")||(!!v&&!!me.id&&sameId(v.by,me.id));
 /* each shop has its own vouchers: Mr.Bee (MB…, Bakery Products, Mr.Bee customers) and JS (JS…, Raw Material items, JS customers).
    The list shows the shop the Sale page is open for; vouchers made before Mr.Bee had them are JS's. */
@@ -10819,12 +10829,12 @@ const soLeftArr=v=>{const g=soGivenArr(v);return(v.lines||[]).map((l,i)=>Math.ma
 const soLeftAll=v=>soLeftArr(v).reduce((s,x)=>s+x,0);
 const soDelivered=v=>soLeftAll(v)<=0;
 /* the debt list on a voucher (အကြွေးစာရင်း) leaves out Preorder vouchers: nothing given, nothing paid yet */
-function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&!soConfPend(v))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
+function soStage(v){const del=soDelivered(v),paid=soPaid(v);if(del&&soBal(v)<=0&&soCredit(v)<=0&&!soConfPend(v))return"fin";if(!del&&paid<=0&&!(v.deliveries||[]).length)return"pre";return"unf"}
 function soChips(v){const left=soLeftAll(v),all=(v.lines||[]).reduce((s,l)=>s+Number(l.qty||0),0),b=soBal(v),paid=soPaid(v);
   if(soStage(v)==="fin")return`<span class="conf-chip ok">✓ Finished</span>`;
   /* only what is still owed shows: goods still to give, money still to get */
   return(left>0?`<span class="conf-chip">📦 ပစ္စည်းပေးရန်ကျန် ${poNum(left)}</span>`:"")
-    +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")
+    +(b>0?`<span class="conf-chip">💵 ငွေရရန်ကျန် ${fmt(b)}</span>`:"")+(soCredit(v)>0?`<span class="conf-chip">↩ ပြန်ပေးရန် ${fmt(soCredit(v))}</span>`:"")
     +(soConfPend(v)?`<span class="conf-chip">⏳ Waiting for approval</span>`:"")}
 /* the status and the deliveries, above the voucher on its page */
 function soStatusHtml(v){const ds=v.deliveries||[],st=soStage(v);
@@ -11480,9 +11490,9 @@ async function soHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),pa
     <table><thead><tr><th>No</th><th>Picture</th><th>Description</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Amount</th><th>Note</th></tr></thead><tbody>
       ${(v.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td class="pic">${pics[i]?`<img src="${esc(pics[i])}" alt="">`:""}</td><td>${esc(l.name)}</td><td class="r">${m(l.qty)}${(u=>u?` <span class="vo-u">${esc(u)}</span>`:"")(soVoUnit(v,l))}</td><td class="r">${m(l.price)}</td><td class="r">${m(Math.round(l.qty*l.price))}</td><td>${esc(l.note||"")}</td></tr>`).join("")}
     </tbody><tfoot class="vo-tot">
-      <tr><td colspan="5" class="r k">Net Amount</td><td class="r v">${m(v.net)}</td><td class="c">MMK</td></tr>
+      <tr><td colspan="5" class="r k">Net Amount</td><td class="r v">${m(v.net)}</td><td class="c">MMK</td></tr>${soRetAmt(v)?`<tr><td colspan="5" class="r k">Return</td><td class="r v">-${m(soRetAmt(v))}</td><td class="c">MMK</td></tr>`:""}
       <tr><td colspan="5" class="r k">Paid Amount</td><td class="r v">${paid?m(paid):"-"}</td><td class="c">MMK</td></tr>
-      <tr class="ln"><td colspan="5" class="r k">Balance</td><td class="r v">${m(bal)}</td><td class="c">MMK</td></tr></tfoot></table>
+      <tr class="ln"><td colspan="5" class="r k">${soCredit(v)>0?"Credit (ပြန်ပေးရန်)":"Balance"}</td><td class="r v">${m(soCredit(v)>0?soCredit(v):bal)}</td><td class="c">MMK</td></tr></tfoot></table>
     ${owe.length?`<div class="vo-owe"><h4>အကြွေးစာရင်း (ယခင်ဘောက်ချာများ)</h4><table><thead><tr><th>SO No</th><th>Date</th><th class="r">Net</th><th class="r">Balance</th></tr></thead><tbody>
       ${owe.map(x=>`<tr><td>${esc(x.no)}</td><td>${esc(soDate(x.date))}</td><td class="r">${m(x.net)}</td><td class="r">${m(soBal(x))}</td></tr>`).join("")}
       <tr><td colspan="3"><b>ယခင်ကျန်ငွေ စုစုပေါင်း</b></td><td class="r"><b>${m(oweSum)}</b></td></tr>
@@ -11515,21 +11525,22 @@ var soShowOwe=false;   /* off each time a voucher is opened */
 const soOweOn=v=>vBrand(v)==="mb"||soShowOwe;
 const soOweCount=v=>v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&soBal(x)>0&&soStage(x)!=="pre").length:0;
 function openSoView(v){if(soOpen!==v.id||$("soView").hidden){const p=$("soPrev");p.innerHTML=`<p class="so-ld">⏳ ${esc(v.no||"")} ဖွင့်နေပါတယ်…</p>`;p.style.transform="";p.style.marginLeft="";p.style.width="";p.style.padding="";if(p.parentElement)p.parentElement.style.height=""}
-  soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;
+  soOpen=v.id;setTimeout(soMarkCur);soVTab="vo";soDEdit=null;soRetCr=null;soPayMulti=null;soShowOwe=false;$("soPaper").value="A5";try{$("soOrient").value=localStorage.getItem("cakeSoOrient")==="L"?"L":"P"}catch(e){}soSyncOrient();$("soPayForm").hidden=$("soDelForm").hidden=true;
   $("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soView").hidden=false;soViewSeq++;
   requestAnimationFrame(()=>setTimeout(()=>{if(soOpen===v.id&&!$("soView").hidden)renderSoView(vos.find(x=>x.id===v.id)||v)},0))}
 async function renderSoView(v){$("soViewT").textContent=v.no;$("soViewC").textContent=v.customer?"· "+v.customer:"";$("soViewC").title=v.customer||"";
   $("soEditBtn").hidden=!soCanEdit(v);$("soDelBtn").hidden=!can("admin");$("soPayBtn").hidden=soBal(v)<=0||vBrand(v)!=="mb";   /* JS: payments are taken on the 💵 Payment tab */$("soDelivBtn").hidden=true;   /* deliveries are entered on the 🚚 Delivered tab now */
   const ps=v.payments||[];
   $("soPayList").after($("soPayForm"));   /* take the form out before the list is drawn again */
-  $("soPayList").innerHTML=!ps.length&&vBrand(v)==="mb"?"":`${vBrand(v)==="mb"?`<p class="ac-h">💵 Payments</p>`:""}<table class="ex-tbl so-ptbl"><tbody>${vBrand(v)!=="mb"?`<tr class="so-pnet"><td>Net Amount</td><td class="ex-r">${fmt(v.net)}</td><td></td></tr>`:""}${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${esc(pmLabel(p.method||"Cash"))} ${v.xl?"":payConfChip(p)}${p.grp?`<br><small class="ex-c">👥 ${esc(p.note||"ပေါင်းရှင်း")}</small>`:""}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}${vBrand(v)!=="mb"?`${ps.length>1?`<tr class="so-ppaid"><td>Paid Amount</td><td class="ex-r">${fmt(soPaid(v))}</td><td></td></tr>`:""}<tr class="so-pfrow" hidden><td colspan="3" id="soPFormCell"></td></tr><tr class="so-pbal"><td><b>Balance</b></td><td class="ex-r"><b>${fmt(soBal(v))}</b></td><td></td></tr>`:""}</tbody></table>`;
+  $("soPayList").innerHTML=!ps.length&&vBrand(v)==="mb"?"":`${vBrand(v)==="mb"?`<p class="ac-h">💵 Payments</p>`:""}<table class="ex-tbl so-ptbl"><tbody>${vBrand(v)!=="mb"?`<tr class="so-pnet"><td>Net Amount</td><td class="ex-r">${fmt(v.net)}</td><td></td></tr>${soRetAmt(v)?`<tr class="so-pnet"><td>↩ Return</td><td class="ex-r">−${fmt(soRetAmt(v))}</td><td></td></tr>`:""}`:""}${ps.map((p,i)=>`<tr><td>${esc(soDate(p.date))} · ${p.refund?`💵 ငွေပြန်အမ်း · ${esc(pmLabel(p.method||"Cash"))}`:p.credit?`↪ ${esc(p.note||"ပိုငွေ")}`:esc(pmLabel(p.method||"Cash"))} ${v.xl||p.refund||p.credit?"":payConfChip(p)}${p.grp?`<br><small class="ex-c">👥 ${esc(p.note||"ပေါင်းရှင်း")}</small>`:""}</td><td class="ex-r">${fmt(p.amt)}</td><td class="ex-v so-pact">${soPayEditable(v,p)?`<button type="button" class="o-ic" data-so-ped="${i}" aria-label="Edit payment" title="Edit payment">${PENCIL}</button>`:""}${can("admin")?`<button type="button" class="o-ic danger" data-so-prm="${i}" aria-label="Remove payment" title="Remove payment">${TRASH_IC}</button>`:""}</td></tr>`).join("")}${vBrand(v)!=="mb"?`${ps.length>1?`<tr class="so-ppaid"><td>Paid Amount</td><td class="ex-r">${fmt(soPaid(v))}</td><td></td></tr>`:""}<tr class="so-pfrow" hidden><td colspan="3" id="soPFormCell"></td></tr>${soCredit(v)>0?`<tr class="so-pbal"><td><b>ပြန်ပေးရန် (Credit)</b></td><td class="ex-r"><b>${fmt(soCredit(v))}</b></td><td></td></tr>`:`<tr class="so-pbal"><td><b>Balance</b></td><td class="ex-r"><b>${fmt(soBal(v))}</b></td><td></td></tr>`}`:""}</tbody></table>`;
   soPayPlace();
   $("soPays").innerHTML=soStatusHtml(v);
     if(vBrand(v)!=="mb"&&soBal(v)<=0&&soPEdit==null&&!soPayMulti)$("soPayForm").hidden=true;
-  if(vBrand(v)!=="mb")$("soPayList").insertAdjacentHTML("afterbegin",soPayMultiHtml(v));   /* above Net Amount */
+  if(vBrand(v)!=="mb")$("soPayList").insertAdjacentHTML("afterbegin",soPayMultiHtml(v));
+  if(vBrand(v)!=="mb"&&soBal(v)>0&&soCanEdit(v)){const cc=soCrSrc(v).reduce((a,x)=>a+soCredit(x),0);if(cc>0)$("soPayList").insertAdjacentHTML("afterbegin",`<button type="button" class="chip so-pm-open so-cruse" data-so-cruse>↪ ဒီ Customer ရဲ့ ပိုငွေ ${fmt(cc)} ကို ဒီ voucher မှာ နှုတ်ရန်</button>`)}   /* above Net Amount */
   {const js=vBrand(v)!=="mb",n=(v.deliveries||[]).length;if(!js)soVTab="vo";
-   $("soVTabs").innerHTML=js?`<button type="button" class="chip" data-vtab="vo">📄 Voucher</button><button type="button" class="chip" data-vtab="pay">💵 Payment <small>${(v.payments||[]).length}</small></button><button type="button" class="chip" data-vtab="del">🚚 Delivered <small>${n}</small></button>${soBal(v)>0?`<button type="button" class="btn ghost so-padd" data-so-padd>+ Add new payment</button>`:""}${(n=>n?`<label class="so-owechk"><input type="checkbox" id="soOweChk" ${soShowOwe?"checked":""}> Show receivable <small>${n}</small></label>`:"")(soOweCount(v))}`:"";soPayPlace();
-   $("soDelList").innerHTML=js?soDelListHtml(v):"";if(js&&!soDelEntry(v))$("soDelForm").hidden=true;$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);soVTabSet(soVTab)}
+   $("soVTabs").innerHTML=js?`<button type="button" class="chip" data-vtab="vo">📄 Voucher</button><button type="button" class="chip" data-vtab="pay">💵 Payment <small>${(v.payments||[]).length}</small></button><button type="button" class="chip" data-vtab="del">🚚 Delivered <small>${n}</small></button>${soGivenArr(v).some(x=>x>0)||(v.returns||[]).length?`<button type="button" class="chip" data-vtab="ret">↩ Return <small>${(v.returns||[]).length}</small></button>`:""}${soBal(v)>0?`<button type="button" class="btn ghost so-padd" data-so-padd>+ Add new payment</button>`:""}${(n=>n?`<label class="so-owechk"><input type="checkbox" id="soOweChk" ${soShowOwe?"checked":""}> Show receivable <small>${n}</small></label>`:"")(soOweCount(v))}`:"";soPayPlace();
+   if(js&&soVTab==="ret"&&!soGivenArr(v).some(x=>x>0)&&!(v.returns||[]).length)soVTab="vo";$("soRetBox").innerHTML=js?soRetHtml(v):"";$("soRetBox").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);$("soDelList").innerHTML=js?soDelListHtml(v):"";if(js&&!soDelEntry(v))$("soDelForm").hidden=true;$("soDelList").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t);soVTabSet(soVTab)}
   /* only the latest draw lands (a slower earlier one, e.g. waiting for photos, must not cover it) */
   const seq=++soViewSeq,rc=$("soPaper").value==="RC";let html;try{html=soIsLabel()?soLabelHtml(v,$("soPaper").value):rc?soRcHtml(v):await soHtml(v)}catch(x){console.error(x);html=`<p class="so-ld">Voucher ပြလို့ မရပါ — ပြန်နှိပ်ကြည့်ပါ</p>`}if(seq!==soViewSeq)return;
   /* the preview is a sheet of the paper picked: A5 / A4 portrait or landscape (the voucher sits inside its margins), or the receipt strip */
@@ -11546,7 +11557,7 @@ $("soDelBtn").addEventListener("click",async()=>{const v=vos.find(x=>x.id===soOp
   if(!await askConfirm(`Delete ${v.no}?`,`${v.customer||""} · ${fmt(v.net||0)}`))return;try{await removeSo(v.id);poSync(v,null).catch(()=>{});$("soView").hidden=true;soOpen=null;toast("Deleted")}catch(x){toast("ဖျက်မရပါ")}});
 /* a voucher payment can be changed by an Admin, or by whoever recorded it on that same day (not on vouchers from the old Excel) */
 var soPEdit=null;
-const soPayEditable=(v,p)=>!v.xl&&(can("admin")||(sameId(p.by,me.id)&&String(p.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
+const soPayEditable=(v,p)=>!v.xl&&!p.refund&&!p.credit&&(can("admin")||(sameId(p.by,me.id)&&String(p.at||"").slice(0,10)===new Date().toISOString().slice(0,10)));
 function soPayPlace(){const f=$("soPayForm"),c=$("soPFormCell");if(c&&f.parentNode!==c)c.append(f);
   if(c)c.parentNode.hidden=f.hidden;const b=$("soVTabs").querySelector(".so-padd");if(b)b.hidden=!f.hidden}
 new MutationObserver(soPayPlace).observe($("soPayForm"),{attributes:true,attributeFilter:["hidden"]});
@@ -11607,7 +11618,47 @@ $("soPayList").addEventListener("click",e=>{const b=e.target.closest("[data-so-p
   $("soPDate").innerHTML=dateSelect("",p.date||todayISO(),"Date","",false,todayISO());$("soDelForm").hidden=true;$("soPayForm").hidden=false;$("soPayForm").scrollIntoView({block:"nearest"});$("soPAmt").focus()});
 $("soPayList").addEventListener("click",async e=>{const b=e.target.closest("[data-so-prm]");if(!b||!can("admin"))return;const v=vos.find(x=>x.id===soOpen);if(!v)return;
   const p=(v.payments||[])[Number(b.dataset.soPrm)];if(!p||!await askConfirm("Remove this payment?",`${soDate(p.date)} · ${fmt(p.amt)}`))return;
-  const n={...v,payments:v.payments.filter((_,i)=>i!==Number(b.dataset.soPrm)),updatedAt:new Date().toISOString()};try{await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
+  const n={...v,payments:v.payments.filter((_,i)=>i!==Number(b.dataset.soPrm)),updatedAt:new Date().toISOString()};
+  try{if(p.xid){const o=vos.find(x=>x.id!==v.id&&(x.payments||[]).some(q=>q.xid===p.xid));if(o)await saveSo({...o,payments:o.payments.filter(q=>q.xid!==p.xid),updatedAt:n.updatedAt})}
+    await saveSo(n);renderSoView(n)}catch(x){toast("ဖျက်မရပါ")}});
+/* ---- ↩ Return tab ---- */
+var soRetCr=null;   /* the credit being settled: "rf" refund, "mv" taken off another voucher */
+function soRetHtml(v){const ls=v.lines||[],g=soGivenArr(v),rd=soRetDone(v),ok=soCanEdit(v)&&!v.xl,cr=soCredit(v),rets=v.returns||[];
+  const rows=ls.map((l,i)=>({l,i,g:g[i],r:rd[i],left:Math.max(0,g[i]-rd[i])})).filter(x=>x.g>0||x.r>0);
+  const list=rets.length?`<p class="ac-h">↩ Return မှတ်တမ်း</p><table class="ex-tbl so-ptbl"><tbody>${rets.map((r,k)=>`<tr><td>${esc(soDate(r.date))}<br><small class="ex-c">${Object.entries(r.lines||{}).map(([i,q])=>`${esc(ls[i]?.name||"?")} × ${poNum(q)}`).join("၊ ")}${r.note?` · ${esc(r.note)}`:""}</small></td><td class="ex-r">−${fmt(r.amt)}</td><td class="ex-v so-pact">${can("admin")?`<button type="button" class="o-ic danger" data-so-rrm="${k}" aria-label="Remove return" title="Remove return">${TRASH_IC}</button>`:""}</td></tr>`).join("")}</tbody></table>`:"";
+  const ms=pmFor("sale"),tg=v.custId?vos.filter(x=>x.custId===v.custId&&x.id!==v.id&&vBrand(x)===vBrand(v)&&soBal(x)>0).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))):[];
+  const rf=`<div class="so-rform"><div class="prf"><span>Date</span><div id="soRfDate">${dateSelect("",todayISO(),"Date","",false,todayISO())}</div></div><label class="prf"><span>Method</span><select id="soRfM"><option value="">— Method ရွေးပါ —</option>${ms.map(m=>`<option value="${esc(m)}">${esc(pmLabel(m))}</option>`).join("")}</select></label><label class="prf"><span>ပြန်အမ်းငွေ (Ks)</span><input id="soRfA" type="number" inputmode="numeric" min="0" step="1" value="${cr}"></label><div class="so-rbtns"><button type="button" class="btn ghost" data-so-rcr="">Cancel</button><button type="button" class="btn" data-so-rfgo>ငွေပြန်အမ်း သိမ်းမည်</button></div></div>`;
+  const mv=!tg.length?`<p class="side-help">ဒီ Customer မှာ ငွေရရန်ကျန်တဲ့ တခြား voucher မရှိသေးပါ။ နောက် voucher ဖွင့်ပြီးရင် အဲဒီ voucher ရဲ့ 💵 Payment tab မှာ "↪ ပိုငွေ … နှုတ်ရန်" ကို နှိပ်ပါ။</p><div class="so-rbtns"><button type="button" class="btn ghost" data-so-rcr="">Close</button></div>`
+    :`<div class="so-rform"><table class="ex-tbl"><tbody>${tg.map((x,k)=>`<tr><td><label class="so-pmr"><input type="radio" name="soMvT" value="${esc(x.id)}" ${k?"":"checked"}> <b>${esc(x.no)}</b> · ${esc(soDate(x.date))}</label></td><td class="ex-r">ကျန် ${fmt(soBal(x))}</td></tr>`).join("")}</tbody></table><div class="so-rbtns"><button type="button" class="btn ghost" data-so-rcr="">Cancel</button><button type="button" class="btn" data-so-mvgo>ရွေးထားတဲ့ voucher မှာ နှုတ်မည်</button></div></div>`;
+  const crb=cr>0?`<div class="so-rcr"><p><b>Customer ကို ပြန်ပေးရန် ${fmt(cr)}</b></p>${!ok?"":soRetCr==="rf"?rf:soRetCr==="mv"?mv:`<div class="so-rcr-b"><button type="button" class="btn ghost" data-so-rcr="rf">💵 ငွေပြန်အမ်းမည်</button><button type="button" class="btn ghost" data-so-rcr="mv">↪ နောက် voucher မှာ နှုတ်မည်</button></div>`}</div>`:"";
+  const form=ok&&rows.some(x=>x.left>0)?`<p class="ac-h">↩ ပစ္စည်း ပြန်လာတာ မှတ်ရန်</p><table class="ex-tbl so-rtbl"><thead><tr><th>Item</th><th class="ex-r">ပေးပြီး</th><th class="ex-r">ပြန်ပြီး</th><th class="ex-r">ယခုပြန်</th></tr></thead><tbody>${rows.map(x=>`<tr><td><span data-t="${esc(x.l.name||"")}"></span><br><small class="ex-c">${fmt(x.l.price)}</small></td><td class="ex-r">${poNum(x.g)}</td><td class="ex-r">${x.r?poNum(x.r):"–"}</td><td class="ex-r">${x.left>0?`<input type="number" inputmode="decimal" min="0" max="${x.left}" step="any" placeholder="0" data-so-rq="${x.i}" aria-label="Return qty">`:"–"}</td></tr>`).join("")}</tbody></table>
+    <div class="so-rform"><div class="prf"><span>Date</span><div id="soRtDate">${dateSelect("",todayISO(),"Date","",false,todayISO())}</div></div><label class="prf"><span>Note</span><input id="soRtNote" placeholder="ဥပမာ – ပစ္စည်းမှား မှာမိ"></label><p class="so-rsum"><span>ပြန်ငွေ</span><b id="soRtSum">0 Ks</b></p><button type="button" class="btn" data-so-rtgo>↩ Return သိမ်းမည်</button></div>`:"";
+  return`<p class="side-help">ပစ္စည်း ပြန်လာရင် ဒီမှာ မှတ်ပါ။ ပြန်ငွေကို ဒီ voucher ရဲ့ ကျန်ငွေထဲက အရင်နှုတ်ပြီး ပိုနေရင် Customer ကို ငွေပြန်အမ်း (သို့) နောက် voucher မှာ နှုတ်လို့ရပါတယ်။</p>${crb}${form}${list}`}
+const soRtSel=()=>{const v=vos.find(x=>x.id===soOpen),out={};let amt=0;if(!v)return{out,amt};
+  $("soRetBox").querySelectorAll("[data-so-rq]").forEach(inp=>{const i=Number(inp.dataset.soRq),q=Math.min(Number(inp.max)||0,Math.max(0,Number(inp.value)||0));if(q>0){out[i]=q;amt+=Math.round(q*Number(v.lines[i]?.price||0))}});return{out,amt}};
+$("soRetBox").addEventListener("input",e=>{if(e.target.closest("[data-so-rq]"))$("soRtSum").textContent=fmt(soRtSel().amt)});
+$("soRetBox").addEventListener("click",async e=>{const v=vos.find(x=>x.id===soOpen);if(!v)return;const now=new Date().toISOString();
+  const c=e.target.closest("[data-so-rcr]");if(c){soRetCr=c.dataset.soRcr||null;renderSoView(v);return}
+  const go=async(n,msg,b)=>{if(b)b.disabled=true;try{await saveSo(n);soRetCr=null;await renderSoView(vos.find(x=>x.id===n.id)||n);toast(msg)}catch(x){toast("သိမ်းမရပါ")}finally{if(b)b.disabled=false}};
+  if(e.target.closest("[data-so-rtgo]")){if(!soCanEdit(v))return;const{out,amt}=soRtSel();if(!Object.keys(out).length){toast("ပြန်လာတဲ့ အရေအတွက် ထည့်ပါ");return}
+    const r={id:"r"+Date.now().toString(36),date:readDate($("soRtDate").querySelector(".dp"))||todayISO(),lines:out,amt,note:$("soRtNote").value.trim(),at:now,by:me.id||null};
+    await go({...v,returns:[...(v.returns||[]),r],updatedAt:now,updatedBy:me.id||null},`↩ Return မှတ်ပြီး · ${fmt(amt)}`,e.target.closest("button"));return}
+  const rm=e.target.closest("[data-so-rrm]");if(rm){if(!can("admin"))return;const r=(v.returns||[])[Number(rm.dataset.soRrm)];if(!r||!await askConfirm("Remove this return?",`${soDate(r.date)} · ${fmt(r.amt)}`))return;
+    await go({...v,returns:v.returns.filter(x=>x!==r),updatedAt:now,updatedBy:me.id||null},"Return ဖယ်ပြီး");return}
+  if(e.target.closest("[data-so-rfgo]")){const cr=soCredit(v),amt=Math.round(Number($("soRfA").value)||0),method=$("soRfM").value;
+    if(!(amt>0)){toast("ပြန်အမ်းငွေ ထည့်ပါ");return}if(amt>cr){toast(`ပြန်ပေးရန် ${fmt(cr)} ထက် များနေပါတယ်`);return}if(!method){toast("Method ရွေးပါ");$("soRfM").focus();return}
+    await go({...v,payments:[...(v.payments||[]),{amt:-amt,refund:true,method,date:readDate($("soRfDate").querySelector(".dp"))||todayISO(),note:"ငွေပြန်အမ်း",at:now,by:me.id||null}],updatedAt:now,updatedBy:me.id||null},`💵 ငွေပြန်အမ်း ${fmt(amt)} မှတ်ပြီး`,e.target.closest("button"));return}
+  if(e.target.closest("[data-so-mvgo]")){const id=$("soRetBox").querySelector('input[name="soMvT"]:checked')?.value,t=vos.find(x=>x.id===id);if(!t){toast("Voucher ရွေးပါ");return}
+    const take=Math.min(soCredit(v),soBal(t));if(!(take>0))return;const b=e.target.closest("button");b.disabled=true;
+    try{await soCrMove(v,t,take,now);soRetCr=null;await renderSoView(vos.find(x=>x.id===v.id)||v);toast(`↪ ${fmt(take)} ကို ${t.no} မှာ နှုတ်ပြီး`,4000)}catch(x){toast("သိမ်းမရပါ")}finally{b.disabled=false}}});
+/* credit moved from one voucher (src) onto another still owing (dst): the same amount out of one, into the other */
+async function soCrMove(src,dst,take,now){const xid="x"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),date=todayISO(),by=me.id||null;
+  const nd={...dst,payments:[...(dst.payments||[]),{amt:take,credit:true,date,note:`ပိုငွေ ← ${src.no}`,xid,at:now,by}],updatedAt:now,updatedBy:by};await saveSo(nd);
+  await saveSo({...src,payments:[...(src.payments||[]),{amt:-take,credit:true,date,note:`ပိုငွေ → ${dst.no}`,xid,at:now,by}],updatedAt:now,updatedBy:by});return nd}
+$("soPayList").addEventListener("click",async e=>{const b=e.target.closest("[data-so-cruse]");if(!b)return;const v=vos.find(x=>x.id===soOpen);if(!v||!soCanEdit(v))return;
+  const now=new Date().toISOString();let need=soBal(v),done=0,cur=v;b.disabled=true;
+  try{for(const x of soCrSrc(v)){if(need<=0)break;const take=Math.min(need,soCredit(x));if(take<=0)continue;cur=await soCrMove(x,cur,take,now);need-=take;done+=take}
+    await renderSoView(cur);toast(`↪ ပိုငွေ ${fmt(done)} နှုတ်ပြီး`,4000)}catch(x){toast("သိမ်းမရပါ");b.disabled=false}});
 /* ---- paper: A5 or A4 (both portrait), or an 80 mm thermal receipt ---- */
 const soRc=()=>$("soPaper").value==="RC";
 const SO_RC_CSS=`.vr{font-family:"Noto Sans Myanmar","Padauk","Myanmar Text",system-ui,sans-serif;color:#000;background:#fff;font-size:12px;line-height:1.35;width:100%}
@@ -11631,7 +11682,7 @@ function soRcHtml(v,sign){const m=n=>Number(n||0).toLocaleString("en-US"),paid=s
     <div class="two sm"><div>${esc(v.customer||"")}${v.phone?`<br>${esc(v.phone)}`:""}</div><div>${esc(soDelivOf(v)).replace(/\n/g,"<br>")}</div></div>
     <table><thead><tr><th class="q">Qty</th><th>Description</th><th class="a">AMOUNT</th></tr></thead><tbody>
       ${(v.lines||[]).map(l=>`<tr><td class="q">${m(l.qty)}</td><td>${esc(l.name)}<div class="at">@${m(l.price)}${l.note?` · ${esc(l.note)}`:""}</div></td><td class="a">${m(Math.round(l.qty*l.price))}</td></tr>`).join("")}
-    </tbody><tbody class="vr-tot"><tr><td colspan="2">Net Amount</td><td class="a">${m(v.net)}</td></tr><tr><td colspan="2">Payment</td><td class="a">${paid?m(paid):"-"}</td></tr><tr><td colspan="2">Balance</td><td class="a">${m(bal)}</td></tr></tbody></table>
+    </tbody><tbody class="vr-tot"><tr><td colspan="2">Net Amount</td><td class="a">${m(v.net)}</td></tr>${soRetAmt(v)?`<tr><td colspan="2">Return</td><td class="a">-${m(soRetAmt(v))}</td></tr>`:""}<tr><td colspan="2">Payment</td><td class="a">${paid?m(paid):"-"}</td></tr><tr><td colspan="2">${soCredit(v)>0?"Credit":"Balance"}</td><td class="a">${m(soCredit(v)>0?soCredit(v):bal)}</td></tr></tbody></table>
     ${owe.length?`<div class="owe"><b>အကြွေးစာရင်း</b>${owe.map(x=>`<div class="two" style="margin:2px 0"><span>${esc(x.no)} · ${esc(soDate(x.date))}</span><span>${m(soBal(x))}</span></div>`).join("")}
       <div class="two b" style="margin:2px 0"><span>ယခင်ကျန်ငွေ</span><span>${m(oweSum)}</span></div><div class="two b" style="margin:2px 0"><span>စုစုပေါင်း ပေးရန်</span><span>${m(oweSum+bal)}</span></div></div>`:""}
     ${v.note?`<div class="sm" style="margin-top:6px">Note: ${esc(v.note)}</div>`:""}
