@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844635"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844747"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,7 +251,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-set .bak-sethd{border-top:0}.bak-snm{font-weight:700;padding:6px 8px;min-height:0;height:36px;margin:0}
 .bak-set .bak-part{padding-left:12px}
 .bak-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px;border-top:1px dashed var(--line);margin:0}.bak-box span{font-weight:600;font-size:14px}.bak-box small{color:var(--muted);font-weight:400}.bak-box input{width:132px;margin:0;text-align:right}
-.bak-setin{display:block;color:var(--muted);font-size:12px}
+.bak-setin{display:block;color:var(--muted);font-size:12px}.bak-rawt{color:var(--muted);font-size:11px;white-space:nowrap}
 @media (max-width:420px){.bak-line{grid-template-columns:132px minmax(0,1fr) 36px}.bak-line .bak-n{grid-column:1/-1}.bak-line .pos-qty{justify-content:flex-start}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
 .photos{display:flex;flex-wrap:wrap;gap:8px}
@@ -3369,10 +3369,16 @@ var bakTgt=null;
 const bakSetCalc=l=>{l.price=(l.parts||[]).reduce((a,p)=>a+(Number(p.price)||0)*(Number(p.qty)||0),0)+(Number(l.box)||0);return l.price};
 const bakSetN=()=>bakItems.filter(l=>l.set).length;
 function bakReprice(){const t=bakTier(),rp=l=>{const p=pds.find(x=>x.id===l.pid),v=p?posPrice(p,t):null;if(v!=null)l.price=v};bakItems.forEach(l=>{if(l.set){(l.parts||[]).forEach(rp);bakSetCalc(l)}else rp(l)})}
+/* raw materials (Raw Material) that have a Mr.Bee price are sold here too, at that price */
+const bakRawOpts=i=>{const R=(i.units||[]).filter(u=>Number(u.m)>0).map((u,k)=>({k,unit:u.n||u.u||"",price:Number(u.m)}));
+  return R.length?R:Number(i.mbPrice)>0?[{k:-1,unit:"",price:Number(i.mbPrice)}]:[]};
+const bakRawName=(i,o)=>o.unit?`${i.name} (${o.unit})`:i.name;
 function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   const q=pdNorm($("bakQ").value),t=bakTier();
   const hits=q?pds.filter(p=>p.cat!=="Birthday Cake"&&posPrice(p,t)!=null&&(pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q))).slice(0,12):[];
-  $("bakRes").innerHTML=hits.map(p=>`<button type="button" class="bak-hit" data-bpid="${esc(p.id)}"><span class="bak-hn" data-t="${esc(p.name)}"></span><small>${esc(p.code||"")}</small><b>${fmt(posPrice(p,t))}</b><i aria-hidden="true">+</i></button>`).join("")||(q?`<p class="bak-empty">မတွေ့ပါ</p>`:"");
+  const raw=q&&typeof items!=="undefined"?items.filter(i=>pdNorm(i.name).includes(q)||pdNorm(i.code).includes(q)).flatMap(i=>bakRawOpts(i).map(o=>({i,o}))).slice(0,Math.max(0,16-hits.length)):[];
+  $("bakRes").innerHTML=(hits.map(p=>`<button type="button" class="bak-hit" data-bpid="${esc(p.id)}"><span class="bak-hn" data-t="${esc(p.name)}"></span><small>${esc(p.code||"")}</small><b>${fmt(posPrice(p,t))}</b><i aria-hidden="true">+</i></button>`).join("")
+    +raw.map(({i,o})=>`<button type="button" class="bak-hit" data-biid="${esc(i.id)}" data-bk="${o.k}"><span class="bak-hn"><span data-t="${esc(bakRawName(i,o))}"></span> <small class="bak-rawt">🧺 Raw · Mr.Bee</small></span><small>${esc(i.code||"")}</small><b>${fmt(o.price)}</b><i aria-hidden="true">+</i></button>`).join(""))||(q?`<p class="bak-empty">မတွေ့ပါ</p>`:"");
   if(bakTgt!=null&&!bakItems[bakTgt]?.set)bakTgt=null;
   $("bakTgt").innerHTML=`<span class="bak-tgl">ထည့်မယ့်နေရာ</span><button type="button" class="chip" data-btg="" aria-pressed="${bakTgt==null}">🥐 ရိုးရိုး</button>${bakItems.map((l,i)=>l.set?`<button type="button" class="chip" data-btg="${i}" aria-pressed="${bakTgt===i}">📦 <span data-t="${esc(l.name||"Set ဘူး")}"></span></button>`:"").join("")}<button type="button" class="chip bak-setadd" data-bsetadd>+ Set ဘူး</button>`;
   const pq=(a,lbl,v)=>`<span class="pos-qty"><button type="button" class="o-ic" ${a}="-1" aria-label="Less">−</button><input class="${lbl}" type="number" inputmode="numeric" min="1" value="${v}" aria-label="Quantity"><button type="button" class="o-ic" ${a}="1" aria-label="More">+</button></span>`;
@@ -3387,12 +3393,16 @@ function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
 /* cake parts hide for a bakery products order, the products part shows */
 function syncKind(){const b=kindVal()==="bakery";
   $("bakSet").hidden=$("bakPickBtn").hidden=!b;$("chargeW").hidden=b;if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
-  if(b)renderBak()}
+  if(b){if(typeof initItems==="function")initItems();renderBak()}}
 function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
   bakItems=(items||[]).map(l=>({...l,...(l.set?{parts:(l.parts||[]).map(p=>({...p}))}:{})}));bakTgt=null;bakCustId=custId||"";$("bakQ").value="";syncKind()}
 document.querySelectorAll('input[name="fKind"]').forEach(i=>i.addEventListener("change",()=>{syncKind();updateReceipt()}));
 $("bakQ").addEventListener("input",renderBak);
-$("bakRes").addEventListener("click",e=>{const b=e.target.closest("[data-bpid]");if(!b)return;const p=pds.find(x=>x.id===b.dataset.bpid);if(!p)return;
+$("bakRes").addEventListener("click",e=>{const rb=e.target.closest("[data-biid]");if(rb){const it=items.find(x=>x.id===rb.dataset.biid),o=it&&bakRawOpts(it).find(x=>String(x.k)===rb.dataset.bk);if(!o)return;
+    const S=bakTgt!=null&&bakItems[bakTgt]?.set?bakItems[bakTgt]:null,into=S?(S.parts=S.parts||[]):bakItems,nm=bakRawName(it,o);
+    const l=into.find(x=>!x.set&&x.iid===it.id&&x.name===nm);if(l)l.qty++;else into.push({iid:it.id,name:nm,code:it.code||"",unit:o.unit||"",price:o.price,qty:1});if(S)bakSetCalc(S);
+    $("bakQ").value="";renderBak();updateReceipt();$("bakQ").focus();return}
+  const b=e.target.closest("[data-bpid]");if(!b)return;const p=pds.find(x=>x.id===b.dataset.bpid);if(!p)return;
   const S=bakTgt!=null&&bakItems[bakTgt]?.set?bakItems[bakTgt]:null,into=S?(S.parts=S.parts||[]):bakItems;
   const l=into.find(x=>!x.set&&x.pid===p.id);if(l)l.qty++;else into.push({pid:p.id,name:p.name,code:p.code||"",price:posPrice(p,bakTier())||0,qty:1});if(S)bakSetCalc(S);
   $("bakQ").value="";renderBak();updateReceipt();$("bakQ").focus()});
@@ -3412,7 +3422,7 @@ $("bakLines").addEventListener("change",e=>{const S=bakItems[Number(e.target.clo
   const inp=e.target.closest(".bak-qn");if(!inp)return;const l=bakItems[Number(inp.closest("[data-bi]").dataset.bi)];
   if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
 /* the form keeps its own fields; a bakery products order drops everything about a cake */
-function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,parts:l.parts.map(p=>({pid:p.pid,name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({pid:l.pid,name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
+function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,parts:l.parts.map(p=>({...(p.iid?{iid:p.iid,unit:p.unit||""}:{pid:p.pid}),name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({...(l.iid?{iid:l.iid,unit:l.unit||""}:{pid:l.pid}),name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
   const o={...r,kind:"bakery",items,charges:[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
