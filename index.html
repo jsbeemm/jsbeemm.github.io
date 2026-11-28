@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795779518"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844199"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -246,6 +246,12 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .bak-n small{color:var(--muted)}
 .bak-qn{width:52px;text-align:center;padding:4px}
 .bak-empty{margin:6px 0;font-size:13px;color:var(--muted)}
+.bak-tgt{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.bak-tgt .chip{margin:0}.bak-tgl{font-size:12px;color:var(--muted);margin-right:2px}.bak-setadd{border-style:dashed}
+.bak-set{border:1px solid var(--line);border-radius:12px;padding:2px 10px 10px;background:var(--surface);cursor:pointer}.bak-set.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}
+.bak-set .bak-sethd{border-top:0}.bak-snm{font-weight:700;padding:6px 8px;min-height:0;height:36px;margin:0}
+.bak-set .bak-part{padding-left:12px}
+.bak-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px;border-top:1px dashed var(--line);margin:0}.bak-box span{font-weight:600;font-size:14px}.bak-box small{color:var(--muted);font-weight:400}.bak-box input{width:132px;margin:0;text-align:right}
+.bak-setin{display:block;color:var(--muted);font-size:12px}
 @media (max-width:420px){.bak-line{grid-template-columns:132px minmax(0,1fr) 36px}.bak-line .bak-n{grid-column:1/-1}.bak-line .pos-qty{justify-content:flex-start}}
 .ch{font-size:11.5px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink);border:1px solid var(--line)}
 .photos{display:flex;flex-wrap:wrap;gap:8px}
@@ -1755,6 +1761,7 @@ span.star-ic{cursor:default}
         <fieldset id="bakSet" hidden>
           <legend>Bakery products</legend>
           <p class="bak-tier" id="bakTier"></p>
+          <div class="bak-tgt" id="bakTgt"></div>
           <input class="search" id="bakQ" type="search" placeholder="Product ရှာရန် – အမည်၊ Code၊ Barcode" autocomplete="off">
           <div class="bak-res" id="bakRes"></div>
           <div class="bak-lines" id="bakLines"></div>
@@ -3357,12 +3364,23 @@ $("bakPopL").addEventListener("click",e=>{const b=e.target.closest("[data-bcid]"
 $("bakChip").addEventListener("click",e=>{if(e.target.closest("#bakChipX"))bakChoose("")});
 document.addEventListener("click",e=>{const p=$("bakPop");if(!p.hidden&&!e.composedPath().some(n=>n===p||n===$("bakPickBtn")))p.hidden=true});
 /* a customer's price changes the price of what is already in the list */
-function bakReprice(){const t=bakTier();bakItems.forEach(l=>{const p=pds.find(x=>x.id===l.pid),v=p?posPrice(p,t):null;if(v!=null)l.price=v})}
+/* a Set box: small products packed together; the order shows only the box (its price = the products for one box + the box price) */
+var bakTgt=null;
+const bakSetCalc=l=>{l.price=(l.parts||[]).reduce((a,p)=>a+(Number(p.price)||0)*(Number(p.qty)||0),0)+(Number(l.box)||0);return l.price};
+const bakSetN=()=>bakItems.filter(l=>l.set).length;
+function bakReprice(){const t=bakTier(),rp=l=>{const p=pds.find(x=>x.id===l.pid),v=p?posPrice(p,t):null;if(v!=null)l.price=v};bakItems.forEach(l=>{if(l.set){(l.parts||[]).forEach(rp);bakSetCalc(l)}else rp(l)})}
 function renderBak(){if(!$("bakSet")||$("bakSet").hidden)return;bakFillCust();
   const q=pdNorm($("bakQ").value),t=bakTier();
   const hits=q?pds.filter(p=>p.cat!=="Birthday Cake"&&posPrice(p,t)!=null&&(pdNorm(p.name).includes(q)||pdNorm(p.code).includes(q)||String(p.barcode||"").includes(q))).slice(0,12):[];
   $("bakRes").innerHTML=hits.map(p=>`<button type="button" class="bak-hit" data-bpid="${esc(p.id)}"><span class="bak-hn" data-t="${esc(p.name)}"></span><small>${esc(p.code||"")}</small><b>${fmt(posPrice(p,t))}</b><i aria-hidden="true">+</i></button>`).join("")||(q?`<p class="bak-empty">မတွေ့ပါ</p>`:"");
-  $("bakLines").innerHTML=bakItems.length?bakItems.map((l,i)=>`<div class="bak-line" data-bi="${i}"><span class="bak-n"><b data-t="${esc(l.name)}"></b><small>${fmt(l.price)}</small></span>
+  if(bakTgt!=null&&!bakItems[bakTgt]?.set)bakTgt=null;
+  $("bakTgt").innerHTML=`<span class="bak-tgl">ထည့်မယ့်နေရာ</span><button type="button" class="chip" data-btg="" aria-pressed="${bakTgt==null}">🥐 ရိုးရိုး</button>${bakItems.map((l,i)=>l.set?`<button type="button" class="chip" data-btg="${i}" aria-pressed="${bakTgt===i}">📦 <span data-t="${esc(l.name||"Set ဘူး")}"></span></button>`:"").join("")}<button type="button" class="chip bak-setadd" data-bsetadd>+ Set ဘူး</button>`;
+  const pq=(a,lbl,v)=>`<span class="pos-qty"><button type="button" class="o-ic" ${a}="-1" aria-label="Less">−</button><input class="${lbl}" type="number" inputmode="numeric" min="1" value="${v}" aria-label="Quantity"><button type="button" class="o-ic" ${a}="1" aria-label="More">+</button></span>`;
+  const setHtml=(l,i)=>{bakSetCalc(l);return`<div class="bak-set${bakTgt===i?" on":""}" data-bi="${i}">
+    <div class="bak-line bak-sethd"><span class="bak-n"><input class="bak-snm" value="${esc(l.name||"")}" placeholder="Set ဘူး နာမည်" aria-label="Set name"><small>တစ်ဘူး ${fmt(l.price)}</small></span>${pq("data-bq","bak-qn",l.qty)}<b class="bak-amt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger" data-brm aria-label="Remove set" title="Set ဘူး ဖယ်ရန်">${TRASH_IC}</button></div>
+    ${(l.parts||[]).map((p,j)=>`<div class="bak-line bak-part" data-bp="${j}"><span class="bak-n"><b data-t="${esc(p.name)}"></b><small>${fmt(p.price)}</small></span>${pq("data-bpq","bak-qn bak-pqn",p.qty)}<b class="bak-amt">${fmt(p.price*p.qty)}</b><button type="button" class="o-ic danger" data-bprm aria-label="Remove" title="Remove">${TRASH_IC}</button></div>`).join("")||`<p class="bak-empty">${bakTgt===i?"အပေါ်က Product ရှာပြီး ထည့်ရင် ဒီ Set ဘူးထဲ ဝင်ပါမယ်":"ဒီ Set ဘူးကို နှိပ်ပြီး Product ထည့်ပါ"}</p>`}
+    <label class="bak-box"><span>ဘူးဈေး <small>(1 ဘူး)</small></span><input class="bak-boxp" type="number" inputmode="numeric" min="0" step="100" value="${l.box||""}" placeholder="0" aria-label="Box price"></label></div>`};
+  $("bakLines").innerHTML=bakItems.length?bakItems.map((l,i)=>l.set?setHtml(l,i):`<div class="bak-line" data-bi="${i}"><span class="bak-n"><b data-t="${esc(l.name)}"></b><small>${fmt(l.price)}</small></span>
     <span class="pos-qty"><button type="button" class="o-ic" data-bq="-1" aria-label="Less">−</button><input class="bak-qn" type="number" inputmode="numeric" min="1" value="${l.qty}" aria-label="Quantity"><button type="button" class="o-ic" data-bq="1" aria-label="More">+</button></span>
     <b class="bak-amt">${fmt(l.price*l.qty)}</b><button type="button" class="o-ic danger" data-brm aria-label="Remove" title="Remove">${TRASH_IC}</button></div>`).join(""):`<p class="bak-empty">Product ရှာပြီး ထည့်ပါ</p>`;
   $("bakSet").querySelectorAll("[data-t]").forEach(el=>el.textContent=el.dataset.t)}
@@ -3371,24 +3389,34 @@ function syncKind(){const b=kindVal()==="bakery";
   $("bakSet").hidden=$("bakPickBtn").hidden=!b;$("chargeW").hidden=b;if(!b){$("bakPop").hidden=true;$("bakChip").hidden=true}else bakFillCust();["typeSet","cakeSet","designSet"].forEach(id=>$(id).hidden=b);
   if(b)renderBak()}
 function setKind(k,items,custId){document.querySelectorAll('input[name="fKind"]').forEach(i=>i.checked=i.value===(k==="bakery"?"bakery":"cake"));
-  bakItems=(items||[]).map(l=>({...l}));bakCustId=custId||"";$("bakQ").value="";syncKind()}
+  bakItems=(items||[]).map(l=>({...l,...(l.set?{parts:(l.parts||[]).map(p=>({...p}))}:{})}));bakTgt=null;bakCustId=custId||"";$("bakQ").value="";syncKind()}
 document.querySelectorAll('input[name="fKind"]').forEach(i=>i.addEventListener("change",()=>{syncKind();updateReceipt()}));
 $("bakQ").addEventListener("input",renderBak);
 $("bakRes").addEventListener("click",e=>{const b=e.target.closest("[data-bpid]");if(!b)return;const p=pds.find(x=>x.id===b.dataset.bpid);if(!p)return;
-  const l=bakItems.find(x=>x.pid===p.id);if(l)l.qty++;else bakItems.push({pid:p.id,name:p.name,code:p.code||"",price:posPrice(p,bakTier())||0,qty:1});
+  const S=bakTgt!=null&&bakItems[bakTgt]?.set?bakItems[bakTgt]:null,into=S?(S.parts=S.parts||[]):bakItems;
+  const l=into.find(x=>!x.set&&x.pid===p.id);if(l)l.qty++;else into.push({pid:p.id,name:p.name,code:p.code||"",price:posPrice(p,bakTier())||0,qty:1});if(S)bakSetCalc(S);
   $("bakQ").value="";renderBak();updateReceipt();$("bakQ").focus()});
+$("bakTgt").addEventListener("click",e=>{if(e.target.closest("[data-bsetadd]")){bakItems.push({set:true,name:`Set ဘူး${bakSetN()?" "+(bakSetN()+1):""}`,qty:1,box:0,parts:[],price:0});bakTgt=bakItems.length-1;renderBak();updateReceipt();$("bakQ").focus();return}
+  const b=e.target.closest("[data-btg]");if(!b)return;bakTgt=b.dataset.btg===""?null:Number(b.dataset.btg);renderBak();$("bakQ").focus()});
 $("bakLines").addEventListener("click",e=>{const r=e.target.closest("[data-bi]");if(!r)return;const i=Number(r.dataset.bi),l=bakItems[i];if(!l)return;
-  if(e.target.closest("[data-brm]"))bakItems.splice(i,1);
+  if(l.set){const pr=e.target.closest("[data-bp]");
+    if(pr){const j=Number(pr.dataset.bp),p=l.parts[j];if(!p)return;if(e.target.closest("[data-bprm]"))l.parts.splice(j,1);else{const q=e.target.closest("[data-bpq]");if(!q)return;p.qty=Math.max(1,p.qty+Number(q.dataset.bpq))}bakSetCalc(l);renderBak();updateReceipt();return}
+    if(!e.target.closest("button,input")){if(bakTgt!==i){bakTgt=i;renderBak()}return}}
+  if(e.target.closest("[data-brm]")){bakItems.splice(i,1);if(bakTgt===i)bakTgt=null;else if(bakTgt!=null&&bakTgt>i)bakTgt--}
   else{const q=e.target.closest("[data-bq]");if(!q)return;l.qty=Math.max(1,l.qty+Number(q.dataset.bq))}
   renderBak();updateReceipt()});
-$("bakLines").addEventListener("change",e=>{const inp=e.target.closest(".bak-qn");if(!inp)return;const l=bakItems[Number(inp.closest("[data-bi]").dataset.bi)];
+$("bakLines").addEventListener("change",e=>{const S=bakItems[Number(e.target.closest("[data-bi]")?.dataset.bi)];
+  if(S?.set&&e.target.matches(".bak-snm")){S.name=e.target.value.trim()||"Set ဘူး";renderBak();updateReceipt();return}
+  if(S?.set&&e.target.matches(".bak-boxp")){S.box=Math.max(0,Math.round(Number(e.target.value)||0));bakSetCalc(S);renderBak();updateReceipt();return}
+  if(S?.set&&e.target.matches(".bak-pqn")){const p=S.parts[Number(e.target.closest("[data-bp]").dataset.bp)];if(p)p.qty=Math.max(1,parseInt(e.target.value)||1);bakSetCalc(S);renderBak();updateReceipt();return}
+  const inp=e.target.closest(".bak-qn");if(!inp)return;const l=bakItems[Number(inp.closest("[data-bi]").dataset.bi)];
   if(l)l.qty=Math.max(1,parseInt(inp.value)||1);renderBak();updateReceipt()});
 /* the form keeps its own fields; a bakery products order drops everything about a cake */
-function bakForm(r){const items=bakItems.filter(l=>l.qty>0).map(l=>({pid:l.pid,name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
+function bakForm(r){const items=bakItems.filter(l=>l.qty>0&&(!l.set||(l.parts||[]).length)).map(l=>l.set?{set:true,name:l.name||"Set ဘူး",box:Number(l.box)||0,price:bakSetCalc(l),qty:l.qty,parts:l.parts.map(p=>({pid:p.pid,name:p.name,code:p.code||"",price:Number(p.price)||0,qty:p.qty}))}:({pid:l.pid,name:l.name,code:l.code||"",price:Number(l.price)||0,qty:l.qty}));
   const o={...r,kind:"bakery",items,charges:[],custId:bakCust()?bakCustId:"",tier:bakTier(),flavor:"",flavorName:"Bakery products",size:"",sizeName:"",cakeCode:"",decoType:"cream",
     shape:"",shapeCustom:"",cakeType:"std",custom:"",msg:"",design:"",photos:[],designNote:"",basePrice:items.reduce((a,l)=>a+l.price*l.qty,0)};
   ["tiers","tierN","qty","count"].forEach(k=>delete o[k]);return o}
-const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small></span>`).join("")}</div>`;
+const bakCard=o=>`<p class="o-cake"><b class="o-flv">🥐 Bakery products</b></p><div class="o-notes o-bak">${bakItemsOf(o).map(l=>`<span><b>${l.set?"📦 ":""}${esc(l.name)}</b> × ${l.qty} <small>${fmt(l.price*l.qty)}</small>${l.set?`<small class="bak-setin">${(l.parts||[]).map(p=>`${esc(p.name)} ×${p.qty}`).join("၊ ")}</small>`:""}</span>`).join("")}</div>`;
 const bakSlip=o=>`${bakItemsOf(o).map(l=>`<div class="pr-row pr-item"><span>${esc(l.name)} <small>${Number(l.price||0).toLocaleString("en-US")} × ${l.qty}</small></span><span>${Number(l.price*l.qty||0).toLocaleString("en-US")}</span></div>`).join("")}`;
 /* ---------- cupcakes: one row each — Cupcake · design (Cream / Fondant / Cream and fondant) · qty × price (typed, for one) ---------- */
 const CUP_DECO={cream:"Cream",fondant:"Fondant",mixed:"Cream and fondant",mixdeco:"Mixed Decoration"};
