@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844304"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<html lang="my"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#C8285F"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Mr.Bee"><meta name="app-build" content="1795844635"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Golden Bee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -4709,6 +4709,8 @@ async function buildPreviewCanvas(o){
   const c=document.createElement("canvas"),g=c.getContext("2d");
   const rr=(ctx,x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()};
   const money=n=>Number(n||0).toLocaleString("en-US");
+  /* a tiered / wedding cake: its drawing stands in the Cake section in place of the "2 tiers Tiered cake" title */
+  let tierPic=null;
   /* draw(ctx,H): H=0 is a measuring pass (nothing painted) that returns the height the left column needs */
   const draw=(ctx,H)=>{
     const paint=!!H;let y=P;
@@ -4759,6 +4761,8 @@ async function buildPreviewCanvas(o){
     /* each product: its name, the line amount on the right, and "price × qty" under the name (as on the slip) */
     if(isBak(o)){bakItemsOf(o).forEach(l=>{const amt=Number(l.price||0)*Number(l.qty||0);font(30,700);wrapLines(ctx,l.name||"",LW-width(money(amt),30,700)-24).forEach((w,i)=>{y+=i?40:48;text(w,P,y,30,{weight:700})});
       text(money(amt),P+LW,y,30,{align:"right",weight:700});y+=34;text(`${money(l.price)} × ${l.qty}`,P,y,22,{color:C.muted})})}else{
+    if(tierPic){const k=Math.min(LW/tierPic.naturalWidth,560/tierPic.naturalHeight),dw=tierPic.naturalWidth*k,dh=tierPic.naturalHeight*k;y+=18;
+      if(paint){ctx.save();rr(ctx,P,y,LW,dh,16);ctx.fillStyle=C.photoBg;ctx.fill();ctx.drawImage(tierPic,P+(LW-dw)/2,y,dw,dh);ctx.restore()}y+=dh-6}else{
     y+=48;font(36,700);
     /* the shape outline with the size written inside it (as on the order card); a size too long to fit stays in the title */
     const sfit=o.shape?shapeSizeFit(shpKey,o.sizeName):null;
@@ -4768,7 +4772,7 @@ async function buildPreviewCanvas(o){
       y=Math.max(y,top+S-8)}
     else{const ic=50;
       if(paint)drawShape(ctx,P,y-36,40);
-      wrapLines(ctx,(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o)),LW-ic).forEach((l,i)=>{if(i)y+=48;text(l,P+ic,y,36,{weight:700})})}
+      wrapLines(ctx,(`${o.sizeName||""} ${o.flavorName||""}`.trim()+fondTag(o)),LW-ic).forEach((l,i)=>{if(i)y+=48;text(l,P+ic,y,36,{weight:700})})}}
     /* a tiered / wedding cake already says so in its title, so its type is not repeated underneath */
     const sub=[shpKey==="custom"?shapeName(o):"",hasTiers(ctOf(o))?"":ctLbl(o)].filter(Boolean).join(" · ");
     const dcl=dcLabel(o);if(sub||dcl){y+=44;let x=P;
@@ -4847,7 +4851,7 @@ async function buildPreviewCanvas(o){
     cx.font=`400 26px ${MM_FONT}`;const lines=wrapLines(cx,note,W-40);cv.width=W;cv.height=Math.round(12+dh+12+lines.length*38+16);   /* tight margins: the drawing as big as the frame allows */
     cx.drawImage(sv,(W-dw)/2,12,dw,dh);   /* transparent: the frame's own ground shows through */
     cx.font=`400 26px ${MM_FONT}`;cx.fillStyle=C.muted;cx.textAlign="center";lines.forEach((l,i)=>cx.fillText(l,W/2,12+dh+12+30+i*38));
-    const tp=await loadImage(cv.toDataURL("image/png"));tp._tier=true;imgs.unshift(tp)}   /* first in the row: to the left of the design photos */catch(e){}}
+    const tp=await loadImage(cv.toDataURL("image/png"));tierPic=tp}   /* first in the row: to the left of the design photos */catch(e){}}
   /* the drawing's frame takes the first photo's shape, so it sits beside the photos in a frame of the same size */
   const firstPhoto=imgs.find(x=>x&&!x._tier),ar=imgs.map(im=>im?._tier&&firstPhoto?firstPhoto.naturalWidth/firstPhoto.naturalHeight:im?im.naturalWidth/im.naturalHeight:1.33);
   imgs.forEach((im,i)=>{if(im?._tier)im._ar=ar[i]});
